@@ -1,5 +1,5 @@
 package com.feko.generictabletoprpg.ui.spell.fivee
 
-data class `5eToolsSpells`(
+data class FifthEToolsSpells(
     var spell: List<Spell> = arrayListOf()
 )
