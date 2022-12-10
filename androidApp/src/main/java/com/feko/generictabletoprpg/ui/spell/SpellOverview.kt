@@ -8,27 +8,38 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.navigation.NamedNavArgument
+import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.composable
+import com.feko.generictabletoprpg.MainActivity.Companion.spells
 import com.feko.generictabletoprpg.ui.Navigation
 import com.feko.generictabletoprpg.ui.spell.fivee.Spell
 
-object SpellOverview : Navigation.IDestination {
+object SpellOverview : Navigation.Destination {
     override val route: String
         get() = "spellOverview"
+    override val isRootDestination: Boolean
+        get() = true
+    override val screenTitle: String
+        get() = "Spell Overview"
 
-    override val arguments: List<NamedNavArgument>
-        get() = listOf()
+    override fun navHostComposable(
+        navGraphBuilder: NavGraphBuilder,
+        navController: NavHostController,
+        appBarTitle: MutableState<String>
+    ) {
+        navGraphBuilder.composable(route) {
+            appBarTitle.value = screenTitle
+            Screen(navController, spells)
+        }
+    }
 
     @Composable
     @OptIn(ExperimentalMaterial3Api::class)
-    fun Screen(
+    private fun Screen(
         navController: NavHostController,
         spells: List<Spell>
     ) {
@@ -44,7 +55,7 @@ object SpellOverview : Navigation.IDestination {
                         .contains(searchString.lowercase())
                 }) { spell ->
                     Row(Modifier.clickable {
-                        navController.navigate("details/${spell.name!!}")
+                        navController.navigate(SpellDetails.getNavRoute(spell.name!!))
                     }) {
                         Text(spell.name!!)
                     }

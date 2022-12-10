@@ -6,21 +6,22 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
 import com.feko.generictabletoprpg.ui.Navigation
-import com.feko.generictabletoprpg.ui.spell.SpellOverview
 import com.feko.generictabletoprpg.ui.spell.fivee.Spell
 import com.feko.generictabletoprpg.ui.theme.GenerictabletoprpgTheme
 import com.squareup.moshi.*
 import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
-    val spells = mutableListOf<Spell>()
+    companion object {
+        val spells = mutableListOf<Spell>()
+    }
 
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -35,11 +36,14 @@ class MainActivity : ComponentActivity() {
                 val drawerState = rememberDrawerState(DrawerValue.Closed)
                 val coroutineScope = rememberCoroutineScope()
                 val navController = rememberNavController()
+                val appBarTitle = rememberSaveable { mutableStateOf("") }
 
                 Scaffold(
                     topBar = {
                         TopAppBar(
-                            title = { Text("Title") },
+                            title = {
+                                Text(appBarTitle.value)
+                            },
                             navigationIcon = {
                                 Icon(
                                     Icons.Default.Menu,
@@ -54,30 +58,10 @@ class MainActivity : ComponentActivity() {
                                         }
                                     })
                             })
-                    },
-                    floatingActionButton = {
-                        FloatingActionButton(onClick = {
-                            navController.navigate(SpellOverview.route)
-                        }) {
-                            Icon(Icons.Default.List, "")
-                        }
-                    }) {
-                    ModalNavigationDrawer(
-                        drawerState = drawerState,
-                        drawerContent = {
-                            ModalDrawerSheet {
-                                Text("1")
-                                Text("2")
-                                Text("3")
-                            }
-                        },
-                        modifier = Modifier.padding(it)
-                    ) {
-                        Navigation.Host(navController, spells)
-                    }
+                    }) { paddingValues ->
+                    Navigation.Drawer(drawerState, paddingValues, navController, appBarTitle)
                 }
             }
         }
     }
-
 }

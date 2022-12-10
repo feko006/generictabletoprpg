@@ -6,18 +6,33 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NamedNavArgument
+import androidx.navigation.NavGraphBuilder
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.composable
 import com.feko.generictabletoprpg.ui.Navigation
 import com.feko.generictabletoprpg.ui.rememberSaveableMutableStateIntToIntMap
 
-object SpellSlots : Navigation.IDestination {
+object SpellSlots : Navigation.Destination {
     override val route: String
         get() = "spellSlots"
-    override val arguments: List<NamedNavArgument>
-        get() = listOf()
+    override val isRootDestination: Boolean
+        get() = true
+    override val screenTitle: String
+        get() = "Spell Slots"
+
+    override fun navHostComposable(
+        navGraphBuilder: NavGraphBuilder,
+        navController: NavHostController,
+        appBarTitle: MutableState<String>
+    ) {
+        navGraphBuilder.composable(route) {
+            appBarTitle.value = screenTitle
+            Screen()
+        }
+    }
 
     @Composable
-    fun Screen() {
+    private fun Screen() {
         val slots = rememberSaveableMutableStateIntToIntMap("slots")
         val usedSlots = rememberSaveableMutableStateIntToIntMap("usedSlots")
         var slotLevelDropdownExpanded by remember { mutableStateOf(false) }

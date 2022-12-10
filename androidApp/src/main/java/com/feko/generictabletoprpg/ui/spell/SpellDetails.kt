@@ -5,31 +5,57 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NamedNavArgument
-import androidx.navigation.NavBackStackEntry
+import androidx.navigation.NavGraphBuilder
+import androidx.navigation.NavHostController
 import androidx.navigation.NavType
+import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.feko.generictabletoprpg.MainActivity.Companion.spells
 import com.feko.generictabletoprpg.ui.Navigation
 import com.feko.generictabletoprpg.ui.spell.fivee.Spell
 import com.feko.generictabletoprpg.ui.spell.fivee.toReadableString
 
-object SpellDetails : Navigation.IDestination {
+
+object SpellDetails : Navigation.Destination {
     private const val nameArgument = "name"
+    private const val routeBase = "spellDetails"
 
     override val route: String
-        get() = "spellDetails"
-    override val arguments: List<NamedNavArgument>
-        get() = listOf(navArgument(nameArgument) {
-            type = NavType.StringType
-        })
+        get() = "$routeBase/{$nameArgument}"
+    override val isRootDestination: Boolean
+        get() = false
+    override val screenTitle: String
+        get() = "Spell Details"
 
-    fun getNameArgument(backStackEntry: NavBackStackEntry) =
-        backStackEntry.arguments?.getString(nameArgument)
+    fun getNavRoute(name: String): String {
+        return "$routeBase/$name"
+    }
+
+    override fun navHostComposable(
+        navGraphBuilder: NavGraphBuilder,
+        navController: NavHostController,
+        appBarTitle: MutableState<String>
+    ) {
+        navGraphBuilder.composable(
+            route = route,
+            arguments = listOf(navArgument(nameArgument) {
+                type = NavType.StringType
+            })
+        ) { backStackEntry ->
+            val currentSpell =
+                spells.first {
+                    it.name == backStackEntry.arguments?.getString(nameArgument)
+                }
+            appBarTitle.value = screenTitle
+            Screen(currentSpell)
+        }
+    }
 
     @Composable
-    fun Screen(currentSpell: Spell) {
+    private fun Screen(currentSpell: Spell) {
         Column {
             Text("Name: ${currentSpell.name}")
             Text("Level: ${currentSpell.level}")
