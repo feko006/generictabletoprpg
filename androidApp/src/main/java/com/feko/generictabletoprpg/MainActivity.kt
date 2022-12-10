@@ -1,5 +1,6 @@
 package com.feko.generictabletoprpg
 
+import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -12,20 +13,21 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
-import com.feko.generictabletoprpg.ui.Navigation
-import com.feko.generictabletoprpg.ui.spell.fivee.Spell
-import com.feko.generictabletoprpg.ui.theme.GenerictabletoprpgTheme
+import com.feko.generictabletoprpg.spell.fiveetools.Spell
+import com.feko.generictabletoprpg.theme.GenerictabletoprpgTheme
 import com.squareup.moshi.*
 import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
     companion object {
         val spells = mutableListOf<Spell>()
+        lateinit var appContext: Context
     }
 
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        appContext = applicationContext
 
         spells.add(Spell(name = "Spell 1", level = 1))
         spells.add(Spell(name = "Spell 2", level = 2))
