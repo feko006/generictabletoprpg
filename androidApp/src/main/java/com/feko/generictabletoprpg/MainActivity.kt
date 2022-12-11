@@ -4,7 +4,6 @@ import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
@@ -53,10 +52,8 @@ class MainActivity : ComponentActivity() {
                                         Text(appBarTitle.value)
                                     },
                                     navigationIcon = {
-                                        Icon(
-                                            Icons.Default.Menu,
-                                            "",
-                                            Modifier.clickable {
+                                        IconButton(
+                                            onClick = {
                                                 coroutineScope.launch {
                                                     if (drawerState.isOpen) {
                                                         drawerState.close()
@@ -64,7 +61,9 @@ class MainActivity : ComponentActivity() {
                                                         drawerState.open()
                                                     }
                                                 }
-                                            })
+                                            }) {
+                                            Icon(Icons.Default.Menu, "")
+                                        }
                                     })
                             }) { paddingValues ->
                             Navigation.Drawer(
