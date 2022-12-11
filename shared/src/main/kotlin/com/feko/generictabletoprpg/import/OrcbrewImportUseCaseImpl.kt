@@ -43,7 +43,11 @@ class OrcbrewImportUseCaseImpl(
 
                             @Suppress("UNCHECKED_CAST")
                             val classesThatCanCastMap =
-                                processEdnMapPort.getValue<Map<Any, Any>>(spellMap, ":spell-lists")
+                                processEdnMapPort.getValueOrDefault<Map<Any, Any>>(
+                                    spellMap,
+                                    ":spell-lists",
+                                    mapOf()
+                                )
 
                             val rangeString =
                                 processEdnMapPort.getValue<String>(spellMap, ":range")

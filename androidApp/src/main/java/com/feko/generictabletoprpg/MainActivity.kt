@@ -12,11 +12,13 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.rememberNavController
 import com.feko.generictabletoprpg.spell.fiveetools.Spell
 import com.feko.generictabletoprpg.theme.GenerictabletoprpgTheme
 import com.squareup.moshi.*
 import kotlinx.coroutines.launch
+import org.koin.androidx.compose.koinViewModel
 
 class MainActivity : ComponentActivity() {
     companion object {
@@ -35,33 +37,50 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             GenerictabletoprpgTheme {
-                val drawerState = rememberDrawerState(DrawerValue.Closed)
-                val coroutineScope = rememberCoroutineScope()
-                val navController = rememberNavController()
-                val appBarTitle = rememberSaveable { mutableStateOf("") }
+                val appViewModel: AppViewModel = koinViewModel()
+                val appState by appViewModel.appState.collectAsState()
 
-                Scaffold(
-                    topBar = {
-                        TopAppBar(
-                            title = {
-                                Text(appBarTitle.value)
-                            },
-                            navigationIcon = {
-                                Icon(
-                                    Icons.Default.Menu,
-                                    "",
-                                    Modifier.clickable {
-                                        coroutineScope.launch {
-                                            if (drawerState.isOpen) {
-                                                drawerState.close()
-                                            } else {
-                                                drawerState.open()
-                                            }
-                                        }
+                when (appState) {
+                    is AppViewModel.AppState.ImportingBaseContent -> {
+                        Surface(Modifier.fillMaxSize()) {
+                            CircularProgressIndicator(Modifier.size(100.dp))
+                        }
+                    }
+                    is AppViewModel.AppState.ReadyToUse -> {
+                        val drawerState = rememberDrawerState(DrawerValue.Closed)
+                        val coroutineScope = rememberCoroutineScope()
+                        val navController = rememberNavController()
+                        val appBarTitle = rememberSaveable { mutableStateOf("") }
+
+                        Scaffold(
+                            topBar = {
+                                TopAppBar(
+                                    title = {
+                                        Text(appBarTitle.value)
+                                    },
+                                    navigationIcon = {
+                                        Icon(
+                                            Icons.Default.Menu,
+                                            "",
+                                            Modifier.clickable {
+                                                coroutineScope.launch {
+                                                    if (drawerState.isOpen) {
+                                                        drawerState.close()
+                                                    } else {
+                                                        drawerState.open()
+                                                    }
+                                                }
+                                            })
                                     })
-                            })
-                    }) { paddingValues ->
-                    Navigation.Drawer(drawerState, paddingValues, navController, appBarTitle)
+                            }) { paddingValues ->
+                            Navigation.Drawer(
+                                drawerState,
+                                paddingValues,
+                                navController,
+                                appBarTitle
+                            )
+                        }
+                    }
                 }
             }
         }
