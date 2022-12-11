@@ -17,6 +17,9 @@ data class Spell(
     val classesThatCanCast: List<String>,
     val range: Range
 ) {
+    val hasComponents: Boolean
+        get() = components.any()
+
     companion object {
         fun createFromOrcbrewData(
             processEdnMapPort: ProcessEdnMapPort,
@@ -56,6 +59,32 @@ data class Spell(
         val material: Boolean,
         val materialComponent: String?
     ) {
+        fun any(): Boolean =
+            verbal or somatic or material
+
+        override fun toString(): String {
+            val builder = StringBuilder()
+            if (verbal) {
+                builder.append("V")
+            }
+            if (somatic) {
+                if (verbal) {
+                    builder.append(", ")
+                }
+                builder.append("S")
+            }
+            if (material) {
+                if (verbal or somatic) {
+                    builder.append(", ")
+                }
+                builder.append("M")
+                materialComponent?.let {
+                    builder.append(" ($it)")
+                }
+            }
+            return builder.toString()
+        }
+
         companion object {
             fun createFromOrcbrewData(
                 processEdnMapPort: ProcessEdnMapPort,

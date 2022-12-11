@@ -10,7 +10,8 @@ import com.feko.generictabletoprpg.import.SaveSpellsPort
 abstract class SpellDao
     : BaseDao<SpellEntity>(),
     SaveSpellsPort,
-    GetAllSpellsPort {
+    GetAllSpellsPort,
+    GetSpellByIdPort {
 
     lateinit var logger: Logger
 
@@ -43,4 +44,10 @@ abstract class SpellDao
     override fun getAllSortedByName(): List<Spell> =
         getAllSortedByNameInternal()
             .map { it.toCoreModel() }
+
+    @Query("select * from spells where id = :spellId")
+    protected abstract fun getByIdInternal(spellId: Long): SpellEntity
+
+    override fun getById(spellId: Long): Spell =
+        getByIdInternal(spellId).toCoreModel()
 }

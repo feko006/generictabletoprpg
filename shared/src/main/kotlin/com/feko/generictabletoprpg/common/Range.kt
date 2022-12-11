@@ -19,4 +19,16 @@ data class Range(
             )
         }
     }
+
+    override fun toString(): String {
+        return if (isSelf) {
+            "Self"
+        } else if (isTouch) {
+            "Touch"
+        } else if (isSight) {
+            "Sight"
+        } else {
+            "$distance $unit"
+        }
+    }
 }

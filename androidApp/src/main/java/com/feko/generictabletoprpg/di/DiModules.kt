@@ -2,6 +2,7 @@ package com.feko.generictabletoprpg.di
 
 import androidx.room.Room
 import com.feko.generictabletoprpg.AppViewModel
+import com.feko.generictabletoprpg.com.feko.generictabletoprpg.spell.SpellDetailsViewModel
 import com.feko.generictabletoprpg.common.*
 import com.feko.generictabletoprpg.import.*
 import com.feko.generictabletoprpg.init.LoadBaseContentAdapter
@@ -35,6 +36,7 @@ val diModules = module {
     }
     single<SaveSpellsPort> { get<SpellDao>() }
     single<GetAllSpellsPort> { get<SpellDao>() }
+    single<GetSpellByIdPort> { get<SpellDao>() }
     single<UserPreferencesPort> { UserPreferencesAdapter(get()) }
     single<LoadBaseContentPort> { LoadBaseContentAdapter(get()) }
 
@@ -42,9 +44,11 @@ val diModules = module {
     single<OrcbrewImportUseCase> { OrcbrewImportUseCaseImpl(get(), get(), get(), get()) }
     single<LoadBaseContentUseCase> { LoadBaseContentUseCaseImpl(get(), get(), get()) }
     single<GetAllSpellsUseCase> { GetAllSpellsUseCaseImpl(get()) }
+    single<GetSpellByIdUseCase> { GetSpellByIdUseCaseImpl(get()) }
 
     // VMs
     viewModel { ImportViewModel(get()) }
     viewModel { AppViewModel(get()) }
     viewModel { SpellOverviewViewModel(get()) }
+    viewModel { SpellDetailsViewModel(get()) }
 }
