@@ -1,6 +1,7 @@
 plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
+    id 'com.google.devtools.ksp' version "1.7.20-1.0.7"
 }
 
 android {
@@ -21,6 +22,12 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary true
+        }
+
+        ksp {
+            arg("room.schemaLocation", "$projectDir/schemas".toString())
+            arg("room.incremental", "true")
+            arg("room.expandProjection", "true")
         }
     }
 
@@ -71,4 +78,8 @@ dependencies {
     implementation "io.insert-koin:koin-core:3.2.2"
     implementation "io.insert-koin:koin-android:3.3.0"
     implementation "io.insert-koin:koin-androidx-compose:3.3.0"
+    def room_version = "2.4.3"
+    implementation "androidx.room:room-runtime:$room_version"
+    ksp "androidx.room:room-compiler:$room_version"
+    implementation "androidx.room:room-ktx:$room_version"
 }

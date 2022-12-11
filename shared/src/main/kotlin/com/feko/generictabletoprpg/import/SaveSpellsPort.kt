@@ -2,4 +2,6 @@ package com.feko.generictabletoprpg.import
 
 import com.feko.generictabletoprpg.spells.Spell
 
-interface SaveSpellsPort : (List<Spell>) -> Result<Boolean>
+interface SaveSpellsPort {
+    fun save(spells: List<Spell>): Result<Boolean>
+}

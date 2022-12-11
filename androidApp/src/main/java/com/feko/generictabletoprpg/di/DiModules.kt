@@ -1,25 +1,33 @@
 package com.feko.generictabletoprpg.di
 
+import androidx.room.Room
+import com.feko.generictabletoprpg.common.GenericTabletopRpgDatabase
 import com.feko.generictabletoprpg.common.Logger
 import com.feko.generictabletoprpg.common.TimberLogger
 import com.feko.generictabletoprpg.import.*
-import com.feko.generictabletoprpg.spells.Spell
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
 val diModules = module {
     // Services
     single<Logger> { TimberLogger() }
+    single {
+        Room
+            .databaseBuilder(
+                get(),
+                GenericTabletopRpgDatabase::class.java,
+                "generic-tabletop-rpg.db"
+            )
+            .build()
+    }
 
     // Ports & Adapters
     single<ParseEdnAsMapPort> { ParseEdnAsMapEdnJavaAdapter() }
     single<ProcessEdnMapPort> { ProcessEdnMapEdnJavaAdapter() }
     single<SaveSpellsPort> {
-        object : SaveSpellsPort {
-            override fun invoke(p1: List<Spell>): Result<Boolean> {
-                return Result.success(true)
-            }
-        }
+        val spellDao = get<GenericTabletopRpgDatabase>().spellDao()
+        spellDao.logger = get()
+        spellDao
     }
 
     // Use-cases

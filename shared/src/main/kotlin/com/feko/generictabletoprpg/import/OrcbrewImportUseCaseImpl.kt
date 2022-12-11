@@ -66,7 +66,7 @@ class OrcbrewImportUseCaseImpl(
             if (spellsToAdd.isEmpty()) {
                 return Result.success(false)
             }
-            return saveSpellsPort.invoke(spellsToAdd)
+            return saveSpellsPort.save(spellsToAdd)
         } catch (e: Exception) {
             logger.error(e, "Failed to process file")
             return Result.failure(e)
