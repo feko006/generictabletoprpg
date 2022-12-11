@@ -14,7 +14,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.rememberNavController
-import com.feko.generictabletoprpg.spell.fiveetools.Spell
 import com.feko.generictabletoprpg.theme.GenerictabletoprpgTheme
 import com.squareup.moshi.*
 import kotlinx.coroutines.launch
@@ -22,7 +21,6 @@ import org.koin.androidx.compose.koinViewModel
 
 class MainActivity : ComponentActivity() {
     companion object {
-        val spells = mutableListOf<Spell>()
         lateinit var appContext: Context
     }
 
@@ -30,10 +28,6 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         appContext = applicationContext
-
-        spells.add(Spell(name = "Spell 1", level = 1))
-        spells.add(Spell(name = "Spell 2", level = 2))
-        spells.add(Spell(name = "Spell 3", level = 3))
 
         setContent {
             GenerictabletoprpgTheme {

@@ -13,25 +13,24 @@ import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import com.feko.generictabletoprpg.MainActivity.Companion.spells
 import com.feko.generictabletoprpg.Navigation
 import com.feko.generictabletoprpg.spell.fiveetools.Spell
 import com.feko.generictabletoprpg.spell.fiveetools.toReadableString
 
 
 object SpellDetails : Navigation.Destination {
-    private const val nameArgument = "name"
+    private const val spellIdArgument = "id"
     private const val routeBase = "spellDetails"
 
     override val route: String
-        get() = "$routeBase/{$nameArgument}"
+        get() = "$routeBase/{$spellIdArgument}"
     override val isRootDestination: Boolean
         get() = false
     override val screenTitle: String
         get() = "Spell Details"
 
-    fun getNavRoute(name: String): String {
-        return "$routeBase/$name"
+    fun getNavRoute(spellId: Long): String {
+        return "$routeBase/$spellId"
     }
 
     override fun navHostComposable(
@@ -41,14 +40,12 @@ object SpellDetails : Navigation.Destination {
     ) {
         navGraphBuilder.composable(
             route = route,
-            arguments = listOf(navArgument(nameArgument) {
+            arguments = listOf(navArgument(spellIdArgument) {
                 type = NavType.StringType
             })
         ) { backStackEntry ->
-            val currentSpell =
-                spells.first {
-                    it.name == backStackEntry.arguments?.getString(nameArgument)
-                }
+            val currentSpell = Spell()
+            val spellId = backStackEntry.arguments?.getLong(spellIdArgument)
             appBarTitle.value = screenTitle
             Screen(currentSpell)
         }

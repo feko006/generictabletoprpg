@@ -1,12 +1,12 @@
 package com.feko.generictabletoprpg.import
 
 import com.feko.generictabletoprpg.common.Logger
-import com.feko.generictabletoprpg.spells.Spell
+import com.feko.generictabletoprpg.spell.Spell
 
 class OrcbrewImportUseCaseImpl(
-    val parseEdnAsMapPort: ParseEdnAsMapPort,
-    val processEdnMapPort: ProcessEdnMapPort,
-    val saveSpellsPort: SaveSpellsPort,
+    private val parseEdnAsMapPort: ParseEdnAsMapPort,
+    private val processEdnMapPort: ProcessEdnMapPort,
+    private val saveSpellsPort: SaveSpellsPort,
     val logger: Logger
 ) : OrcbrewImportUseCase {
     override fun invoke(fileContents: String): Result<Boolean> {

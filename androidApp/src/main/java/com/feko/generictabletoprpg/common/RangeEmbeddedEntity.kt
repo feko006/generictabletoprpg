@@ -9,6 +9,15 @@ data class RangeEmbeddedEntity(
     val distance: Long,
     val unit: String?
 ) {
+    fun toCoreModel(): Range =
+        Range(
+            isSelf,
+            isTouch,
+            isSight,
+            distance,
+            unit
+        )
+
     companion object {
         fun fromCoreModel(range: Range) =
             RangeEmbeddedEntity(

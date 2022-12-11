@@ -1,4 +1,4 @@
-package com.feko.generictabletoprpg.spells
+package com.feko.generictabletoprpg.spell
 
 import com.feko.generictabletoprpg.common.Range
 import com.feko.generictabletoprpg.import.ProcessEdnMapPort

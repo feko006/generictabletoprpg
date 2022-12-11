@@ -1,4 +1,4 @@
-package com.feko.generictabletoprpg.spells
+package com.feko.generictabletoprpg.spell
 
 class GetSpellByIdUseCaseImpl(
     private val getSpellByIdPort: GetSpellByIdPort

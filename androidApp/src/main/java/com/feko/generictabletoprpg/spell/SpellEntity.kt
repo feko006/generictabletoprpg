@@ -4,7 +4,6 @@ import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.feko.generictabletoprpg.com.feko.generictabletoprpg.common.RangeEmbeddedEntity
-import com.feko.generictabletoprpg.spells.Spell
 
 @Entity(
     tableName = "spells"
@@ -26,12 +25,37 @@ data class SpellEntity(
     @Embedded
     val range: RangeEmbeddedEntity
 ) {
+
+    fun toCoreModel(): Spell =
+        Spell(
+            id,
+            name,
+            description,
+            school,
+            duration,
+            concentration,
+            level,
+            source,
+            components.toCoreModel(),
+            castingTime,
+            classesThatCanCast,
+            range.toCoreModel()
+        )
+
     data class SpellComponentsEmbeddedEntity(
         val verbal: Boolean,
         val somatic: Boolean,
         val material: Boolean,
         val materialComponent: String?
     ) {
+        fun toCoreModel(): Spell.SpellComponents =
+            Spell.SpellComponents(
+                verbal,
+                somatic,
+                material,
+                materialComponent
+            )
+
         companion object {
             fun fromCoreModel(spellComponents: Spell.SpellComponents) =
                 SpellComponentsEmbeddedEntity(

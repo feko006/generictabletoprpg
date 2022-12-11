@@ -5,12 +5,12 @@ import androidx.room.Query
 import com.feko.generictabletoprpg.common.BaseDao
 import com.feko.generictabletoprpg.common.Logger
 import com.feko.generictabletoprpg.import.SaveSpellsPort
-import com.feko.generictabletoprpg.spells.Spell
 
 @Dao
 abstract class SpellDao
     : BaseDao<SpellEntity>(),
-    SaveSpellsPort {
+    SaveSpellsPort,
+    GetAllSpellsPort {
 
     lateinit var logger: Logger
 
@@ -36,4 +36,11 @@ abstract class SpellDao
     override fun setEntityId(entity: SpellEntity, existingEntityId: Long) {
         entity.id = existingEntityId
     }
+
+    @Query("select * from spells order by name")
+    protected abstract fun getAllSortedByNameInternal(): List<SpellEntity>
+
+    override fun getAllSortedByName(): List<Spell> =
+        getAllSortedByNameInternal()
+            .map { it.toCoreModel() }
 }

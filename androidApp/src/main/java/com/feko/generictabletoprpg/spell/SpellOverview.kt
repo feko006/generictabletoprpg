@@ -1,22 +1,19 @@
 package com.feko.generictabletoprpg.spell
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
-import com.feko.generictabletoprpg.MainActivity.Companion.spells
 import com.feko.generictabletoprpg.Navigation
-import com.feko.generictabletoprpg.spell.fiveetools.Spell
+import com.feko.generictabletoprpg.common.Common
+import org.koin.androidx.compose.koinViewModel
 
 object SpellOverview : Navigation.Destination {
     override val route: String
@@ -33,32 +30,42 @@ object SpellOverview : Navigation.Destination {
     ) {
         navGraphBuilder.composable(route) {
             appBarTitle.value = screenTitle
-            Screen(navController, spells)
+            Screen(navController)
         }
     }
 
     @Composable
     @OptIn(ExperimentalMaterial3Api::class)
     private fun Screen(
-        navController: NavHostController,
-        spells: List<Spell>
+        navController: NavHostController
     ) {
-        var searchString by rememberSaveable { mutableStateOf("") }
-        Column {
-            TextField(
-                value = searchString,
-                onValueChange = { searchString = it }
-            )
-            LazyColumn {
+        val viewModel: SpellOverviewViewModel = koinViewModel()
+        val spells by viewModel.spells.collectAsState(listOf())
+        val searchString by viewModel.searchString.collectAsState("")
+        Column(Modifier.padding(8.dp)) {
+            Common.SearchTextField(
+                searchString
+            ) {
+                viewModel.searchStringUpdated(it)
+            }
+            Spacer(Modifier.height(8.dp))
+            LazyColumn(
+                Modifier.fillMaxSize()
+            ) {
                 items(spells.filter {
-                    it.name!!.lowercase()
+                    it.name.lowercase()
                         .contains(searchString.lowercase())
-                }) { spell ->
-                    Row(Modifier.clickable {
-                        navController.navigate(SpellDetails.getNavRoute(spell.name!!))
-                    }) {
-                        Text(spell.name!!)
-                    }
+                }, key = { it.id }
+                ) { spell ->
+                    ListItem(
+                        headlineText = {
+                            Text(spell.name)
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable {
+                                navController.navigate(SpellDetails.getNavRoute(spell.id))
+                            })
                 }
             }
         }

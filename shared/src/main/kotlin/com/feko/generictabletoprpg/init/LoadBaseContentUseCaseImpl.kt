@@ -4,9 +4,9 @@ import com.feko.generictabletoprpg.common.UserPreferencesPort
 import com.feko.generictabletoprpg.import.OrcbrewImportUseCase
 
 class LoadBaseContentUseCaseImpl(
-    val userPreferences: UserPreferencesPort,
-    val loadBaseContentPort: LoadBaseContentPort,
-    val orcbrewImportUseCase: OrcbrewImportUseCase
+    private val userPreferences: UserPreferencesPort,
+    private val loadBaseContentPort: LoadBaseContentPort,
+    private val orcbrewImportUseCase: OrcbrewImportUseCase
 ) : LoadBaseContentUseCase {
     override fun invoke() {
         val latestBaseContentLoaded =

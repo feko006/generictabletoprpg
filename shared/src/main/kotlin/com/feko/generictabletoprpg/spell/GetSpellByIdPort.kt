@@ -1,3 +1,3 @@
-package com.feko.generictabletoprpg.spells
+package com.feko.generictabletoprpg.spell
 
 interface GetSpellByIdPort : (Long) -> Spell
