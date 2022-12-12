@@ -23,7 +23,6 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.feko.generictabletoprpg.Navigation
-import com.feko.generictabletoprpg.com.feko.generictabletoprpg.spell.SpellDetailsViewModel
 import org.koin.androidx.compose.koinViewModel
 
 

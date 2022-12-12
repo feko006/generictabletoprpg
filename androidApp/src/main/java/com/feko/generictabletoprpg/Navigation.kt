@@ -12,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.*
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
+import com.feko.generictabletoprpg.feat.FeatOverview
 import com.feko.generictabletoprpg.import.Import
 import com.feko.generictabletoprpg.spell.SpellDetails
 import com.feko.generictabletoprpg.spell.SpellOverview
@@ -34,6 +35,7 @@ object Navigation {
         listOf(
             SpellDetails,
             SpellOverview,
+            FeatOverview,
             SpellSlots,
             Import
         )
@@ -42,7 +44,7 @@ object Navigation {
         destinations.filter { it.isRootDestination }
 
     private val firstDestination: Destination =
-        destinations.first { it is SpellSlots }
+        destinations.first { it is SpellOverview }
 
     @Composable
     private fun Host(

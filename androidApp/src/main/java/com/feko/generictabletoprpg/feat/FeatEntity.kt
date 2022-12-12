@@ -1,9 +1,8 @@
-package com.feko.generictabletoprpg.com.feko.generictabletoprpg.feat
+package com.feko.generictabletoprpg.feat
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.feko.generictabletoprpg.common.Stat
-import com.feko.generictabletoprpg.feat.Feat
 
 @Entity(tableName = "feats")
 data class FeatEntity(

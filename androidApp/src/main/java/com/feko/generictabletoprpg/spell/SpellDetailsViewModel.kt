@@ -1,9 +1,7 @@
-package com.feko.generictabletoprpg.com.feko.generictabletoprpg.spell
+package com.feko.generictabletoprpg.spell
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.feko.generictabletoprpg.spell.GetSpellByIdUseCase
-import com.feko.generictabletoprpg.spell.Spell
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow

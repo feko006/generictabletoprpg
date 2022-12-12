@@ -1,11 +1,16 @@
-package com.feko.generictabletoprpg.spell
+package com.feko.generictabletoprpg.feat
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ListItem
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavGraphBuilder
@@ -15,13 +20,13 @@ import com.feko.generictabletoprpg.Navigation
 import com.feko.generictabletoprpg.common.Common
 import org.koin.androidx.compose.koinViewModel
 
-object SpellOverview : Navigation.Destination {
+object FeatOverview : Navigation.Destination {
+    override val screenTitle: String
+        get() = "Feats"
     override val route: String
-        get() = "spellOverview"
+        get() = "featOverview"
     override val isRootDestination: Boolean
         get() = true
-    override val screenTitle: String
-        get() = "Spells"
 
     override fun navHostComposable(
         navGraphBuilder: NavGraphBuilder,
@@ -34,13 +39,13 @@ object SpellOverview : Navigation.Destination {
         }
     }
 
-    @Composable
     @OptIn(ExperimentalMaterial3Api::class)
-    private fun Screen(
+    @Composable
+    fun Screen(
         navController: NavHostController
     ) {
-        val viewModel: SpellOverviewViewModel = koinViewModel()
-        val spells by viewModel.spells.collectAsState(listOf())
+        val viewModel: FeatOverviewViewModel = koinViewModel()
+        val feats by viewModel.feats.collectAsState(listOf())
         val searchString by viewModel.searchString.collectAsState("")
         Column(Modifier.padding(8.dp)) {
             Common.SearchTextField(
@@ -53,17 +58,17 @@ object SpellOverview : Navigation.Destination {
                 Modifier.fillMaxSize()
             ) {
                 items(
-                    spells,
+                    feats,
                     key = { it.id }
-                ) { spell ->
+                ) { feat ->
                     ListItem(
                         headlineText = {
-                            Text(spell.name)
+                            Text(feat.name)
                         },
                         modifier = Modifier
                             .fillMaxWidth()
                             .clickable {
-                                navController.navigate(SpellDetails.getNavRoute(spell.id))
+                                navController.navigate(FeatDetails.getNavRoute(feat.id))
                             })
                 }
             }

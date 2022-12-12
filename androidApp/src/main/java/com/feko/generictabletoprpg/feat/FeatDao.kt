@@ -1,16 +1,15 @@
-package com.feko.generictabletoprpg.com.feko.generictabletoprpg.feat
+package com.feko.generictabletoprpg.feat
 
 import androidx.room.Dao
 import androidx.room.Query
 import com.feko.generictabletoprpg.common.BaseDao
 import com.feko.generictabletoprpg.common.Logger
-import com.feko.generictabletoprpg.feat.Feat
-import com.feko.generictabletoprpg.feat.SaveFeatsPort
 
 @Dao
 abstract class FeatDao
     : BaseDao<FeatEntity>(),
-    SaveFeatsPort {
+    SaveFeatsPort,
+    GetAllFeatsPort {
 
     lateinit var logger: Logger
 
@@ -37,4 +36,7 @@ abstract class FeatDao
     override fun setEntityId(entity: FeatEntity, existingEntityId: Long) {
         entity.id = existingEntityId
     }
+
+    @Query("select * from feats order by name")
+    abstract override fun getAllSortedByName(): List<Feat>
 }

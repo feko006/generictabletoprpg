@@ -2,10 +2,8 @@ package com.feko.generictabletoprpg.di
 
 import androidx.room.Room
 import com.feko.generictabletoprpg.AppViewModel
-import com.feko.generictabletoprpg.com.feko.generictabletoprpg.feat.FeatDao
-import com.feko.generictabletoprpg.com.feko.generictabletoprpg.spell.SpellDetailsViewModel
 import com.feko.generictabletoprpg.common.*
-import com.feko.generictabletoprpg.feat.SaveFeatsPort
+import com.feko.generictabletoprpg.feat.*
 import com.feko.generictabletoprpg.import.*
 import com.feko.generictabletoprpg.init.LoadBaseContentAdapter
 import com.feko.generictabletoprpg.init.LoadBaseContentPort
@@ -45,6 +43,7 @@ val diModules = module {
         featDao
     }
     single<SaveFeatsPort> { get<FeatDao>() }
+    single<GetAllFeatsPort> { get<FeatDao>() }
     single<UserPreferencesPort> { UserPreferencesAdapter(get()) }
     single<LoadBaseContentPort> { LoadBaseContentAdapter(get()) }
 
@@ -55,10 +54,12 @@ val diModules = module {
     single<LoadBaseContentUseCase> { LoadBaseContentUseCaseImpl(get(), get(), get()) }
     single<GetAllSpellsUseCase> { GetAllSpellsUseCaseImpl(get()) }
     single<GetSpellByIdUseCase> { GetSpellByIdUseCaseImpl(get()) }
+    single<GetAllFeatsUseCase> { GetAllFeatsUseCaseImpl(get()) }
 
     // VMs
     viewModel { ImportViewModel(get()) }
     viewModel { AppViewModel(get()) }
     viewModel { SpellOverviewViewModel(get()) }
     viewModel { SpellDetailsViewModel(get()) }
+    viewModel { FeatOverviewViewModel(get()) }
 }
