@@ -4,7 +4,6 @@ import androidx.room.Dao
 import androidx.room.Query
 import com.feko.generictabletoprpg.common.BaseDao
 import com.feko.generictabletoprpg.common.Logger
-import com.feko.generictabletoprpg.import.SaveSpellsPort
 
 @Dao
 abstract class SpellDao

@@ -4,6 +4,8 @@ import androidx.room.Room
 import com.feko.generictabletoprpg.AppViewModel
 import com.feko.generictabletoprpg.com.feko.generictabletoprpg.spell.SpellDetailsViewModel
 import com.feko.generictabletoprpg.common.*
+import com.feko.generictabletoprpg.feat.Feat
+import com.feko.generictabletoprpg.feat.SaveFeatsPort
 import com.feko.generictabletoprpg.import.*
 import com.feko.generictabletoprpg.init.LoadBaseContentAdapter
 import com.feko.generictabletoprpg.init.LoadBaseContentPort
@@ -37,10 +39,19 @@ val diModules = module {
     single<SaveSpellsPort> { get<SpellDao>() }
     single<GetAllSpellsPort> { get<SpellDao>() }
     single<GetSpellByIdPort> { get<SpellDao>() }
+    single<SaveFeatsPort> {
+        object : SaveFeatsPort {
+            override fun save(feats: List<Feat>): Result<Boolean> {
+                return Result.success(true)
+            }
+        }
+    }
     single<UserPreferencesPort> { UserPreferencesAdapter(get()) }
     single<LoadBaseContentPort> { LoadBaseContentAdapter(get()) }
 
     // Use-cases
+    single<OrcbrewImportSpellsUseCase> { OrcbrewImportSpellsUseCaseImpl(get(), get(), get()) }
+    single<OrcbrewImportFeatsUseCase> { OrcbrewImportFeatsUseCaseImpl(get(), get(), get()) }
     single<OrcbrewImportUseCase> { OrcbrewImportUseCaseImpl(get(), get(), get(), get()) }
     single<LoadBaseContentUseCase> { LoadBaseContentUseCaseImpl(get(), get(), get()) }
     single<GetAllSpellsUseCase> { GetAllSpellsUseCaseImpl(get()) }

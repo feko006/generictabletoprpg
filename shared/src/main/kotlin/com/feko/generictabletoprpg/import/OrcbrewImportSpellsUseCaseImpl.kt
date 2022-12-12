@@ -1,0 +1,43 @@
+package com.feko.generictabletoprpg.import
+
+import com.feko.generictabletoprpg.common.Logger
+import com.feko.generictabletoprpg.spell.SaveSpellsPort
+import com.feko.generictabletoprpg.spell.Spell
+
+@Suppress("UNCHECKED_CAST")
+class OrcbrewImportSpellsUseCaseImpl(
+    private val processEdnMapPort: ProcessEdnMapPort,
+    private val saveSpellsPort: SaveSpellsPort,
+    private val logger: Logger
+) : OrcbrewImportSpellsUseCase {
+    override fun import(
+        sources: Map<Any, Any>
+    ): Result<Boolean> {
+        val spellsToAdd = mutableListOf<Spell>()
+        sources.forEach { source ->
+            val content = source.value as Map<Any, Any>
+            val spellsKey = ":orcpub.dnd.e5/spells"
+            val hasValueForKey = processEdnMapPort.containsKey(content, spellsKey)
+            if (hasValueForKey) {
+                val spells = processEdnMapPort.getValue<Map<Any, Any>>(content, spellsKey)
+                spells.forEach { spell ->
+                    try {
+                        val spellMap = spell.value as Map<Any, Any>
+                        val spellToAdd = Spell.createFromOrcbrewData(
+                            processEdnMapPort,
+                            spellMap,
+                            source.key.toString()
+                        )
+                        spellsToAdd.add(spellToAdd)
+                    } catch (e: Exception) {
+                        logger.error(e, "Failed to process spell named '${spell.key}.")
+                    }
+                }
+            }
+        }
+        if (spellsToAdd.isEmpty()) {
+            return Result.success(false)
+        }
+        return saveSpellsPort.save(spellsToAdd)
+    }
+}

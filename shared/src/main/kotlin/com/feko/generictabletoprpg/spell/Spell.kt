@@ -24,11 +24,22 @@ data class Spell(
         fun createFromOrcbrewData(
             processEdnMapPort: ProcessEdnMapPort,
             spellMap: Map<Any, Any>,
-            componentsMap: Map<Any, Any>,
-            classesThatCanCastMap: Map<Any, Any>,
-            range: String,
             defaultSource: String
         ): Spell {
+            val componentsMap =
+                processEdnMapPort.getValueOrDefault(
+                    spellMap,
+                    ":components",
+                    mapOf<Any, Any>()
+                )
+            val classesThatCanCastMap =
+                processEdnMapPort.getValueOrDefault<Map<Any, Any>>(
+                    spellMap,
+                    ":spell-lists",
+                    mapOf()
+                )
+            val rangeString =
+                processEdnMapPort.getValue<String>(spellMap, ":range")
             val spellDuration =
                 processEdnMapPort.getValueOrDefault(spellMap, ":duration", "Instantaneous")
             val classesThatCanCast =
@@ -48,7 +59,7 @@ data class Spell(
                 SpellComponents.createFromOrcbrewData(processEdnMapPort, componentsMap),
                 processEdnMapPort.getValue(spellMap, ":casting-time"),
                 classesThatCanCast,
-                Range.createFromString(range)
+                Range.createFromString(rangeString)
             )
         }
     }
