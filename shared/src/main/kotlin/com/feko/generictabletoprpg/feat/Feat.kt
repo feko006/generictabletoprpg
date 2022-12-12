@@ -11,7 +11,8 @@ data class Feat(
     val abilityIncreases: List<Stat>,
     val proficiencyRequirements: List<String>,
     val statRequirements: List<Stat>,
-    val raceRequirements: List<String>
+    val raceRequirements: List<String>,
+    val savingThrow: Boolean
 ) {
     companion object {
         fun createFromOrcbrewData(
@@ -25,26 +26,37 @@ data class Feat(
                     ":ability-increases",
                     setOf()
                 )
-            val abilityIncreases =
-                abilityIncreasesSet.map {
-                    Stat.fromOrcbrewString(it.toString())
+            val abilityIncreases = mutableListOf<Stat>()
+            var savingThrow = false
+            abilityIncreasesSet.forEach {
+                val orcbrewString = it.toString()
+                try {
+                    val stat = Stat.fromOrcbrewString(orcbrewString)
+                    abilityIncreases.add(stat)
+                } catch (e: Exception) {
+                    if (orcbrewString.contains("saves")) {
+                        savingThrow = true
+                    }
                 }
-            val requirementsMap =
-                processEdnMapPort.getValueOrDefault<Set<String>>(
+            }
+            val requirementsSet =
+                processEdnMapPort.getValueOrDefault<Set<Any>>(
                     featMap,
                     ":prereqs",
                     setOf()
                 )
             val proficiencyRequirements = mutableListOf<String>()
             val statRequirements = mutableListOf<Stat>()
-            requirementsMap.forEach {
-                try {
-                    val stat = Stat.fromOrcbrewString(it)
-                    statRequirements.add(stat)
-                } catch (e: Exception) {
-                    proficiencyRequirements.add(it.substring(1))
+            requirementsSet
+                .map { it.toString() }
+                .forEach {
+                    try {
+                        val stat = Stat.fromOrcbrewString(it)
+                        statRequirements.add(stat)
+                    } catch (e: Exception) {
+                        proficiencyRequirements.add(it.substring(1))
+                    }
                 }
-            }
             val pathRequirementsMap =
                 processEdnMapPort.getValueOrDefault<Map<Any, Any>>(
                     featMap,
@@ -71,7 +83,8 @@ data class Feat(
                 abilityIncreases,
                 proficiencyRequirements,
                 statRequirements,
-                raceRequirements
+                raceRequirements,
+                savingThrow
             )
         }
     }

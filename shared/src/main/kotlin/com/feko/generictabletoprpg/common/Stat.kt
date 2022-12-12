@@ -17,7 +17,7 @@ enum class Stat {
                 "int" -> Int
                 "wis" -> Wis
                 "cha" -> Cha
-                else -> throw IllegalStateException()
+                else -> throw IllegalStateException("Unable to convert string '$string' to stat")
             }
         }
     }

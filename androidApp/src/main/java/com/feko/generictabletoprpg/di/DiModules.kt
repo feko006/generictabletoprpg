@@ -2,9 +2,9 @@ package com.feko.generictabletoprpg.di
 
 import androidx.room.Room
 import com.feko.generictabletoprpg.AppViewModel
+import com.feko.generictabletoprpg.com.feko.generictabletoprpg.feat.FeatDao
 import com.feko.generictabletoprpg.com.feko.generictabletoprpg.spell.SpellDetailsViewModel
 import com.feko.generictabletoprpg.common.*
-import com.feko.generictabletoprpg.feat.Feat
 import com.feko.generictabletoprpg.feat.SaveFeatsPort
 import com.feko.generictabletoprpg.import.*
 import com.feko.generictabletoprpg.init.LoadBaseContentAdapter
@@ -39,13 +39,12 @@ val diModules = module {
     single<SaveSpellsPort> { get<SpellDao>() }
     single<GetAllSpellsPort> { get<SpellDao>() }
     single<GetSpellByIdPort> { get<SpellDao>() }
-    single<SaveFeatsPort> {
-        object : SaveFeatsPort {
-            override fun save(feats: List<Feat>): Result<Boolean> {
-                return Result.success(true)
-            }
-        }
+    single {
+        val featDao = get<GenericTabletopRpgDatabase>().featDao()
+        featDao.logger = get()
+        featDao
     }
+    single<SaveFeatsPort> { get<FeatDao>() }
     single<UserPreferencesPort> { UserPreferencesAdapter(get()) }
     single<LoadBaseContentPort> { LoadBaseContentAdapter(get()) }
 
