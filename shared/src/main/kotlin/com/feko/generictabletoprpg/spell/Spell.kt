@@ -55,7 +55,13 @@ data class Spell(
                 spellDuration,
                 spellDuration.contains("Concentration"),
                 processEdnMapPort.getValue(spellMap, ":level"),
-                processEdnMapPort.getValueOrDefault(spellMap, ":source", defaultSource),
+                processEdnMapPort
+                    .getValueOrDefault<Any?>(
+                        spellMap,
+                        ":source",
+                        null
+                    )?.toString()
+                    ?: defaultSource,
                 SpellComponents.createFromOrcbrewData(processEdnMapPort, componentsMap),
                 processEdnMapPort.getValue(spellMap, ":casting-time"),
                 classesThatCanCast,
