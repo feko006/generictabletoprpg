@@ -14,6 +14,7 @@ class OrcbrewImportFeatsUseCaseImpl(
         sources: Map<Any, Any>
     ): Result<Boolean> {
         val featsToAdd = mutableListOf<Feat>()
+        val exceptions = mutableListOf<Exception>()
         sources.forEach { source ->
             val content = source.value as Map<Any, Any>
             val featsKey = ":orcpub.dnd.e5/feats"
@@ -31,12 +32,18 @@ class OrcbrewImportFeatsUseCaseImpl(
                         featsToAdd.add(featToAdd)
                     } catch (e: Exception) {
                         logger.error(e, "Failed to process feat named '${feat.key}.")
+                        exceptions.add(e)
                     }
                 }
             }
         }
-        if (featsToAdd.isEmpty()) {
+        if (exceptions.isNotEmpty() and
+            featsToAdd.isNotEmpty()
+        ) {
             return Result.success(false)
+        }
+        if (featsToAdd.isEmpty()) {
+            return Result.success(true)
         }
         return saveFeatsPort.save(featsToAdd)
     }

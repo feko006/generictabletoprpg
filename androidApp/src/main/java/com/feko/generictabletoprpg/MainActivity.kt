@@ -10,6 +10,7 @@ import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.rememberNavController
@@ -35,8 +36,12 @@ class MainActivity : ComponentActivity() {
 
                 when (appState) {
                     is AppViewModel.AppState.ImportingBaseContent -> {
-                        Surface(Modifier.fillMaxSize()) {
-                            CircularProgressIndicator(Modifier.size(100.dp))
+                        Box(Modifier.fillMaxSize()) {
+                            CircularProgressIndicator(
+                                Modifier
+                                    .size(100.dp)
+                                    .align(Alignment.Center)
+                            )
                         }
                     }
                     is AppViewModel.AppState.ReadyToUse -> {
