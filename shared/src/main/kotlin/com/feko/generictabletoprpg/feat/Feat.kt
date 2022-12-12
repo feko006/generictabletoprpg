@@ -14,6 +14,25 @@ data class Feat(
     val raceRequirements: List<String>,
     val savingThrow: Boolean
 ) {
+    val hasRequirements: Boolean
+        get() = proficiencyRequirements.isNotEmpty() or
+                statRequirements.isNotEmpty() or
+                raceRequirements.isNotEmpty()
+    val requirements: String
+        get() {
+            val builder = StringBuilder()
+            if (proficiencyRequirements.isNotEmpty()) {
+                builder.append("\nProficiencies: ${proficiencyRequirements.joinToString()}")
+            }
+            if (statRequirements.isNotEmpty()) {
+                builder.append("\nStats: ${statRequirements.joinToString { "${it.name} 13+" }}")
+            }
+            if (raceRequirements.isNotEmpty()) {
+                builder.append("\nRace: ${raceRequirements.joinToString()}")
+            }
+            return builder.toString()
+        }
+
     companion object {
         fun createFromOrcbrewData(
             processEdnMapPort: ProcessEdnMapPort,

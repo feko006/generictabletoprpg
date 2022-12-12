@@ -9,5 +9,9 @@ object StringListTypeConverter {
 
     @TypeConverter
     fun toStringList(string: String): List<String> =
-        string.split(", ")
+        if (string.isEmpty()) {
+            listOf()
+        } else {
+            string.split(", ")
+        }
 }

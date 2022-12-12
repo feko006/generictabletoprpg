@@ -37,9 +37,7 @@ object SpellDetails : Navigation.Destination {
     override val screenTitle: String
         get() = "Spell Details"
 
-    fun getNavRoute(spellId: Long): String {
-        return "$routeBase/$spellId"
-    }
+    fun getNavRoute(spellId: Long): String = "$routeBase/$spellId"
 
     override fun navHostComposable(
         navGraphBuilder: NavGraphBuilder,

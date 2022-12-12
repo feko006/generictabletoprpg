@@ -12,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.*
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
+import com.feko.generictabletoprpg.feat.FeatDetails
 import com.feko.generictabletoprpg.feat.FeatOverview
 import com.feko.generictabletoprpg.import.Import
 import com.feko.generictabletoprpg.spell.SpellDetails
@@ -35,6 +36,7 @@ object Navigation {
         listOf(
             SpellDetails,
             SpellOverview,
+            FeatDetails,
             FeatOverview,
             SpellSlots,
             Import

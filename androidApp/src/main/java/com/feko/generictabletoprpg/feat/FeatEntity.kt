@@ -17,6 +17,19 @@ data class FeatEntity(
     val raceRequirements: List<String>,
     val savingThrow: Boolean
 ) {
+    fun toCoreModel(): Feat =
+        Feat(
+            id,
+            name,
+            description,
+            source,
+            abilityIncreases,
+            proficiencyRequirements,
+            statRequirements,
+            raceRequirements,
+            savingThrow
+        )
+
     companion object {
         fun fromCoreModel(feat: Feat): FeatEntity =
             FeatEntity(

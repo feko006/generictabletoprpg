@@ -9,10 +9,11 @@ object StatListTypeConverter {
 
     @TypeConverter
     fun toStatList(string: String): List<Stat> =
-        if (string.isBlank())
+        if (string.isBlank()) {
             listOf()
-        else
+        } else {
             string
                 .split(", ")
                 .map { Stat.valueOf(it) }
+        }
 }

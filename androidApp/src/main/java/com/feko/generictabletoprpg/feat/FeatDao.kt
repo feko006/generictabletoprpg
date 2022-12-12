@@ -9,7 +9,8 @@ import com.feko.generictabletoprpg.common.Logger
 abstract class FeatDao
     : BaseDao<FeatEntity>(),
     SaveFeatsPort,
-    GetAllFeatsPort {
+    GetAllFeatsPort,
+    GetFeatByIdPort {
 
     lateinit var logger: Logger
 
@@ -38,5 +39,14 @@ abstract class FeatDao
     }
 
     @Query("select * from feats order by name")
-    abstract override fun getAllSortedByName(): List<Feat>
+    protected abstract fun getAllSortedByNameInternal(): List<FeatEntity>
+
+    override fun getAllSortedByName(): List<Feat> =
+        getAllSortedByNameInternal().map { it.toCoreModel() }
+
+    @Query("select * from feats where id = :featId")
+    protected abstract fun getByIdInternal(featId: Long): FeatEntity
+
+    override fun getById(featId: Long): Feat =
+        getByIdInternal(featId).toCoreModel()
 }

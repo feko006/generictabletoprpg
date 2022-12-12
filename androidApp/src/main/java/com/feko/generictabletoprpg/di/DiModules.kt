@@ -44,6 +44,7 @@ val diModules = module {
     }
     single<SaveFeatsPort> { get<FeatDao>() }
     single<GetAllFeatsPort> { get<FeatDao>() }
+    single<GetFeatByIdPort> { get<FeatDao>() }
     single<UserPreferencesPort> { UserPreferencesAdapter(get()) }
     single<LoadBaseContentPort> { LoadBaseContentAdapter(get()) }
 
@@ -55,6 +56,7 @@ val diModules = module {
     single<GetAllSpellsUseCase> { GetAllSpellsUseCaseImpl(get()) }
     single<GetSpellByIdUseCase> { GetSpellByIdUseCaseImpl(get()) }
     single<GetAllFeatsUseCase> { GetAllFeatsUseCaseImpl(get()) }
+    single<GetFeatByIdUseCase> { GetFeatByIdUseCaseImpl(get()) }
 
     // VMs
     viewModel { ImportViewModel(get()) }
@@ -62,4 +64,5 @@ val diModules = module {
     viewModel { SpellOverviewViewModel(get()) }
     viewModel { SpellDetailsViewModel(get()) }
     viewModel { FeatOverviewViewModel(get()) }
+    viewModel { FeatDetailsViewModel(get()) }
 }

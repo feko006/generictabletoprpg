@@ -22,8 +22,8 @@ class OrcbrewImportUseCaseImpl(
             val spellsImported = orcbrewImportSpellsUseCase.import(sources)
             val featsImported = orcbrewImportFeatsUseCase.import(sources)
             val everythingImported =
-                spellsImported.getOrDefault(false)
-                        && featsImported.getOrDefault(false)
+                spellsImported.getOrDefault(false) and
+                        featsImported.getOrDefault(false)
             return Result.success(everythingImported)
         } catch (e: Exception) {
             logger.error(e, "Failed to process file")
