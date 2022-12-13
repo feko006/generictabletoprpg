@@ -32,6 +32,10 @@ object Navigation {
         )
     }
 
+    interface DetailsNavRouteProvider {
+        fun getNavRoute(id: Long): String
+    }
+
     private val destinations: List<Destination> =
         listOf(
             SpellDetails,

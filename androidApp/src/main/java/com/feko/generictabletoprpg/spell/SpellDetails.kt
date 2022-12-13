@@ -26,7 +26,7 @@ import com.feko.generictabletoprpg.Navigation
 import org.koin.androidx.compose.koinViewModel
 
 
-object SpellDetails : Navigation.Destination {
+object SpellDetails : Navigation.Destination, Navigation.DetailsNavRouteProvider {
     private const val spellIdArgument = "id"
     private const val routeBase = "spellDetails"
 
@@ -37,7 +37,7 @@ object SpellDetails : Navigation.Destination {
     override val screenTitle: String
         get() = "Spell Details"
 
-    fun getNavRoute(spellId: Long): String = "$routeBase/$spellId"
+    override fun getNavRoute(id: Long): String = "$routeBase/$id"
 
     override fun navHostComposable(
         navGraphBuilder: NavGraphBuilder,

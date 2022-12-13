@@ -25,7 +25,9 @@ import androidx.navigation.navArgument
 import com.feko.generictabletoprpg.Navigation
 import org.koin.androidx.compose.koinViewModel
 
-object FeatDetails : Navigation.Destination {
+object FeatDetails :
+    Navigation.Destination,
+    Navigation.DetailsNavRouteProvider {
     private const val routeBase = "featDetails"
     private const val featIdArgument = "id"
 
@@ -36,7 +38,7 @@ object FeatDetails : Navigation.Destination {
     override val isRootDestination: Boolean
         get() = false
 
-    fun getNavRoute(featId: Long): String = "$routeBase/$featId"
+    override fun getNavRoute(id: Long): String = "$routeBase/$id"
 
     override fun navHostComposable(
         navGraphBuilder: NavGraphBuilder,
