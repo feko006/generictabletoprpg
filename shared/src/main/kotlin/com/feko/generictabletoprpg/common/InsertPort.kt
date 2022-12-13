@@ -1,5 +1,5 @@
 package com.feko.generictabletoprpg.common
 
 interface InsertPort<in T> {
-    fun insert(list: List<@JvmSuppressWildcards T>): Result<Boolean>
+    fun insertAll(list: List<@JvmSuppressWildcards T>): Result<Boolean>
 }

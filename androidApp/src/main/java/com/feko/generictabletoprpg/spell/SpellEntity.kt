@@ -4,14 +4,17 @@ import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.feko.generictabletoprpg.com.feko.generictabletoprpg.common.RangeEmbeddedEntity
+import com.feko.generictabletoprpg.common.CoreConvertible
+import com.feko.generictabletoprpg.common.MutableIdentifiable
+import com.feko.generictabletoprpg.common.Named
 
 @Entity(
     tableName = "spells"
 )
 data class SpellEntity(
     @PrimaryKey(autoGenerate = true)
-    var id: Long,
-    val name: String,
+    override var id: Long,
+    override val name: String,
     val description: String,
     val school: String,
     val duration: String,
@@ -24,9 +27,11 @@ data class SpellEntity(
     val classesThatCanCast: List<String>,
     @Embedded
     val range: RangeEmbeddedEntity
-) {
+) : Named,
+    MutableIdentifiable,
+    CoreConvertible<Spell> {
 
-    fun toCoreModel(): Spell =
+    override fun toCoreModel(): Spell =
         Spell(
             id,
             name,
@@ -47,8 +52,8 @@ data class SpellEntity(
         val somatic: Boolean,
         val material: Boolean,
         val materialComponent: String?
-    ) {
-        fun toCoreModel(): Spell.SpellComponents =
+    ) : CoreConvertible<Spell.SpellComponents> {
+        override fun toCoreModel(): Spell.SpellComponents =
             Spell.SpellComponents(
                 verbal,
                 somatic,

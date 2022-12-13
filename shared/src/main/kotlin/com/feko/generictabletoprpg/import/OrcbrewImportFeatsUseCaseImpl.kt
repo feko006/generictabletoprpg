@@ -45,6 +45,6 @@ class OrcbrewImportFeatsUseCaseImpl(
         if (featsToAdd.isEmpty()) {
             return Result.success(true)
         }
-        return insertFeatsPort.insert(featsToAdd)
+        return insertFeatsPort.insertAll(featsToAdd)
     }
 }

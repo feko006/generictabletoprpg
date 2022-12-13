@@ -45,6 +45,6 @@ class OrcbrewImportSpellsUseCaseImpl(
         if (spellsToAdd.isEmpty()) {
             return Result.success(true)
         }
-        return insertSpellsPort.insert(spellsToAdd)
+        return insertSpellsPort.insertAll(spellsToAdd)
     }
 }
