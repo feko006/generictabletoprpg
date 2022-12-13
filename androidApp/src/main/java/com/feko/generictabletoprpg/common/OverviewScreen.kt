@@ -21,7 +21,8 @@ import com.feko.generictabletoprpg.common.Common
 import com.feko.generictabletoprpg.common.Identifiable
 import com.feko.generictabletoprpg.common.Named
 
-abstract class OverviewScreen<TViewModel, T> : Navigation.Destination
+abstract class OverviewScreen<TViewModel, T> :
+    Navigation.Destination
         where TViewModel : OverviewViewModel<*>,
               T : Identifiable,
               T : Named {
@@ -40,7 +41,7 @@ abstract class OverviewScreen<TViewModel, T> : Navigation.Destination
 
     @Composable
     @OptIn(ExperimentalMaterial3Api::class)
-    fun Screen(navController: NavHostController) {
+    private fun Screen(navController: NavHostController) {
         val viewModel: TViewModel = getViewModel()
         val listItems by viewModel.items.collectAsState(listOf())
         val searchString by viewModel.searchString.collectAsState("")
@@ -66,7 +67,9 @@ abstract class OverviewScreen<TViewModel, T> : Navigation.Destination
                             .fillMaxWidth()
                             .clickable {
                                 navController.navigate(
-                                    detailsNavRouteProvider.getNavRoute((item as Identifiable).id)
+                                    detailsNavRouteProvider.getNavRoute(
+                                        (item as Identifiable).id
+                                    )
                                 )
                             })
                 }
@@ -75,5 +78,5 @@ abstract class OverviewScreen<TViewModel, T> : Navigation.Destination
     }
 
     @Composable
-    abstract fun getViewModel(): TViewModel
+    protected abstract fun getViewModel(): TViewModel
 }

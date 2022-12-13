@@ -1,44 +1,9 @@
 package com.feko.generictabletoprpg.spell
 
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import com.feko.generictabletoprpg.com.feko.generictabletoprpg.common.DetailsViewModel
 
 class SpellDetailsViewModel(
     private val getSpellByIdUseCase: GetSpellByIdUseCase
-) : ViewModel() {
-    val screenState: Flow<SpellDetailsScreenState>
-        get() = _spell.map { spell ->
-            if (spell == null) {
-                SpellDetailsScreenState.Loading
-            } else {
-                SpellDetailsScreenState.SpellReady(spell)
-            }
-        }
-    private val _spell: MutableStateFlow<Spell?> =
-        MutableStateFlow(null)
-    private var _spellId: Long = -1
-
-    fun spellIdChanged(spellId: Long) {
-        if (_spellId != spellId) {
-            viewModelScope.launch {
-                _spellId = spellId
-                val newSpell =
-                    withContext(Dispatchers.Default) {
-                        getSpellByIdUseCase.getById(_spellId)
-                    }
-                _spell.emit(newSpell)
-            }
-        }
-    }
-
-    sealed class SpellDetailsScreenState {
-        object Loading : SpellDetailsScreenState()
-        class SpellReady(val spell: Spell) : SpellDetailsScreenState()
-    }
+) : DetailsViewModel<Spell>() {
+    override fun getItemById(id: Long): Spell = getSpellByIdUseCase.getById(id)
 }
