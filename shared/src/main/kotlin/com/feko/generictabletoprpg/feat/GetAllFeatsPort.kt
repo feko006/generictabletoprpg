@@ -1,5 +1,5 @@
 package com.feko.generictabletoprpg.feat
 
-interface GetAllFeatsPort {
-    fun getAllSortedByName(): List<Feat>
-}
+import com.feko.generictabletoprpg.common.GetAllPort
+
+interface GetAllFeatsPort : GetAllPort<Feat>

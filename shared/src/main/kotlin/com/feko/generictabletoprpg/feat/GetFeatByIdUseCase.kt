@@ -1,3 +1,5 @@
 package com.feko.generictabletoprpg.feat
 
-interface GetFeatByIdUseCase : (Long) -> Feat
+import com.feko.generictabletoprpg.common.GetByIdUseCase
+
+interface GetFeatByIdUseCase : GetByIdUseCase<Feat>

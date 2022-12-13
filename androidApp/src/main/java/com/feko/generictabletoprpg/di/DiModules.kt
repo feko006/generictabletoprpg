@@ -34,7 +34,7 @@ val diModules = module {
         spellDao.logger = get()
         spellDao
     }
-    single<SaveSpellsPort> { get<SpellDao>() }
+    single<InsertSpellsPort> { get<SpellDao>() }
     single<GetAllSpellsPort> { get<SpellDao>() }
     single<GetSpellByIdPort> { get<SpellDao>() }
     single {
@@ -42,7 +42,7 @@ val diModules = module {
         featDao.logger = get()
         featDao
     }
-    single<SaveFeatsPort> { get<FeatDao>() }
+    single<InsertFeatsPort> { get<FeatDao>() }
     single<GetAllFeatsPort> { get<FeatDao>() }
     single<GetFeatByIdPort> { get<FeatDao>() }
     single<UserPreferencesPort> { UserPreferencesAdapter(get()) }
@@ -51,7 +51,7 @@ val diModules = module {
     // Use-cases
     single<OrcbrewImportSpellsUseCase> { OrcbrewImportSpellsUseCaseImpl(get(), get(), get()) }
     single<OrcbrewImportFeatsUseCase> { OrcbrewImportFeatsUseCaseImpl(get(), get(), get()) }
-    single<OrcbrewImportUseCase> { OrcbrewImportUseCaseImpl(get(), get(), get(), get()) }
+    single<OrcbrewImportAllUseCase> { OrcbrewImportAllUseCaseImpl(get(), get(), get(), get()) }
     single<LoadBaseContentUseCase> { LoadBaseContentUseCaseImpl(get(), get(), get()) }
     single<GetAllSpellsUseCase> { GetAllSpellsUseCaseImpl(get()) }
     single<GetSpellByIdUseCase> { GetSpellByIdUseCaseImpl(get()) }

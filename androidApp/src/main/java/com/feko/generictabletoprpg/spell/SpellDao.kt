@@ -8,15 +8,15 @@ import com.feko.generictabletoprpg.common.Logger
 @Dao
 abstract class SpellDao
     : BaseDao<SpellEntity>(),
-    SaveSpellsPort,
+    InsertSpellsPort,
     GetAllSpellsPort,
     GetSpellByIdPort {
 
     lateinit var logger: Logger
 
-    override fun save(spells: List<Spell>): Result<Boolean> {
+    override fun insert(list: List<Spell>): Result<Boolean> {
         val errors = mutableListOf<Exception>()
-        spells.forEach { spell ->
+        list.forEach { spell ->
             try {
                 val spellEntity = SpellEntity.fromCoreModel(spell)
                 insertOrUpdate(spellEntity)
@@ -47,6 +47,6 @@ abstract class SpellDao
     @Query("select * from spells where id = :spellId")
     protected abstract fun getByIdInternal(spellId: Long): SpellEntity
 
-    override fun getById(spellId: Long): Spell =
-        getByIdInternal(spellId).toCoreModel()
+    override fun getById(id: Long): Spell =
+        getByIdInternal(id).toCoreModel()
 }

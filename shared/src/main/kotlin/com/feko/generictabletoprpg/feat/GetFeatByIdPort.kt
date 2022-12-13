@@ -1,5 +1,5 @@
 package com.feko.generictabletoprpg.feat
 
-interface GetFeatByIdPort {
-    fun getById(featId: Long): Feat
-}
+import com.feko.generictabletoprpg.common.GetByIdPort
+
+interface GetFeatByIdPort : GetByIdPort<Feat>

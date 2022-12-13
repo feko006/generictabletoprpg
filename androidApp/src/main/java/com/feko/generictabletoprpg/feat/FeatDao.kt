@@ -8,15 +8,15 @@ import com.feko.generictabletoprpg.common.Logger
 @Dao
 abstract class FeatDao
     : BaseDao<FeatEntity>(),
-    SaveFeatsPort,
+    InsertFeatsPort,
     GetAllFeatsPort,
     GetFeatByIdPort {
 
     lateinit var logger: Logger
 
-    override fun save(feats: List<Feat>): Result<Boolean> {
+    override fun insert(list: List<Feat>): Result<Boolean> {
         val errors = mutableListOf<Exception>()
-        feats.forEach { feat ->
+        list.forEach { feat ->
             try {
                 val featEntity = FeatEntity.fromCoreModel(feat)
                 insertOrUpdate(featEntity)
@@ -47,6 +47,6 @@ abstract class FeatDao
     @Query("select * from feats where id = :featId")
     protected abstract fun getByIdInternal(featId: Long): FeatEntity
 
-    override fun getById(featId: Long): Feat =
-        getByIdInternal(featId).toCoreModel()
+    override fun getById(id: Long): Feat =
+        getByIdInternal(id).toCoreModel()
 }

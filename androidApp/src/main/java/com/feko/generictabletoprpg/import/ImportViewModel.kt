@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class ImportViewModel(private val orcbrewImportUseCase: OrcbrewImportUseCase) : ViewModel() {
+class ImportViewModel(private val orcbrewImportAllUseCase: OrcbrewImportAllUseCase) : ViewModel() {
     val screenState: StateFlow<ImportScreenState>
         get() = _screenState
     private val _screenState = MutableStateFlow<ImportScreenState>(ImportScreenState.ReadyToImport)
@@ -27,7 +27,7 @@ class ImportViewModel(private val orcbrewImportUseCase: OrcbrewImportUseCase) : 
             }
             val result: Result<Boolean> =
                 withContext(Dispatchers.Default) {
-                    orcbrewImportUseCase.invoke(contents)
+                    orcbrewImportAllUseCase.import(contents)
                 }
             if (result.isFailure) {
                 showToastAndResetScreen("Failed to import data")

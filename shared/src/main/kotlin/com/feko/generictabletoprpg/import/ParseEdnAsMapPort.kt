@@ -1,3 +1,5 @@
 package com.feko.generictabletoprpg.import
 
-interface ParseEdnAsMapPort : (String) -> Map<Any, Any>
+interface ParseEdnAsMapPort {
+    fun parse(ednContent: String): Map<Any, Any>
+}

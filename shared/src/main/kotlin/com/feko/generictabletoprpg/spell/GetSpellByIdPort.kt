@@ -1,5 +1,5 @@
 package com.feko.generictabletoprpg.spell
 
-interface GetSpellByIdPort {
-    fun getById(spellId: Long): Spell
-}
+import com.feko.generictabletoprpg.common.GetByIdPort
+
+interface GetSpellByIdPort : GetByIdPort<Spell>

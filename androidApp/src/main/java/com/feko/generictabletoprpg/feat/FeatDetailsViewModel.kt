@@ -30,7 +30,7 @@ class FeatDetailsViewModel(
                 _featId = featId
                 val newFeat =
                     withContext(Dispatchers.Default) {
-                        getFeatByIdUseCase.invoke(_featId)
+                        getFeatByIdUseCase.getById(_featId)
                     }
                 _feat.emit(newFeat)
             }

@@ -1,3 +1,5 @@
 package com.feko.generictabletoprpg.feat
 
-interface GetAllFeatsUseCase : () -> List<Feat>
+import com.feko.generictabletoprpg.common.GetAllUseCase
+
+interface GetAllFeatsUseCase : GetAllUseCase<Feat>

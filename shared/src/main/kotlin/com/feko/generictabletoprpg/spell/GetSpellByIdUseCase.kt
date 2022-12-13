@@ -1,3 +1,5 @@
 package com.feko.generictabletoprpg.spell
 
-interface GetSpellByIdUseCase : (Long) -> Spell
+import com.feko.generictabletoprpg.common.GetByIdUseCase
+
+interface GetSpellByIdUseCase : GetByIdUseCase<Spell>

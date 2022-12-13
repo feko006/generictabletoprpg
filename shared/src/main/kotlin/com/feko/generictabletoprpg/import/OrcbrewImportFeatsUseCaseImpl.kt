@@ -2,12 +2,12 @@ package com.feko.generictabletoprpg.import
 
 import com.feko.generictabletoprpg.common.Logger
 import com.feko.generictabletoprpg.feat.Feat
-import com.feko.generictabletoprpg.feat.SaveFeatsPort
+import com.feko.generictabletoprpg.feat.InsertFeatsPort
 
 @Suppress("UNCHECKED_CAST")
 class OrcbrewImportFeatsUseCaseImpl(
     private val processEdnMapPort: ProcessEdnMapPort,
-    private val saveFeatsPort: SaveFeatsPort,
+    private val insertFeatsPort: InsertFeatsPort,
     private val logger: Logger
 ) : OrcbrewImportFeatsUseCase {
     override fun import(
@@ -45,6 +45,6 @@ class OrcbrewImportFeatsUseCaseImpl(
         if (featsToAdd.isEmpty()) {
             return Result.success(true)
         }
-        return saveFeatsPort.save(featsToAdd)
+        return insertFeatsPort.insert(featsToAdd)
     }
 }

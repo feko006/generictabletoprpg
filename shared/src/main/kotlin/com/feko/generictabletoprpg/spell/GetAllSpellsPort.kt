@@ -1,5 +1,5 @@
 package com.feko.generictabletoprpg.spell
 
-interface GetAllSpellsPort {
-    fun getAllSortedByName(): List<Spell>
-}
+import com.feko.generictabletoprpg.common.GetAllPort
+
+interface GetAllSpellsPort : GetAllPort<Spell>

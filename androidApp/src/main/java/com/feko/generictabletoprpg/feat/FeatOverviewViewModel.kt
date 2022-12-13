@@ -31,7 +31,7 @@ class FeatOverviewViewModel(
         viewModelScope.launch {
             val allFeats =
                 withContext(Dispatchers.Default) {
-                    getAllFeatsUseCase.invoke()
+                    getAllFeatsUseCase.getAll()
                 }
             _feats.emit(allFeats)
         }

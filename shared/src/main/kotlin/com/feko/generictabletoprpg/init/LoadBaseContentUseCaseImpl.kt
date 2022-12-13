@@ -1,12 +1,12 @@
 package com.feko.generictabletoprpg.init
 
 import com.feko.generictabletoprpg.common.UserPreferencesPort
-import com.feko.generictabletoprpg.import.OrcbrewImportUseCase
+import com.feko.generictabletoprpg.import.OrcbrewImportAllUseCase
 
 class LoadBaseContentUseCaseImpl(
     private val userPreferences: UserPreferencesPort,
     private val loadBaseContentPort: LoadBaseContentPort,
-    private val orcbrewImportUseCase: OrcbrewImportUseCase
+    private val orcbrewImportAllUseCase: OrcbrewImportAllUseCase
 ) : LoadBaseContentUseCase {
     override fun invoke() {
         val latestBaseContentLoaded =
@@ -20,7 +20,7 @@ class LoadBaseContentUseCaseImpl(
         }
 
         val baseContent = loadBaseContentPort.invoke()
-        val result = orcbrewImportUseCase.invoke(baseContent)
+        val result = orcbrewImportAllUseCase.import(baseContent)
         if (result.isFailure
             or result.isSuccess
             and !result.getOrDefault(true)

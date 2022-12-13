@@ -31,7 +31,7 @@ class SpellOverviewViewModel(
         viewModelScope.launch {
             val allSpells =
                 withContext(Dispatchers.Default) {
-                    getAllSpellsUseCase.invoke()
+                    getAllSpellsUseCase.getAll()
                 }
             _spells.emit(allSpells)
         }

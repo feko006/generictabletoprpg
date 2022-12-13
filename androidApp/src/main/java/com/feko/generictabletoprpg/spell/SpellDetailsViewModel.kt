@@ -30,7 +30,7 @@ class SpellDetailsViewModel(
                 _spellId = spellId
                 val newSpell =
                     withContext(Dispatchers.Default) {
-                        getSpellByIdUseCase.invoke(_spellId)
+                        getSpellByIdUseCase.getById(_spellId)
                     }
                 _spell.emit(newSpell)
             }

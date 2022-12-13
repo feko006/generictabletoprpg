@@ -3,5 +3,5 @@ package com.feko.generictabletoprpg.spell
 class GetAllSpellsUseCaseImpl(
     private val getAllSpellsPort: GetAllSpellsPort
 ) : GetAllSpellsUseCase {
-    override fun invoke() = getAllSpellsPort.getAllSortedByName()
+    override fun getAll() = getAllSpellsPort.getAllSortedByName()
 }

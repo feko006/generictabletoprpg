@@ -3,22 +3,22 @@ package com.feko.generictabletoprpg.import
 import com.feko.generictabletoprpg.common.Logger
 
 @Suppress("UNCHECKED_CAST")
-class OrcbrewImportUseCaseImpl(
+class OrcbrewImportAllUseCaseImpl(
     private val parseEdnAsMapPort: ParseEdnAsMapPort,
     private val orcbrewImportSpellsUseCase: OrcbrewImportSpellsUseCase,
     private val orcbrewImportFeatsUseCase: OrcbrewImportFeatsUseCase,
     private val logger: Logger
-) : OrcbrewImportUseCase {
-    override fun invoke(fileContents: String): Result<Boolean> {
+) : OrcbrewImportAllUseCase {
+    override fun import(ednContent: String): Result<Boolean> {
         try {
             val safeFileContents =
-                if (fileContents[0] != '\ufeff') {
-                    fileContents
+                if (ednContent[0] != '\ufeff') {
+                    ednContent
                 } else {
-                    fileContents.substring(1)
+                    ednContent.substring(1)
                 }
                     .replace("##NaN", "nil")
-            val sources = parseEdnAsMapPort.invoke(safeFileContents)
+            val sources = parseEdnAsMapPort.parse(safeFileContents)
             val spellsImported = orcbrewImportSpellsUseCase.import(sources)
             val featsImported = orcbrewImportFeatsUseCase.import(sources)
             val everythingImported =
