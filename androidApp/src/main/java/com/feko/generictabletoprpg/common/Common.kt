@@ -54,4 +54,39 @@ object Common {
             }
         )
     }
+
+    @Composable
+    @OptIn(ExperimentalMaterial3Api::class)
+    fun Dropdown(
+        textFieldValue: String,
+        dropdownExpanded: Boolean,
+        onDropdownExpandedStateChanged: (Boolean) -> Unit,
+        dropdownMenuContent: @Composable () -> Unit
+    ) {
+        ExposedDropdownMenuBox(
+            expanded = dropdownExpanded,
+            onExpandedChange = { onDropdownExpandedStateChanged(!dropdownExpanded) },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            OutlinedTextField(
+                value = textFieldValue,
+                onValueChange = {},
+                trailingIcon = {
+                    ExposedDropdownMenuDefaults.TrailingIcon(expanded = dropdownExpanded)
+                },
+                colors = ExposedDropdownMenuDefaults.textFieldColors(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .menuAnchor(),
+                readOnly = true
+            )
+            DropdownMenu(
+                expanded = dropdownExpanded,
+                onDismissRequest = { onDropdownExpandedStateChanged(false) },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                dropdownMenuContent()
+            }
+        }
+    }
 }
