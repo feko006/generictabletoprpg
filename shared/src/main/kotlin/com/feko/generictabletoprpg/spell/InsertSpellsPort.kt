@@ -1,5 +1,5 @@
 package com.feko.generictabletoprpg.spell
 
-import com.feko.generictabletoprpg.common.InsertPort
+import com.feko.generictabletoprpg.common.InsertAllPort
 
-interface InsertSpellsPort : InsertPort<Spell>
+interface InsertSpellsPort : InsertAllPort<Spell>

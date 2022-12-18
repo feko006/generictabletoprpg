@@ -5,6 +5,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.feko.generictabletoprpg.com.feko.generictabletoprpg.common.RangeEmbeddedEntity
 import com.feko.generictabletoprpg.common.CoreConvertible
+import com.feko.generictabletoprpg.common.FromSource
 import com.feko.generictabletoprpg.common.MutableIdentifiable
 import com.feko.generictabletoprpg.common.Named
 
@@ -20,7 +21,7 @@ data class SpellEntity(
     val duration: String,
     val concentration: Boolean,
     val level: Int,
-    val source: String,
+    override val source: String,
     @Embedded
     val components: SpellComponentsEmbeddedEntity,
     val castingTime: String,
@@ -29,6 +30,7 @@ data class SpellEntity(
     val range: RangeEmbeddedEntity
 ) : Named,
     MutableIdentifiable,
+    FromSource,
     CoreConvertible<Spell> {
 
     override fun toCoreModel(): Spell =

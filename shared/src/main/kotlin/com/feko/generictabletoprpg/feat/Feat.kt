@@ -1,22 +1,24 @@
 package com.feko.generictabletoprpg.feat
 
+import com.feko.generictabletoprpg.common.FromSource
 import com.feko.generictabletoprpg.common.Identifiable
 import com.feko.generictabletoprpg.common.Named
 import com.feko.generictabletoprpg.common.Stat
 import com.feko.generictabletoprpg.import.ProcessEdnMapPort
 
 data class Feat(
-    override val id: Long,
+    override val id: Long = 0,
     override val name: String,
     val description: String,
-    val source: String,
+    override val source: String,
     val abilityIncreases: List<Stat>,
     val proficiencyRequirements: List<String>,
     val statRequirements: List<Stat>,
     val raceRequirements: List<String>,
     val savingThrow: Boolean
 ) : Identifiable,
-    Named {
+    Named,
+    FromSource {
     val hasRequirements: Boolean
         get() = proficiencyRequirements.isNotEmpty() or
                 statRequirements.isNotEmpty() or

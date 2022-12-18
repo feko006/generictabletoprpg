@@ -2,13 +2,19 @@ package com.feko.generictabletoprpg.di
 
 import androidx.room.Room
 import com.feko.generictabletoprpg.AppViewModel
-import com.feko.generictabletoprpg.common.*
+import com.feko.generictabletoprpg.action.ActionDao
+import com.feko.generictabletoprpg.action.InsertActionsPort
+import com.feko.generictabletoprpg.common.Logger
+import com.feko.generictabletoprpg.common.TimberLogger
+import com.feko.generictabletoprpg.common.UserPreferencesAdapter
+import com.feko.generictabletoprpg.common.UserPreferencesPort
 import com.feko.generictabletoprpg.feat.*
 import com.feko.generictabletoprpg.import.*
 import com.feko.generictabletoprpg.init.LoadBaseContentAdapter
 import com.feko.generictabletoprpg.init.LoadBaseContentPort
 import com.feko.generictabletoprpg.init.LoadBaseContentUseCase
 import com.feko.generictabletoprpg.init.LoadBaseContentUseCaseImpl
+import com.feko.generictabletoprpg.room.GenericTabletopRpgDatabase
 import com.feko.generictabletoprpg.spell.*
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
@@ -47,6 +53,13 @@ val diModules = module {
     single<GetFeatByIdPort> { get<FeatDao>() }
     single<UserPreferencesPort> { UserPreferencesAdapter(get()) }
     single<LoadBaseContentPort> { LoadBaseContentAdapter(get()) }
+    single<JsonPort> { MoshiJsonAdapter() }
+    single {
+        val actionDao = get<GenericTabletopRpgDatabase>().actionDao()
+        actionDao.logger = get()
+        actionDao
+    }
+    single<InsertActionsPort> { get<ActionDao>() }
 
     // Use-cases
     single<OrcbrewImportSpellsUseCase> { OrcbrewImportSpellsUseCaseImpl(get(), get(), get()) }
@@ -57,6 +70,8 @@ val diModules = module {
     single<GetSpellByIdUseCase> { GetSpellByIdUseCaseImpl(get()) }
     single<GetAllFeatsUseCase> { GetAllFeatsUseCaseImpl(get()) }
     single<GetFeatByIdUseCase> { GetFeatByIdUseCaseImpl(get()) }
+    single<JsonImportAllUseCase> { JsonImportAllUseCaseImpl(get(), get(), get()) }
+    single<ImportAllUseCase> { ImportAllUseCaseImpl(get(), get()) }
 
     // VMs
     viewModel { ImportViewModel(get()) }

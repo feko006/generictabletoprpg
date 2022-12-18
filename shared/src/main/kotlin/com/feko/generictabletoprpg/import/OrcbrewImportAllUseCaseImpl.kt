@@ -9,21 +9,25 @@ class OrcbrewImportAllUseCaseImpl(
     private val orcbrewImportFeatsUseCase: OrcbrewImportFeatsUseCase,
     private val logger: Logger
 ) : OrcbrewImportAllUseCase {
-    override fun import(ednContent: String): Result<Boolean> {
+    override fun import(content: String): Result<Boolean> {
         try {
             val safeFileContents =
-                if (ednContent[0] != '\ufeff') {
-                    ednContent
+                if (content[0] != '\ufeff') {
+                    content
                 } else {
-                    ednContent.substring(1)
+                    content.substring(1)
                 }
                     .replace("##NaN", "nil")
             val sources = parseEdnAsMapPort.parse(safeFileContents)
+            val results = mutableListOf<Result<Boolean>>()
             val spellsImported = orcbrewImportSpellsUseCase.import(sources)
+            results.add(spellsImported)
             val featsImported = orcbrewImportFeatsUseCase.import(sources)
+            results.add(featsImported)
             val everythingImported =
-                spellsImported.getOrDefault(false) and
-                        featsImported.getOrDefault(false)
+                results.fold(true) { current, result ->
+                    current && result.getOrDefault(false)
+                }
             return Result.success(everythingImported)
         } catch (e: Exception) {
             logger.error(e, "Failed to process file")

@@ -4,7 +4,7 @@ import androidx.room.Insert
 import androidx.room.Update
 
 abstract class BaseDao<TEntity, TCore> :
-    InsertPort<TCore>,
+    InsertAllPort<TCore>,
     GetAllPort<TCore>,
     GetByIdPort<TCore>
         where TCore : Named,
@@ -58,10 +58,11 @@ abstract class BaseDao<TEntity, TCore> :
         getAllSortedByNameInternal()
             .map { it.toCoreModel() }
 
-    protected abstract fun getAllSortedByNameInternal(): List<TEntity>
+
+    protected open fun getAllSortedByNameInternal(): List<TEntity> = throw NotImplementedError()
 
     final override fun getById(id: Long): TCore =
         getByIdInternal(id).toCoreModel()
 
-    protected abstract fun getByIdInternal(id: Long): TEntity
+    protected open fun getByIdInternal(id: Long): TEntity = throw NotImplementedError()
 }

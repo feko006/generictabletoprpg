@@ -1,5 +1,5 @@
 package com.feko.generictabletoprpg.feat
 
-import com.feko.generictabletoprpg.common.InsertPort
+import com.feko.generictabletoprpg.common.InsertAllPort
 
-interface InsertFeatsPort : InsertPort<Feat>
+interface InsertFeatsPort : InsertAllPort<Feat>

@@ -1,5 +1,7 @@
 package com.feko.generictabletoprpg.import
 
-interface OrcbrewImportAllUseCase {
-    fun import(ednContent: String): Result<Boolean>
+interface OrcbrewImportAllUseCase : ImportAllUseCase
+
+interface ImportAllUseCase {
+    fun import(content: String): Result<Boolean>
 }

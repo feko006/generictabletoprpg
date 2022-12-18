@@ -1,25 +1,27 @@
 package com.feko.generictabletoprpg.spell
 
+import com.feko.generictabletoprpg.common.FromSource
 import com.feko.generictabletoprpg.common.Identifiable
 import com.feko.generictabletoprpg.common.Named
 import com.feko.generictabletoprpg.common.Range
 import com.feko.generictabletoprpg.import.ProcessEdnMapPort
 
 data class Spell(
-    override val id: Long,
+    override val id: Long = 0,
     override val name: String,
     val description: String,
     val school: String,
     val duration: String,
     val concentration: Boolean,
     val level: Int,
-    val source: String,
+    override val source: String,
     val components: SpellComponents,
     val castingTime: String,
     val classesThatCanCast: List<String>,
     val range: Range
 ) : Identifiable,
-    Named {
+    Named,
+    FromSource {
     val hasComponents: Boolean
         get() = components.any()
 

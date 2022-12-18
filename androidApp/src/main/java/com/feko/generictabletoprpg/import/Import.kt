@@ -52,7 +52,7 @@ object Import : Navigation.Destination {
             contentAlignment = Alignment.Center
         ) {
             val context = LocalContext.current
-            val pickPictureLauncher =
+            val pickFileLauncher =
                 rememberLauncherForActivityResult(
                     ActivityResultContracts.GetContent()
                 ) launch@{ fileUri ->
@@ -81,7 +81,7 @@ object Import : Navigation.Destination {
                 is ImportViewModel.ImportScreenState.ReadyToImport -> {
                     FloatingActionButton(
                         onClick = {
-                            pickPictureLauncher.launch("*/*")
+                            pickFileLauncher.launch("*/*")
                         }
                     ) {
                         Icon(Icons.Default.Add, "")
