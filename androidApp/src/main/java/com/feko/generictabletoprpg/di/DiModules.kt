@@ -7,6 +7,7 @@ import com.feko.generictabletoprpg.common.Logger
 import com.feko.generictabletoprpg.common.TimberLogger
 import com.feko.generictabletoprpg.common.UserPreferencesAdapter
 import com.feko.generictabletoprpg.common.UserPreferencesPort
+import com.feko.generictabletoprpg.condition.*
 import com.feko.generictabletoprpg.feat.*
 import com.feko.generictabletoprpg.import.*
 import com.feko.generictabletoprpg.init.LoadBaseContentAdapter
@@ -61,6 +62,14 @@ val diModules = module {
     single<InsertActionsPort> { get<ActionDao>() }
     single<GetAllActionsPort> { get<ActionDao>() }
     single<GetActionByIdPort> { get<ActionDao>() }
+    single {
+        val conditionDao = get<GenericTabletopRpgDatabase>().conditionDao()
+        conditionDao.logger = get()
+        conditionDao
+    }
+    single<InsertConditionsPort> { get<ConditionDao>() }
+    single<GetAllConditionsPort> { get<ConditionDao>() }
+    single<GetConditionByIdPort> { get<ConditionDao>() }
 
     // Use-cases
     single<OrcbrewImportSpellsUseCase> { OrcbrewImportSpellsUseCaseImpl(get(), get(), get()) }
@@ -71,10 +80,12 @@ val diModules = module {
     single<GetSpellByIdUseCase> { GetSpellByIdUseCaseImpl(get()) }
     single<GetAllFeatsUseCase> { GetAllFeatsUseCaseImpl(get()) }
     single<GetFeatByIdUseCase> { GetFeatByIdUseCaseImpl(get()) }
-    single<JsonImportAllUseCase> { JsonImportAllUseCaseImpl(get(), get(), get()) }
+    single<JsonImportAllUseCase> { JsonImportAllUseCaseImpl(get(), get(), get(), get()) }
     single<ImportAllUseCase> { ImportAllUseCaseImpl(get(), get()) }
     single<GetAllActionsUseCase> { GetAllActionsUseCaseImpl(get()) }
     single<GetActionByIdUseCase> { GetActionByIdUseCaseImpl(get()) }
+    single<GetAllConditionsUseCase> { GetAllConditionsUseCaseImpl(get()) }
+    single<GetConditionByIdUseCase> { GetConditionByIdUseCaseImpl(get()) }
 
     // VMs
     viewModel { ImportViewModel(get()) }
@@ -85,4 +96,6 @@ val diModules = module {
     viewModel { FeatDetailsViewModel(get()) }
     viewModel { ActionOverviewViewModel(get()) }
     viewModel { ActionDetailsViewModel(get()) }
+    viewModel { ConditionOverviewViewModel(get()) }
+    viewModel { ConditionDetailsViewModel(get()) }
 }

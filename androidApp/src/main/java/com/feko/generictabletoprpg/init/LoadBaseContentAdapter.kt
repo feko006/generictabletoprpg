@@ -13,7 +13,7 @@ class LoadBaseContentAdapter(context: Context) : LoadBaseContentPort {
 
     override fun loadOrcbrewBaseContent(): String =
         resources
-            .openRawResource(R.raw.base_content)
+            .openRawResource(R.raw.base_content_ob)
             .bufferedReader()
             .use {
                 it.readText()
@@ -21,7 +21,7 @@ class LoadBaseContentAdapter(context: Context) : LoadBaseContentPort {
 
     override fun loadJsonBaseContent(): String =
         resources
-            .openRawResource(R.raw.base_actions)
+            .openRawResource(R.raw.base_content_j)
             .bufferedReader()
             .use {
                 it.readText()
