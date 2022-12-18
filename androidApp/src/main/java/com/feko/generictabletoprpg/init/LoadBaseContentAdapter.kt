@@ -11,9 +11,17 @@ class LoadBaseContentAdapter(context: Context) : LoadBaseContentPort {
         resources = context.resources
     }
 
-    override fun invoke(): String =
+    override fun loadOrcbrewBaseContent(): String =
         resources
             .openRawResource(R.raw.base_content)
+            .bufferedReader()
+            .use {
+                it.readText()
+            }
+
+    override fun loadJsonBaseContent(): String =
+        resources
+            .openRawResource(R.raw.base_actions)
             .bufferedReader()
             .use {
                 it.readText()

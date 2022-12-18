@@ -1,0 +1,45 @@
+{
+  "sources": [
+    {
+      "name": "Basic Rules",
+      "actions": [
+        {
+          "name": "Attack",
+          "description": "The most common action to take in combat is the Attack action, whether you are swinging a sword, firing an arrow from a bow, or brawling with your fists.\n\nWith this action, you make one melee or ranged attack. See the \"Making an Attack\" section for the rules that govern attacks.\n\nCertain features, such as the Extra Attack feature of the fighter, allow you to make more than one attack with this action."
+        },
+        {
+          "name": "Cast a Spell",
+          "description": "Spellcasters such as wizards and clerics, as well as many monsters, have access to spells and can use them to great effect in combat. Each spell has a casting time, which specifies whether the caster must use an action, a reaction, minutes, or even hours to cast the spell. Casting a spell is, therefore, not necessarily an action. Most spells do have a casting time of 1 action, so a spellcaster often uses his or her action in combat to cast such a spell."
+        },
+        {
+          "name": "Dash",
+          "description": "When you take the Dash action, you gain extra movement for the current turn. The increase equals your speed, after applying any modifiers. With a speed of 30 feet, for example, you can move up to 60 feet on your turn if you dash.\n\nAny increase or decrease to your speed changes this additional movement by the same amount. If your speed of 30 feet is reduced to 15 feet, for instance, you can move up to 30 feet this turn if you dash."
+        },
+        {
+          "name": "Disengage",
+          "description": "If you take the Disengage action, your movement doesn't provoke opportunity attacks for the rest of the turn."
+        },
+        {
+          "name": "Dodge",
+          "description": "When you take the Dodge action, you focus entirely on avoiding attacks. Until the start of your next turn, any attack roll made against you has disadvantage if you can see the attacker, and you make Dexterity saving throws with advantage. You lose this benefit if you are incapacitated or if your speed drops to 0."
+        },
+        {
+          "name": "Help",
+          "description": "You can lend your aid to another creature in the completion of a task. When you take the Help action, the creature you aid gains advantage on the next ability check it makes to perform the task you are helping with, provided that it makes the check before the start of your next turn.\n\nAlternatively, you can aid a friendly creature in attacking a creature within 5 feet of you. You feint, distract the target, or in some other way team up to make your ally's attack more effective. If your ally attacks the target before your next turn, the first attack roll is made with advantage."
+        },
+        {
+          "name": "Ready",
+          "description": "Sometimes you want to get the jump on a foe or wait for a particular circumstance before you act. To do so, you can take the Ready action on your turn, which lets you act using your reaction before the start of your next turn.\n\nFirst, you decide what perceivable circumstance will trigger your reaction. Then, you choose the action you will take in response to that trigger, or you choose to move up to your speed in response to it. Examples include \"If the cultist steps on the trapdoor, I'll pull the lever that opens it,\" and \"If the goblin steps next to me, I move away.\"\n\nWhen the trigger occurs, you can either take your reaction right after the trigger finishes or ignore the trigger. Remember that you can take only one reaction per round.\n\nWhen you ready a spell, you cast it as normal but hold its energy, which you release with your reaction when the trigger occurs. To be readied, a spell must have a casting time of 1 action, and holding onto the spell's magic requires concentration. If your concentration is broken, the spell dissipates without taking effect. For example, if you are concentrating on the web spell and ready magic missile, your web spell ends, and if you take damage before you release magic missile with your reaction, your concentration might be broken."
+        },
+        {
+          "name": "Search",
+          "description": "When you take the Search action, you devote your attention to finding something. Depending on the nature of your search, the DM might have you make a Wisdom (Perception) check or an Intelligence (Investigation) check."
+        },
+        {
+          "name": "Improvising an Action",
+          "description": "Your character can do things not covered by the actions in this section, such as breaking down doors, intimidating enemies, sensing weaknesses in magical defenses, or calling for a parley with a foe. The only limits to the actions you can attempt are your imagination and your character’s ability scores. See the descriptions of the ability scores in the Using Ability Scores section for inspiration as you improvise.\n\nWhen you describe an action not detailed elsewhere in the rules, the DM tells you whether that action is possible and what kind of roll you need to make, if any, to determine success or failure."
+        }
+      ]
+    }
+  ]
+}

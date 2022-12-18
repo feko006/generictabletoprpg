@@ -65,7 +65,7 @@ val diModules = module {
     single<OrcbrewImportSpellsUseCase> { OrcbrewImportSpellsUseCaseImpl(get(), get(), get()) }
     single<OrcbrewImportFeatsUseCase> { OrcbrewImportFeatsUseCaseImpl(get(), get(), get()) }
     single<OrcbrewImportAllUseCase> { OrcbrewImportAllUseCaseImpl(get(), get(), get(), get()) }
-    single<LoadBaseContentUseCase> { LoadBaseContentUseCaseImpl(get(), get(), get()) }
+    single<LoadBaseContentUseCase> { LoadBaseContentUseCaseImpl(get(), get(), get(), get()) }
     single<GetAllSpellsUseCase> { GetAllSpellsUseCaseImpl(get()) }
     single<GetSpellByIdUseCase> { GetSpellByIdUseCaseImpl(get()) }
     single<GetAllFeatsUseCase> { GetAllFeatsUseCaseImpl(get()) }
