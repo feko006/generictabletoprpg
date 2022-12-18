@@ -2,7 +2,7 @@ package com.feko.generictabletoprpg.feat
 
 import androidx.compose.runtime.Composable
 import com.feko.generictabletoprpg.Navigation
-import com.feko.generictabletoprpg.com.feko.generictabletoprpg.common.OverviewScreen
+import com.feko.generictabletoprpg.common.OverviewScreen
 import org.koin.androidx.compose.koinViewModel
 
 

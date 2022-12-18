@@ -1,6 +1,6 @@
 package com.feko.generictabletoprpg.spell
 
-import com.feko.generictabletoprpg.com.feko.generictabletoprpg.common.OverviewViewModel
+import com.feko.generictabletoprpg.common.OverviewViewModel
 
 class SpellOverviewViewModel(
     private val getAllSpellsUseCase: GetAllSpellsUseCase

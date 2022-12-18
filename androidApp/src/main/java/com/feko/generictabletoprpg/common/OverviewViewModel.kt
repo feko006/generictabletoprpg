@@ -1,8 +1,7 @@
-package com.feko.generictabletoprpg.com.feko.generictabletoprpg.common
+package com.feko.generictabletoprpg.common
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.feko.generictabletoprpg.common.Named
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow

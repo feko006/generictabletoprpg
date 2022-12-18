@@ -1,4 +1,4 @@
-package com.feko.generictabletoprpg.com.feko.generictabletoprpg.common
+package com.feko.generictabletoprpg.common
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

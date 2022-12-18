@@ -1,20 +1,21 @@
-package com.feko.generictabletoprpg.spell
+package com.feko.generictabletoprpg.action
 
 import androidx.compose.runtime.Composable
 import com.feko.generictabletoprpg.Navigation
 import com.feko.generictabletoprpg.common.OverviewScreen
 import org.koin.androidx.compose.koinViewModel
 
-object SpellOverview : OverviewScreen<SpellOverviewViewModel, Spell>() {
+object ActionOverview : OverviewScreen<ActionOverviewViewModel, Action>() {
+    override val screenTitle: String
+        get() = "Actions"
     override val route: String
-        get() = "spellOverview"
+        get() = "actions"
     override val isRootDestination: Boolean
         get() = true
-    override val screenTitle: String
-        get() = "Spells"
     override val detailsNavRouteProvider: Navigation.DetailsNavRouteProvider
-        get() = SpellDetails
+        get() = ActionDetails
 
     @Composable
-    override fun getViewModel(): SpellOverviewViewModel = koinViewModel()
+    override fun getViewModel(): ActionOverviewViewModel = koinViewModel()
 }
+

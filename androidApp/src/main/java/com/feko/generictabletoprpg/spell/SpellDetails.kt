@@ -8,9 +8,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
-import com.feko.generictabletoprpg.com.feko.generictabletoprpg.common.DetailsScreen
-import com.feko.generictabletoprpg.com.feko.generictabletoprpg.common.DetailsViewModel
 import com.feko.generictabletoprpg.common.Common.TextWithLabel
+import com.feko.generictabletoprpg.common.DetailsScreen
+import com.feko.generictabletoprpg.common.DetailsViewModel
 import org.koin.androidx.compose.koinViewModel
 
 
@@ -26,10 +26,10 @@ object SpellDetails : DetailsScreen<SpellDetailsViewModel, Spell>() {
 
     @Composable
     override fun ScreenContent(
-        readiedFeat: DetailsViewModel.DetailsScreenState.ItemReady<Spell>,
+        readiedItem: DetailsViewModel.DetailsScreenState.ItemReady<Spell>,
         padding: Dp
     ) {
-        readiedFeat.item.run {
+        readiedItem.item.run {
             TextWithLabel("Name", name)
             Spacer(Modifier.height(padding))
             TextWithLabel("Level", level.toString())

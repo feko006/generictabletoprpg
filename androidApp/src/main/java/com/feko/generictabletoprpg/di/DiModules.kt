@@ -2,8 +2,7 @@ package com.feko.generictabletoprpg.di
 
 import androidx.room.Room
 import com.feko.generictabletoprpg.AppViewModel
-import com.feko.generictabletoprpg.action.ActionDao
-import com.feko.generictabletoprpg.action.InsertActionsPort
+import com.feko.generictabletoprpg.action.*
 import com.feko.generictabletoprpg.common.Logger
 import com.feko.generictabletoprpg.common.TimberLogger
 import com.feko.generictabletoprpg.common.UserPreferencesAdapter
@@ -60,6 +59,8 @@ val diModules = module {
         actionDao
     }
     single<InsertActionsPort> { get<ActionDao>() }
+    single<GetAllActionsPort> { get<ActionDao>() }
+    single<GetActionByIdPort> { get<ActionDao>() }
 
     // Use-cases
     single<OrcbrewImportSpellsUseCase> { OrcbrewImportSpellsUseCaseImpl(get(), get(), get()) }
@@ -72,6 +73,8 @@ val diModules = module {
     single<GetFeatByIdUseCase> { GetFeatByIdUseCaseImpl(get()) }
     single<JsonImportAllUseCase> { JsonImportAllUseCaseImpl(get(), get(), get()) }
     single<ImportAllUseCase> { ImportAllUseCaseImpl(get(), get()) }
+    single<GetAllActionsUseCase> { GetAllActionsUseCaseImpl(get()) }
+    single<GetActionByIdUseCase> { GetActionByIdUseCaseImpl(get()) }
 
     // VMs
     viewModel { ImportViewModel(get()) }
@@ -80,4 +83,6 @@ val diModules = module {
     viewModel { SpellDetailsViewModel(get()) }
     viewModel { FeatOverviewViewModel(get()) }
     viewModel { FeatDetailsViewModel(get()) }
+    viewModel { ActionOverviewViewModel(get()) }
+    viewModel { ActionDetailsViewModel(get()) }
 }

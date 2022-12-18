@@ -1,4 +1,4 @@
-package com.feko.generictabletoprpg.com.feko.generictabletoprpg.common
+package com.feko.generictabletoprpg.common
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -17,9 +17,6 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import com.feko.generictabletoprpg.Navigation
-import com.feko.generictabletoprpg.common.Common
-import com.feko.generictabletoprpg.common.Identifiable
-import com.feko.generictabletoprpg.common.Named
 
 abstract class OverviewScreen<TViewModel, T> :
     Navigation.Destination

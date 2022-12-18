@@ -1,6 +1,6 @@
 package com.feko.generictabletoprpg.feat
 
-import com.feko.generictabletoprpg.com.feko.generictabletoprpg.common.OverviewViewModel
+import com.feko.generictabletoprpg.common.OverviewViewModel
 
 class FeatOverviewViewModel(
     private val getAllFeatsUseCase: GetAllFeatsUseCase

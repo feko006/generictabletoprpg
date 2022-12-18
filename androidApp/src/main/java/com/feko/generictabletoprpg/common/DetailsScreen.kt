@@ -1,4 +1,4 @@
-package com.feko.generictabletoprpg.com.feko.generictabletoprpg.common
+package com.feko.generictabletoprpg.common
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -67,7 +67,7 @@ abstract class DetailsScreen<TViewModel, T> :
             }
             is DetailsViewModel.DetailsScreenState.ItemReady<*> -> {
                 @Suppress("UNCHECKED_CAST")
-                val readiedFeat =
+                val readiedItem =
                     screenState as DetailsViewModel.DetailsScreenState.ItemReady<T>
                 val padding = 8.dp
                 Column(
@@ -75,7 +75,7 @@ abstract class DetailsScreen<TViewModel, T> :
                         .padding(padding)
                         .verticalScroll(rememberScrollState())
                 ) {
-                    ScreenContent(readiedFeat, padding)
+                    ScreenContent(readiedItem, padding)
                 }
             }
         }
@@ -83,7 +83,7 @@ abstract class DetailsScreen<TViewModel, T> :
 
     @Composable
     protected abstract fun ScreenContent(
-        readiedFeat: DetailsViewModel.DetailsScreenState.ItemReady<T>,
+        readiedItem: DetailsViewModel.DetailsScreenState.ItemReady<T>,
         padding: Dp
     )
 

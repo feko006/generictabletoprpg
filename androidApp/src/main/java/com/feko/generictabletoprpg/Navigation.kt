@@ -12,6 +12,8 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.*
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
+import com.feko.generictabletoprpg.action.ActionDetails
+import com.feko.generictabletoprpg.action.ActionOverview
 import com.feko.generictabletoprpg.feat.FeatDetails
 import com.feko.generictabletoprpg.feat.FeatOverview
 import com.feko.generictabletoprpg.import.Import
@@ -38,6 +40,8 @@ object Navigation {
 
     private val destinations: List<Destination> =
         listOf(
+            ActionOverview,
+            ActionDetails,
             SpellDetails,
             SpellOverview,
             FeatDetails,
