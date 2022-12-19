@@ -89,7 +89,7 @@ val diModules = module {
     single<GetSpellByIdUseCase> { GetSpellByIdUseCaseImpl(get()) }
     single<GetAllFeatsUseCase> { GetAllFeatsUseCaseImpl(get()) }
     single<GetFeatByIdUseCase> { GetFeatByIdUseCaseImpl(get()) }
-    single<JsonImportAllUseCase> { JsonImportAllUseCaseImpl(get(), get(), get(), get()) }
+    single<JsonImportAllUseCase> { JsonImportAllUseCaseImpl(get(), get(), get(), get(), get()) }
     single<ImportAllUseCase> { ImportAllUseCaseImpl(get(), get()) }
     single<GetAllActionsUseCase> { GetAllActionsUseCaseImpl(get()) }
     single<GetActionByIdUseCase> { GetActionByIdUseCaseImpl(get()) }

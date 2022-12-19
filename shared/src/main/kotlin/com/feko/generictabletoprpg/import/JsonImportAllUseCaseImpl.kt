@@ -4,12 +4,14 @@ import com.feko.generictabletoprpg.action.InsertActionsPort
 import com.feko.generictabletoprpg.app.AppModel
 import com.feko.generictabletoprpg.common.Logger
 import com.feko.generictabletoprpg.condition.InsertConditionsPort
+import com.feko.generictabletoprpg.disease.InsertDiseasesPort
 
 class JsonImportAllUseCaseImpl(
     private val logger: Logger,
     private val jsonPort: JsonPort,
     private val insertActionsPort: InsertActionsPort,
-    private val insertConditionsPort: InsertConditionsPort
+    private val insertConditionsPort: InsertConditionsPort,
+    private val insertDiseasesPort: InsertDiseasesPort
 ) : JsonImportAllUseCase {
     override fun import(content: String): Result<Boolean> {
         try {
@@ -21,6 +23,9 @@ class JsonImportAllUseCaseImpl(
 
             val conditionsImported = importConditions(appModel)
             results.add(conditionsImported)
+
+            val diseasesImported = importDiseases(appModel)
+            results.add(diseasesImported)
 
             return results.fold(Result.success(true)) { current, result ->
                 val currentResult = current.getOrDefault(false)
@@ -58,6 +63,20 @@ class JsonImportAllUseCaseImpl(
             Result.success(true)
         } else {
             insertConditionsPort.insertAll(conditions)
+        }
+    }
+
+    private fun importDiseases(appModel: AppModel): Result<Boolean> {
+        val diseases = appModel.sources.flatMap { source ->
+            source.diseases.map {
+                it.source = source.name
+                it
+            }
+        }
+        return if (diseases.isEmpty()) {
+            Result.success(true)
+        } else {
+            insertDiseasesPort.insertAll(diseases)
         }
     }
 }
