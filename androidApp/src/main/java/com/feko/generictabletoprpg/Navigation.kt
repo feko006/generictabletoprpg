@@ -16,6 +16,8 @@ import com.feko.generictabletoprpg.action.ActionDetails
 import com.feko.generictabletoprpg.action.ActionOverview
 import com.feko.generictabletoprpg.condition.ConditionDetails
 import com.feko.generictabletoprpg.condition.ConditionOverview
+import com.feko.generictabletoprpg.disease.DiseaseDetails
+import com.feko.generictabletoprpg.disease.DiseaseOverview
 import com.feko.generictabletoprpg.feat.FeatDetails
 import com.feko.generictabletoprpg.feat.FeatOverview
 import com.feko.generictabletoprpg.import.Import
@@ -46,6 +48,8 @@ object Navigation {
             ActionDetails,
             ConditionOverview,
             ConditionDetails,
+            DiseaseOverview,
+            DiseaseDetails,
             SpellDetails,
             SpellOverview,
             FeatDetails,

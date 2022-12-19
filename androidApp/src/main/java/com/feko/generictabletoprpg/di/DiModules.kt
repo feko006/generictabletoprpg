@@ -8,6 +8,7 @@ import com.feko.generictabletoprpg.common.TimberLogger
 import com.feko.generictabletoprpg.common.UserPreferencesAdapter
 import com.feko.generictabletoprpg.common.UserPreferencesPort
 import com.feko.generictabletoprpg.condition.*
+import com.feko.generictabletoprpg.disease.*
 import com.feko.generictabletoprpg.feat.*
 import com.feko.generictabletoprpg.import.*
 import com.feko.generictabletoprpg.init.LoadBaseContentAdapter
@@ -70,6 +71,14 @@ val diModules = module {
     single<InsertConditionsPort> { get<ConditionDao>() }
     single<GetAllConditionsPort> { get<ConditionDao>() }
     single<GetConditionByIdPort> { get<ConditionDao>() }
+    single {
+        val diseaseDao = get<GenericTabletopRpgDatabase>().diseaseDao()
+        diseaseDao.logger = get()
+        diseaseDao
+    }
+    single<InsertDiseasesPort> { get<DiseaseDao>() }
+    single<GetAllDiseasesPort> { get<DiseaseDao>() }
+    single<GetDiseaseByIdPort> { get<DiseaseDao>() }
 
     // Use-cases
     single<OrcbrewImportSpellsUseCase> { OrcbrewImportSpellsUseCaseImpl(get(), get(), get()) }
@@ -86,6 +95,8 @@ val diModules = module {
     single<GetActionByIdUseCase> { GetActionByIdUseCaseImpl(get()) }
     single<GetAllConditionsUseCase> { GetAllConditionsUseCaseImpl(get()) }
     single<GetConditionByIdUseCase> { GetConditionByIdUseCaseImpl(get()) }
+    single<GetAllDiseasesUseCase> { GetAllDiseasesUseCaseImpl(get()) }
+    single<GetDiseaseByIdUseCase> { GetDiseaseByIdUseCaseImpl(get()) }
 
     // VMs
     viewModel { ImportViewModel(get()) }
@@ -98,4 +109,6 @@ val diModules = module {
     viewModel { ActionDetailsViewModel(get()) }
     viewModel { ConditionOverviewViewModel(get()) }
     viewModel { ConditionDetailsViewModel(get()) }
+    viewModel { DiseaseOverviewViewModel(get()) }
+    viewModel { DiseaseDetailsViewModel(get()) }
 }
