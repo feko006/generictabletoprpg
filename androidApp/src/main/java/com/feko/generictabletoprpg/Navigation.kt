@@ -24,6 +24,8 @@ import com.feko.generictabletoprpg.import.Import
 import com.feko.generictabletoprpg.spell.SpellDetails
 import com.feko.generictabletoprpg.spell.SpellOverview
 import com.feko.generictabletoprpg.spell.SpellSlots
+import com.feko.generictabletoprpg.weapon.WeaponDetails
+import com.feko.generictabletoprpg.weapon.WeaponOverview
 import kotlinx.coroutines.launch
 
 object Navigation {
@@ -44,14 +46,16 @@ object Navigation {
 
     private val destinations: List<Destination> =
         listOf(
+            SpellDetails,
+            SpellOverview,
+            WeaponDetails,
+            WeaponOverview,
             ActionOverview,
             ActionDetails,
             ConditionOverview,
             ConditionDetails,
             DiseaseOverview,
             DiseaseDetails,
-            SpellDetails,
-            SpellOverview,
             FeatDetails,
             FeatOverview,
             SpellSlots,

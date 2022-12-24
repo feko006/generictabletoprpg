@@ -17,7 +17,9 @@ import com.feko.generictabletoprpg.init.LoadBaseContentUseCase
 import com.feko.generictabletoprpg.init.LoadBaseContentUseCaseImpl
 import com.feko.generictabletoprpg.room.GenericTabletopRpgDatabase
 import com.feko.generictabletoprpg.spell.*
+import com.feko.generictabletoprpg.weapon.*
 import org.koin.androidx.viewmodel.dsl.viewModel
+import org.koin.core.module.Module
 import org.koin.dsl.module
 
 val diModules = module {
@@ -33,9 +35,29 @@ val diModules = module {
             .build()
     }
 
+    includeSpellDependencies()
+    includeFeatDependencies()
+    includeActionDependencies()
+    includeConditionDependencies()
+    includeDiseaseDependencies()
+    includeWeaponDependencies()
+    includeImportDependencies()
+
     // Ports & Adapters
     single<ParseEdnAsMapPort> { ParseEdnAsMapEdnJavaAdapter() }
     single<ProcessEdnMapPort> { ProcessEdnMapEdnJavaAdapter() }
+    single<UserPreferencesPort> { UserPreferencesAdapter(get()) }
+    single<LoadBaseContentPort> { LoadBaseContentAdapter(get()) }
+    single<JsonPort> { MoshiJsonAdapter() }
+
+    // Use-cases
+    single<LoadBaseContentUseCase> { LoadBaseContentUseCaseImpl(get(), get(), get(), get()) }
+
+    // VMs
+    viewModel { AppViewModel(get()) }
+}
+
+fun Module.includeSpellDependencies() {
     single {
         val spellDao = get<GenericTabletopRpgDatabase>().spellDao()
         spellDao.logger = get()
@@ -44,6 +66,15 @@ val diModules = module {
     single<InsertSpellsPort> { get<SpellDao>() }
     single<GetAllSpellsPort> { get<SpellDao>() }
     single<GetSpellByIdPort> { get<SpellDao>() }
+
+    single<GetAllSpellsUseCase> { GetAllSpellsUseCaseImpl(get()) }
+    single<GetSpellByIdUseCase> { GetSpellByIdUseCaseImpl(get()) }
+
+    viewModel { SpellOverviewViewModel(get()) }
+    viewModel { SpellDetailsViewModel(get()) }
+}
+
+fun Module.includeFeatDependencies() {
     single {
         val featDao = get<GenericTabletopRpgDatabase>().featDao()
         featDao.logger = get()
@@ -52,9 +83,15 @@ val diModules = module {
     single<InsertFeatsPort> { get<FeatDao>() }
     single<GetAllFeatsPort> { get<FeatDao>() }
     single<GetFeatByIdPort> { get<FeatDao>() }
-    single<UserPreferencesPort> { UserPreferencesAdapter(get()) }
-    single<LoadBaseContentPort> { LoadBaseContentAdapter(get()) }
-    single<JsonPort> { MoshiJsonAdapter() }
+
+    single<GetAllFeatsUseCase> { GetAllFeatsUseCaseImpl(get()) }
+    single<GetFeatByIdUseCase> { GetFeatByIdUseCaseImpl(get()) }
+
+    viewModel { FeatOverviewViewModel(get()) }
+    viewModel { FeatDetailsViewModel(get()) }
+}
+
+fun Module.includeActionDependencies() {
     single {
         val actionDao = get<GenericTabletopRpgDatabase>().actionDao()
         actionDao.logger = get()
@@ -63,6 +100,15 @@ val diModules = module {
     single<InsertActionsPort> { get<ActionDao>() }
     single<GetAllActionsPort> { get<ActionDao>() }
     single<GetActionByIdPort> { get<ActionDao>() }
+
+    single<GetAllActionsUseCase> { GetAllActionsUseCaseImpl(get()) }
+    single<GetActionByIdUseCase> { GetActionByIdUseCaseImpl(get()) }
+
+    viewModel { ActionOverviewViewModel(get()) }
+    viewModel { ActionDetailsViewModel(get()) }
+}
+
+fun Module.includeConditionDependencies() {
     single {
         val conditionDao = get<GenericTabletopRpgDatabase>().conditionDao()
         conditionDao.logger = get()
@@ -71,6 +117,15 @@ val diModules = module {
     single<InsertConditionsPort> { get<ConditionDao>() }
     single<GetAllConditionsPort> { get<ConditionDao>() }
     single<GetConditionByIdPort> { get<ConditionDao>() }
+
+    single<GetAllConditionsUseCase> { GetAllConditionsUseCaseImpl(get()) }
+    single<GetConditionByIdUseCase> { GetConditionByIdUseCaseImpl(get()) }
+
+    viewModel { ConditionOverviewViewModel(get()) }
+    viewModel { ConditionDetailsViewModel(get()) }
+}
+
+fun Module.includeDiseaseDependencies() {
     single {
         val diseaseDao = get<GenericTabletopRpgDatabase>().diseaseDao()
         diseaseDao.logger = get()
@@ -80,35 +135,45 @@ val diModules = module {
     single<GetAllDiseasesPort> { get<DiseaseDao>() }
     single<GetDiseaseByIdPort> { get<DiseaseDao>() }
 
-    // Use-cases
-    single<OrcbrewImportSpellsUseCase> { OrcbrewImportSpellsUseCaseImpl(get(), get(), get()) }
-    single<OrcbrewImportFeatsUseCase> { OrcbrewImportFeatsUseCaseImpl(get(), get(), get()) }
-    single<OrcbrewImportAllUseCase> { OrcbrewImportAllUseCaseImpl(get(), get(), get(), get()) }
-    single<LoadBaseContentUseCase> { LoadBaseContentUseCaseImpl(get(), get(), get(), get()) }
-    single<GetAllSpellsUseCase> { GetAllSpellsUseCaseImpl(get()) }
-    single<GetSpellByIdUseCase> { GetSpellByIdUseCaseImpl(get()) }
-    single<GetAllFeatsUseCase> { GetAllFeatsUseCaseImpl(get()) }
-    single<GetFeatByIdUseCase> { GetFeatByIdUseCaseImpl(get()) }
-    single<JsonImportAllUseCase> { JsonImportAllUseCaseImpl(get(), get(), get(), get(), get()) }
-    single<ImportAllUseCase> { ImportAllUseCaseImpl(get(), get()) }
-    single<GetAllActionsUseCase> { GetAllActionsUseCaseImpl(get()) }
-    single<GetActionByIdUseCase> { GetActionByIdUseCaseImpl(get()) }
-    single<GetAllConditionsUseCase> { GetAllConditionsUseCaseImpl(get()) }
-    single<GetConditionByIdUseCase> { GetConditionByIdUseCaseImpl(get()) }
     single<GetAllDiseasesUseCase> { GetAllDiseasesUseCaseImpl(get()) }
     single<GetDiseaseByIdUseCase> { GetDiseaseByIdUseCaseImpl(get()) }
 
-    // VMs
-    viewModel { ImportViewModel(get()) }
-    viewModel { AppViewModel(get()) }
-    viewModel { SpellOverviewViewModel(get()) }
-    viewModel { SpellDetailsViewModel(get()) }
-    viewModel { FeatOverviewViewModel(get()) }
-    viewModel { FeatDetailsViewModel(get()) }
-    viewModel { ActionOverviewViewModel(get()) }
-    viewModel { ActionDetailsViewModel(get()) }
-    viewModel { ConditionOverviewViewModel(get()) }
-    viewModel { ConditionDetailsViewModel(get()) }
     viewModel { DiseaseOverviewViewModel(get()) }
     viewModel { DiseaseDetailsViewModel(get()) }
+}
+
+fun Module.includeWeaponDependencies() {
+    single {
+        val weaponDao = get<GenericTabletopRpgDatabase>().weaponDao()
+        weaponDao.logger = get()
+        weaponDao
+    }
+    single<InsertWeaponsPort> { get<WeaponDao>() }
+    single<GetAllWeaponsPort> { get<WeaponDao>() }
+    single<GetWeaponByIdPort> { get<WeaponDao>() }
+
+    single<GetAllWeaponsUseCase> { GetAllWeaponsUseCaseImpl(get()) }
+    single<GetWeaponByIdUseCase> { GetWeaponByIdUseCaseImpl(get()) }
+
+    viewModel { WeaponOverviewViewModel(get()) }
+    viewModel { WeaponDetailsViewModel(get()) }
+}
+
+fun Module.includeImportDependencies() {
+    single<OrcbrewImportSpellsUseCase> { OrcbrewImportSpellsUseCaseImpl(get(), get(), get()) }
+    single<OrcbrewImportFeatsUseCase> { OrcbrewImportFeatsUseCaseImpl(get(), get(), get()) }
+    single<OrcbrewImportWeaponsUseCase> { OrcbrewImportWeaponsUseCaseImpl(get(), get(), get()) }
+    single<OrcbrewImportAllUseCase> {
+        OrcbrewImportAllUseCaseImpl(
+            get(),
+            get(),
+            get(),
+            get(),
+            get()
+        )
+    }
+    single<JsonImportAllUseCase> { JsonImportAllUseCaseImpl(get(), get(), get(), get(), get()) }
+    single<ImportAllUseCase> { ImportAllUseCaseImpl(get(), get()) }
+
+    viewModel { ImportViewModel(get()) }
 }

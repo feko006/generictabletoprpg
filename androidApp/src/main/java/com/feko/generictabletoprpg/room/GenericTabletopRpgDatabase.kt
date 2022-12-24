@@ -16,6 +16,8 @@ import com.feko.generictabletoprpg.feat.FeatDao
 import com.feko.generictabletoprpg.feat.FeatEntity
 import com.feko.generictabletoprpg.spell.SpellDao
 import com.feko.generictabletoprpg.spell.SpellEntity
+import com.feko.generictabletoprpg.weapon.WeaponDao
+import com.feko.generictabletoprpg.weapon.WeaponEntity
 
 @TypeConverters(
     StringListTypeConverter::class,
@@ -27,15 +29,17 @@ import com.feko.generictabletoprpg.spell.SpellEntity
         FeatEntity::class,
         ActionEntity::class,
         ConditionEntity::class,
-        DiseaseEntity::class
+        DiseaseEntity::class,
+        WeaponEntity::class
     ],
-    version = 6,
+    version = 7,
     autoMigrations = [
         AutoMigration(from = 1, to = 2),
         AutoMigration(from = 2, to = 3),
         AutoMigration(from = 3, to = 4),
         AutoMigration(from = 4, to = 5),
-        AutoMigration(from = 5, to = 6)
+        AutoMigration(from = 5, to = 6),
+        AutoMigration(from = 6, to = 7)
     ]
 )
 abstract class GenericTabletopRpgDatabase : RoomDatabase() {
@@ -44,4 +48,5 @@ abstract class GenericTabletopRpgDatabase : RoomDatabase() {
     abstract fun actionDao(): ActionDao
     abstract fun conditionDao(): ConditionDao
     abstract fun diseaseDao(): DiseaseDao
+    abstract fun weaponDao(): WeaponDao
 }

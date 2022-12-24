@@ -3,7 +3,6 @@ package com.feko.generictabletoprpg.spell
 import com.feko.generictabletoprpg.common.FromSource
 import com.feko.generictabletoprpg.common.Identifiable
 import com.feko.generictabletoprpg.common.Named
-import com.feko.generictabletoprpg.common.Range
 import com.feko.generictabletoprpg.import.ProcessEdnMapPort
 
 data class Spell(
@@ -18,7 +17,7 @@ data class Spell(
     val components: SpellComponents,
     val castingTime: String,
     val classesThatCanCast: List<String>,
-    val range: Range,
+    val range: SpellRange,
     val isRitual: Boolean
 ) : Identifiable,
     Named,
@@ -74,7 +73,7 @@ data class Spell(
                 SpellComponents.createFromOrcbrewData(processEdnMapPort, componentsMap),
                 processEdnMapPort.getValue(spellMap, ":casting-time"),
                 classesThatCanCast,
-                Range.createFromString(rangeString),
+                SpellRange.createFromString(rangeString),
                 processEdnMapPort.getValueOrDefault(spellMap, ":ritual", false)
             )
         }

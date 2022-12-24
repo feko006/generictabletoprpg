@@ -1,6 +1,6 @@
-package com.feko.generictabletoprpg.common
+package com.feko.generictabletoprpg.spell
 
-data class Range(
+data class SpellRange(
     val isSelf: Boolean,
     val isTouch: Boolean,
     val isSight: Boolean,
@@ -8,9 +8,9 @@ data class Range(
     val unit: String?
 ) {
     companion object {
-        fun createFromString(string: String): Range {
+        fun createFromString(string: String): SpellRange {
             val parts = string.split(" ")
-            return Range(
+            return SpellRange(
                 parts.first().lowercase().contains("self"),
                 parts.first().lowercase().contains("touch"),
                 parts.first().lowercase().contains("sight"),

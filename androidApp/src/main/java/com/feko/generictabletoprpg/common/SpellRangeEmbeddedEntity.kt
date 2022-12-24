@@ -1,16 +1,16 @@
-package com.feko.generictabletoprpg.com.feko.generictabletoprpg.common
+package com.feko.generictabletoprpg.common
 
-import com.feko.generictabletoprpg.common.Range
+import com.feko.generictabletoprpg.spell.SpellRange
 
-data class RangeEmbeddedEntity(
+data class SpellRangeEmbeddedEntity(
     val isSelf: Boolean,
     val isTouch: Boolean,
     val isSight: Boolean,
     val distance: Long,
     val unit: String?
 ) {
-    fun toCoreModel(): Range =
-        Range(
+    fun toCoreModel(): SpellRange =
+        SpellRange(
             isSelf,
             isTouch,
             isSight,
@@ -19,8 +19,8 @@ data class RangeEmbeddedEntity(
         )
 
     companion object {
-        fun fromCoreModel(range: Range) =
-            RangeEmbeddedEntity(
+        fun fromCoreModel(range: SpellRange) =
+            SpellRangeEmbeddedEntity(
                 range.isSelf,
                 range.isTouch,
                 range.isSight,
