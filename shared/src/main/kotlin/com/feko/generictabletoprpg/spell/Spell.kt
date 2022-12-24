@@ -18,12 +18,16 @@ data class Spell(
     val components: SpellComponents,
     val castingTime: String,
     val classesThatCanCast: List<String>,
-    val range: Range
+    val range: Range,
+    val isRitual: Boolean
 ) : Identifiable,
     Named,
     FromSource {
     val hasComponents: Boolean
         get() = components.any()
+
+    val castingTimeWithRitualTag: String
+        get() = "${castingTime}${if (isRitual) " (Ritual)" else ""}"
 
     companion object {
         fun createFromOrcbrewData(
@@ -70,7 +74,8 @@ data class Spell(
                 SpellComponents.createFromOrcbrewData(processEdnMapPort, componentsMap),
                 processEdnMapPort.getValue(spellMap, ":casting-time"),
                 classesThatCanCast,
-                Range.createFromString(rangeString)
+                Range.createFromString(rangeString),
+                processEdnMapPort.getValueOrDefault(spellMap, ":ritual", false)
             )
         }
     }

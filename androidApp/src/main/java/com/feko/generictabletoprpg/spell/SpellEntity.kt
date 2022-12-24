@@ -1,5 +1,6 @@
 package com.feko.generictabletoprpg.spell
 
+import androidx.room.ColumnInfo
 import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
@@ -27,7 +28,9 @@ data class SpellEntity(
     val castingTime: String,
     val classesThatCanCast: List<String>,
     @Embedded
-    val range: RangeEmbeddedEntity
+    val range: RangeEmbeddedEntity,
+    @ColumnInfo(defaultValue = "0")
+    val isRitual: Boolean
 ) : Named,
     MutableIdentifiable,
     FromSource,
@@ -46,7 +49,8 @@ data class SpellEntity(
             components.toCoreModel(),
             castingTime,
             classesThatCanCast,
-            range.toCoreModel()
+            range.toCoreModel(),
+            isRitual
         )
 
     data class SpellComponentsEmbeddedEntity(
@@ -88,7 +92,8 @@ data class SpellEntity(
                 SpellComponentsEmbeddedEntity.fromCoreModel(spell.components),
                 spell.castingTime,
                 spell.classesThatCanCast,
-                RangeEmbeddedEntity.fromCoreModel(spell.range)
+                RangeEmbeddedEntity.fromCoreModel(spell.range),
+                spell.isRitual
             )
     }
 }

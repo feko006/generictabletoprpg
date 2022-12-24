@@ -36,7 +36,7 @@ object SpellDetails : DetailsScreen<SpellDetailsViewModel, Spell>() {
             Spacer(Modifier.height(padding))
             TextWithLabel("School", school)
             Spacer(Modifier.height(padding))
-            TextWithLabel("Casting time", castingTime)
+            TextWithLabel("Casting time", castingTimeWithRitualTag)
             Spacer(Modifier.height(padding))
             TextWithLabel("Range", range.toString())
             if (hasComponents) {
