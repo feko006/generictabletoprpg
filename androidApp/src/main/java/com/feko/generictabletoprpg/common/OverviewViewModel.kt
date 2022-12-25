@@ -10,8 +10,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-abstract class OverviewViewModel<T> : ViewModel()
-        where T : Named {
+abstract class OverviewViewModel<T> : ViewModel() {
     private val _items =
         MutableStateFlow<List<T>>(listOf())
     val searchString: StateFlow<String>
@@ -22,7 +21,8 @@ abstract class OverviewViewModel<T> : ViewModel()
     private val combinedItemFlow: Flow<List<T>> =
         _items.combine(_searchString) { feats, searchString ->
             feats.filter { feat ->
-                feat.name.lowercase().contains(searchString.lowercase())
+                feat is Named
+                        && feat.name.lowercase().contains(searchString.lowercase())
             }
         }
 

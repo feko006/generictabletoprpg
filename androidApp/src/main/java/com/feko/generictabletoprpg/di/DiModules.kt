@@ -16,6 +16,7 @@ import com.feko.generictabletoprpg.init.LoadBaseContentPort
 import com.feko.generictabletoprpg.init.LoadBaseContentUseCase
 import com.feko.generictabletoprpg.init.LoadBaseContentUseCaseImpl
 import com.feko.generictabletoprpg.room.GenericTabletopRpgDatabase
+import com.feko.generictabletoprpg.searchall.SearchAllViewModel
 import com.feko.generictabletoprpg.spell.*
 import com.feko.generictabletoprpg.weapon.*
 import org.koin.androidx.viewmodel.dsl.viewModel
@@ -55,6 +56,18 @@ val diModules = module {
 
     // VMs
     viewModel { AppViewModel(get()) }
+    viewModel {
+        SearchAllViewModel(
+            listOf(
+                get<GetAllSpellsUseCase>(),
+                get<GetAllFeatsUseCase>(),
+                get<GetAllActionsUseCase>(),
+                get<GetAllConditionsUseCase>(),
+                get<GetAllDiseasesUseCase>(),
+                get<GetAllWeaponsUseCase>()
+            )
+        )
+    }
 }
 
 fun Module.includeSpellDependencies() {

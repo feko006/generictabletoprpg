@@ -20,9 +20,8 @@ import com.feko.generictabletoprpg.Navigation
 
 abstract class OverviewScreen<TViewModel, T> :
     Navigation.Destination
-        where TViewModel : OverviewViewModel<*>,
-              T : Identifiable,
-              T : Named {
+        where TViewModel : OverviewViewModel<T>,
+              T : Any {
     abstract val detailsNavRouteProvider: Navigation.DetailsNavRouteProvider
 
     final override fun navHostComposable(
@@ -54,25 +53,28 @@ abstract class OverviewScreen<TViewModel, T> :
             ) {
                 items(
                     listItems,
-                    key = { (it as Identifiable).id }
+                    key = { listItem -> uniqueListItemKey(listItem) }
                 ) { item ->
                     ListItem(
                         headlineText = {
-                            Text(item.name)
+                            Text((item as Named).name)
                         },
                         modifier = Modifier
                             .fillMaxWidth()
                             .clickable {
                                 navController.navigate(
-                                    detailsNavRouteProvider.getNavRoute(
-                                        (item as Identifiable).id
-                                    )
+                                    getNavRouteInternal(item)
                                 )
                             })
                 }
             }
         }
     }
+
+    protected open fun uniqueListItemKey(listItem: T): Any = (listItem as Identifiable).id
+
+    protected open fun getNavRouteInternal(item: T) =
+        detailsNavRouteProvider.getNavRoute((item as Identifiable).id)
 
     @Composable
     protected abstract fun getViewModel(): TViewModel

@@ -21,6 +21,7 @@ import com.feko.generictabletoprpg.disease.DiseaseOverview
 import com.feko.generictabletoprpg.feat.FeatDetails
 import com.feko.generictabletoprpg.feat.FeatOverview
 import com.feko.generictabletoprpg.import.Import
+import com.feko.generictabletoprpg.searchall.SearchAll
 import com.feko.generictabletoprpg.spell.SpellDetails
 import com.feko.generictabletoprpg.spell.SpellOverview
 import com.feko.generictabletoprpg.spell.SpellSlots
@@ -46,6 +47,7 @@ object Navigation {
 
     private val destinations: List<Destination> =
         listOf(
+            SearchAll,
             SpellDetails,
             SpellOverview,
             WeaponDetails,
@@ -66,7 +68,7 @@ object Navigation {
         destinations.filter { it.isRootDestination }
 
     private val firstDestination: Destination =
-        destinations.first { it is SpellOverview }
+        destinations.first { it is SearchAll }
 
     @Composable
     private fun Host(
