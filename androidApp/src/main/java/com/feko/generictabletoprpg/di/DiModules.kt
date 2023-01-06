@@ -195,8 +195,16 @@ fun Module.includeImportDependencies() {
     single<OrcbrewImportSpellsUseCase> { OrcbrewImportSpellsUseCaseImpl(get(), get(), get()) }
     single<OrcbrewImportFeatsUseCase> { OrcbrewImportFeatsUseCaseImpl(get(), get(), get()) }
     single<OrcbrewImportWeaponsUseCase> { OrcbrewImportWeaponsUseCaseImpl(get(), get(), get()) }
+    single<OrcbrewImportAmmunitionsUseCase> {
+        OrcbrewImportAmmunitionsUseCaseImpl(
+            get(),
+            get(),
+            get()
+        )
+    }
     single<OrcbrewImportAllUseCase> {
         OrcbrewImportAllUseCaseImpl(
+            get(),
             get(),
             get(),
             get(),
