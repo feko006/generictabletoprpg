@@ -6,6 +6,8 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.feko.generictabletoprpg.action.ActionDao
 import com.feko.generictabletoprpg.action.ActionEntity
+import com.feko.generictabletoprpg.ammunition.AmmunitionDao
+import com.feko.generictabletoprpg.ammunition.AmmunitionEntity
 import com.feko.generictabletoprpg.common.StatListTypeConverter
 import com.feko.generictabletoprpg.common.StringListTypeConverter
 import com.feko.generictabletoprpg.condition.ConditionDao
@@ -30,16 +32,18 @@ import com.feko.generictabletoprpg.weapon.WeaponEntity
         ActionEntity::class,
         ConditionEntity::class,
         DiseaseEntity::class,
-        WeaponEntity::class
+        WeaponEntity::class,
+        AmmunitionEntity::class
     ],
-    version = 7,
+    version = 8,
     autoMigrations = [
         AutoMigration(from = 1, to = 2),
         AutoMigration(from = 2, to = 3),
         AutoMigration(from = 3, to = 4),
         AutoMigration(from = 4, to = 5),
         AutoMigration(from = 5, to = 6),
-        AutoMigration(from = 6, to = 7)
+        AutoMigration(from = 6, to = 7),
+        AutoMigration(from = 7, to = 8),
     ]
 )
 abstract class GenericTabletopRpgDatabase : RoomDatabase() {
@@ -49,4 +53,5 @@ abstract class GenericTabletopRpgDatabase : RoomDatabase() {
     abstract fun conditionDao(): ConditionDao
     abstract fun diseaseDao(): DiseaseDao
     abstract fun weaponDao(): WeaponDao
+    abstract fun ammunitionDao(): AmmunitionDao
 }

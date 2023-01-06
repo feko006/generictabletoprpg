@@ -3,6 +3,7 @@ package com.feko.generictabletoprpg.di
 import androidx.room.Room
 import com.feko.generictabletoprpg.AppViewModel
 import com.feko.generictabletoprpg.action.*
+import com.feko.generictabletoprpg.ammunition.*
 import com.feko.generictabletoprpg.common.Logger
 import com.feko.generictabletoprpg.common.TimberLogger
 import com.feko.generictabletoprpg.common.UserPreferencesAdapter
@@ -42,6 +43,7 @@ val diModules = module {
     includeConditionDependencies()
     includeDiseaseDependencies()
     includeWeaponDependencies()
+    includeAmmunitionDependencies()
     includeImportDependencies()
 
     // Ports & Adapters
@@ -170,6 +172,23 @@ fun Module.includeWeaponDependencies() {
 
     viewModel { WeaponOverviewViewModel(get()) }
     viewModel { WeaponDetailsViewModel(get()) }
+}
+
+fun Module.includeAmmunitionDependencies() {
+    single {
+        val ammunitionDao = get<GenericTabletopRpgDatabase>().ammunitionDao()
+        ammunitionDao.logger = get()
+        ammunitionDao
+    }
+    single<InsertAmmunitionsPort> { get<AmmunitionDao>() }
+    single<GetAllAmmunitionsPort> { get<AmmunitionDao>() }
+    single<GetAmmunitionByIdPort> { get<AmmunitionDao>() }
+
+    single<GetAllAmmunitionsUseCase> { GetAllAmmunitionsUseCaseImpl(get()) }
+    single<GetAmmunitionByIdUseCase> { GetAmmunitionByIdUseCaseImpl(get()) }
+
+    viewModel { AmmunitionOverviewViewModel(get()) }
+    viewModel { AmmunitionDetailsViewModel(get()) }
 }
 
 fun Module.includeImportDependencies() {

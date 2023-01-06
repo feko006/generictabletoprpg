@@ -14,6 +14,8 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
 import com.feko.generictabletoprpg.action.ActionDetails
 import com.feko.generictabletoprpg.action.ActionOverview
+import com.feko.generictabletoprpg.ammunition.AmmunitionDetails
+import com.feko.generictabletoprpg.ammunition.AmmunitionOverview
 import com.feko.generictabletoprpg.condition.ConditionDetails
 import com.feko.generictabletoprpg.condition.ConditionOverview
 import com.feko.generictabletoprpg.disease.DiseaseDetails
@@ -60,6 +62,8 @@ object Navigation {
             DiseaseDetails,
             FeatDetails,
             FeatOverview,
+            AmmunitionDetails,
+            AmmunitionOverview,
             SpellSlots,
             Import
         )
