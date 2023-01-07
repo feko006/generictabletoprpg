@@ -9,6 +9,7 @@ class OrcbrewImportAllUseCaseImpl(
     private val orcbrewImportFeatsUseCase: OrcbrewImportFeatsUseCase,
     private val orcbrewImportWeaponsUseCase: OrcbrewImportWeaponsUseCase,
     private val orcbrewImportAmmunitionsUseCase: OrcbrewImportAmmunitionsUseCase,
+    private val orcbrewImportArmorsUseCase: OrcbrewImportArmorsUseCase,
     private val logger: Logger
 ) : OrcbrewImportAllUseCase {
     override fun import(content: String): Result<Boolean> {
@@ -30,6 +31,8 @@ class OrcbrewImportAllUseCaseImpl(
             results.add(weaponsImported)
             val ammunitionsImported = orcbrewImportAmmunitionsUseCase.import(sources)
             results.add(ammunitionsImported)
+            val armorsImported = orcbrewImportArmorsUseCase.import(sources)
+            results.add(armorsImported)
             val everythingImported =
                 results.fold(true) { current, result ->
                     current && result.getOrDefault(false)

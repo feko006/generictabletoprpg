@@ -8,6 +8,8 @@ import com.feko.generictabletoprpg.action.ActionDao
 import com.feko.generictabletoprpg.action.ActionEntity
 import com.feko.generictabletoprpg.ammunition.AmmunitionDao
 import com.feko.generictabletoprpg.ammunition.AmmunitionEntity
+import com.feko.generictabletoprpg.armor.ArmorDao
+import com.feko.generictabletoprpg.armor.ArmorEntity
 import com.feko.generictabletoprpg.common.StatListTypeConverter
 import com.feko.generictabletoprpg.common.StringListTypeConverter
 import com.feko.generictabletoprpg.condition.ConditionDao
@@ -33,9 +35,10 @@ import com.feko.generictabletoprpg.weapon.WeaponEntity
         ConditionEntity::class,
         DiseaseEntity::class,
         WeaponEntity::class,
-        AmmunitionEntity::class
+        AmmunitionEntity::class,
+        ArmorEntity::class
     ],
-    version = 8,
+    version = 9,
     autoMigrations = [
         AutoMigration(from = 1, to = 2),
         AutoMigration(from = 2, to = 3),
@@ -44,6 +47,7 @@ import com.feko.generictabletoprpg.weapon.WeaponEntity
         AutoMigration(from = 5, to = 6),
         AutoMigration(from = 6, to = 7),
         AutoMigration(from = 7, to = 8),
+        AutoMigration(from = 8, to = 9),
     ]
 )
 abstract class GenericTabletopRpgDatabase : RoomDatabase() {
@@ -54,4 +58,5 @@ abstract class GenericTabletopRpgDatabase : RoomDatabase() {
     abstract fun diseaseDao(): DiseaseDao
     abstract fun weaponDao(): WeaponDao
     abstract fun ammunitionDao(): AmmunitionDao
+    abstract fun armorDao(): ArmorDao
 }

@@ -16,6 +16,8 @@ import com.feko.generictabletoprpg.action.ActionDetails
 import com.feko.generictabletoprpg.action.ActionOverview
 import com.feko.generictabletoprpg.ammunition.AmmunitionDetails
 import com.feko.generictabletoprpg.ammunition.AmmunitionOverview
+import com.feko.generictabletoprpg.armor.ArmorDetails
+import com.feko.generictabletoprpg.armor.ArmorOverview
 import com.feko.generictabletoprpg.condition.ConditionDetails
 import com.feko.generictabletoprpg.condition.ConditionOverview
 import com.feko.generictabletoprpg.disease.DiseaseDetails
@@ -54,6 +56,8 @@ object Navigation {
             SpellOverview,
             WeaponDetails,
             WeaponOverview,
+            ArmorDetails,
+            ArmorOverview,
             ActionOverview,
             ActionDetails,
             ConditionOverview,

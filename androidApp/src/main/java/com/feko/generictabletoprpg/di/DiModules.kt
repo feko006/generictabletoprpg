@@ -4,6 +4,7 @@ import androidx.room.Room
 import com.feko.generictabletoprpg.AppViewModel
 import com.feko.generictabletoprpg.action.*
 import com.feko.generictabletoprpg.ammunition.*
+import com.feko.generictabletoprpg.armor.*
 import com.feko.generictabletoprpg.common.Logger
 import com.feko.generictabletoprpg.common.TimberLogger
 import com.feko.generictabletoprpg.common.UserPreferencesAdapter
@@ -44,6 +45,7 @@ val diModules = module {
     includeDiseaseDependencies()
     includeWeaponDependencies()
     includeAmmunitionDependencies()
+    includeArmorDependencies()
     includeImportDependencies()
 
     // Ports & Adapters
@@ -191,6 +193,23 @@ fun Module.includeAmmunitionDependencies() {
     viewModel { AmmunitionDetailsViewModel(get()) }
 }
 
+fun Module.includeArmorDependencies() {
+    single {
+        val armorDao = get<GenericTabletopRpgDatabase>().armorDao()
+        armorDao.logger = get()
+        armorDao
+    }
+    single<InsertArmorsPort> { get<ArmorDao>() }
+    single<GetAllArmorsPort> { get<ArmorDao>() }
+    single<GetArmorByIdPort> { get<ArmorDao>() }
+
+    single<GetAllArmorsUseCase> { GetAllArmorsUseCaseImpl(get()) }
+    single<GetArmorByIdUseCase> { GetArmorByIdUseCaseImpl(get()) }
+
+    viewModel { ArmorOverviewViewModel(get()) }
+    viewModel { ArmorDetailsViewModel(get()) }
+}
+
 fun Module.includeImportDependencies() {
     single<OrcbrewImportSpellsUseCase> { OrcbrewImportSpellsUseCaseImpl(get(), get(), get()) }
     single<OrcbrewImportFeatsUseCase> { OrcbrewImportFeatsUseCaseImpl(get(), get(), get()) }
@@ -202,8 +221,10 @@ fun Module.includeImportDependencies() {
             get()
         )
     }
+    single<OrcbrewImportArmorsUseCase> { OrcbrewImportArmorsUseCaseImpl(get(), get(), get()) }
     single<OrcbrewImportAllUseCase> {
         OrcbrewImportAllUseCaseImpl(
+            get(),
             get(),
             get(),
             get(),
