@@ -1,7 +1,4 @@
-package com.feko.generictabletoprpg.com.feko.generictabletoprpg.common
-
-import com.feko.generictabletoprpg.common.CoreConvertible
-import com.feko.generictabletoprpg.common.Damage
+package com.feko.generictabletoprpg.common
 
 data class DamageEmbeddedEntity(
     val damageType: String,

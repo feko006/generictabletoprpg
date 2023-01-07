@@ -3,11 +3,7 @@ package com.feko.generictabletoprpg.weapon
 import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.feko.generictabletoprpg.com.feko.generictabletoprpg.common.DamageEmbeddedEntity
-import com.feko.generictabletoprpg.common.CoreConvertible
-import com.feko.generictabletoprpg.common.FromSource
-import com.feko.generictabletoprpg.common.MutableIdentifiable
-import com.feko.generictabletoprpg.common.Named
+import com.feko.generictabletoprpg.common.*
 
 @Entity(
     tableName = "weapons"
