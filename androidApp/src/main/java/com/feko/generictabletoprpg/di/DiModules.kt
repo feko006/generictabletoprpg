@@ -68,7 +68,9 @@ val diModules = module {
                 get<GetAllActionsUseCase>(),
                 get<GetAllConditionsUseCase>(),
                 get<GetAllDiseasesUseCase>(),
-                get<GetAllWeaponsUseCase>()
+                get<GetAllWeaponsUseCase>(),
+                get<GetAllAmmunitionsUseCase>(),
+                get<GetAllArmorsUseCase>()
             )
         )
     }

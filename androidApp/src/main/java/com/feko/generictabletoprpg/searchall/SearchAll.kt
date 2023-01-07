@@ -4,6 +4,10 @@ import androidx.compose.runtime.Composable
 import com.feko.generictabletoprpg.Navigation
 import com.feko.generictabletoprpg.action.Action
 import com.feko.generictabletoprpg.action.ActionDetails
+import com.feko.generictabletoprpg.ammunition.Ammunition
+import com.feko.generictabletoprpg.ammunition.AmmunitionDetails
+import com.feko.generictabletoprpg.armor.Armor
+import com.feko.generictabletoprpg.armor.ArmorDetails
 import com.feko.generictabletoprpg.common.Identifiable
 import com.feko.generictabletoprpg.common.OverviewScreen
 import com.feko.generictabletoprpg.condition.Condition
@@ -49,6 +53,8 @@ object SearchAll : OverviewScreen<SearchAllViewModel, Any>() {
             is Condition -> ConditionDetails.getNavRoute(id)
             is Disease -> DiseaseDetails.getNavRoute(id)
             is Weapon -> WeaponDetails.getNavRoute(id)
+            is Ammunition -> AmmunitionDetails.getNavRoute(id)
+            is Armor -> ArmorDetails.getNavRoute(id)
             else -> throw IllegalStateException("Unknown list item")
         }
     }
