@@ -1,6 +1,9 @@
 package com.feko.generictabletoprpg.ammunition
 
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 import com.feko.generictabletoprpg.common.Common.TextWithLabel
 import com.feko.generictabletoprpg.common.DetailsScreen
@@ -22,8 +25,11 @@ object AmmunitionDetails : DetailsScreen<AmmunitionDetailsViewModel, Ammunition>
     ) {
         readiedItem.item.run {
             TextWithLabel("Name", name)
+            Spacer(Modifier.height(padding))
             TextWithLabel("Sell quantity", sellQuantity.toString())
+            Spacer(Modifier.height(padding))
             TextWithLabel("Cost", cost.toString())
+            Spacer(Modifier.height(padding))
             TextWithLabel("Weight", weight)
         }
     }
