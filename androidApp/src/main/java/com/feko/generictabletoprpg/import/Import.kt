@@ -62,7 +62,7 @@ object Import : Navigation.Destination {
                     val contents = context
                         .contentResolver
                         .openInputStream(fileUri)
-                        ?.let { inputStream ->
+                        ?.use { inputStream ->
                             inputStream.bufferedReader()
                                 .use {
                                     it.readText()
