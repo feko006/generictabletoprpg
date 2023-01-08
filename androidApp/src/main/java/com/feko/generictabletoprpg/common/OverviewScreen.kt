@@ -4,19 +4,25 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.List
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import com.feko.generictabletoprpg.Navigation
+import com.feko.generictabletoprpg.theme.Typography
 
 abstract class OverviewScreen<TViewModel, T> :
     Navigation.Destination
@@ -42,30 +48,52 @@ abstract class OverviewScreen<TViewModel, T> :
         val listItems by viewModel.items.collectAsState(listOf())
         val searchString by viewModel.searchString.collectAsState("")
         Column(Modifier.padding(8.dp)) {
-            Common.SearchTextField(
-                searchString
-            ) {
+            Common.SearchTextField(searchString) {
                 viewModel.searchStringUpdated(it)
             }
             Spacer(Modifier.height(8.dp))
-            LazyColumn(
-                Modifier.fillMaxSize()
-            ) {
-                items(
-                    listItems,
-                    key = { listItem -> uniqueListItemKey(listItem) }
-                ) { item ->
-                    ListItem(
-                        headlineText = {
-                            Text((item as Named).name)
-                        },
-                        modifier = Modifier
+            if (listItems.isNotEmpty()) {
+                LazyColumn(
+                    Modifier.fillMaxSize()
+                ) {
+                    items(
+                        listItems,
+                        key = { listItem -> uniqueListItemKey(listItem) }
+                    ) { item ->
+                        ListItem(
+                            headlineText = {
+                                Text((item as Named).name)
+                            },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable {
+                                    navController.navigate(
+                                        getNavRouteInternal(item)
+                                    )
+                                })
+                    }
+                }
+            } else {
+                Box(Modifier.fillMaxSize()) {
+                    Column(
+                        Modifier
+                            .wrapContentHeight()
                             .fillMaxWidth()
-                            .clickable {
-                                navController.navigate(
-                                    getNavRouteInternal(item)
-                                )
-                            })
+                            .align(Alignment.Center)
+                    ) {
+                        Icon(
+                            Icons.Default.List, "",
+                            Modifier
+                                .size(80.dp)
+                                .align(CenterHorizontally)
+                        )
+                        Spacer(Modifier.height(8.dp))
+                        Text(
+                            "Nothing here...",
+                            Modifier.align(CenterHorizontally),
+                            style = Typography.titleLarge
+                        )
+                    }
                 }
             }
         }
