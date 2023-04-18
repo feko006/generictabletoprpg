@@ -61,7 +61,7 @@ abstract class OverviewScreen<TViewModel, T> :
                         key = { listItem -> uniqueListItemKey(listItem) }
                     ) { item ->
                         ListItem(
-                            headlineText = {
+                            headlineContent = {
                                 Text((item as Named).name)
                             },
                             modifier = Modifier
