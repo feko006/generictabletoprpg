@@ -2,25 +2,127 @@ package com.feko.generictabletoprpg.di
 
 import androidx.room.Room
 import com.feko.generictabletoprpg.AppViewModel
-import com.feko.generictabletoprpg.action.*
-import com.feko.generictabletoprpg.ammunition.*
-import com.feko.generictabletoprpg.armor.*
+import com.feko.generictabletoprpg.action.ActionDao
+import com.feko.generictabletoprpg.action.ActionDetailsViewModel
+import com.feko.generictabletoprpg.action.ActionOverviewViewModel
+import com.feko.generictabletoprpg.action.GetActionByIdPort
+import com.feko.generictabletoprpg.action.GetActionByIdUseCase
+import com.feko.generictabletoprpg.action.GetActionByIdUseCaseImpl
+import com.feko.generictabletoprpg.action.GetAllActionsPort
+import com.feko.generictabletoprpg.action.GetAllActionsUseCase
+import com.feko.generictabletoprpg.action.GetAllActionsUseCaseImpl
+import com.feko.generictabletoprpg.action.InsertActionsPort
+import com.feko.generictabletoprpg.ammunition.AmmunitionDao
+import com.feko.generictabletoprpg.ammunition.AmmunitionDetailsViewModel
+import com.feko.generictabletoprpg.ammunition.AmmunitionOverviewViewModel
+import com.feko.generictabletoprpg.ammunition.GetAllAmmunitionsPort
+import com.feko.generictabletoprpg.ammunition.GetAllAmmunitionsUseCase
+import com.feko.generictabletoprpg.ammunition.GetAllAmmunitionsUseCaseImpl
+import com.feko.generictabletoprpg.ammunition.GetAmmunitionByIdPort
+import com.feko.generictabletoprpg.ammunition.GetAmmunitionByIdUseCase
+import com.feko.generictabletoprpg.ammunition.GetAmmunitionByIdUseCaseImpl
+import com.feko.generictabletoprpg.ammunition.InsertAmmunitionsPort
+import com.feko.generictabletoprpg.armor.ArmorDao
+import com.feko.generictabletoprpg.armor.ArmorDetailsViewModel
+import com.feko.generictabletoprpg.armor.ArmorOverviewViewModel
+import com.feko.generictabletoprpg.armor.GetAllArmorsPort
+import com.feko.generictabletoprpg.armor.GetAllArmorsUseCase
+import com.feko.generictabletoprpg.armor.GetAllArmorsUseCaseImpl
+import com.feko.generictabletoprpg.armor.GetArmorByIdPort
+import com.feko.generictabletoprpg.armor.GetArmorByIdUseCase
+import com.feko.generictabletoprpg.armor.GetArmorByIdUseCaseImpl
+import com.feko.generictabletoprpg.armor.InsertArmorsPort
+import com.feko.generictabletoprpg.com.feko.generictabletoprpg.tracker.TrackedThingDao
+import com.feko.generictabletoprpg.com.feko.generictabletoprpg.tracker.TrackerViewModel
 import com.feko.generictabletoprpg.common.Logger
 import com.feko.generictabletoprpg.common.TimberLogger
 import com.feko.generictabletoprpg.common.UserPreferencesAdapter
 import com.feko.generictabletoprpg.common.UserPreferencesPort
-import com.feko.generictabletoprpg.condition.*
-import com.feko.generictabletoprpg.disease.*
-import com.feko.generictabletoprpg.feat.*
-import com.feko.generictabletoprpg.import.*
+import com.feko.generictabletoprpg.condition.ConditionDao
+import com.feko.generictabletoprpg.condition.ConditionDetailsViewModel
+import com.feko.generictabletoprpg.condition.ConditionOverviewViewModel
+import com.feko.generictabletoprpg.condition.GetAllConditionsPort
+import com.feko.generictabletoprpg.condition.GetAllConditionsUseCase
+import com.feko.generictabletoprpg.condition.GetAllConditionsUseCaseImpl
+import com.feko.generictabletoprpg.condition.GetConditionByIdPort
+import com.feko.generictabletoprpg.condition.GetConditionByIdUseCase
+import com.feko.generictabletoprpg.condition.GetConditionByIdUseCaseImpl
+import com.feko.generictabletoprpg.condition.InsertConditionsPort
+import com.feko.generictabletoprpg.disease.DiseaseDao
+import com.feko.generictabletoprpg.disease.DiseaseDetailsViewModel
+import com.feko.generictabletoprpg.disease.DiseaseOverviewViewModel
+import com.feko.generictabletoprpg.disease.GetAllDiseasesPort
+import com.feko.generictabletoprpg.disease.GetAllDiseasesUseCase
+import com.feko.generictabletoprpg.disease.GetAllDiseasesUseCaseImpl
+import com.feko.generictabletoprpg.disease.GetDiseaseByIdPort
+import com.feko.generictabletoprpg.disease.GetDiseaseByIdUseCase
+import com.feko.generictabletoprpg.disease.GetDiseaseByIdUseCaseImpl
+import com.feko.generictabletoprpg.disease.InsertDiseasesPort
+import com.feko.generictabletoprpg.feat.FeatDao
+import com.feko.generictabletoprpg.feat.FeatDetailsViewModel
+import com.feko.generictabletoprpg.feat.FeatOverviewViewModel
+import com.feko.generictabletoprpg.feat.GetAllFeatsPort
+import com.feko.generictabletoprpg.feat.GetAllFeatsUseCase
+import com.feko.generictabletoprpg.feat.GetAllFeatsUseCaseImpl
+import com.feko.generictabletoprpg.feat.GetFeatByIdPort
+import com.feko.generictabletoprpg.feat.GetFeatByIdUseCase
+import com.feko.generictabletoprpg.feat.GetFeatByIdUseCaseImpl
+import com.feko.generictabletoprpg.feat.InsertFeatsPort
+import com.feko.generictabletoprpg.import.ImportAllUseCase
+import com.feko.generictabletoprpg.import.ImportAllUseCaseImpl
+import com.feko.generictabletoprpg.import.ImportViewModel
+import com.feko.generictabletoprpg.import.JsonImportAllUseCase
+import com.feko.generictabletoprpg.import.JsonImportAllUseCaseImpl
+import com.feko.generictabletoprpg.import.JsonPort
+import com.feko.generictabletoprpg.import.MoshiJsonAdapter
+import com.feko.generictabletoprpg.import.OrcbrewImportAllUseCase
+import com.feko.generictabletoprpg.import.OrcbrewImportAllUseCaseImpl
+import com.feko.generictabletoprpg.import.OrcbrewImportAmmunitionsUseCase
+import com.feko.generictabletoprpg.import.OrcbrewImportAmmunitionsUseCaseImpl
+import com.feko.generictabletoprpg.import.OrcbrewImportArmorsUseCase
+import com.feko.generictabletoprpg.import.OrcbrewImportArmorsUseCaseImpl
+import com.feko.generictabletoprpg.import.OrcbrewImportFeatsUseCase
+import com.feko.generictabletoprpg.import.OrcbrewImportFeatsUseCaseImpl
+import com.feko.generictabletoprpg.import.OrcbrewImportSpellsUseCase
+import com.feko.generictabletoprpg.import.OrcbrewImportSpellsUseCaseImpl
+import com.feko.generictabletoprpg.import.OrcbrewImportWeaponsUseCase
+import com.feko.generictabletoprpg.import.OrcbrewImportWeaponsUseCaseImpl
+import com.feko.generictabletoprpg.import.ParseEdnAsMapEdnJavaAdapter
+import com.feko.generictabletoprpg.import.ParseEdnAsMapPort
+import com.feko.generictabletoprpg.import.ProcessEdnMapEdnJavaAdapter
+import com.feko.generictabletoprpg.import.ProcessEdnMapPort
 import com.feko.generictabletoprpg.init.LoadBaseContentAdapter
 import com.feko.generictabletoprpg.init.LoadBaseContentPort
 import com.feko.generictabletoprpg.init.LoadBaseContentUseCase
 import com.feko.generictabletoprpg.init.LoadBaseContentUseCaseImpl
 import com.feko.generictabletoprpg.room.GenericTabletopRpgDatabase
 import com.feko.generictabletoprpg.searchall.SearchAllViewModel
-import com.feko.generictabletoprpg.spell.*
-import com.feko.generictabletoprpg.weapon.*
+import com.feko.generictabletoprpg.spell.GetAllSpellsPort
+import com.feko.generictabletoprpg.spell.GetAllSpellsUseCase
+import com.feko.generictabletoprpg.spell.GetAllSpellsUseCaseImpl
+import com.feko.generictabletoprpg.spell.GetSpellByIdPort
+import com.feko.generictabletoprpg.spell.GetSpellByIdUseCase
+import com.feko.generictabletoprpg.spell.GetSpellByIdUseCaseImpl
+import com.feko.generictabletoprpg.spell.InsertSpellsPort
+import com.feko.generictabletoprpg.spell.SpellDao
+import com.feko.generictabletoprpg.spell.SpellDetailsViewModel
+import com.feko.generictabletoprpg.spell.SpellOverviewViewModel
+import com.feko.generictabletoprpg.tracker.GetAllTrackedThingsPort
+import com.feko.generictabletoprpg.tracker.GetAllTrackedThingsUseCase
+import com.feko.generictabletoprpg.tracker.GetAllTrackedThingsUseCaseImpl
+import com.feko.generictabletoprpg.tracker.InsertOrUpdateTrackedThingPort
+import com.feko.generictabletoprpg.tracker.InsertOrUpdateTrackedThingUseCase
+import com.feko.generictabletoprpg.tracker.InsertOrUpdateTrackedThingUseCaseImpl
+import com.feko.generictabletoprpg.weapon.GetAllWeaponsPort
+import com.feko.generictabletoprpg.weapon.GetAllWeaponsUseCase
+import com.feko.generictabletoprpg.weapon.GetAllWeaponsUseCaseImpl
+import com.feko.generictabletoprpg.weapon.GetWeaponByIdPort
+import com.feko.generictabletoprpg.weapon.GetWeaponByIdUseCase
+import com.feko.generictabletoprpg.weapon.GetWeaponByIdUseCaseImpl
+import com.feko.generictabletoprpg.weapon.InsertWeaponsPort
+import com.feko.generictabletoprpg.weapon.WeaponDao
+import com.feko.generictabletoprpg.weapon.WeaponDetailsViewModel
+import com.feko.generictabletoprpg.weapon.WeaponOverviewViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.module.Module
 import org.koin.dsl.module
@@ -47,6 +149,7 @@ val diModules = module {
     includeAmmunitionDependencies()
     includeArmorDependencies()
     includeImportDependencies()
+    includeTrackedThingDependencies()
 
     // Ports & Adapters
     single<ParseEdnAsMapPort> { ParseEdnAsMapEdnJavaAdapter() }
@@ -210,6 +313,22 @@ fun Module.includeArmorDependencies() {
 
     viewModel { ArmorOverviewViewModel(get()) }
     viewModel { ArmorDetailsViewModel(get()) }
+}
+
+fun Module.includeTrackedThingDependencies() {
+    single {
+        val trackedThingDao = get<GenericTabletopRpgDatabase>().trackedThingDao()
+        trackedThingDao.logger = get()
+        trackedThingDao
+    }
+
+    single<GetAllTrackedThingsPort> { get<TrackedThingDao>() }
+    single<InsertOrUpdateTrackedThingPort> { get<TrackedThingDao>() }
+
+    single<GetAllTrackedThingsUseCase> { GetAllTrackedThingsUseCaseImpl(get()) }
+    single<InsertOrUpdateTrackedThingUseCase> { InsertOrUpdateTrackedThingUseCaseImpl(get()) }
+
+    viewModel { TrackerViewModel(get(), get()) }
 }
 
 fun Module.includeImportDependencies() {

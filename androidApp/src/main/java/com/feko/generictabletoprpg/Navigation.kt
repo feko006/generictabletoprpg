@@ -2,15 +2,20 @@ package com.feko.generictabletoprpg
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.*
+import androidx.compose.material3.DrawerState
+import androidx.compose.material3.ModalDrawerSheet
+import androidx.compose.material3.ModalNavigationDrawer
+import androidx.compose.material3.NavigationDrawerItem
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
-import androidx.navigation.*
 import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.NavGraphBuilder
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import com.feko.generictabletoprpg.action.ActionDetails
 import com.feko.generictabletoprpg.action.ActionOverview
@@ -18,6 +23,7 @@ import com.feko.generictabletoprpg.ammunition.AmmunitionDetails
 import com.feko.generictabletoprpg.ammunition.AmmunitionOverview
 import com.feko.generictabletoprpg.armor.ArmorDetails
 import com.feko.generictabletoprpg.armor.ArmorOverview
+import com.feko.generictabletoprpg.com.feko.generictabletoprpg.tracker.Tracker
 import com.feko.generictabletoprpg.condition.ConditionDetails
 import com.feko.generictabletoprpg.condition.ConditionOverview
 import com.feko.generictabletoprpg.disease.DiseaseDetails
@@ -52,6 +58,7 @@ object Navigation {
     private val destinations: List<Destination> =
         listOf(
             SearchAll,
+            Tracker,
             SpellDetails,
             SpellOverview,
             WeaponDetails,
@@ -94,7 +101,6 @@ object Navigation {
     }
 
     @Composable
-    @OptIn(ExperimentalMaterial3Api::class)
     fun Drawer(
         drawerState: DrawerState,
         paddingValues: PaddingValues,

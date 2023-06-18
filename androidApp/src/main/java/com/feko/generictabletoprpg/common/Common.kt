@@ -13,8 +13,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 
 object Common {
+    data class InputFieldData(
+        val value: String,
+        val isValid: Boolean
+    ) {
+        companion object {
+            val EMPTY = InputFieldData("", true)
+        }
+    }
+
     @Composable
-    @OptIn(ExperimentalMaterial3Api::class)
     fun SearchTextField(
         searchString: String,
         onValueChange: (String) -> Unit

@@ -1,12 +1,25 @@
 package com.feko.generictabletoprpg.common
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.List
+import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.Text
@@ -30,6 +43,8 @@ abstract class OverviewScreen<TViewModel, T> :
               T : Any {
     abstract val detailsNavRouteProvider: Navigation.DetailsNavRouteProvider
 
+    open val isFabEnabled = false
+    open val isFabDropdownMenuEnabled = false
     final override fun navHostComposable(
         navGraphBuilder: NavGraphBuilder,
         navController: NavHostController,
@@ -60,17 +75,7 @@ abstract class OverviewScreen<TViewModel, T> :
                         listItems,
                         key = { listItem -> uniqueListItemKey(listItem) }
                     ) { item ->
-                        ListItem(
-                            headlineContent = {
-                                Text((item as Named).name)
-                            },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clickable {
-                                    navController.navigate(
-                                        getNavRouteInternal(item)
-                                    )
-                                })
+                        OverviewListItem(item, navController)
                     }
                 }
             } else {
@@ -97,12 +102,82 @@ abstract class OverviewScreen<TViewModel, T> :
                 }
             }
         }
+        if (isFabEnabled) {
+            val expanded by viewModel.isFabDropdownMenuExpanded.collectAsState(false)
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp)
+            )
+            {
+                ExposedDropdownMenuBox(
+                    expanded = expanded,
+                    onExpandedChange = {},
+                    modifier = Modifier
+                        .wrapContentSize()
+                        .align(Alignment.BottomEnd)
+                ) {
+                    if (isFabDropdownMenuEnabled) {
+                        DropdownMenu(
+                            expanded = expanded,
+                            onDismissRequest = { viewModel.onDismissFabDropdownMenuRequested() },
+                            content = {
+                                DropdownMenuContent(viewModel)
+                            }
+                        )
+                    }
+                    FloatingActionButton(
+                        onClick = {
+                            if (isFabDropdownMenuEnabled) {
+                                viewModel.toggleFabDropdownMenu()
+                            } else {
+                                onFabClicked(viewModel)
+                            }
+                        },
+                        Modifier
+                            .size(48.dp)
+                            .menuAnchor()
+                    ) {
+                        Icon(Icons.Default.Add, "")
+                    }
+                }
+            }
+        }
+        val isDialogVisible by viewModel.isDialogVisible.collectAsState(false)
+        if (isDialogVisible) {
+            AlertDialogComposable(viewModel)
+        }
+    }
+
+    @Composable
+    protected open fun OverviewListItem(item: T, navController: NavHostController) {
+        ListItem(
+            headlineContent = {
+                Text((item as Named).name)
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable {
+                    navController.navigate(
+                        getNavRouteInternal(item)
+                    )
+                })
     }
 
     protected open fun uniqueListItemKey(listItem: T): Any = (listItem as Identifiable).id
 
     protected open fun getNavRouteInternal(item: T) =
         detailsNavRouteProvider.getNavRoute((item as Identifiable).id)
+
+    @Composable
+    protected open fun DropdownMenuContent(viewModel: TViewModel) {
+    }
+
+    @Composable
+    open fun AlertDialogComposable(viewModel: TViewModel) {
+    }
+
+    protected open fun onFabClicked(viewModel: TViewModel) {}
 
     @Composable
     protected abstract fun getViewModel(): TViewModel

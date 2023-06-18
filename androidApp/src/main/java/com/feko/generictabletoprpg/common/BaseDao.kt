@@ -5,6 +5,7 @@ import androidx.room.Update
 
 abstract class BaseDao<TEntity, TCore> :
     InsertAllPort<TCore>,
+    InsertOrUpdatePort<TCore>,
     GetAllPort<TCore>,
     GetByIdPort<TCore>
         where TCore : Named,
@@ -19,12 +20,11 @@ abstract class BaseDao<TEntity, TCore> :
     @Update
     abstract fun update(entity: TEntity)
 
-    final override fun insertAll(list: List<@JvmSuppressWildcards TCore>): Result<Boolean> {
+    override fun insertAll(list: List<@JvmSuppressWildcards TCore>): Result<Boolean> {
         val errors = mutableListOf<Exception>()
         list.forEach { item ->
             try {
-                val entity = getEntityFromCoreModel(item)
-                insertOrUpdate(entity)
+                insertOrUpdate(item)
             } catch (e: Exception) {
                 logger.error(e, "Saving spell with name ${item.name} failed.")
                 errors.add(e)
@@ -33,20 +33,23 @@ abstract class BaseDao<TEntity, TCore> :
         return Result.success(errors.isEmpty())
     }
 
-    private fun insertOrUpdate(entity: TEntity) {
+    override fun insertOrUpdate(item: TCore): Long {
+        val entity = getEntityFromCoreModel(item)
         val existingEntityId = getEntityId(entity)
         return if (existingEntityId == null) {
             val newId = insert(entity)
             setEntityId(entity, newId)
+            newId
         } else {
             setEntityId(entity, existingEntityId)
             update(entity)
+            existingEntityId
         }
     }
 
     protected abstract fun getEntityFromCoreModel(item: TCore): TEntity
 
-    private fun getEntityId(entity: TEntity): Long? = getEntityIdByName(entity.name)
+    protected open fun getEntityId(entity: TEntity): Long? = getEntityIdByName(entity.name)
 
     protected open fun getEntityIdByName(name: String): Long? = throw NotImplementedError()
 
