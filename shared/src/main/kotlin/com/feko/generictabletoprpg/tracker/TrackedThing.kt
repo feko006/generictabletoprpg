@@ -41,6 +41,8 @@ sealed class TrackedThing(
 
     open fun validate(): Boolean = isNameValid() && isValueValid()
 
+    abstract fun getPrintableValue(): String
+
     class Percentage(id: Long, name: String, var amount: Float) :
         TrackedThing(id, name, String.format("%.2f", amount), Type.Percentage) {
         override fun setNewValue(value: String) {
@@ -50,6 +52,8 @@ sealed class TrackedThing(
 
         override fun isValueValid(): Boolean =
             super.isValueValid() && amount >= 0f && amount <= 100f
+
+        override fun getPrintableValue(): String = "${value}%"
     }
 
     abstract class GenericTrackedThing<T>(id: Long, name: String, var amount: T, type: Type) :
@@ -63,6 +67,8 @@ sealed class TrackedThing(
         }
 
         override fun isValueValid(): Boolean = super.isValueValid() && amount > 0
+
+        override fun getPrintableValue(): String = "$value / $defaultValue"
     }
 
     class Health(id: Long, name: String, amount: Int) :

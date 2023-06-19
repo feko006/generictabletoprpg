@@ -2,8 +2,13 @@ package com.feko.generictabletoprpg.com.feko.generictabletoprpg.tracker
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -11,10 +16,12 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
+import androidx.compose.material3.Divider
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -34,12 +41,12 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
+import androidx.navigation.NavHostController
 import com.feko.generictabletoprpg.Navigation
 import com.feko.generictabletoprpg.common.OverviewScreen
 import com.feko.generictabletoprpg.theme.Typography
 import com.feko.generictabletoprpg.tracker.TrackedThing
 import org.koin.androidx.compose.koinViewModel
-
 
 object Tracker : OverviewScreen<TrackerViewModel, TrackedThing>() {
     override val screenTitle: String
@@ -63,6 +70,50 @@ object Tracker : OverviewScreen<TrackerViewModel, TrackedThing>() {
 
     @Composable
     override fun getViewModel(): TrackerViewModel = koinViewModel()
+
+    @Composable
+    public override fun OverviewListItem(item: TrackedThing, navController: NavHostController) {
+        ListItem(
+            headlineContent = {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(IntrinsicSize.Min),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column(
+                        verticalArrangement = Arrangement.SpaceAround,
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier.width(85.dp)
+                    ) {
+                        Text(item.getPrintableValue())
+                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) row@{
+                            if (item.type == TrackedThing.Type.Percentage) {
+                                return@row
+                            }
+                            Text(item.type.name, style = Typography.bodySmall)
+                            if (item is TrackedThing.SpellSlot) {
+                                Text("Lv ${item.level}", style = Typography.bodySmall)
+                            }
+                        }
+                    }
+                    Divider(
+                        Modifier
+                            .fillMaxHeight()
+                            .width(1.dp)
+                            .padding(vertical = 4.dp)
+                    )
+                    Text(item.name, style = Typography.titleMedium)
+                }
+            },
+            modifier = Modifier.fillMaxWidth(),
+            trailingContent = {
+                Text("context menu")
+                // TODO: Context menu
+            }
+        )
+    }
 
     @Composable
     override fun DropdownMenuContent(viewModel: TrackerViewModel) {
@@ -156,6 +207,7 @@ object Tracker : OverviewScreen<TrackerViewModel, TrackedThing>() {
         type: TrackedThing.Type,
         viewModel: TrackerViewModel
     ) {
+        val focusManager = LocalFocusManager.current
         if (type == TrackedThing.Type.SpellSlot) {
             val spellSlotLevelInputData
                     by viewModel.editedTrackedThingSpellSlotLevel.collectAsState()
@@ -180,6 +232,9 @@ object Tracker : OverviewScreen<TrackerViewModel, TrackedThing>() {
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Number,
                     imeAction = ImeAction.Next
+                ),
+                keyboardActions = KeyboardActions(
+                    onNext = { focusManager.moveFocus(FocusDirection.Down) }
                 )
             )
         }
