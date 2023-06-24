@@ -13,7 +13,9 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.Divider
@@ -21,7 +23,6 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -37,12 +38,14 @@ import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavHostController
 import com.feko.generictabletoprpg.Navigation
+import com.feko.generictabletoprpg.R
 import com.feko.generictabletoprpg.common.OverviewScreen
 import com.feko.generictabletoprpg.theme.Typography
 import com.feko.generictabletoprpg.tracker.TrackedThing
@@ -73,15 +76,27 @@ object Tracker : OverviewScreen<TrackerViewModel, TrackedThing>() {
 
     @Composable
     public override fun OverviewListItem(item: TrackedThing, navController: NavHostController) {
-        ListItem(
-            headlineContent = {
+        Card(Modifier.fillMaxWidth()) {
+            Column(
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier.padding(16.dp, 16.dp, 16.dp)
+            ) {
                 Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(IntrinsicSize.Min),
+                    modifier = Modifier.height(IntrinsicSize.Min),
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
+                    Text(
+                        item.name,
+                        style = Typography.titleMedium,
+                        modifier = Modifier.weight(1f)
+                    )
+                    Divider(
+                        Modifier
+                            .fillMaxHeight()
+                            .width(1.dp)
+                            .padding(vertical = 4.dp)
+                    )
                     Column(
                         verticalArrangement = Arrangement.SpaceAround,
                         horizontalAlignment = Alignment.CenterHorizontally,
@@ -98,21 +113,107 @@ object Tracker : OverviewScreen<TrackerViewModel, TrackedThing>() {
                             }
                         }
                     }
-                    Divider(
-                        Modifier
-                            .fillMaxHeight()
-                            .width(1.dp)
-                            .padding(vertical = 4.dp)
-                    )
-                    Text(item.name, style = Typography.titleMedium)
                 }
-            },
-            modifier = Modifier.fillMaxWidth(),
-            trailingContent = {
-                Text("context menu")
-                // TODO: Context menu
+                when (item.type) {
+                    TrackedThing.Type.Percentage -> PercentageActions(item)
+                    TrackedThing.Type.Health -> HealthActions(item)
+                    TrackedThing.Type.Ability -> AbilityActions(item)
+                    TrackedThing.Type.SpellSlot -> SpellSlotActions(item)
+                    TrackedThing.Type.None -> {}
+                }
             }
-        )
+        }
+    }
+
+    @Composable
+    private fun PercentageActions(item: TrackedThing) {
+        ItemActionsBase { viewModel ->
+            IconButton(
+                onClick = { viewModel.addToPercentageRequested(item) },
+                enabled = item.canAdd()
+            ) {
+                Icon(Icons.Default.Add, "")
+            }
+            IconButton(
+                onClick = { viewModel.subtractFromPercentageRequested(item) },
+                enabled = item.canSubtract()
+            ) {
+                Icon(painterResource(R.drawable.subtract), "")
+            }
+        }
+    }
+
+    @Composable
+    private fun HealthActions(item: TrackedThing) {
+        ItemActionsBase { viewModel ->
+            IconButton(
+                onClick = { viewModel.healRequested(item) },
+                enabled = item.canAdd()
+            ) {
+                Icon(painterResource(R.drawable.heart_plus), "")
+            }
+            IconButton(
+                onClick = { viewModel.takeDamageRequested(item) },
+                enabled = item.canSubtract()
+            ) {
+                Icon(painterResource(R.drawable.heart_minus), "")
+            }
+            IconButton(
+                onClick = { viewModel.resetValueToDefault(item) },
+                enabled = item.canAdd()
+            ) {
+                Icon(Icons.Default.Refresh, "")
+            }
+        }
+    }
+
+    @Composable
+    private fun AbilityActions(item: TrackedThing) {
+        ItemActionsBase { viewModel ->
+            IconButton(
+                onClick = { viewModel.useAbility(item) },
+                enabled = item.canSubtract()
+            ) {
+                Icon(painterResource(R.drawable.subtract), "")
+            }
+            IconButton(
+                onClick = { viewModel.resetValueToDefault(item) },
+                enabled = item.canAdd()
+            ) {
+                Icon(Icons.Default.Refresh, "")
+            }
+        }
+    }
+
+    @Composable
+    private fun SpellSlotActions(item: TrackedThing) {
+        ItemActionsBase { viewModel ->
+            IconButton(
+                onClick = { viewModel.useSpell(item) },
+                enabled = item.canSubtract()
+            ) {
+                Icon(painterResource(R.drawable.subtract), "")
+            }
+            IconButton(
+                onClick = { viewModel.resetValueToDefault(item) },
+                enabled = item.canAdd()
+            ) {
+                Icon(Icons.Default.Refresh, "")
+            }
+        }
+    }
+
+    @Composable
+    private fun ItemActionsBase(
+        actions: @Composable (TrackerViewModel) -> Unit
+    ) {
+        val viewModel = koinViewModel<TrackerViewModel>()
+        Row(
+            horizontalArrangement = Arrangement.Center,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            actions(viewModel)
+        }
     }
 
     @Composable
@@ -124,7 +225,7 @@ object Tracker : OverviewScreen<TrackerViewModel, TrackedThing>() {
                 DropdownMenuItem(
                     text = { Text(type.name) },
                     onClick = {
-                        viewModel.showDialog(type)
+                        viewModel.showCreateDialog(type)
                     })
             }
     }
@@ -137,25 +238,66 @@ object Tracker : OverviewScreen<TrackerViewModel, TrackedThing>() {
             properties = DialogProperties()
         ) {
             Card {
-                EditDialog(viewModel)
+                when (viewModel.dialogType) {
+                    TrackerViewModel.DialogType.Create -> EditDialog(viewModel)
+                    TrackerViewModel.DialogType.AddPercentage,
+                    TrackerViewModel.DialogType.ReducePercentage ->
+                        ChangePercentageDialog(viewModel)
+
+                    TrackerViewModel.DialogType.HealHealth,
+                    TrackerViewModel.DialogType.DamageHealth ->
+                        ChangeHealthDialog(viewModel)
+                }
             }
         }
     }
 
     @Composable
     private fun EditDialog(viewModel: TrackerViewModel) {
+        DialogBase(viewModel) {
+            val type by viewModel.editedTrackedThingType.collectAsState()
+            NameTextField(viewModel, autoFocus = true)
+            SpellSlotLevelTextField(type, viewModel)
+            ValueTextField(viewModel, type) { viewModel.setValue(it) }
+        }
+    }
+
+    @Composable
+    private fun ChangePercentageDialog(viewModel: TrackerViewModel) {
+        DialogBase(viewModel) {
+            ValueTextField(
+                viewModel,
+                TrackedThing.Type.Percentage,
+                autoFocus = true
+            ) { viewModel.updateValueInputField(it) }
+        }
+    }
+
+    @Composable
+    private fun ChangeHealthDialog(viewModel: TrackerViewModel) {
+        DialogBase(viewModel) {
+            ValueTextField(
+                viewModel,
+                TrackedThing.Type.Health,
+                autoFocus = true
+            ) { viewModel.updateValueInputField(it) }
+        }
+    }
+
+    @Composable
+    private fun DialogBase(
+        viewModel: TrackerViewModel,
+        inputFields: @Composable () -> Unit
+    ) {
         Column(
             Modifier.padding(16.dp),
             Arrangement.spacedBy(16.dp)
         ) {
-            val type by viewModel.editedTrackedThingType.collectAsState()
-            Text(type.name, style = Typography.titleLarge)
-            NameTextField(viewModel)
-            SpellSlotLevelTextField(type, viewModel)
-            ValueTextField(viewModel, type)
+            DialogTitle(viewModel)
+            inputFields()
             val buttonEnabled by viewModel.confirmButtonEnabled.collectAsState()
             TextButton(
-                onClick = { viewModel.validateAndCreateTrackedThing() },
+                onClick = { viewModel.confirmDialogAction() },
                 enabled = buttonEnabled,
                 modifier = Modifier
                     .wrapContentWidth()
@@ -168,7 +310,10 @@ object Tracker : OverviewScreen<TrackerViewModel, TrackedThing>() {
     }
 
     @Composable
-    private fun NameTextField(viewModel: TrackerViewModel) {
+    private fun NameTextField(
+        viewModel: TrackerViewModel,
+        autoFocus: Boolean = false
+    ) {
         val focusRequester = remember { FocusRequester() }
         val nameInputData by viewModel.editedTrackedThingName.collectAsState()
         val focusManager = LocalFocusManager.current
@@ -197,8 +342,10 @@ object Tracker : OverviewScreen<TrackerViewModel, TrackedThing>() {
                 onNext = { focusManager.moveFocus(FocusDirection.Down) }
             )
         )
-        LaunchedEffect(Unit) {
-            focusRequester.requestFocus()
+        if (autoFocus) {
+            LaunchedEffect(Unit) {
+                focusRequester.requestFocus()
+            }
         }
     }
 
@@ -243,12 +390,15 @@ object Tracker : OverviewScreen<TrackerViewModel, TrackedThing>() {
     @Composable
     private fun ValueTextField(
         viewModel: TrackerViewModel,
-        type: TrackedThing.Type
+        type: TrackedThing.Type,
+        autoFocus: Boolean = false,
+        updateValue: (String) -> Unit
     ) {
+        val focusRequester = remember { FocusRequester() }
         val valueInputData by viewModel.editedTrackedThingValue.collectAsState()
         TextField(
             value = valueInputData.value,
-            onValueChange = { viewModel.setValue(it) },
+            onValueChange = { updateValue(it) },
             isError = !valueInputData.isValid,
             suffix = {
                 if (type == TrackedThing.Type.Percentage) {
@@ -263,19 +413,26 @@ object Tracker : OverviewScreen<TrackerViewModel, TrackedThing>() {
             },
             trailingIcon = {
                 IconButton(
-                    onClick = { viewModel.setValue("") }
+                    onClick = { updateValue("") }
                 ) {
                     Icon(Icons.Default.Clear, "")
                 }
             },
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .focusRequester(focusRequester),
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Number,
                 imeAction = ImeAction.Done
             ),
             keyboardActions = KeyboardActions(
-                onDone = { viewModel.validateAndCreateTrackedThing() }
+                onDone = { viewModel.confirmDialogAction() }
             )
         )
+        if (autoFocus) {
+            LaunchedEffect(Unit) {
+                focusRequester.requestFocus()
+            }
+        }
     }
 }

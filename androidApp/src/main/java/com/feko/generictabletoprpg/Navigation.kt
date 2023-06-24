@@ -18,25 +18,16 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import com.feko.generictabletoprpg.action.ActionDetails
-import com.feko.generictabletoprpg.action.ActionOverview
 import com.feko.generictabletoprpg.ammunition.AmmunitionDetails
-import com.feko.generictabletoprpg.ammunition.AmmunitionOverview
 import com.feko.generictabletoprpg.armor.ArmorDetails
-import com.feko.generictabletoprpg.armor.ArmorOverview
 import com.feko.generictabletoprpg.com.feko.generictabletoprpg.tracker.Tracker
 import com.feko.generictabletoprpg.condition.ConditionDetails
-import com.feko.generictabletoprpg.condition.ConditionOverview
 import com.feko.generictabletoprpg.disease.DiseaseDetails
-import com.feko.generictabletoprpg.disease.DiseaseOverview
 import com.feko.generictabletoprpg.feat.FeatDetails
-import com.feko.generictabletoprpg.feat.FeatOverview
 import com.feko.generictabletoprpg.import.Import
 import com.feko.generictabletoprpg.searchall.SearchAll
 import com.feko.generictabletoprpg.spell.SpellDetails
-import com.feko.generictabletoprpg.spell.SpellOverview
-import com.feko.generictabletoprpg.spell.SpellSlots
 import com.feko.generictabletoprpg.weapon.WeaponDetails
-import com.feko.generictabletoprpg.weapon.WeaponOverview
 import kotlinx.coroutines.launch
 
 object Navigation {
@@ -60,22 +51,22 @@ object Navigation {
             SearchAll,
             Tracker,
             SpellDetails,
-            SpellOverview,
+//            SpellOverview,
             WeaponDetails,
-            WeaponOverview,
+//            WeaponOverview,
             ArmorDetails,
-            ArmorOverview,
-            ActionOverview,
+//            ArmorOverview,
+//            ActionOverview,
             ActionDetails,
-            ConditionOverview,
+//            ConditionOverview,
             ConditionDetails,
-            DiseaseOverview,
+//            DiseaseOverview,
             DiseaseDetails,
             FeatDetails,
-            FeatOverview,
+//            FeatOverview,
             AmmunitionDetails,
-            AmmunitionOverview,
-            SpellSlots,
+//            AmmunitionOverview,
+//            SpellSlots,
             Import
         )
 

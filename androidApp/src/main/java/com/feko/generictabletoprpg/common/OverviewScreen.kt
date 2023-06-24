@@ -1,6 +1,7 @@
 package com.feko.generictabletoprpg.common
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -69,7 +70,8 @@ abstract class OverviewScreen<TViewModel, T> :
             Spacer(Modifier.height(8.dp))
             if (listItems.isNotEmpty()) {
                 LazyColumn(
-                    Modifier.fillMaxSize()
+                    Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     items(
                         listItems,
@@ -162,6 +164,11 @@ abstract class OverviewScreen<TViewModel, T> :
                         getNavRouteInternal(item)
                     )
                 })
+    }
+
+    @Composable
+    protected open fun DialogTitle(viewModel: TViewModel) {
+        Text(viewModel.dialogTitle, style = Typography.titleLarge)
     }
 
     protected open fun uniqueListItemKey(listItem: T): Any = (listItem as Identifiable).id

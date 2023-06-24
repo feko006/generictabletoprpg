@@ -22,12 +22,14 @@ class TrackerViewModel(
     val confirmButtonEnabled = MutableStateFlow(false)
 
     private lateinit var editedTrackedThing: TrackedThing
+    lateinit var dialogType: DialogType
 
     override fun getAllItems(): List<TrackedThing> = getAllTrackedThingsUseCase.getAll()
 
-    fun showDialog(type: TrackedThing.Type) {
+    fun showCreateDialog(type: TrackedThing.Type) {
         viewModelScope.launch {
             dialogTitle = type.name
+            dialogType = DialogType.Create
             editedTrackedThing = TrackedThing.emptyOfType(type)
             editedTrackedThingName.emit(Common.InputFieldData.EMPTY)
             editedTrackedThingSpellSlotLevel.emit(Common.InputFieldData.EMPTY)
@@ -39,13 +41,24 @@ class TrackerViewModel(
         }
     }
 
-    fun validateAndCreateTrackedThing() {
+    fun confirmDialogAction() {
         if (!editedTrackedThing.validate()) {
             return
         }
-        if (editedTrackedThing.defaultValue.isBlank()) {
-            editedTrackedThing.defaultValue = editedTrackedThing.value
+
+        when (dialogType) {
+            DialogType.Create -> createNewTrackedThing()
+            DialogType.AddPercentage,
+            DialogType.ReducePercentage ->
+                changePercentageOfTrackedThing()
+
+            DialogType.HealHealth,
+            DialogType.DamageHealth ->
+                changeHealthOfTrackedThing()
         }
+    }
+
+    private fun createNewTrackedThing() {
         viewModelScope.launch {
             withContext(Dispatchers.Default) {
                 val id = insertOrUpdateTrackedThingsUseCase.insertOrUpdate(editedTrackedThing)
@@ -56,6 +69,82 @@ class TrackerViewModel(
             _items.emit(items.sortedBy(TrackedThing::name))
             _isDialogVisible.emit(false)
         }
+    }
+
+    private fun changePercentageOfTrackedThing() {
+        viewModelScope.launch {
+            when (dialogType) {
+                DialogType.AddPercentage ->
+                    editedTrackedThing.add(editedTrackedThingValue.value.value)
+
+                DialogType.ReducePercentage ->
+                    editedTrackedThing.subtract(editedTrackedThingValue.value.value)
+
+                else -> throw Exception("Changing percentage on non-percent tracked thing.")
+            }
+            withContext(Dispatchers.Default) {
+                insertOrUpdateTrackedThingsUseCase.insertOrUpdate(editedTrackedThing)
+            }
+            _isDialogVisible.emit(false)
+            replaceItem(editedTrackedThing)
+        }
+    }
+
+    private fun changeHealthOfTrackedThing() {
+        viewModelScope.launch {
+            when (dialogType) {
+                DialogType.HealHealth ->
+                    editedTrackedThing.add(editedTrackedThingValue.value.value)
+
+                DialogType.DamageHealth ->
+                    editedTrackedThing.subtract(editedTrackedThingValue.value.value)
+
+                else -> throw Exception("Changing health on non-health tracked thing.")
+            }
+            withContext(Dispatchers.Default) {
+                insertOrUpdateTrackedThingsUseCase.insertOrUpdate(editedTrackedThing)
+            }
+            _isDialogVisible.emit(false)
+            replaceItem(editedTrackedThing)
+        }
+    }
+
+    fun resetValueToDefault(item: TrackedThing) {
+        viewModelScope.launch {
+            val itemCopy = item.copy()
+            itemCopy.resetValueToDefault()
+            withContext(Dispatchers.Default) {
+                insertOrUpdateTrackedThingsUseCase.insertOrUpdate(itemCopy)
+            }
+            replaceItem(itemCopy)
+        }
+    }
+
+    fun useAbility(item: TrackedThing) {
+        reduceByOne(item)
+    }
+
+    fun useSpell(item: TrackedThing) {
+        reduceByOne(item)
+    }
+
+    private fun reduceByOne(item: TrackedThing) {
+        viewModelScope.launch {
+            val itemCopy = item.copy()
+            itemCopy.subtract("1")
+            withContext(Dispatchers.Default) {
+                insertOrUpdateTrackedThingsUseCase.insertOrUpdate(itemCopy)
+            }
+            replaceItem(itemCopy)
+        }
+    }
+
+    private suspend fun replaceItem(item: TrackedThing) {
+        val newList = _items.value.toMutableList()
+        val index = newList.indexOfFirst { it.id == item.id }
+        newList.removeAt(index)
+        newList.add(index, item)
+        _items.emit(newList)
     }
 
     fun setName(name: String) {
@@ -89,6 +178,7 @@ class TrackerViewModel(
     fun setValue(value: String) {
         viewModelScope.launch {
             editedTrackedThing.setNewValue(value)
+            editedTrackedThing.defaultValue = value
             editedTrackedThingValue.emit(
                 Common.InputFieldData(
                     value,
@@ -103,5 +193,51 @@ class TrackerViewModel(
         viewModelScope.launch {
             confirmButtonEnabled.emit(editedTrackedThing.validate())
         }
+    }
+
+    fun addToPercentageRequested(item: TrackedThing) =
+        setupValueChangeDialog(item, DialogType.AddPercentage, "Increase percentage")
+
+    fun subtractFromPercentageRequested(item: TrackedThing) =
+        setupValueChangeDialog(item, DialogType.ReducePercentage, "Reduce percentage")
+
+    fun takeDamageRequested(item: TrackedThing) =
+        setupValueChangeDialog(item, DialogType.DamageHealth, "Take damage")
+
+    fun healRequested(item: TrackedThing) =
+        setupValueChangeDialog(item, DialogType.HealHealth, "Heal")
+
+    private fun setupValueChangeDialog(
+        item: TrackedThing,
+        type: DialogType,
+        title: String
+    ) {
+        viewModelScope.launch {
+            dialogType = type
+            dialogTitle = title
+            editedTrackedThing = item.copy()
+            editedTrackedThingValue.emit(Common.InputFieldData.EMPTY)
+            validateModel()
+            _isDialogVisible.emit(true)
+        }
+    }
+
+    fun updateValueInputField(delta: String) {
+        viewModelScope.launch {
+            editedTrackedThingValue.emit(
+                Common.InputFieldData(
+                    delta,
+                    editedTrackedThing.isValueValid()
+                )
+            )
+        }
+    }
+
+    enum class DialogType {
+        Create,
+        AddPercentage,
+        ReducePercentage,
+        DamageHealth,
+        HealHealth
     }
 }
