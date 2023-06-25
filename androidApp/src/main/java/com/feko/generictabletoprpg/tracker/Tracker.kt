@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.text.KeyboardActions
@@ -103,6 +104,21 @@ object Tracker : OverviewScreen<TrackerViewModel, TrackedThing>() {
                         modifier = Modifier.width(85.dp)
                     ) {
                         Text(item.getPrintableValue())
+                        if (item is TrackedThing.Health) {
+                            if (item.temporaryHp > 0) {
+                                Row(
+                                    horizontalArrangement = Arrangement.spacedBy(4.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Icon(
+                                        painterResource(R.drawable.shield_with_heart),
+                                        "",
+                                        modifier = Modifier.size(12.dp)
+                                    )
+                                    Text(item.temporaryHp.toString(), style = Typography.bodySmall)
+                                }
+                            }
+                        }
                         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) row@{
                             if (item.type == TrackedThing.Type.Percentage) {
                                 return@row
@@ -159,8 +175,14 @@ object Tracker : OverviewScreen<TrackerViewModel, TrackedThing>() {
                 Icon(painterResource(R.drawable.heart_minus), "")
             }
             IconButton(
+                onClick = { viewModel.addTemporaryHp(item) },
+                enabled = true
+            ) {
+                Icon(painterResource(R.drawable.shield_with_heart), "")
+            }
+            IconButton(
                 onClick = { viewModel.resetValueToDefault(item) },
-                enabled = item.canAdd()
+                enabled = item.canAdd() || (item as TrackedThing.Health).temporaryHp > 0
             ) {
                 Icon(Icons.Default.Refresh, "")
             }
@@ -241,12 +263,15 @@ object Tracker : OverviewScreen<TrackerViewModel, TrackedThing>() {
                 when (viewModel.dialogType) {
                     TrackerViewModel.DialogType.Create -> EditDialog(viewModel)
                     TrackerViewModel.DialogType.AddPercentage,
-                    TrackerViewModel.DialogType.ReducePercentage ->
-                        ChangePercentageDialog(viewModel)
+                    TrackerViewModel.DialogType.ReducePercentage -> {
+                        ValueInputDialog(viewModel, TrackedThing.Type.Percentage)
+                    }
 
                     TrackerViewModel.DialogType.HealHealth,
-                    TrackerViewModel.DialogType.DamageHealth ->
-                        ChangeHealthDialog(viewModel)
+                    TrackerViewModel.DialogType.DamageHealth,
+                    TrackerViewModel.DialogType.AddTemporaryHp -> {
+                        ValueInputDialog(viewModel, TrackedThing.Type.Health)
+                    }
                 }
             }
         }
@@ -263,22 +288,14 @@ object Tracker : OverviewScreen<TrackerViewModel, TrackedThing>() {
     }
 
     @Composable
-    private fun ChangePercentageDialog(viewModel: TrackerViewModel) {
+    private fun ValueInputDialog(
+        viewModel: TrackerViewModel,
+        type: TrackedThing.Type
+    ) {
         DialogBase(viewModel) {
             ValueTextField(
                 viewModel,
-                TrackedThing.Type.Percentage,
-                autoFocus = true
-            ) { viewModel.updateValueInputField(it) }
-        }
-    }
-
-    @Composable
-    private fun ChangeHealthDialog(viewModel: TrackerViewModel) {
-        DialogBase(viewModel) {
-            ValueTextField(
-                viewModel,
-                TrackedThing.Type.Health,
+                type,
                 autoFocus = true
             ) { viewModel.updateValueInputField(it) }
         }

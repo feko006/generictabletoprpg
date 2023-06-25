@@ -27,7 +27,7 @@ sealed class TrackedThing(
             when (type) {
                 Type.None -> throw Exception("Cannot create tracked thing of type None.")
                 Type.Percentage -> Percentage(0, "", 0f)
-                Type.Health -> Health(0, "", 0)
+                Type.Health -> Health(0, 0, "", 0)
                 Type.Ability -> Ability(0, "", 0)
                 Type.SpellSlot -> SpellSlot(1, 0, "", 0)
             }
@@ -102,7 +102,10 @@ sealed class TrackedThing(
         }
 
         companion object {
+            @JvmStatic
             protected fun toValue(amount: Int) = amount.toString()
+
+            @JvmStatic
             protected fun toAmount(value: String) = value.toIntOrNull() ?: 0
         }
 
@@ -133,11 +136,26 @@ sealed class TrackedThing(
         override fun canSubtract(): Boolean = amount > 0
     }
 
-    class Health(id: Long, name: String, amount: Int) :
+    class Health(var temporaryHp: Int, id: Long, name: String, amount: Int) :
         IntTrackedThing(id, name, amount, Type.Health) {
 
         override fun copy(): TrackedThing =
-            Health(id, name, amount).also { it.defaultValue = defaultValue }
+            Health(temporaryHp, id, name, amount).also { it.defaultValue = defaultValue }
+
+        override fun subtract(delta: String) {
+            var intDelta = toAmount(delta)
+            val newTemporaryHp = (temporaryHp - intDelta).coerceAtLeast(0)
+            intDelta -= (temporaryHp - newTemporaryHp)
+            temporaryHp = newTemporaryHp
+            super.subtract(toValue(intDelta))
+        }
+
+        fun addTemporaryHp(value: String) {
+            val newTemporaryHp = toAmount(value)
+            if (temporaryHp < newTemporaryHp) {
+                temporaryHp = newTemporaryHp
+            }
+        }
     }
 
     class Ability(id: Long, name: String, amount: Int) :

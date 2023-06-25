@@ -17,8 +17,20 @@ abstract class TrackedThingDao :
         if (item is TrackedThing.SpellSlot) {
             level = item.level
         }
+        var temporaryHp = 0
+        if (item is TrackedThing.Health) {
+            temporaryHp = item.temporaryHp
+        }
         val type = item.type.ordinal
-        return TrackedThingEntity(item.id, item.name, level, item.value, item.defaultValue, type)
+        return TrackedThingEntity(
+            item.id,
+            item.name,
+            level,
+            temporaryHp,
+            item.value,
+            item.defaultValue,
+            type
+        )
     }
 
     @Query("select * from tracked_things order by name")

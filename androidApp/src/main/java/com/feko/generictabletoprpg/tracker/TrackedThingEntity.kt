@@ -8,18 +8,16 @@ import com.feko.generictabletoprpg.common.MutableIdentifiable
 import com.feko.generictabletoprpg.common.Named
 import com.feko.generictabletoprpg.tracker.TrackedThing
 
-@Entity(
-    tableName = "tracked_things"
-)
+@Entity(tableName = "tracked_things")
 data class TrackedThingEntity(
     @PrimaryKey(autoGenerate = true)
     override var id: Long,
     override val name: String,
     val level: Int,
+    @ColumnInfo(defaultValue = "0")
+    val temporaryHp: Int,
     val value: String,
-    @ColumnInfo(
-        defaultValue = ""
-    )
+    @ColumnInfo(defaultValue = "")
     var defaultValue: String,
     val type: Int
 ) : MutableIdentifiable,
@@ -32,7 +30,7 @@ data class TrackedThingEntity(
                 TrackedThing.Percentage(id, name, value.toFloat())
 
             TrackedThing.Type.Health.ordinal ->
-                TrackedThing.Health(id, name, value.toInt())
+                TrackedThing.Health(temporaryHp, id, name, value.toInt())
 
             TrackedThing.Type.Ability.ordinal ->
                 TrackedThing.Ability(id, name, value.toInt())

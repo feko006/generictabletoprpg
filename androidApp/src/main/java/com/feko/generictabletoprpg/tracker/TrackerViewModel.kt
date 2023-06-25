@@ -55,6 +55,8 @@ class TrackerViewModel(
             DialogType.HealHealth,
             DialogType.DamageHealth ->
                 changeHealthOfTrackedThing()
+
+            DialogType.AddTemporaryHp -> addTemporaryHpToTrackedThing()
         }
     }
 
@@ -109,10 +111,26 @@ class TrackerViewModel(
         }
     }
 
+    private fun addTemporaryHpToTrackedThing() {
+        viewModelScope.launch {
+            val health = editedTrackedThing
+            require(health is TrackedThing.Health)
+            health.addTemporaryHp(editedTrackedThingValue.value.value)
+            withContext(Dispatchers.Default) {
+                insertOrUpdateTrackedThingsUseCase.insertOrUpdate(editedTrackedThing)
+            }
+            _isDialogVisible.emit(false)
+            replaceItem(editedTrackedThing)
+        }
+    }
+
     fun resetValueToDefault(item: TrackedThing) {
         viewModelScope.launch {
             val itemCopy = item.copy()
             itemCopy.resetValueToDefault()
+            if (itemCopy is TrackedThing.Health) {
+                itemCopy.temporaryHp = 0
+            }
             withContext(Dispatchers.Default) {
                 insertOrUpdateTrackedThingsUseCase.insertOrUpdate(itemCopy)
             }
@@ -207,6 +225,9 @@ class TrackerViewModel(
     fun healRequested(item: TrackedThing) =
         setupValueChangeDialog(item, DialogType.HealHealth, "Heal")
 
+    fun addTemporaryHp(item: TrackedThing) =
+        setupValueChangeDialog(item, DialogType.AddTemporaryHp, "Add temporary HP")
+
     private fun setupValueChangeDialog(
         item: TrackedThing,
         type: DialogType,
@@ -238,6 +259,7 @@ class TrackerViewModel(
         AddPercentage,
         ReducePercentage,
         DamageHealth,
-        HealHealth
+        HealHealth,
+        AddTemporaryHp,
     }
 }
