@@ -41,6 +41,29 @@ class TrackerViewModel(
         }
     }
 
+    fun showEditDialog(item: TrackedThing) {
+        viewModelScope.launch {
+            dialogTitle = "Edit"
+            dialogType = DialogType.Edit
+            val copy = item.copy()
+            editedTrackedThing = copy
+            editedTrackedThingName.emit(Common.InputFieldData(copy.name, isValid = true))
+            if (copy is TrackedThing.SpellSlot) {
+                editedTrackedThingSpellSlotLevel.emit(
+                    Common.InputFieldData(
+                        copy.level.toString(),
+                        isValid = true
+                    )
+                )
+            }
+            editedTrackedThingValue.emit(Common.InputFieldData(copy.defaultValue, isValid = true))
+            editedTrackedThingType.emit(copy.type)
+            validateModel()
+            _isFabDropdownMenuExpanded.emit(false)
+            _isDialogVisible.emit(true)
+        }
+    }
+
     fun confirmDialogAction() {
         if (!editedTrackedThing.validate()) {
             return
@@ -48,6 +71,7 @@ class TrackerViewModel(
 
         when (dialogType) {
             DialogType.Create -> createNewTrackedThing()
+            DialogType.Edit -> editExistingTrackedThing()
             DialogType.AddPercentage,
             DialogType.ReducePercentage ->
                 changePercentageOfTrackedThing()
@@ -69,6 +93,20 @@ class TrackerViewModel(
             val items = _items.value.toMutableList()
             items.add(editedTrackedThing)
             _items.emit(items.sortedBy(TrackedThing::name))
+            _isDialogVisible.emit(false)
+        }
+    }
+
+    private fun editExistingTrackedThing() {
+        viewModelScope.launch {
+            val trackedThingToUpdate = editedTrackedThing
+            if (trackedThingToUpdate is TrackedThing.Health) {
+                trackedThingToUpdate.temporaryHp = 0
+            }
+            withContext(Dispatchers.Default) {
+                insertOrUpdateTrackedThingsUseCase.insertOrUpdate(trackedThingToUpdate)
+            }
+            replaceItem(trackedThingToUpdate)
             _isDialogVisible.emit(false)
         }
     }
@@ -256,6 +294,7 @@ class TrackerViewModel(
 
     enum class DialogType {
         Create,
+        Edit,
         AddPercentage,
         ReducePercentage,
         DamageHealth,

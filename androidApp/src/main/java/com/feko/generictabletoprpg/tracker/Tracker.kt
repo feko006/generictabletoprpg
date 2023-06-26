@@ -16,6 +16,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
@@ -143,7 +144,7 @@ object Tracker : OverviewScreen<TrackerViewModel, TrackedThing>() {
 
     @Composable
     private fun PercentageActions(item: TrackedThing) {
-        ItemActionsBase { viewModel ->
+        ItemActionsBase(item) { viewModel ->
             IconButton(
                 onClick = { viewModel.addToPercentageRequested(item) },
                 enabled = item.canAdd()
@@ -161,7 +162,7 @@ object Tracker : OverviewScreen<TrackerViewModel, TrackedThing>() {
 
     @Composable
     private fun HealthActions(item: TrackedThing) {
-        ItemActionsBase { viewModel ->
+        ItemActionsBase(item) { viewModel ->
             IconButton(
                 onClick = { viewModel.healRequested(item) },
                 enabled = item.canAdd()
@@ -191,7 +192,7 @@ object Tracker : OverviewScreen<TrackerViewModel, TrackedThing>() {
 
     @Composable
     private fun AbilityActions(item: TrackedThing) {
-        ItemActionsBase { viewModel ->
+        ItemActionsBase(item) { viewModel ->
             IconButton(
                 onClick = { viewModel.useAbility(item) },
                 enabled = item.canSubtract()
@@ -209,7 +210,7 @@ object Tracker : OverviewScreen<TrackerViewModel, TrackedThing>() {
 
     @Composable
     private fun SpellSlotActions(item: TrackedThing) {
-        ItemActionsBase { viewModel ->
+        ItemActionsBase(item) { viewModel ->
             IconButton(
                 onClick = { viewModel.useSpell(item) },
                 enabled = item.canSubtract()
@@ -227,6 +228,7 @@ object Tracker : OverviewScreen<TrackerViewModel, TrackedThing>() {
 
     @Composable
     private fun ItemActionsBase(
+        item: TrackedThing,
         actions: @Composable (TrackerViewModel) -> Unit
     ) {
         val viewModel = koinViewModel<TrackerViewModel>()
@@ -235,6 +237,11 @@ object Tracker : OverviewScreen<TrackerViewModel, TrackedThing>() {
             modifier = Modifier.fillMaxWidth()
         ) {
             actions(viewModel)
+            IconButton(
+                onClick = { viewModel.showEditDialog(item) }
+            ) {
+                Icon(Icons.Default.Edit, "")
+            }
         }
     }
 
@@ -261,7 +268,10 @@ object Tracker : OverviewScreen<TrackerViewModel, TrackedThing>() {
         ) {
             Card {
                 when (viewModel.dialogType) {
-                    TrackerViewModel.DialogType.Create -> EditDialog(viewModel)
+                    TrackerViewModel.DialogType.Create,
+                    TrackerViewModel.DialogType.Edit ->
+                        EditDialog(viewModel)
+
                     TrackerViewModel.DialogType.AddPercentage,
                     TrackerViewModel.DialogType.ReducePercentage -> {
                         ValueInputDialog(viewModel, TrackedThing.Type.Percentage)
