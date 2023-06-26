@@ -107,6 +107,9 @@ import com.feko.generictabletoprpg.spell.InsertSpellsPort
 import com.feko.generictabletoprpg.spell.SpellDao
 import com.feko.generictabletoprpg.spell.SpellDetailsViewModel
 import com.feko.generictabletoprpg.spell.SpellOverviewViewModel
+import com.feko.generictabletoprpg.tracker.DeleteTrackedThingPort
+import com.feko.generictabletoprpg.tracker.DeleteTrackedThingUseCase
+import com.feko.generictabletoprpg.tracker.DeleteTrackedThingUseCaseImpl
 import com.feko.generictabletoprpg.tracker.GetAllTrackedThingsPort
 import com.feko.generictabletoprpg.tracker.GetAllTrackedThingsUseCase
 import com.feko.generictabletoprpg.tracker.GetAllTrackedThingsUseCaseImpl
@@ -324,11 +327,13 @@ fun Module.includeTrackedThingDependencies() {
 
     single<GetAllTrackedThingsPort> { get<TrackedThingDao>() }
     single<InsertOrUpdateTrackedThingPort> { get<TrackedThingDao>() }
+    single<DeleteTrackedThingPort> { get<TrackedThingDao>() }
 
     single<GetAllTrackedThingsUseCase> { GetAllTrackedThingsUseCaseImpl(get()) }
     single<InsertOrUpdateTrackedThingUseCase> { InsertOrUpdateTrackedThingUseCaseImpl(get()) }
+    single<DeleteTrackedThingUseCase> { DeleteTrackedThingUseCaseImpl(get()) }
 
-    viewModel { TrackerViewModel(get(), get()) }
+    viewModel { TrackerViewModel(get(), get(), get()) }
 }
 
 fun Module.includeImportDependencies() {

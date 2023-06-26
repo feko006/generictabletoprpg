@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -16,6 +17,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.AlertDialog
@@ -242,6 +244,11 @@ object Tracker : OverviewScreen<TrackerViewModel, TrackedThing>() {
             ) {
                 Icon(Icons.Default.Edit, "")
             }
+            IconButton(
+                onClick = { viewModel.deleteItemRequested(item) }
+            ) {
+                Icon(Icons.Default.Delete, "")
+            }
         }
     }
 
@@ -272,6 +279,9 @@ object Tracker : OverviewScreen<TrackerViewModel, TrackedThing>() {
                     TrackerViewModel.DialogType.Edit ->
                         EditDialog(viewModel)
 
+                    TrackerViewModel.DialogType.ConfirmDeletion ->
+                        ConfirmDialog(viewModel)
+
                     TrackerViewModel.DialogType.AddPercentage,
                     TrackerViewModel.DialogType.ReducePercentage -> {
                         ValueInputDialog(viewModel, TrackedThing.Type.Percentage)
@@ -294,6 +304,31 @@ object Tracker : OverviewScreen<TrackerViewModel, TrackedThing>() {
             NameTextField(viewModel, autoFocus = true)
             SpellSlotLevelTextField(type, viewModel)
             ValueTextField(viewModel, type) { viewModel.setValue(it) }
+        }
+    }
+
+    @Composable
+    private fun ConfirmDialog(viewModel: TrackerViewModel) {
+        Column(
+            Modifier.padding(16.dp),
+            Arrangement.spacedBy(16.dp)
+        ) {
+            DialogTitle(viewModel)
+            Row(horizontalArrangement = Arrangement.End) {
+                Spacer(Modifier.weight(1f))
+                TextButton(
+                    onClick = { viewModel.hideDialog() },
+                    modifier = Modifier.wrapContentWidth()
+                ) {
+                    Text("Cancel")
+                }
+                TextButton(
+                    onClick = { viewModel.confirmDialogAction() },
+                    modifier = Modifier.wrapContentWidth()
+                ) {
+                    Text("Confirm")
+                }
+            }
         }
     }
 
@@ -328,7 +363,6 @@ object Tracker : OverviewScreen<TrackerViewModel, TrackedThing>() {
                 enabled = buttonEnabled,
                 modifier = Modifier
                     .wrapContentWidth()
-                    .padding(16.dp)
                     .align(Alignment.End)
             ) {
                 Text("Confirm")

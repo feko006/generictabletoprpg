@@ -3,6 +3,7 @@ package com.feko.generictabletoprpg.com.feko.generictabletoprpg.tracker
 import androidx.lifecycle.viewModelScope
 import com.feko.generictabletoprpg.common.Common
 import com.feko.generictabletoprpg.common.OverviewViewModel
+import com.feko.generictabletoprpg.tracker.DeleteTrackedThingUseCase
 import com.feko.generictabletoprpg.tracker.GetAllTrackedThingsUseCase
 import com.feko.generictabletoprpg.tracker.InsertOrUpdateTrackedThingUseCase
 import com.feko.generictabletoprpg.tracker.TrackedThing
@@ -13,7 +14,8 @@ import kotlinx.coroutines.withContext
 
 class TrackerViewModel(
     private val getAllTrackedThingsUseCase: GetAllTrackedThingsUseCase,
-    private val insertOrUpdateTrackedThingsUseCase: InsertOrUpdateTrackedThingUseCase
+    private val insertOrUpdateTrackedThingsUseCase: InsertOrUpdateTrackedThingUseCase,
+    private val deleteTrackedThingUseCase: DeleteTrackedThingUseCase
 ) : OverviewViewModel<TrackedThing>() {
     val editedTrackedThingName = MutableStateFlow(Common.InputFieldData.EMPTY)
     val editedTrackedThingSpellSlotLevel = MutableStateFlow(Common.InputFieldData.EMPTY)
@@ -72,6 +74,7 @@ class TrackerViewModel(
         when (dialogType) {
             DialogType.Create -> createNewTrackedThing()
             DialogType.Edit -> editExistingTrackedThing()
+            DialogType.ConfirmDeletion -> deleteTrackedThing()
             DialogType.AddPercentage,
             DialogType.ReducePercentage ->
                 changePercentageOfTrackedThing()
@@ -107,6 +110,18 @@ class TrackerViewModel(
                 insertOrUpdateTrackedThingsUseCase.insertOrUpdate(trackedThingToUpdate)
             }
             replaceItem(trackedThingToUpdate)
+            _isDialogVisible.emit(false)
+        }
+    }
+
+    private fun deleteTrackedThing() {
+        viewModelScope.launch {
+            withContext(Dispatchers.Default) {
+                deleteTrackedThingUseCase.delete(editedTrackedThing)
+            }
+            val newList = _items.value.toMutableList()
+            newList.remove(editedTrackedThing)
+            _items.emit(newList)
             _isDialogVisible.emit(false)
         }
     }
@@ -292,9 +307,19 @@ class TrackerViewModel(
         }
     }
 
+    fun deleteItemRequested(item: TrackedThing) {
+        viewModelScope.launch {
+            dialogType = DialogType.ConfirmDeletion
+            dialogTitle = "Delete?"
+            editedTrackedThing = item
+            _isDialogVisible.emit(true)
+        }
+    }
+
     enum class DialogType {
         Create,
         Edit,
+        ConfirmDeletion,
         AddPercentage,
         ReducePercentage,
         DamageHealth,

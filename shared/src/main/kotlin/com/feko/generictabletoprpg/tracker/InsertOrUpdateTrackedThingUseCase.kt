@@ -1,5 +1,5 @@
 package com.feko.generictabletoprpg.tracker
 
-import com.feko.generictabletoprpg.common.InsertOrUpdatePort
+import com.feko.generictabletoprpg.common.InsertOrUpdateUseCase
 
-interface InsertOrUpdateTrackedThingUseCase : InsertOrUpdatePort<TrackedThing>
+interface InsertOrUpdateTrackedThingUseCase : InsertOrUpdateUseCase<TrackedThing>
