@@ -33,7 +33,9 @@ import com.feko.generictabletoprpg.armor.GetArmorByIdUseCase
 import com.feko.generictabletoprpg.armor.GetArmorByIdUseCaseImpl
 import com.feko.generictabletoprpg.armor.InsertArmorsPort
 import com.feko.generictabletoprpg.com.feko.generictabletoprpg.tracker.TrackedThingDao
+import com.feko.generictabletoprpg.com.feko.generictabletoprpg.tracker.TrackerGroupViewModel
 import com.feko.generictabletoprpg.com.feko.generictabletoprpg.tracker.TrackerViewModel
+import com.feko.generictabletoprpg.common.Identifiable
 import com.feko.generictabletoprpg.common.Logger
 import com.feko.generictabletoprpg.common.TimberLogger
 import com.feko.generictabletoprpg.common.UserPreferencesAdapter
@@ -107,15 +109,19 @@ import com.feko.generictabletoprpg.spell.InsertSpellsPort
 import com.feko.generictabletoprpg.spell.SpellDao
 import com.feko.generictabletoprpg.spell.SpellDetailsViewModel
 import com.feko.generictabletoprpg.spell.SpellOverviewViewModel
+import com.feko.generictabletoprpg.tracker.DeleteTrackedThingGroupUseCase
 import com.feko.generictabletoprpg.tracker.DeleteTrackedThingPort
 import com.feko.generictabletoprpg.tracker.DeleteTrackedThingUseCase
 import com.feko.generictabletoprpg.tracker.DeleteTrackedThingUseCaseImpl
+import com.feko.generictabletoprpg.tracker.GetAllTrackedThingGroupsUseCase
 import com.feko.generictabletoprpg.tracker.GetAllTrackedThingsPort
 import com.feko.generictabletoprpg.tracker.GetAllTrackedThingsUseCase
 import com.feko.generictabletoprpg.tracker.GetAllTrackedThingsUseCaseImpl
+import com.feko.generictabletoprpg.tracker.InsertOrUpdateTrackedThingGroupUseCase
 import com.feko.generictabletoprpg.tracker.InsertOrUpdateTrackedThingPort
 import com.feko.generictabletoprpg.tracker.InsertOrUpdateTrackedThingUseCase
 import com.feko.generictabletoprpg.tracker.InsertOrUpdateTrackedThingUseCaseImpl
+import com.feko.generictabletoprpg.tracker.TrackedThingGroup
 import com.feko.generictabletoprpg.weapon.GetAllWeaponsPort
 import com.feko.generictabletoprpg.weapon.GetAllWeaponsUseCase
 import com.feko.generictabletoprpg.weapon.GetAllWeaponsUseCaseImpl
@@ -129,6 +135,7 @@ import com.feko.generictabletoprpg.weapon.WeaponOverviewViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.module.Module
 import org.koin.dsl.module
+import timber.log.Timber
 
 val diModules = module {
     // Services
@@ -152,6 +159,7 @@ val diModules = module {
     includeAmmunitionDependencies()
     includeArmorDependencies()
     includeImportDependencies()
+    includeTrackedThingGroupDependencies()
     includeTrackedThingDependencies()
 
     // Ports & Adapters
@@ -316,6 +324,52 @@ fun Module.includeArmorDependencies() {
 
     viewModel { ArmorOverviewViewModel(get()) }
     viewModel { ArmorDetailsViewModel(get()) }
+}
+
+fun Module.includeTrackedThingGroupDependencies() {
+    single<GetAllTrackedThingGroupsUseCase> {
+        object : GetAllTrackedThingGroupsUseCase {
+            override fun getAll(): List<TrackedThingGroup> {
+                return listOf(
+                    TrackedThingGroup(
+                        1,
+                        "Campaign X"
+                    ),
+                    TrackedThingGroup(
+                        2,
+                        "Modig"
+                    ),
+                    TrackedThingGroup(
+                        3,
+                        "Slasher"
+                    ),
+                    TrackedThingGroup(
+                        4,
+                        "Group with a veeery large name, like you wouldn't believe how long it is"
+                    )
+                )
+            }
+        }
+    }
+
+    single<InsertOrUpdateTrackedThingGroupUseCase> {
+        object : InsertOrUpdateTrackedThingGroupUseCase {
+            override fun insertOrUpdate(item: TrackedThingGroup): Long {
+                Timber.d("Insert or updating item '$item'")
+                return if (item.id == 0L) Math.random().toLong() else item.id
+            }
+        }
+    }
+
+    single<DeleteTrackedThingGroupUseCase> {
+        object : DeleteTrackedThingGroupUseCase {
+            override fun delete(item: Identifiable) {
+                Timber.d("Deleting item '$item'")
+            }
+        }
+    }
+
+    viewModel { TrackerGroupViewModel(get(), get(), get()) }
 }
 
 fun Module.includeTrackedThingDependencies() {

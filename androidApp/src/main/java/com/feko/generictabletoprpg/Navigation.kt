@@ -21,6 +21,7 @@ import com.feko.generictabletoprpg.action.ActionDetails
 import com.feko.generictabletoprpg.ammunition.AmmunitionDetails
 import com.feko.generictabletoprpg.armor.ArmorDetails
 import com.feko.generictabletoprpg.com.feko.generictabletoprpg.tracker.Tracker
+import com.feko.generictabletoprpg.com.feko.generictabletoprpg.tracker.TrackerGroups
 import com.feko.generictabletoprpg.condition.ConditionDetails
 import com.feko.generictabletoprpg.disease.DiseaseDetails
 import com.feko.generictabletoprpg.feat.FeatDetails
@@ -49,6 +50,7 @@ object Navigation {
     private val destinations: List<Destination> =
         listOf(
             SearchAll,
+            TrackerGroups,
             Tracker,
             SpellDetails,
 //            SpellOverview,

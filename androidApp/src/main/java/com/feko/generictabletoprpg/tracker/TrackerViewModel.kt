@@ -93,9 +93,7 @@ class TrackerViewModel(
                 val id = insertOrUpdateTrackedThingsUseCase.insertOrUpdate(editedTrackedThing)
                 editedTrackedThing.id = id
             }
-            val items = _items.value.toMutableList()
-            items.add(editedTrackedThing)
-            _items.emit(items.sortedBy(TrackedThing::name))
+            addItem(editedTrackedThing)
             _isDialogVisible.emit(false)
         }
     }
@@ -119,9 +117,7 @@ class TrackerViewModel(
             withContext(Dispatchers.Default) {
                 deleteTrackedThingUseCase.delete(editedTrackedThing)
             }
-            val newList = _items.value.toMutableList()
-            newList.remove(editedTrackedThing)
-            _items.emit(newList)
+            removeItem(editedTrackedThing)
             _isDialogVisible.emit(false)
         }
     }
@@ -208,14 +204,6 @@ class TrackerViewModel(
             }
             replaceItem(itemCopy)
         }
-    }
-
-    private suspend fun replaceItem(item: TrackedThing) {
-        val newList = _items.value.toMutableList()
-        val index = newList.indexOfFirst { it.id == item.id }
-        newList.removeAt(index)
-        newList.add(index, item)
-        _items.emit(newList)
     }
 
     fun setName(name: String) {

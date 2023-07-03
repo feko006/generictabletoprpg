@@ -40,8 +40,7 @@ import com.feko.generictabletoprpg.theme.Typography
 
 abstract class OverviewScreen<TViewModel, T> :
     Navigation.Destination
-        where TViewModel : OverviewViewModel<T>,
-              T : Any {
+        where TViewModel : OverviewViewModel<T> {
     abstract val detailsNavRouteProvider: Navigation.DetailsNavRouteProvider
 
     open val isFabEnabled = false

@@ -55,13 +55,18 @@ import com.feko.generictabletoprpg.theme.Typography
 import com.feko.generictabletoprpg.tracker.TrackedThing
 import org.koin.androidx.compose.koinViewModel
 
-object Tracker : OverviewScreen<TrackerViewModel, TrackedThing>() {
+object Tracker : OverviewScreen<TrackerViewModel, TrackedThing>(),
+    Navigation.DetailsNavRouteProvider {
+
+    private const val idArgumentName = "id"
+
     override val screenTitle: String
-        get() = "Tracker"
+        get() = _screenTitle
+    private var _screenTitle = "Tracker"
     override val route: String
-        get() = "tracker"
+        get() = constructRoute("{$idArgumentName}")
     override val isRootDestination: Boolean
-        get() = true
+        get() = false
     override val detailsNavRouteProvider: Navigation.DetailsNavRouteProvider
         get() = object : Navigation.DetailsNavRouteProvider {
             override fun getNavRoute(id: Long): String {
@@ -496,4 +501,8 @@ object Tracker : OverviewScreen<TrackerViewModel, TrackedThing>() {
             }
         }
     }
+
+    override fun getNavRoute(id: Long): String = constructRoute(id.toString())
+
+    private fun constructRoute(id: String): String = "tracker/$id"
 }

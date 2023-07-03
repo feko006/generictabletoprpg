@@ -70,4 +70,37 @@ abstract class OverviewViewModel<T> : ViewModel() {
             _isFabDropdownMenuExpanded.emit(!_isFabDropdownMenuExpanded.value)
         }
     }
+
+    protected suspend fun replaceItem(item: T) {
+        if (item !is Identifiable) return
+        val newList = _items.value.toMutableList()
+        val index =
+            newList.indexOfFirst {
+                if (it !is Identifiable) false
+                else it.id == item.id
+            }
+        newList.removeAt(index)
+        newList.add(index, item)
+        _items.emit(newList)
+    }
+
+    protected suspend fun addItem(item: T) {
+        val items = _items.value.toMutableList()
+        items.add(item)
+        _items.emit(
+            items.sortedBy {
+                if (it !is Named) ""
+                else it.name
+            })
+    }
+
+    protected suspend fun removeItem(item: T) {
+        if (item !is Identifiable) return
+        val newList = _items.value.toMutableList()
+        newList.removeAll {
+            if (it !is Identifiable) false
+            else it.id == item.id
+        }
+        _items.emit(newList)
+    }
 }
