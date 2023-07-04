@@ -37,6 +37,7 @@ import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
+import com.feko.generictabletoprpg.ButtonState
 import com.feko.generictabletoprpg.Navigation
 import com.feko.generictabletoprpg.theme.Typography
 
@@ -50,7 +51,8 @@ abstract class OverviewScreen<TViewModel, T> :
     final override fun navHostComposable(
         navGraphBuilder: NavGraphBuilder,
         navController: NavHostController,
-        appBarTitle: MutableState<String>
+        appBarTitle: MutableState<String>,
+        setNavBarActions: (List<ButtonState>) -> Unit
     ) {
         navGraphBuilder.composable(
             route,
@@ -58,9 +60,14 @@ abstract class OverviewScreen<TViewModel, T> :
         ) {
             appBarTitle.value = screenTitle
             readNavArguments(it)
-            Screen(navController)
+            Screen(navController, setNavBarActions)
         }
     }
+
+    protected open fun setNavBarActionsInternal(
+        navBarActions: (List<ButtonState>) -> Unit,
+        viewModel: TViewModel
+    ) = navBarActions(listOf())
 
     protected open fun readNavArguments(backStackEntry: NavBackStackEntry) {}
 
@@ -68,8 +75,12 @@ abstract class OverviewScreen<TViewModel, T> :
 
     @Composable
     @OptIn(ExperimentalMaterial3Api::class)
-    private fun Screen(navController: NavHostController) {
+    private fun Screen(
+        navController: NavHostController,
+        setNavBarActions: (List<ButtonState>) -> Unit
+    ) {
         val viewModel: TViewModel = getViewModel()
+        setNavBarActionsInternal(setNavBarActions, viewModel)
         val listItems by viewModel.items.collectAsState(listOf())
         val searchString by viewModel.searchString.collectAsState("")
         Column(Modifier.padding(8.dp)) {

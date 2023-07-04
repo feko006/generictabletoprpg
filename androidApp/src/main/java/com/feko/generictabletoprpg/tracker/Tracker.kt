@@ -52,6 +52,7 @@ import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
+import com.feko.generictabletoprpg.ButtonState
 import com.feko.generictabletoprpg.Navigation
 import com.feko.generictabletoprpg.R
 import com.feko.generictabletoprpg.common.OverviewScreen
@@ -97,6 +98,17 @@ object Tracker : OverviewScreen<TrackerViewModel, TrackedThing>(),
 
     override fun readNavArguments(backStackEntry: NavBackStackEntry) {
         groupId = backStackEntry.arguments!!.getLong(groupIdArgumentName)
+    }
+
+    override fun setNavBarActionsInternal(
+        navBarActions: (List<ButtonState>) -> Unit,
+        viewModel: TrackerViewModel
+    ) {
+        navBarActions(
+            listOf(
+                ButtonState(Icons.Default.Refresh) { viewModel.refreshAllRequested() }
+            )
+        )
     }
 
     @Composable
@@ -300,7 +312,8 @@ object Tracker : OverviewScreen<TrackerViewModel, TrackedThing>(),
                     TrackerViewModel.DialogType.Edit ->
                         EditDialog(viewModel)
 
-                    TrackerViewModel.DialogType.ConfirmDeletion ->
+                    TrackerViewModel.DialogType.ConfirmDeletion,
+                    TrackerViewModel.DialogType.RefreshAll ->
                         ConfirmDialog(viewModel)
 
                     TrackerViewModel.DialogType.AddPercentage,

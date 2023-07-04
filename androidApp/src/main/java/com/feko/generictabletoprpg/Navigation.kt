@@ -39,7 +39,8 @@ object Navigation {
         fun navHostComposable(
             navGraphBuilder: NavGraphBuilder,
             navController: NavHostController,
-            appBarTitle: MutableState<String>
+            appBarTitle: MutableState<String>,
+            setNavBarActions: (List<ButtonState>) -> Unit
         )
     }
 
@@ -81,14 +82,15 @@ object Navigation {
     @Composable
     private fun Host(
         navController: NavHostController,
-        appBarTitle: MutableState<String>
+        appBarTitle: MutableState<String>,
+        setNavBarActions: (List<ButtonState>) -> Unit
     ) {
         NavHost(
             navController = navController,
             startDestination = firstDestination.route
         ) {
             destinations.forEach {
-                it.navHostComposable(this, navController, appBarTitle)
+                it.navHostComposable(this, navController, appBarTitle, setNavBarActions)
             }
         }
     }
@@ -98,7 +100,8 @@ object Navigation {
         drawerState: DrawerState,
         paddingValues: PaddingValues,
         navController: NavHostController,
-        appBarTitle: MutableState<String>
+        appBarTitle: MutableState<String>,
+        setNavBarActions: (List<ButtonState>) -> Unit
     ) {
         val scope = rememberCoroutineScope()
         val activeDrawerItem = rememberSaveable { mutableStateOf(firstDestination.route) }
@@ -130,7 +133,7 @@ object Navigation {
             },
             modifier = Modifier.padding(paddingValues)
         ) {
-            Host(navController, appBarTitle)
+            Host(navController, appBarTitle, setNavBarActions)
         }
     }
 }

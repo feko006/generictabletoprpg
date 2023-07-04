@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
+import com.feko.generictabletoprpg.ButtonState
 import com.feko.generictabletoprpg.Navigation
 import org.koin.androidx.compose.koinViewModel
 
@@ -37,10 +38,12 @@ object Import : Navigation.Destination {
     override fun navHostComposable(
         navGraphBuilder: NavGraphBuilder,
         navController: NavHostController,
-        appBarTitle: MutableState<String>
+        appBarTitle: MutableState<String>,
+        setNavBarActions: (List<ButtonState>) -> Unit
     ) {
         navGraphBuilder.composable(route) {
             appBarTitle.value = screenTitle
+            setNavBarActions(listOf())
             Screen()
         }
     }

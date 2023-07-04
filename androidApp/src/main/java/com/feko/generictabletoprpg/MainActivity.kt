@@ -43,11 +43,13 @@ class MainActivity : ComponentActivity() {
                             )
                         }
                     }
+
                     is AppViewModel.AppState.ReadyToUse -> {
                         val drawerState = rememberDrawerState(DrawerValue.Closed)
                         val coroutineScope = rememberCoroutineScope()
                         val navController = rememberNavController()
                         val appBarTitle = rememberSaveable { mutableStateOf("") }
+                        val navBarActions = remember { mutableStateListOf<ButtonState>() }
 
                         Scaffold(
                             topBar = {
@@ -68,6 +70,14 @@ class MainActivity : ComponentActivity() {
                                             }) {
                                             Icon(Icons.Default.Menu, "")
                                         }
+                                    }, actions = {
+                                        navBarActions.forEach {
+                                            IconButton(
+                                                onClick = it.onClick
+                                            ) {
+                                                Icon(it.icon, "")
+                                            }
+                                        }
                                     })
                             }) { paddingValues ->
                             Navigation.Drawer(
@@ -75,7 +85,10 @@ class MainActivity : ComponentActivity() {
                                 paddingValues,
                                 navController,
                                 appBarTitle
-                            )
+                            ) {
+                                navBarActions.clear()
+                                navBarActions.addAll(it)
+                            }
                         }
                     }
                 }
@@ -83,3 +96,4 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
+

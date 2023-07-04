@@ -68,7 +68,9 @@ class TrackerViewModel(
     }
 
     fun confirmDialogAction() {
-        if (!editedTrackedThing.validate()) {
+        if (dialogType != DialogType.RefreshAll
+            && !editedTrackedThing.validate()
+        ) {
             return
         }
 
@@ -85,6 +87,8 @@ class TrackerViewModel(
                 changeHealthOfTrackedThing()
 
             DialogType.AddTemporaryHp -> addTemporaryHpToTrackedThing()
+
+            DialogType.RefreshAll -> refreshAll()
         }
     }
 
@@ -171,6 +175,15 @@ class TrackerViewModel(
             }
             _isDialogVisible.emit(false)
             replaceItem(editedTrackedThing)
+        }
+    }
+
+    private fun refreshAll() {
+        viewModelScope.launch {
+            _items.value.forEach {
+                resetValueToDefault(it)
+            }
+            _isDialogVisible.emit(false)
         }
     }
 
@@ -305,6 +318,14 @@ class TrackerViewModel(
         }
     }
 
+    fun refreshAllRequested() {
+        viewModelScope.launch {
+            dialogType = DialogType.RefreshAll
+            dialogTitle = "Refresh all?"
+            _isDialogVisible.emit(true)
+        }
+    }
+
     enum class DialogType {
         Create,
         Edit,
@@ -314,5 +335,6 @@ class TrackerViewModel(
         DamageHealth,
         HealHealth,
         AddTemporaryHp,
+        RefreshAll,
     }
 }

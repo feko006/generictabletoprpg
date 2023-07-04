@@ -17,6 +17,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.feko.generictabletoprpg.ButtonState
 import com.feko.generictabletoprpg.Navigation
 
 abstract class DetailsScreen<TViewModel, T> :
@@ -34,7 +35,8 @@ abstract class DetailsScreen<TViewModel, T> :
     final override fun navHostComposable(
         navGraphBuilder: NavGraphBuilder,
         navController: NavHostController,
-        appBarTitle: MutableState<String>
+        appBarTitle: MutableState<String>,
+        setNavBarActions: (List<ButtonState>) -> Unit
     ) {
         navGraphBuilder.composable(
             route = route,
@@ -43,6 +45,7 @@ abstract class DetailsScreen<TViewModel, T> :
             })
         ) { backStackEntry ->
             appBarTitle.value = screenTitle
+            setNavBarActions(listOf())
             val id = backStackEntry.arguments!!.getLong(idArgumentName)
             Screen(id)
         }
