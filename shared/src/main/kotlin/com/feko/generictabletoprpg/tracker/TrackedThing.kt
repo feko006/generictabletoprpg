@@ -1,14 +1,15 @@
 package com.feko.generictabletoprpg.tracker
 
-import com.feko.generictabletoprpg.common.Identifiable
+import com.feko.generictabletoprpg.common.MutableIdentifiable
 import com.feko.generictabletoprpg.common.Named
 
 sealed class TrackedThing(
     override var id: Long,
     override var name: String,
     value: String,
-    val type: Type
-) : Identifiable,
+    val type: Type,
+    val groupId: Long
+) : MutableIdentifiable,
     Named {
     enum class Type {
         None,
@@ -23,13 +24,13 @@ sealed class TrackedThing(
     var defaultValue: String = ""
 
     companion object {
-        fun emptyOfType(type: Type): TrackedThing =
+        fun emptyOfType(type: Type, groupId: Long): TrackedThing =
             when (type) {
                 Type.None -> throw Exception("Cannot create tracked thing of type None.")
-                Type.Percentage -> Percentage(0, "", 0f)
-                Type.Health -> Health(0, 0, "", 0)
-                Type.Ability -> Ability(0, "", 0)
-                Type.SpellSlot -> SpellSlot(1, 0, "", 0)
+                Type.Percentage -> Percentage(0, "", 0f, groupId)
+                Type.Health -> Health(0, 0, "", 0, groupId)
+                Type.Ability -> Ability(0, "", 0, groupId)
+                Type.SpellSlot -> SpellSlot(1, 0, "", 0, groupId)
             }
     }
 
@@ -50,8 +51,8 @@ sealed class TrackedThing(
     abstract fun canAdd(): Boolean
     abstract fun canSubtract(): Boolean
 
-    class Percentage(id: Long, name: String, var amount: Float) :
-        TrackedThing(id, name, "", Type.Percentage) {
+    class Percentage(id: Long, name: String, var amount: Float, groupId: Long) :
+        TrackedThing(id, name, "", Type.Percentage, groupId) {
 
         init {
             value = toValue(amount)
@@ -84,18 +85,30 @@ sealed class TrackedThing(
         }
 
         override fun copy(): TrackedThing =
-            Percentage(id, name, amount).also { it.defaultValue = defaultValue }
+            Percentage(id, name, amount, groupId).also { it.defaultValue = defaultValue }
 
         override fun canAdd(): Boolean = amount < 100f
 
         override fun canSubtract(): Boolean = amount > 0f
     }
 
-    abstract class GenericTrackedThing<T>(id: Long, name: String, var amount: T, type: Type) :
-        TrackedThing(id, name, amount.toString(), type)
+    abstract class GenericTrackedThing<T>(
+        id: Long,
+        name: String,
+        var amount: T,
+        type: Type,
+        groupId: Long
+    ) :
+        TrackedThing(id, name, amount.toString(), type, groupId)
 
-    abstract class IntTrackedThing(id: Long, name: String, amount: Int, type: Type) :
-        GenericTrackedThing<Int>(id, name, amount, type) {
+    abstract class IntTrackedThing(
+        id: Long,
+        name: String,
+        amount: Int,
+        type: Type,
+        groupId: Long
+    ) :
+        GenericTrackedThing<Int>(id, name, amount, type, groupId) {
 
         init {
             value = toValue(amount)
@@ -136,11 +149,11 @@ sealed class TrackedThing(
         override fun canSubtract(): Boolean = amount > 0
     }
 
-    class Health(var temporaryHp: Int, id: Long, name: String, amount: Int) :
-        IntTrackedThing(id, name, amount, Type.Health) {
+    class Health(var temporaryHp: Int, id: Long, name: String, amount: Int, groupId: Long) :
+        IntTrackedThing(id, name, amount, Type.Health, groupId) {
 
         override fun copy(): TrackedThing =
-            Health(temporaryHp, id, name, amount).also { it.defaultValue = defaultValue }
+            Health(temporaryHp, id, name, amount, groupId).also { it.defaultValue = defaultValue }
 
         override fun subtract(delta: String) {
             var intDelta = toAmount(delta)
@@ -158,21 +171,21 @@ sealed class TrackedThing(
         }
     }
 
-    class Ability(id: Long, name: String, amount: Int) :
-        IntTrackedThing(id, name, amount, Type.Ability) {
+    class Ability(id: Long, name: String, amount: Int, groupId: Long) :
+        IntTrackedThing(id, name, amount, Type.Ability, groupId) {
 
         override fun copy(): TrackedThing =
-            Ability(id, name, amount).also { it.defaultValue = defaultValue }
+            Ability(id, name, amount, groupId).also { it.defaultValue = defaultValue }
     }
 
-    class SpellSlot(var level: Int, id: Long, name: String, amount: Int) :
-        IntTrackedThing(id, name, amount, Type.SpellSlot) {
+    class SpellSlot(var level: Int, id: Long, name: String, amount: Int, groupId: Long) :
+        IntTrackedThing(id, name, amount, Type.SpellSlot, groupId) {
 
         fun isLevelValid(): Boolean = level > 0
 
         override fun validate(): Boolean = super.validate() && isLevelValid()
 
         override fun copy(): TrackedThing =
-            SpellSlot(level, id, name, amount).also { it.defaultValue = defaultValue }
+            SpellSlot(level, id, name, amount, groupId).also { it.defaultValue = defaultValue }
     }
 }

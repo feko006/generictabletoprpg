@@ -13,6 +13,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class TrackerViewModel(
+    private val groupId: Long,
     private val getAllTrackedThingsUseCase: GetAllTrackedThingsUseCase,
     private val insertOrUpdateTrackedThingsUseCase: InsertOrUpdateTrackedThingUseCase,
     private val deleteTrackedThingUseCase: DeleteTrackedThingUseCase
@@ -26,13 +27,13 @@ class TrackerViewModel(
     private lateinit var editedTrackedThing: TrackedThing
     lateinit var dialogType: DialogType
 
-    override fun getAllItems(): List<TrackedThing> = getAllTrackedThingsUseCase.getAll()
+    override fun getAllItems(): List<TrackedThing> = getAllTrackedThingsUseCase.getAll(groupId)
 
     fun showCreateDialog(type: TrackedThing.Type) {
         viewModelScope.launch {
             dialogTitle = type.name
             dialogType = DialogType.Create
-            editedTrackedThing = TrackedThing.emptyOfType(type)
+            editedTrackedThing = TrackedThing.emptyOfType(type, groupId)
             editedTrackedThingName.emit(Common.InputFieldData.EMPTY)
             editedTrackedThingSpellSlotLevel.emit(Common.InputFieldData.EMPTY)
             editedTrackedThingValue.emit(Common.InputFieldData.EMPTY)

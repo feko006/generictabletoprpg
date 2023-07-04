@@ -32,6 +32,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NamedNavArgument
+import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
@@ -50,11 +52,19 @@ abstract class OverviewScreen<TViewModel, T> :
         navController: NavHostController,
         appBarTitle: MutableState<String>
     ) {
-        navGraphBuilder.composable(route) {
+        navGraphBuilder.composable(
+            route,
+            arguments = getNavArguments()
+        ) {
             appBarTitle.value = screenTitle
+            readNavArguments(it)
             Screen(navController)
         }
     }
+
+    protected open fun readNavArguments(backStackEntry: NavBackStackEntry) {}
+
+    protected open fun getNavArguments(): List<NamedNavArgument> = listOf()
 
     @Composable
     @OptIn(ExperimentalMaterial3Api::class)

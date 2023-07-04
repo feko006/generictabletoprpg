@@ -47,24 +47,30 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
+import androidx.navigation.NamedNavArgument
+import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
+import androidx.navigation.navArgument
 import com.feko.generictabletoprpg.Navigation
 import com.feko.generictabletoprpg.R
 import com.feko.generictabletoprpg.common.OverviewScreen
 import com.feko.generictabletoprpg.theme.Typography
 import com.feko.generictabletoprpg.tracker.TrackedThing
 import org.koin.androidx.compose.koinViewModel
+import org.koin.core.parameter.parametersOf
 
 object Tracker : OverviewScreen<TrackerViewModel, TrackedThing>(),
     Navigation.DetailsNavRouteProvider {
 
-    private const val idArgumentName = "id"
+    private const val groupIdArgumentName = "id"
+    private var groupId: Long = 0L
 
     override val screenTitle: String
         get() = _screenTitle
     private var _screenTitle = "Tracker"
     override val route: String
-        get() = constructRoute("{$idArgumentName}")
+        get() = constructRoute("{$groupIdArgumentName}")
     override val isRootDestination: Boolean
         get() = false
     override val detailsNavRouteProvider: Navigation.DetailsNavRouteProvider
@@ -81,7 +87,17 @@ object Tracker : OverviewScreen<TrackerViewModel, TrackedThing>(),
         get() = true
 
     @Composable
-    override fun getViewModel(): TrackerViewModel = koinViewModel()
+    override fun getViewModel(): TrackerViewModel =
+        koinViewModel(parameters = { parametersOf(groupId) })
+
+    override fun getNavArguments(): List<NamedNavArgument> =
+        listOf(navArgument(groupIdArgumentName) {
+            type = NavType.LongType
+        })
+
+    override fun readNavArguments(backStackEntry: NavBackStackEntry) {
+        groupId = backStackEntry.arguments!!.getLong(groupIdArgumentName)
+    }
 
     @Composable
     public override fun OverviewListItem(item: TrackedThing, navController: NavHostController) {

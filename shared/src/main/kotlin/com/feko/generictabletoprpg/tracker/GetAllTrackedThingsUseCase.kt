@@ -1,5 +1,5 @@
 package com.feko.generictabletoprpg.tracker
 
-import com.feko.generictabletoprpg.common.GetAllUseCase
+import com.feko.generictabletoprpg.common.GetAllByParentUseCase
 
-interface GetAllTrackedThingsUseCase : GetAllUseCase<TrackedThing>
+interface GetAllTrackedThingsUseCase : GetAllByParentUseCase<TrackedThing>

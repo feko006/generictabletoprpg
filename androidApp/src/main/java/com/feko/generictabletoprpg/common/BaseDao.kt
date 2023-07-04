@@ -7,6 +7,7 @@ abstract class BaseDao<TEntity, TCore> :
     InsertAllPort<TCore>,
     InsertOrUpdatePort<TCore>,
     GetAllPort<TCore>,
+    GetAllByParentPort<TCore>,
     GetByIdPort<TCore>
         where TCore : Named,
               TEntity : Named,
@@ -61,8 +62,13 @@ abstract class BaseDao<TEntity, TCore> :
         getAllSortedByNameInternal()
             .map { it.toCoreModel() }
 
+    final override fun getAllSortedByName(parentId: Long): List<TCore> =
+        getAllSortedByNameInternal(parentId)
+            .map { it.toCoreModel() }
 
     protected open fun getAllSortedByNameInternal(): List<TEntity> = throw NotImplementedError()
+    protected open fun getAllSortedByNameInternal(parentId: Long): List<TEntity> =
+        throw NotImplementedError()
 
     final override fun getById(id: Long): TCore =
         getByIdInternal(id).toCoreModel()

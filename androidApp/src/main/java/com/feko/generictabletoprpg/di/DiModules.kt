@@ -33,9 +33,9 @@ import com.feko.generictabletoprpg.armor.GetArmorByIdUseCase
 import com.feko.generictabletoprpg.armor.GetArmorByIdUseCaseImpl
 import com.feko.generictabletoprpg.armor.InsertArmorsPort
 import com.feko.generictabletoprpg.com.feko.generictabletoprpg.tracker.TrackedThingDao
+import com.feko.generictabletoprpg.com.feko.generictabletoprpg.tracker.TrackedThingGroupDao
 import com.feko.generictabletoprpg.com.feko.generictabletoprpg.tracker.TrackerGroupViewModel
 import com.feko.generictabletoprpg.com.feko.generictabletoprpg.tracker.TrackerViewModel
-import com.feko.generictabletoprpg.common.Identifiable
 import com.feko.generictabletoprpg.common.Logger
 import com.feko.generictabletoprpg.common.TimberLogger
 import com.feko.generictabletoprpg.common.UserPreferencesAdapter
@@ -109,19 +109,24 @@ import com.feko.generictabletoprpg.spell.InsertSpellsPort
 import com.feko.generictabletoprpg.spell.SpellDao
 import com.feko.generictabletoprpg.spell.SpellDetailsViewModel
 import com.feko.generictabletoprpg.spell.SpellOverviewViewModel
+import com.feko.generictabletoprpg.tracker.DeleteTrackedThingGroupPort
 import com.feko.generictabletoprpg.tracker.DeleteTrackedThingGroupUseCase
+import com.feko.generictabletoprpg.tracker.DeleteTrackedThingGroupUseCaseImpl
 import com.feko.generictabletoprpg.tracker.DeleteTrackedThingPort
 import com.feko.generictabletoprpg.tracker.DeleteTrackedThingUseCase
 import com.feko.generictabletoprpg.tracker.DeleteTrackedThingUseCaseImpl
+import com.feko.generictabletoprpg.tracker.GetAllTrackedThingGroupsPort
 import com.feko.generictabletoprpg.tracker.GetAllTrackedThingGroupsUseCase
-import com.feko.generictabletoprpg.tracker.GetAllTrackedThingsPort
+import com.feko.generictabletoprpg.tracker.GetAllTrackedThingGroupsUseCaseImpl
+import com.feko.generictabletoprpg.tracker.GetAllTrackedThingsByGroupPort
 import com.feko.generictabletoprpg.tracker.GetAllTrackedThingsUseCase
 import com.feko.generictabletoprpg.tracker.GetAllTrackedThingsUseCaseImpl
+import com.feko.generictabletoprpg.tracker.InsertOrUpdateTrackedThingGroupPort
 import com.feko.generictabletoprpg.tracker.InsertOrUpdateTrackedThingGroupUseCase
+import com.feko.generictabletoprpg.tracker.InsertOrUpdateTrackedThingGroupUseCaseImpl
 import com.feko.generictabletoprpg.tracker.InsertOrUpdateTrackedThingPort
 import com.feko.generictabletoprpg.tracker.InsertOrUpdateTrackedThingUseCase
 import com.feko.generictabletoprpg.tracker.InsertOrUpdateTrackedThingUseCaseImpl
-import com.feko.generictabletoprpg.tracker.TrackedThingGroup
 import com.feko.generictabletoprpg.weapon.GetAllWeaponsPort
 import com.feko.generictabletoprpg.weapon.GetAllWeaponsUseCase
 import com.feko.generictabletoprpg.weapon.GetAllWeaponsUseCaseImpl
@@ -135,7 +140,6 @@ import com.feko.generictabletoprpg.weapon.WeaponOverviewViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.module.Module
 import org.koin.dsl.module
-import timber.log.Timber
 
 val diModules = module {
     // Services
@@ -327,46 +331,22 @@ fun Module.includeArmorDependencies() {
 }
 
 fun Module.includeTrackedThingGroupDependencies() {
-    single<GetAllTrackedThingGroupsUseCase> {
-        object : GetAllTrackedThingGroupsUseCase {
-            override fun getAll(): List<TrackedThingGroup> {
-                return listOf(
-                    TrackedThingGroup(
-                        1,
-                        "Campaign X"
-                    ),
-                    TrackedThingGroup(
-                        2,
-                        "Modig"
-                    ),
-                    TrackedThingGroup(
-                        3,
-                        "Slasher"
-                    ),
-                    TrackedThingGroup(
-                        4,
-                        "Group with a veeery large name, like you wouldn't believe how long it is"
-                    )
-                )
-            }
-        }
+    single {
+        val trackedThingGroupDao = get<GenericTabletopRpgDatabase>().trackedThingGroupDao()
+        trackedThingGroupDao.logger = get()
+        trackedThingGroupDao
     }
+    single<GetAllTrackedThingGroupsPort> { get<TrackedThingGroupDao>() }
+    single<InsertOrUpdateTrackedThingGroupPort> { get<TrackedThingGroupDao>() }
+    single<DeleteTrackedThingGroupPort> { get<TrackedThingGroupDao>() }
 
+    single<GetAllTrackedThingGroupsUseCase> { GetAllTrackedThingGroupsUseCaseImpl(get()) }
     single<InsertOrUpdateTrackedThingGroupUseCase> {
-        object : InsertOrUpdateTrackedThingGroupUseCase {
-            override fun insertOrUpdate(item: TrackedThingGroup): Long {
-                Timber.d("Insert or updating item '$item'")
-                return if (item.id == 0L) Math.random().toLong() else item.id
-            }
-        }
+        InsertOrUpdateTrackedThingGroupUseCaseImpl(get())
     }
 
     single<DeleteTrackedThingGroupUseCase> {
-        object : DeleteTrackedThingGroupUseCase {
-            override fun delete(item: Identifiable) {
-                Timber.d("Deleting item '$item'")
-            }
-        }
+        DeleteTrackedThingGroupUseCaseImpl(get())
     }
 
     viewModel { TrackerGroupViewModel(get(), get(), get()) }
@@ -379,7 +359,7 @@ fun Module.includeTrackedThingDependencies() {
         trackedThingDao
     }
 
-    single<GetAllTrackedThingsPort> { get<TrackedThingDao>() }
+    single<GetAllTrackedThingsByGroupPort> { get<TrackedThingDao>() }
     single<InsertOrUpdateTrackedThingPort> { get<TrackedThingDao>() }
     single<DeleteTrackedThingPort> { get<TrackedThingDao>() }
 
@@ -387,7 +367,7 @@ fun Module.includeTrackedThingDependencies() {
     single<InsertOrUpdateTrackedThingUseCase> { InsertOrUpdateTrackedThingUseCaseImpl(get()) }
     single<DeleteTrackedThingUseCase> { DeleteTrackedThingUseCaseImpl(get()) }
 
-    viewModel { TrackerViewModel(get(), get(), get()) }
+    viewModel { params -> TrackerViewModel(params.get(), get(), get(), get()) }
 }
 
 fun Module.includeImportDependencies() {
