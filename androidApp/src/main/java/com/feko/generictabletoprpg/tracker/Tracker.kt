@@ -57,6 +57,8 @@ import com.feko.generictabletoprpg.Navigation
 import com.feko.generictabletoprpg.R
 import com.feko.generictabletoprpg.common.OverviewScreen
 import com.feko.generictabletoprpg.theme.Typography
+import com.feko.generictabletoprpg.tracker.Health
+import com.feko.generictabletoprpg.tracker.SpellSlot
 import com.feko.generictabletoprpg.tracker.TrackedThing
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -140,7 +142,7 @@ object Tracker : OverviewScreen<TrackerViewModel, TrackedThing>(),
                         modifier = Modifier.width(85.dp)
                     ) {
                         Text(item.getPrintableValue())
-                        if (item is TrackedThing.Health) {
+                        if (item is Health) {
                             if (item.temporaryHp > 0) {
                                 Row(
                                     horizontalArrangement = Arrangement.spacedBy(4.dp),
@@ -160,7 +162,7 @@ object Tracker : OverviewScreen<TrackerViewModel, TrackedThing>(),
                                 return@row
                             }
                             Text(item.type.name, style = Typography.bodySmall)
-                            if (item is TrackedThing.SpellSlot) {
+                            if (item is SpellSlot) {
                                 Text("Lv ${item.level}", style = Typography.bodySmall)
                             }
                         }
@@ -168,6 +170,7 @@ object Tracker : OverviewScreen<TrackerViewModel, TrackedThing>(),
                 }
                 when (item.type) {
                     TrackedThing.Type.Percentage -> PercentageActions(item)
+                    TrackedThing.Type.Number -> NumberActions(item)
                     TrackedThing.Type.Health -> HealthActions(item)
                     TrackedThing.Type.Ability -> AbilityActions(item)
                     TrackedThing.Type.SpellSlot -> SpellSlotActions(item)
@@ -188,6 +191,24 @@ object Tracker : OverviewScreen<TrackerViewModel, TrackedThing>(),
             }
             IconButton(
                 onClick = { viewModel.subtractFromPercentageRequested(item) },
+                enabled = item.canSubtract()
+            ) {
+                Icon(painterResource(R.drawable.subtract), "")
+            }
+        }
+    }
+
+    @Composable
+    private fun NumberActions(item: TrackedThing) {
+        ItemActionsBase(item) { viewModel ->
+            IconButton(
+                onClick = { viewModel.addToNumberRequested(item) },
+                enabled = item.canAdd()
+            ) {
+                Icon(Icons.Default.Add, "")
+            }
+            IconButton(
+                onClick = { viewModel.subtractFromNumberRequested(item) },
                 enabled = item.canSubtract()
             ) {
                 Icon(painterResource(R.drawable.subtract), "")
@@ -218,7 +239,7 @@ object Tracker : OverviewScreen<TrackerViewModel, TrackedThing>(),
             }
             IconButton(
                 onClick = { viewModel.resetValueToDefault(item) },
-                enabled = item.canAdd() || (item as TrackedThing.Health).temporaryHp > 0
+                enabled = item.canAdd() || (item as Health).temporaryHp > 0
             ) {
                 Icon(Icons.Default.Refresh, "")
             }
@@ -317,15 +338,17 @@ object Tracker : OverviewScreen<TrackerViewModel, TrackedThing>(),
                         ConfirmDialog(viewModel)
 
                     TrackerViewModel.DialogType.AddPercentage,
-                    TrackerViewModel.DialogType.ReducePercentage -> {
+                    TrackerViewModel.DialogType.ReducePercentage ->
                         ValueInputDialog(viewModel, TrackedThing.Type.Percentage)
-                    }
+
+                    TrackerViewModel.DialogType.AddNumber,
+                    TrackerViewModel.DialogType.ReduceNumber ->
+                        ValueInputDialog(viewModel, TrackedThing.Type.Number)
 
                     TrackerViewModel.DialogType.HealHealth,
                     TrackerViewModel.DialogType.DamageHealth,
-                    TrackerViewModel.DialogType.AddTemporaryHp -> {
+                    TrackerViewModel.DialogType.AddTemporaryHp ->
                         ValueInputDialog(viewModel, TrackedThing.Type.Health)
-                    }
                 }
             }
         }

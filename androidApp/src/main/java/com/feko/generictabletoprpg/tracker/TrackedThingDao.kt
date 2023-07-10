@@ -5,7 +5,9 @@ import androidx.room.Query
 import com.feko.generictabletoprpg.common.BaseDao
 import com.feko.generictabletoprpg.tracker.DeleteTrackedThingPort
 import com.feko.generictabletoprpg.tracker.GetAllTrackedThingsByGroupPort
+import com.feko.generictabletoprpg.tracker.Health
 import com.feko.generictabletoprpg.tracker.InsertOrUpdateTrackedThingPort
+import com.feko.generictabletoprpg.tracker.SpellSlot
 import com.feko.generictabletoprpg.tracker.TrackedThing
 
 @Dao
@@ -16,11 +18,11 @@ abstract class TrackedThingDao :
     DeleteTrackedThingPort {
     override fun getEntityFromCoreModel(item: TrackedThing): TrackedThingEntity {
         var level = 0
-        if (item is TrackedThing.SpellSlot) {
+        if (item is SpellSlot) {
             level = item.level
         }
         var temporaryHp = 0
-        if (item is TrackedThing.Health) {
+        if (item is Health) {
             temporaryHp = item.temporaryHp
         }
         val type = item.type.ordinal

@@ -7,6 +7,11 @@ import androidx.room.PrimaryKey
 import com.feko.generictabletoprpg.common.CoreConvertible
 import com.feko.generictabletoprpg.common.MutableIdentifiable
 import com.feko.generictabletoprpg.common.Named
+import com.feko.generictabletoprpg.tracker.Ability
+import com.feko.generictabletoprpg.tracker.Health
+import com.feko.generictabletoprpg.tracker.Number
+import com.feko.generictabletoprpg.tracker.Percentage
+import com.feko.generictabletoprpg.tracker.SpellSlot
 import com.feko.generictabletoprpg.tracker.TrackedThing
 
 @Entity(
@@ -41,21 +46,25 @@ data class TrackedThingEntity(
     CoreConvertible<TrackedThing> {
 
     override fun toCoreModel(): TrackedThing {
-        val trackedThing = when (type) {
-            TrackedThing.Type.Percentage.ordinal ->
-                TrackedThing.Percentage(id, name, value.toFloat(), groupId)
+        val trackedThing =
+            when (TrackedThing.Type.values()[type]) {
+                TrackedThing.Type.Percentage ->
+                    Percentage(id, name, value.toFloat(), groupId)
 
-            TrackedThing.Type.Health.ordinal ->
-                TrackedThing.Health(temporaryHp, id, name, value.toInt(), groupId)
+                TrackedThing.Type.Health ->
+                    Health(temporaryHp, id, name, value.toInt(), groupId)
 
-            TrackedThing.Type.Ability.ordinal ->
-                TrackedThing.Ability(id, name, value.toInt(), groupId)
+                TrackedThing.Type.Ability ->
+                    Ability(id, name, value.toInt(), groupId)
 
-            TrackedThing.Type.SpellSlot.ordinal ->
-                TrackedThing.SpellSlot(level, id, name, value.toInt(), groupId)
+                TrackedThing.Type.SpellSlot ->
+                    SpellSlot(level, id, name, value.toInt(), groupId)
 
-            else -> throw Exception("Tracked thing not supported.")
-        }
+                TrackedThing.Type.Number ->
+                    Number(id, name, value.toInt(), groupId)
+
+                TrackedThing.Type.None -> throw Exception("Tracked thing not supported.")
+            }
         trackedThing.defaultValue = defaultValue
         return trackedThing
     }

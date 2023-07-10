@@ -5,7 +5,9 @@ import com.feko.generictabletoprpg.common.Common
 import com.feko.generictabletoprpg.common.OverviewViewModel
 import com.feko.generictabletoprpg.tracker.DeleteTrackedThingUseCase
 import com.feko.generictabletoprpg.tracker.GetAllTrackedThingsUseCase
+import com.feko.generictabletoprpg.tracker.Health
 import com.feko.generictabletoprpg.tracker.InsertOrUpdateTrackedThingUseCase
+import com.feko.generictabletoprpg.tracker.SpellSlot
 import com.feko.generictabletoprpg.tracker.TrackedThing
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -51,7 +53,7 @@ class TrackerViewModel(
             val copy = item.copy()
             editedTrackedThing = copy
             editedTrackedThingName.emit(Common.InputFieldData(copy.name, isValid = true))
-            if (copy is TrackedThing.SpellSlot) {
+            if (copy is SpellSlot) {
                 editedTrackedThingSpellSlotLevel.emit(
                     Common.InputFieldData(
                         copy.level.toString(),
@@ -78,9 +80,12 @@ class TrackerViewModel(
             DialogType.Create -> createNewTrackedThing()
             DialogType.Edit -> editExistingTrackedThing()
             DialogType.ConfirmDeletion -> deleteTrackedThing()
+
+            DialogType.AddNumber,
+            DialogType.ReduceNumber,
             DialogType.AddPercentage,
             DialogType.ReducePercentage ->
-                changePercentageOfTrackedThing()
+                changePercentageOrNumberOfTrackedThing()
 
             DialogType.HealHealth,
             DialogType.DamageHealth ->
@@ -106,7 +111,7 @@ class TrackerViewModel(
     private fun editExistingTrackedThing() {
         viewModelScope.launch {
             val trackedThingToUpdate = editedTrackedThing
-            if (trackedThingToUpdate is TrackedThing.Health) {
+            if (trackedThingToUpdate is Health) {
                 trackedThingToUpdate.temporaryHp = 0
             }
             withContext(Dispatchers.Default) {
@@ -127,16 +132,18 @@ class TrackerViewModel(
         }
     }
 
-    private fun changePercentageOfTrackedThing() {
+    private fun changePercentageOrNumberOfTrackedThing() {
         viewModelScope.launch {
             when (dialogType) {
-                DialogType.AddPercentage ->
+                DialogType.AddPercentage,
+                DialogType.AddNumber ->
                     editedTrackedThing.add(editedTrackedThingValue.value.value)
 
-                DialogType.ReducePercentage ->
+                DialogType.ReducePercentage,
+                DialogType.ReduceNumber ->
                     editedTrackedThing.subtract(editedTrackedThingValue.value.value)
 
-                else -> throw Exception("Changing percentage on non-percent tracked thing.")
+                else -> throw Exception("$dialogType operation attempted on $editedTrackedThingType")
             }
             withContext(Dispatchers.Default) {
                 insertOrUpdateTrackedThingsUseCase.insertOrUpdate(editedTrackedThing)
@@ -168,7 +175,7 @@ class TrackerViewModel(
     private fun addTemporaryHpToTrackedThing() {
         viewModelScope.launch {
             val health = editedTrackedThing
-            require(health is TrackedThing.Health)
+            require(health is Health)
             health.addTemporaryHp(editedTrackedThingValue.value.value)
             withContext(Dispatchers.Default) {
                 insertOrUpdateTrackedThingsUseCase.insertOrUpdate(editedTrackedThing)
@@ -191,7 +198,7 @@ class TrackerViewModel(
         viewModelScope.launch {
             val itemCopy = item.copy()
             itemCopy.resetValueToDefault()
-            if (itemCopy is TrackedThing.Health) {
+            if (itemCopy is Health) {
                 itemCopy.temporaryHp = 0
             }
             withContext(Dispatchers.Default) {
@@ -236,7 +243,7 @@ class TrackerViewModel(
     fun setLevel(level: String) {
         viewModelScope.launch {
             val trackedThing = editedTrackedThing
-            require(trackedThing is TrackedThing.SpellSlot)
+            require(trackedThing is SpellSlot)
             trackedThing.level = level.toIntOrNull() ?: 0
             editedTrackedThingSpellSlotLevel.emit(
                 Common.InputFieldData(
@@ -273,6 +280,12 @@ class TrackerViewModel(
 
     fun subtractFromPercentageRequested(item: TrackedThing) =
         setupValueChangeDialog(item, DialogType.ReducePercentage, "Reduce percentage")
+
+    fun addToNumberRequested(item: TrackedThing) =
+        setupValueChangeDialog(item, DialogType.AddNumber, "Add")
+
+    fun subtractFromNumberRequested(item: TrackedThing) =
+        setupValueChangeDialog(item, DialogType.ReduceNumber, "Subtract")
 
     fun takeDamageRequested(item: TrackedThing) =
         setupValueChangeDialog(item, DialogType.DamageHealth, "Take damage")
@@ -336,5 +349,7 @@ class TrackerViewModel(
         HealHealth,
         AddTemporaryHp,
         RefreshAll,
+        AddNumber,
+        ReduceNumber
     }
 }
