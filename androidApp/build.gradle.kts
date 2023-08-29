@@ -1,7 +1,7 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
-    id("com.google.devtools.ksp") version "1.8.10-1.0.9"
+    id("com.google.devtools.ksp") version "1.9.0-1.0.12"
 }
 
 android {
@@ -10,12 +10,13 @@ android {
         }
     }
     namespace = "com.feko.generictabletoprpg"
-    compileSdk = 33
+    compileSdk = 34
+    buildToolsVersion = "34.0.0"
 
     defaultConfig {
         applicationId = "com.feko.generictabletoprpg"
         minSdk = 21
-        targetSdk = 33
+        targetSdk = 34
         versionCode = 1
         versionName = "1.0"
 
@@ -34,7 +35,6 @@ android {
         release {
             isMinifyEnabled = false
             proguardFiles(
-                @Suppress("UnstableApiUsage")
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
@@ -47,7 +47,6 @@ android {
     kotlinOptions {
         jvmTarget = "17"
     }
-    @Suppress("UnstableApiUsage")
     buildFeatures {
         compose = true
     }
@@ -66,25 +65,24 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.1")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.1")
     implementation("androidx.activity:activity-compose:1.7.2")
-    val composeUiVersion = "1.4.1"
+    val composeUiVersion = "1.5.0"
     implementation("androidx.compose.ui:ui:$composeUiVersion")
     implementation("androidx.compose.ui:ui-tooling-preview:$composeUiVersion")
-    implementation("androidx.compose.material3:material3:1.2.0-alpha02")
-    implementation("androidx.navigation:navigation-compose:2.6.0")
+    implementation("androidx.compose.material3:material3:1.2.0-alpha06")
+    implementation("androidx.navigation:navigation-compose:2.7.1")
     implementation(project(":shared"))
-    testImplementation("junit:junit:4.13.2")
     debugImplementation("androidx.compose.ui:ui-tooling:$composeUiVersion")
     debugImplementation("androidx.compose.ui:ui-test-manifest:$composeUiVersion")
     implementation("us.bpsm:edn-java:0.7.1")
     implementation("com.jakewharton.timber:timber:5.0.1")
-    implementation("io.insert-koin:koin-core:3.2.2")
-    implementation("io.insert-koin:koin-android:3.3.0")
-    implementation("io.insert-koin:koin-androidx-compose:3.3.0")
-    val roomVersion = "2.5.1"
+    implementation("io.insert-koin:koin-core:3.4.3")
+    implementation("io.insert-koin:koin-android:3.4.3")
+    implementation("io.insert-koin:koin-androidx-compose:3.4.6")
+    val roomVersion = "2.5.2"
     implementation("androidx.room:room-runtime:$roomVersion")
     ksp("androidx.room:room-compiler:$roomVersion")
     implementation("androidx.room:room-ktx:$roomVersion")
-    val moshiVersion = "1.14.0"
+    val moshiVersion = "1.15.0"
     implementation("com.squareup.moshi:moshi:$moshiVersion")
     implementation("com.squareup.moshi:moshi-kotlin:$moshiVersion")
     ksp(project(":annotation-processor"))

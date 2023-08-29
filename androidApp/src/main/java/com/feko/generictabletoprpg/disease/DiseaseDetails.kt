@@ -1,10 +1,8 @@
 package com.feko.generictabletoprpg.disease
 
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 import com.feko.generictabletoprpg.common.Common.TextWithLabel
 import com.feko.generictabletoprpg.common.DetailsScreen
@@ -26,7 +24,7 @@ object DiseaseDetails : DetailsScreen<DiseaseDetailsViewModel, Disease>() {
     ) {
         readiedItem.item.run {
             TextWithLabel("Name", name)
-            Divider(Modifier.padding(vertical = padding))
+            HorizontalDivider(thickness = padding)
             Text(description)
         }
     }

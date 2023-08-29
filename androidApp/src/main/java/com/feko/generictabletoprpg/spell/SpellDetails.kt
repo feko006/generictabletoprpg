@@ -2,8 +2,7 @@ package com.feko.generictabletoprpg.spell
 
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -45,7 +44,7 @@ object SpellDetails : DetailsScreen<SpellDetailsViewModel, Spell>() {
             }
             Spacer(Modifier.height(padding))
             TextWithLabel("Duration", duration)
-            Divider(Modifier.padding(vertical = padding))
+            HorizontalDivider(thickness = padding)
             Text(description)
         }
     }
