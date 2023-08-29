@@ -3,13 +3,16 @@ package com.feko.generictabletoprpg.spell
 import androidx.room.Dao
 import androidx.room.Query
 import com.feko.generictabletoprpg.common.BaseDao
+import com.feko.generictabletoprpg.common.IGetAll
+import com.feko.generictabletoprpg.common.IGetById
+import com.feko.generictabletoprpg.common.IInsertAll
 
 @Dao
 abstract class SpellDao
     : BaseDao<SpellEntity, Spell>(),
-    InsertSpellsPort,
-    GetAllSpellsPort,
-    GetSpellByIdPort {
+    IInsertAll<Spell>,
+    IGetAll<Spell>,
+    IGetById<Spell> {
     override fun getEntityFromCoreModel(item: Spell): SpellEntity =
         SpellEntity.fromCoreModel(item)
 

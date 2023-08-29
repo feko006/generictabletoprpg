@@ -3,17 +3,17 @@ package com.feko.generictabletoprpg.com.feko.generictabletoprpg.tracker
 import androidx.room.Dao
 import androidx.room.Query
 import com.feko.generictabletoprpg.common.BaseDao
-import com.feko.generictabletoprpg.tracker.DeleteTrackedThingGroupPort
-import com.feko.generictabletoprpg.tracker.GetAllTrackedThingGroupsPort
-import com.feko.generictabletoprpg.tracker.InsertOrUpdateTrackedThingGroupPort
+import com.feko.generictabletoprpg.common.IDelete
+import com.feko.generictabletoprpg.common.IGetAll
+import com.feko.generictabletoprpg.common.IInsertOrUpdate
 import com.feko.generictabletoprpg.tracker.TrackedThingGroup
 
 @Dao
 abstract class TrackedThingGroupDao :
     BaseDao<TrackedThingGroupEntity, TrackedThingGroup>(),
-    GetAllTrackedThingGroupsPort,
-    InsertOrUpdateTrackedThingGroupPort,
-    DeleteTrackedThingGroupPort {
+    IGetAll<TrackedThingGroup>,
+    IInsertOrUpdate<TrackedThingGroup>,
+    IDelete {
 
     override fun getEntityFromCoreModel(item: TrackedThingGroup): TrackedThingGroupEntity =
         TrackedThingGroupEntity(item.id, item.name)

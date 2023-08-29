@@ -3,13 +3,16 @@ package com.feko.generictabletoprpg.disease
 import androidx.room.Dao
 import androidx.room.Query
 import com.feko.generictabletoprpg.common.BaseDao
+import com.feko.generictabletoprpg.common.IGetAll
+import com.feko.generictabletoprpg.common.IGetById
+import com.feko.generictabletoprpg.common.IInsertAll
 
 @Dao
 abstract class DiseaseDao
     : BaseDao<DiseaseEntity, Disease>(),
-    InsertDiseasesPort,
-    GetAllDiseasesPort,
-    GetDiseaseByIdPort {
+    IInsertAll<Disease>,
+    IGetAll<Disease>,
+    IGetById<Disease> {
     override fun getEntityFromCoreModel(item: Disease): DiseaseEntity =
         DiseaseEntity.fromCoreModel(item)
 

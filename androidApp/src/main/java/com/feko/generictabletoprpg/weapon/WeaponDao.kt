@@ -3,14 +3,17 @@ package com.feko.generictabletoprpg.weapon
 import androidx.room.Dao
 import androidx.room.Query
 import com.feko.generictabletoprpg.common.BaseDao
+import com.feko.generictabletoprpg.common.IGetAll
+import com.feko.generictabletoprpg.common.IGetById
+import com.feko.generictabletoprpg.common.IInsertAll
 import com.feko.generictabletoprpg.weapon.*
 
 @Dao
 abstract class WeaponDao
     : BaseDao<WeaponEntity, Weapon>(),
-    InsertWeaponsPort,
-    GetAllWeaponsPort,
-    GetWeaponByIdPort {
+    IInsertAll<Weapon>,
+    IGetAll<Weapon>,
+    IGetById<Weapon> {
     override fun getEntityFromCoreModel(item: Weapon): WeaponEntity =
         WeaponEntity.fromCoreModel(item)
 

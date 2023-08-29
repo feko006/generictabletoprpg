@@ -1,16 +1,16 @@
 package com.feko.generictabletoprpg.searchall
 
-import com.feko.generictabletoprpg.common.GetAllUseCase
+import com.feko.generictabletoprpg.common.IGetAll
 import com.feko.generictabletoprpg.common.Named
 import com.feko.generictabletoprpg.common.OverviewViewModel
 
 class SearchAllViewModel(
-    private val getAllUseCases: List<GetAllUseCase<*>>
+    private val getAllDaos: List<IGetAll<*>>
 ) : OverviewViewModel<Any>() {
     override fun getAllItems(): List<Any> =
-        getAllUseCases
+        getAllDaos
             .flatMap {
-                it.getAll().filterNotNull()
+                it.getAllSortedByName().filterNotNull()
             }.sortedBy {
                 (it as Named).name
             }

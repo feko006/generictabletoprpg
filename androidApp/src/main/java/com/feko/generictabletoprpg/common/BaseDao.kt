@@ -4,11 +4,11 @@ import androidx.room.Insert
 import androidx.room.Update
 
 abstract class BaseDao<TEntity, TCore> :
-    InsertAllPort<TCore>,
-    InsertOrUpdatePort<TCore>,
-    GetAllPort<TCore>,
-    GetAllByParentPort<TCore>,
-    GetByIdPort<TCore>
+    IInsertAll<TCore>,
+    IInsertOrUpdate<TCore>,
+    IGetAll<TCore>,
+    IGetAllByParent<TCore>,
+    IGetById<TCore>
         where TCore : Named,
               TEntity : Named,
               TEntity : MutableIdentifiable,

@@ -3,19 +3,19 @@ package com.feko.generictabletoprpg.com.feko.generictabletoprpg.tracker
 import androidx.room.Dao
 import androidx.room.Query
 import com.feko.generictabletoprpg.common.BaseDao
-import com.feko.generictabletoprpg.tracker.DeleteTrackedThingPort
-import com.feko.generictabletoprpg.tracker.GetAllTrackedThingsByGroupPort
+import com.feko.generictabletoprpg.common.IDelete
+import com.feko.generictabletoprpg.common.IGetAllByParent
+import com.feko.generictabletoprpg.common.IInsertOrUpdate
 import com.feko.generictabletoprpg.tracker.Health
-import com.feko.generictabletoprpg.tracker.InsertOrUpdateTrackedThingPort
 import com.feko.generictabletoprpg.tracker.SpellSlot
 import com.feko.generictabletoprpg.tracker.TrackedThing
 
 @Dao
 abstract class TrackedThingDao :
     BaseDao<TrackedThingEntity, TrackedThing>(),
-    GetAllTrackedThingsByGroupPort,
-    InsertOrUpdateTrackedThingPort,
-    DeleteTrackedThingPort {
+    IGetAllByParent<TrackedThing>,
+    IInsertOrUpdate<TrackedThing>,
+    IDelete {
     override fun getEntityFromCoreModel(item: TrackedThing): TrackedThingEntity {
         var level = 0
         if (item is SpellSlot) {

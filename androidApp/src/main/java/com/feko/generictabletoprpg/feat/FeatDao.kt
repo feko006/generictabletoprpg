@@ -3,13 +3,16 @@ package com.feko.generictabletoprpg.feat
 import androidx.room.Dao
 import androidx.room.Query
 import com.feko.generictabletoprpg.common.BaseDao
+import com.feko.generictabletoprpg.common.IGetAll
+import com.feko.generictabletoprpg.common.IGetById
+import com.feko.generictabletoprpg.common.IInsertAll
 
 @Dao
 abstract class FeatDao
     : BaseDao<FeatEntity, Feat>(),
-    InsertFeatsPort,
-    GetAllFeatsPort,
-    GetFeatByIdPort {
+    IInsertAll<Feat>,
+    IGetAll<Feat>,
+    IGetById<Feat> {
     override fun getEntityFromCoreModel(item: Feat): FeatEntity =
         FeatEntity.fromCoreModel(item)
 

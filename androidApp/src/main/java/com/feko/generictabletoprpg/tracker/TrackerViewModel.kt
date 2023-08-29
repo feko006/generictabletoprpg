@@ -3,10 +3,7 @@ package com.feko.generictabletoprpg.com.feko.generictabletoprpg.tracker
 import androidx.lifecycle.viewModelScope
 import com.feko.generictabletoprpg.common.Common
 import com.feko.generictabletoprpg.common.OverviewViewModel
-import com.feko.generictabletoprpg.tracker.DeleteTrackedThingUseCase
-import com.feko.generictabletoprpg.tracker.GetAllTrackedThingsUseCase
 import com.feko.generictabletoprpg.tracker.Health
-import com.feko.generictabletoprpg.tracker.InsertOrUpdateTrackedThingUseCase
 import com.feko.generictabletoprpg.tracker.SpellSlot
 import com.feko.generictabletoprpg.tracker.TrackedThing
 import kotlinx.coroutines.Dispatchers
@@ -16,9 +13,7 @@ import kotlinx.coroutines.withContext
 
 class TrackerViewModel(
     private val groupId: Long,
-    private val getAllTrackedThingsUseCase: GetAllTrackedThingsUseCase,
-    private val insertOrUpdateTrackedThingsUseCase: InsertOrUpdateTrackedThingUseCase,
-    private val deleteTrackedThingUseCase: DeleteTrackedThingUseCase
+    private val trackedThingDao: TrackedThingDao
 ) : OverviewViewModel<TrackedThing>() {
     val editedTrackedThingName = MutableStateFlow(Common.InputFieldData.EMPTY)
     val editedTrackedThingSpellSlotLevel = MutableStateFlow(Common.InputFieldData.EMPTY)
@@ -29,7 +24,7 @@ class TrackerViewModel(
     private lateinit var editedTrackedThing: TrackedThing
     lateinit var dialogType: DialogType
 
-    override fun getAllItems(): List<TrackedThing> = getAllTrackedThingsUseCase.getAll(groupId)
+    override fun getAllItems(): List<TrackedThing> = trackedThingDao.getAllSortedByName(groupId)
 
     fun showCreateDialog(type: TrackedThing.Type) {
         viewModelScope.launch {
@@ -100,7 +95,7 @@ class TrackerViewModel(
     private fun createNewTrackedThing() {
         viewModelScope.launch {
             withContext(Dispatchers.Default) {
-                val id = insertOrUpdateTrackedThingsUseCase.insertOrUpdate(editedTrackedThing)
+                val id = trackedThingDao.insertOrUpdate(editedTrackedThing)
                 editedTrackedThing.id = id
             }
             addItem(editedTrackedThing)
@@ -115,7 +110,7 @@ class TrackerViewModel(
                 trackedThingToUpdate.temporaryHp = 0
             }
             withContext(Dispatchers.Default) {
-                insertOrUpdateTrackedThingsUseCase.insertOrUpdate(trackedThingToUpdate)
+                trackedThingDao.insertOrUpdate(trackedThingToUpdate)
             }
             replaceItem(trackedThingToUpdate)
             _isDialogVisible.emit(false)
@@ -125,7 +120,7 @@ class TrackerViewModel(
     private fun deleteTrackedThing() {
         viewModelScope.launch {
             withContext(Dispatchers.Default) {
-                deleteTrackedThingUseCase.delete(editedTrackedThing)
+                trackedThingDao.delete(editedTrackedThing.id)
             }
             removeItem(editedTrackedThing)
             _isDialogVisible.emit(false)
@@ -146,7 +141,7 @@ class TrackerViewModel(
                 else -> throw Exception("$dialogType operation attempted on $editedTrackedThingType")
             }
             withContext(Dispatchers.Default) {
-                insertOrUpdateTrackedThingsUseCase.insertOrUpdate(editedTrackedThing)
+                trackedThingDao.insertOrUpdate(editedTrackedThing)
             }
             _isDialogVisible.emit(false)
             replaceItem(editedTrackedThing)
@@ -165,7 +160,7 @@ class TrackerViewModel(
                 else -> throw Exception("Changing health on non-health tracked thing.")
             }
             withContext(Dispatchers.Default) {
-                insertOrUpdateTrackedThingsUseCase.insertOrUpdate(editedTrackedThing)
+                trackedThingDao.insertOrUpdate(editedTrackedThing)
             }
             _isDialogVisible.emit(false)
             replaceItem(editedTrackedThing)
@@ -178,7 +173,7 @@ class TrackerViewModel(
             require(health is Health)
             health.addTemporaryHp(editedTrackedThingValue.value.value)
             withContext(Dispatchers.Default) {
-                insertOrUpdateTrackedThingsUseCase.insertOrUpdate(editedTrackedThing)
+                trackedThingDao.insertOrUpdate(editedTrackedThing)
             }
             _isDialogVisible.emit(false)
             replaceItem(editedTrackedThing)
@@ -202,7 +197,7 @@ class TrackerViewModel(
                 itemCopy.temporaryHp = 0
             }
             withContext(Dispatchers.Default) {
-                insertOrUpdateTrackedThingsUseCase.insertOrUpdate(itemCopy)
+                trackedThingDao.insertOrUpdate(itemCopy)
             }
             replaceItem(itemCopy)
         }
@@ -221,7 +216,7 @@ class TrackerViewModel(
             val itemCopy = item.copy()
             itemCopy.subtract("1")
             withContext(Dispatchers.Default) {
-                insertOrUpdateTrackedThingsUseCase.insertOrUpdate(itemCopy)
+                trackedThingDao.insertOrUpdate(itemCopy)
             }
             replaceItem(itemCopy)
         }

@@ -3,13 +3,16 @@ package com.feko.generictabletoprpg.action
 import androidx.room.Dao
 import androidx.room.Query
 import com.feko.generictabletoprpg.common.BaseDao
+import com.feko.generictabletoprpg.common.IGetAll
+import com.feko.generictabletoprpg.common.IGetById
+import com.feko.generictabletoprpg.common.IInsertAll
 
 @Dao
 abstract class ActionDao
     : BaseDao<ActionEntity, Action>(),
-    InsertActionsPort,
-    GetAllActionsPort,
-    GetActionByIdPort {
+    IInsertAll<Action>,
+    IGetAll<Action>,
+    IGetById<Action> {
     override fun getEntityFromCoreModel(item: Action): ActionEntity =
         ActionEntity.fromCoreModel(item)
 

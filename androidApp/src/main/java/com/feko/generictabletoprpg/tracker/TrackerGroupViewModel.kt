@@ -3,9 +3,6 @@ package com.feko.generictabletoprpg.com.feko.generictabletoprpg.tracker
 import androidx.lifecycle.viewModelScope
 import com.feko.generictabletoprpg.common.Common
 import com.feko.generictabletoprpg.common.OverviewViewModel
-import com.feko.generictabletoprpg.tracker.DeleteTrackedThingGroupUseCase
-import com.feko.generictabletoprpg.tracker.GetAllTrackedThingGroupsUseCase
-import com.feko.generictabletoprpg.tracker.InsertOrUpdateTrackedThingGroupUseCase
 import com.feko.generictabletoprpg.tracker.TrackedThingGroup
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -13,9 +10,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class TrackerGroupViewModel(
-    private val getAllTrackedThingGroupsUseCase: GetAllTrackedThingGroupsUseCase,
-    private val insertOrUpdateTrackedThingGroupUseCase: InsertOrUpdateTrackedThingGroupUseCase,
-    private val deleteTrackedThingGroupUseCase: DeleteTrackedThingGroupUseCase
+    private val trackedThingGroupDao: TrackedThingGroupDao
 ) : OverviewViewModel<TrackedThingGroup>() {
     val groupName = MutableStateFlow(Common.InputFieldData.EMPTY)
     val confirmButtonEnabled = MutableStateFlow(false)
@@ -24,7 +19,7 @@ class TrackerGroupViewModel(
 
     private var groupId: Long = 0L
 
-    override fun getAllItems(): List<TrackedThingGroup> = getAllTrackedThingGroupsUseCase.getAll()
+    override fun getAllItems(): List<TrackedThingGroup> = trackedThingGroupDao.getAllSortedByName()
 
     fun newTrackedThingGroupRequested() {
         viewModelScope.launch {
@@ -87,8 +82,7 @@ class TrackerGroupViewModel(
             groupName.value.value
         )
         withContext(Dispatchers.Default) {
-            val trackedThingId =
-                insertOrUpdateTrackedThingGroupUseCase.insertOrUpdate(item)
+            val trackedThingId = trackedThingGroupDao.insertOrUpdate(item)
             item.id = trackedThingId
         }
         if (groupId == 0L) {
@@ -101,7 +95,7 @@ class TrackerGroupViewModel(
     private suspend fun deleteGroup() {
         val item = TrackedThingGroup(groupId, "")
         withContext(Dispatchers.Default) {
-            deleteTrackedThingGroupUseCase.delete(item)
+            trackedThingGroupDao.delete(item.id)
         }
         removeItem(item)
     }
