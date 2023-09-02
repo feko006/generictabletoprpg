@@ -11,15 +11,13 @@ import kotlinx.coroutines.withContext
 
 class TrackerGroupViewModel(
     private val trackedThingGroupDao: TrackedThingGroupDao
-) : OverviewViewModel<TrackedThingGroup>() {
+) : OverviewViewModel<TrackedThingGroup>(trackedThingGroupDao) {
     val groupName = MutableStateFlow(Common.InputFieldData.EMPTY)
     val confirmButtonEnabled = MutableStateFlow(false)
 
     lateinit var dialogType: DialogType
 
     private var groupId: Long = 0L
-
-    override fun getAllItems(): List<TrackedThingGroup> = trackedThingGroupDao.getAllSortedByName()
 
     fun newTrackedThingGroupRequested() {
         viewModelScope.launch {

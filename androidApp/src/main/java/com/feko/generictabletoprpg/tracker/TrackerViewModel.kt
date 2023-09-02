@@ -14,7 +14,7 @@ import kotlinx.coroutines.withContext
 class TrackerViewModel(
     private val groupId: Long,
     private val trackedThingDao: TrackedThingDao
-) : OverviewViewModel<TrackedThing>() {
+) : OverviewViewModel<TrackedThing>(trackedThingDao) {
     val editedTrackedThingName = MutableStateFlow(Common.InputFieldData.EMPTY)
     val editedTrackedThingSpellSlotLevel = MutableStateFlow(Common.InputFieldData.EMPTY)
     val editedTrackedThingValue = MutableStateFlow(Common.InputFieldData.EMPTY)

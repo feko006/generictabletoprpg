@@ -6,7 +6,7 @@ import com.feko.generictabletoprpg.common.OverviewViewModel
 
 class SearchAllViewModel(
     private val getAllDaos: List<IGetAll<*>>
-) : OverviewViewModel<Any>() {
+) : OverviewViewModel<Any>(null) {
     override fun getAllItems(): List<Any> =
         getAllDaos
             .flatMap {

@@ -9,7 +9,9 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-abstract class OverviewViewModel<T> : ViewModel() {
+open class OverviewViewModel<T>(
+    private val getAll: IGetAll<T>?
+) : ViewModel() {
     protected val _items =
         MutableStateFlow<List<T>>(listOf())
     val searchString: Flow<String>
@@ -45,7 +47,7 @@ abstract class OverviewViewModel<T> : ViewModel() {
         }
     }
 
-    abstract fun getAllItems(): List<T>
+    open fun getAllItems(): List<T> = getAll!!.getAllSortedByName()
 
     fun searchStringUpdated(searchString: String) {
         viewModelScope.launch {
