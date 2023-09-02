@@ -32,11 +32,12 @@ import com.feko.generictabletoprpg.weapon.WeaponDetails
 import kotlinx.coroutines.launch
 
 object Navigation {
-    interface Destination {
-        val screenTitle: String
-        val route: String
-        val isRootDestination: Boolean
-        fun navHostComposable(
+    abstract class Destination(
+        var screenTitle: String,
+        var route: String,
+        var isRootDestination: Boolean
+    ) {
+        abstract fun navHostComposable(
             navGraphBuilder: NavGraphBuilder,
             navController: NavHostController,
             appBarTitle: MutableState<String>,

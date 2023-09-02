@@ -22,22 +22,18 @@ import com.feko.generictabletoprpg.weapon.Weapon
 import com.feko.generictabletoprpg.weapon.WeaponDetails
 import org.koin.androidx.compose.koinViewModel
 
-object SearchAll : OverviewScreen<SearchAllViewModel, Any>() {
-    override val screenTitle: String
-        get() = "Search All"
-    override val route: String
-        get() = "searchall"
-    override val isRootDestination: Boolean
-        get() = true
-    override val detailsNavRouteProvider: Navigation.DetailsNavRouteProvider
-        get() = object : Navigation.DetailsNavRouteProvider {
-            override fun getNavRoute(id: Long): String {
-                throw UnsupportedOperationException(
-                    "Details nav route provider should not be used from the search all screen."
-                )
-            }
+object SearchAll
+    : OverviewScreen<SearchAllViewModel, Any>(
+    object : Navigation.DetailsNavRouteProvider {
+        override fun getNavRoute(id: Long): String {
+            throw UnsupportedOperationException(
+                "Details nav route provider should not be used from the search all screen."
+            )
         }
-
+    },
+    "Search All",
+    "searchall"
+) {
     @Composable
     override fun getViewModel(): SearchAllViewModel = koinViewModel()
 

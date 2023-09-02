@@ -65,31 +65,28 @@ import com.feko.generictabletoprpg.tracker.TrackedThing
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 
-object Tracker : OverviewScreen<TrackerViewModel, TrackedThing>(),
-    Navigation.DetailsNavRouteProvider {
-
-    private const val groupIdArgumentName = "id"
-    private var groupId: Long = 0L
-
-    override val screenTitle: String
-        get() = _screenTitle
-    private var _screenTitle = "Tracker"
-    override val route: String
-        get() = constructRoute("{$groupIdArgumentName}")
-    override val isRootDestination: Boolean
-        get() = false
-    override val detailsNavRouteProvider: Navigation.DetailsNavRouteProvider
-        get() = object : Navigation.DetailsNavRouteProvider {
-            override fun getNavRoute(id: Long): String {
-                throw UnsupportedOperationException(
-                    "Details nav route provider should not be used from the search all screen."
-                )
-            }
+object Tracker
+    : OverviewScreen<TrackerViewModel, TrackedThing>(
+    object : Navigation.DetailsNavRouteProvider {
+        override fun getNavRoute(id: Long): String {
+            throw UnsupportedOperationException(
+                "Details nav route provider should not be used from the search all screen."
+            )
         }
-    override val isFabEnabled: Boolean
-        get() = true
-    override val isFabDropdownMenuEnabled: Boolean
-        get() = true
+    },
+    "Tracker",
+    "",
+    isRootDestination = false,
+    isFabEnabled = true,
+    isFabDropdownMenuEnabled = true
+), Navigation.DetailsNavRouteProvider {
+    private const val groupIdArgumentName = "id"
+
+    init {
+        route = constructRoute("{$groupIdArgumentName}")
+    }
+
+    private var groupId: Long = 0L
 
     @Composable
     override fun getViewModel(): TrackerViewModel =

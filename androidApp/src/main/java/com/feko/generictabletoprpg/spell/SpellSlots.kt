@@ -25,19 +25,18 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import com.feko.generictabletoprpg.ButtonState
-import com.feko.generictabletoprpg.Navigation
 import com.feko.generictabletoprpg.common.Common.Dropdown
 import com.feko.generictabletoprpg.rememberSaveableMutableStateIntToIntMap
 
-object SpellSlots : Navigation.Destination {
-    override val route: String
+object SpellSlots {
+    val route: String
         get() = "spellSlots"
-    override val isRootDestination: Boolean
+    val isRootDestination: Boolean
         get() = true
-    override val screenTitle: String
+    val screenTitle: String
         get() = "Spell Slots"
 
-    override fun navHostComposable(
+    fun navHostComposable(
         navGraphBuilder: NavGraphBuilder,
         navController: NavHostController,
         appBarTitle: MutableState<String>,

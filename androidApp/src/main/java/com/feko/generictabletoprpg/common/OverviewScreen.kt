@@ -41,13 +41,16 @@ import com.feko.generictabletoprpg.ButtonState
 import com.feko.generictabletoprpg.Navigation
 import com.feko.generictabletoprpg.theme.Typography
 
-abstract class OverviewScreen<TViewModel, T> :
-    Navigation.Destination
+abstract class OverviewScreen<TViewModel, T>(
+    private val detailsNavRouteProvider: Navigation.DetailsNavRouteProvider,
+    screenTitle: String,
+    route: String,
+    isRootDestination: Boolean = true,
+    private val isFabEnabled: Boolean = false,
+    private val isFabDropdownMenuEnabled: Boolean = false
+) : Navigation.Destination(screenTitle, route, isRootDestination)
         where TViewModel : OverviewViewModel<T> {
-    abstract val detailsNavRouteProvider: Navigation.DetailsNavRouteProvider
 
-    open val isFabEnabled = false
-    open val isFabDropdownMenuEnabled = false
     final override fun navHostComposable(
         navGraphBuilder: NavGraphBuilder,
         navController: NavHostController,

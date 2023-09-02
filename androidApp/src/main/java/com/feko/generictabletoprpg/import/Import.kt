@@ -27,14 +27,11 @@ import com.feko.generictabletoprpg.Navigation
 import org.koin.androidx.compose.koinViewModel
 
 
-object Import : Navigation.Destination {
-    override val screenTitle: String
-        get() = "Import"
-    override val route: String
-        get() = "import"
-    override val isRootDestination: Boolean
-        get() = true
-
+object Import : Navigation.Destination(
+    "Import",
+    "import",
+    isRootDestination = true
+) {
     override fun navHostComposable(
         navGraphBuilder: NavGraphBuilder,
         navController: NavHostController,
@@ -90,6 +87,7 @@ object Import : Navigation.Destination {
                         Icon(Icons.Default.Add, "")
                     }
                 }
+
                 is ImportViewModel.ImportScreenState.Importing -> {
                     Box(
                         Modifier.fillMaxSize()

@@ -9,14 +9,11 @@ import com.feko.generictabletoprpg.common.DetailsScreen
 import com.feko.generictabletoprpg.common.DetailsViewModel
 import org.koin.androidx.compose.koinViewModel
 
-object DiseaseDetails : DetailsScreen<DiseaseDetailsViewModel, Disease>() {
-    override val screenTitle: String
-        get() = "Disease Details"
-    override val isRootDestination: Boolean
-        get() = false
-    override val routeBase: String
-        get() = "diseaseDetails"
-
+object DiseaseDetails
+    : DetailsScreen<DiseaseDetailsViewModel, Disease>(
+    "Disease Details",
+    "disease"
+) {
     @Composable
     override fun ScreenContent(
         readiedItem: DetailsViewModel.DetailsScreenState.ItemReady<Disease>,

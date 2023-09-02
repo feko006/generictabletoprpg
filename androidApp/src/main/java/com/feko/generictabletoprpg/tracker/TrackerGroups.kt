@@ -37,27 +37,20 @@ import androidx.compose.ui.text.input.ImeAction.Companion.Done
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavHostController
-import com.feko.generictabletoprpg.Navigation
 import com.feko.generictabletoprpg.common.Named
 import com.feko.generictabletoprpg.common.OverviewScreen
 import com.feko.generictabletoprpg.tracker.TrackedThingGroup
 import org.koin.androidx.compose.koinViewModel
 
-object TrackerGroups : OverviewScreen<TrackerGroupViewModel, TrackedThingGroup>() {
-    override val detailsNavRouteProvider: Navigation.DetailsNavRouteProvider
-        get() = Tracker
-
+object TrackerGroups
+    : OverviewScreen<TrackerGroupViewModel, TrackedThingGroup>(
+    Tracker,
+    "Tracker",
+    "trackergroups",
+    isFabEnabled = true
+) {
     @Composable
     override fun getViewModel(): TrackerGroupViewModel = koinViewModel()
-
-    override val screenTitle: String
-        get() = "Tracker"
-    override val route: String
-        get() = "trackergroups"
-    override val isRootDestination: Boolean
-        get() = true
-    override val isFabEnabled: Boolean
-        get() = true
 
     override fun onFabClicked(viewModel: TrackerGroupViewModel) {
         viewModel.newTrackedThingGroupRequested()

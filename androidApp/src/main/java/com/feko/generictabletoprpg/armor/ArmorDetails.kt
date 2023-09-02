@@ -11,13 +11,11 @@ import com.feko.generictabletoprpg.common.DetailsViewModel
 import org.koin.androidx.compose.koinViewModel
 
 
-object ArmorDetails : DetailsScreen<ArmorDetailsViewModel, Armor>() {
-    override val routeBase = "armorDetails"
-    override val isRootDestination: Boolean
-        get() = false
-    override val screenTitle: String
-        get() = "Armor Details"
-
+object ArmorDetails
+    : DetailsScreen<ArmorDetailsViewModel, Armor>(
+    "Armor Details",
+    "armor"
+) {
     @Composable
     override fun getViewModel(): ArmorDetailsViewModel = koinViewModel()
 

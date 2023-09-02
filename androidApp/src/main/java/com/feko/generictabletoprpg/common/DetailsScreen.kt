@@ -20,15 +20,19 @@ import androidx.navigation.navArgument
 import com.feko.generictabletoprpg.ButtonState
 import com.feko.generictabletoprpg.Navigation
 
-abstract class DetailsScreen<TViewModel, T> :
-    Navigation.Destination,
+abstract class DetailsScreen<TViewModel, T>(
+    screenTitle: String,
+    val routeBase: String,
+    val idArgumentName: String = "id",
+    isRootDestination: Boolean = false
+) :
+    Navigation.Destination(
+        screenTitle,
+        "${routeBase}/{$idArgumentName}",
+        isRootDestination
+    ),
     Navigation.DetailsNavRouteProvider
         where TViewModel : DetailsViewModel<T> {
-    abstract val routeBase: String
-
-    private val idArgumentName = "id"
-    final override val route: String
-        get() = "${routeBase}/{$idArgumentName}"
 
     final override fun getNavRoute(id: Long): String = "${routeBase}/$id"
 
@@ -68,6 +72,7 @@ abstract class DetailsScreen<TViewModel, T> :
                     )
                 }
             }
+
             is DetailsViewModel.DetailsScreenState.ItemReady<*> -> {
                 @Suppress("UNCHECKED_CAST")
                 val readiedItem =

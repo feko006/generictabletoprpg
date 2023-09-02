@@ -13,13 +13,11 @@ import com.feko.generictabletoprpg.common.DetailsViewModel
 import org.koin.androidx.compose.koinViewModel
 
 
-object SpellDetails : DetailsScreen<SpellDetailsViewModel, Spell>() {
-    override val routeBase = "spellDetails"
-    override val isRootDestination: Boolean
-        get() = false
-    override val screenTitle: String
-        get() = "Spell Details"
-
+object SpellDetails
+    : DetailsScreen<SpellDetailsViewModel, Spell>(
+    "Spell Details",
+    "spell"
+) {
     @Composable
     override fun getViewModel(): SpellDetailsViewModel = koinViewModel()
 
