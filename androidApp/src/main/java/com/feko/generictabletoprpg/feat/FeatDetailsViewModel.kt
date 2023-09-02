@@ -4,8 +4,4 @@ import com.feko.generictabletoprpg.common.DetailsViewModel
 import com.feko.generictabletoprpg.common.IGetById
 
 
-class FeatDetailsViewModel(
-    private val getFeatById: IGetById<Feat>
-) : DetailsViewModel<Feat>() {
-    override fun getItemById(id: Long) = getFeatById.getById(id)
-}
+class FeatDetailsViewModel(getById: IGetById<Feat>) : DetailsViewModel<Feat>(getById)

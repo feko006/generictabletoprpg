@@ -9,7 +9,9 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-abstract class DetailsViewModel<T> : ViewModel() {
+abstract class DetailsViewModel<T>(
+    private val getById: IGetById<T>
+) : ViewModel() {
     val screenState: Flow<DetailsScreenState>
         get() = _item.map { item ->
             if (item == null) {
@@ -35,7 +37,7 @@ abstract class DetailsViewModel<T> : ViewModel() {
         }
     }
 
-    abstract fun getItemById(id: Long): T
+    open fun getItemById(id: Long): T = getById.getById(id)
 
     sealed class DetailsScreenState {
         object Loading : DetailsScreenState()
