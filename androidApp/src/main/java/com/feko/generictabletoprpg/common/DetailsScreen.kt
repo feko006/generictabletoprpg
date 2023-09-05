@@ -61,7 +61,7 @@ abstract class DetailsScreen<TViewModel, T>(
         val screenState by viewModel.screenState.collectAsState(
             DetailsViewModel.DetailsScreenState.Loading
         )
-        viewModel.featIdChanged(id)
+        viewModel.itemIdChanged(id)
         when (screenState) {
             is DetailsViewModel.DetailsScreenState.Loading -> {
                 Box(Modifier.fillMaxSize()) {

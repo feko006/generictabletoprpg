@@ -24,7 +24,7 @@ abstract class DetailsViewModel<T>(
         MutableStateFlow(null)
     private var _id: Long = -1
 
-    fun featIdChanged(id: Long) {
+    fun itemIdChanged(id: Long) {
         if (_id != id) {
             viewModelScope.launch {
                 _id = id
@@ -40,7 +40,7 @@ abstract class DetailsViewModel<T>(
     open fun getItemById(id: Long): T = getById.getById(id)
 
     sealed class DetailsScreenState {
-        object Loading : DetailsScreenState()
+        data object Loading : DetailsScreenState()
         class ItemReady<T>(val item: T) : DetailsScreenState()
     }
 }
