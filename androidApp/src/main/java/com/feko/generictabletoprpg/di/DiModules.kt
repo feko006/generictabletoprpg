@@ -4,13 +4,10 @@ import androidx.room.Room
 import com.feko.generictabletoprpg.AppViewModel
 import com.feko.generictabletoprpg.action.ActionDao
 import com.feko.generictabletoprpg.action.ActionDetailsViewModel
-import com.feko.generictabletoprpg.action.ActionOverviewViewModel
 import com.feko.generictabletoprpg.ammunition.AmmunitionDao
 import com.feko.generictabletoprpg.ammunition.AmmunitionDetailsViewModel
-import com.feko.generictabletoprpg.ammunition.AmmunitionOverviewViewModel
 import com.feko.generictabletoprpg.armor.ArmorDao
 import com.feko.generictabletoprpg.armor.ArmorDetailsViewModel
-import com.feko.generictabletoprpg.armor.ArmorOverviewViewModel
 import com.feko.generictabletoprpg.com.feko.generictabletoprpg.tracker.TrackerGroupViewModel
 import com.feko.generictabletoprpg.com.feko.generictabletoprpg.tracker.TrackerViewModel
 import com.feko.generictabletoprpg.common.IUserPreferences
@@ -19,13 +16,10 @@ import com.feko.generictabletoprpg.common.TimberLogger
 import com.feko.generictabletoprpg.common.UserPreferences
 import com.feko.generictabletoprpg.condition.ConditionDao
 import com.feko.generictabletoprpg.condition.ConditionDetailsViewModel
-import com.feko.generictabletoprpg.condition.ConditionOverviewViewModel
 import com.feko.generictabletoprpg.disease.DiseaseDao
 import com.feko.generictabletoprpg.disease.DiseaseDetailsViewModel
-import com.feko.generictabletoprpg.disease.DiseaseOverviewViewModel
 import com.feko.generictabletoprpg.feat.FeatDao
 import com.feko.generictabletoprpg.feat.FeatDetailsViewModel
-import com.feko.generictabletoprpg.feat.FeatOverviewViewModel
 import com.feko.generictabletoprpg.import.IJson
 import com.feko.generictabletoprpg.import.IParseEdnAsMap
 import com.feko.generictabletoprpg.import.IProcessEdnMap
@@ -57,10 +51,8 @@ import com.feko.generictabletoprpg.room.GenericTabletopRpgDatabase
 import com.feko.generictabletoprpg.searchall.SearchAllViewModel
 import com.feko.generictabletoprpg.spell.SpellDao
 import com.feko.generictabletoprpg.spell.SpellDetailsViewModel
-import com.feko.generictabletoprpg.spell.SpellOverviewViewModel
 import com.feko.generictabletoprpg.weapon.WeaponDao
 import com.feko.generictabletoprpg.weapon.WeaponDetailsViewModel
-import com.feko.generictabletoprpg.weapon.WeaponOverviewViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.module.Module
 import org.koin.dsl.module
@@ -124,7 +116,6 @@ fun Module.includeSpellDependencies() {
         spellDao
     }
 
-    viewModel { SpellOverviewViewModel(get<SpellDao>()) }
     viewModel { SpellDetailsViewModel(get<SpellDao>()) }
 }
 
@@ -135,7 +126,6 @@ fun Module.includeFeatDependencies() {
         featDao
     }
 
-    viewModel { FeatOverviewViewModel(get<FeatDao>()) }
     viewModel { FeatDetailsViewModel(get<FeatDao>()) }
 }
 
@@ -146,7 +136,6 @@ fun Module.includeActionDependencies() {
         actionDao
     }
 
-    viewModel { ActionOverviewViewModel(get<ActionDao>()) }
     viewModel { ActionDetailsViewModel(get<ActionDao>()) }
 }
 
@@ -157,7 +146,6 @@ fun Module.includeConditionDependencies() {
         conditionDao
     }
 
-    viewModel { ConditionOverviewViewModel(get<ConditionDao>()) }
     viewModel { ConditionDetailsViewModel(get<ConditionDao>()) }
 }
 
@@ -168,7 +156,6 @@ fun Module.includeDiseaseDependencies() {
         diseaseDao
     }
 
-    viewModel { DiseaseOverviewViewModel(get<DiseaseDao>()) }
     viewModel { DiseaseDetailsViewModel(get<DiseaseDao>()) }
 }
 
@@ -179,7 +166,6 @@ fun Module.includeWeaponDependencies() {
         weaponDao
     }
 
-    viewModel { WeaponOverviewViewModel(get<WeaponDao>()) }
     viewModel { WeaponDetailsViewModel(get<WeaponDao>()) }
 }
 
@@ -190,7 +176,6 @@ fun Module.includeAmmunitionDependencies() {
         ammunitionDao
     }
 
-    viewModel { AmmunitionOverviewViewModel(get<AmmunitionDao>()) }
     viewModel { AmmunitionDetailsViewModel(get<AmmunitionDao>()) }
 }
 
@@ -201,7 +186,6 @@ fun Module.includeArmorDependencies() {
         armorDao
     }
 
-    viewModel { ArmorOverviewViewModel(get<ArmorDao>()) }
     viewModel { ArmorDetailsViewModel(get<ArmorDao>()) }
 }
 

@@ -55,22 +55,13 @@ object Navigation {
             TrackerGroups,
             Tracker,
             SpellDetails,
-//            SpellOverview,
             WeaponDetails,
-//            WeaponOverview,
             ArmorDetails,
-//            ArmorOverview,
-//            ActionOverview,
             ActionDetails,
-//            ConditionOverview,
             ConditionDetails,
-//            DiseaseOverview,
             DiseaseDetails,
             FeatDetails,
-//            FeatOverview,
             AmmunitionDetails,
-//            AmmunitionOverview,
-//            SpellSlots,
             Import
         )
 
