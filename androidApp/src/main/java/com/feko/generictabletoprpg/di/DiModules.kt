@@ -54,10 +54,9 @@ import com.feko.generictabletoprpg.spell.SpellDetailsViewModel
 import com.feko.generictabletoprpg.weapon.WeaponDao
 import com.feko.generictabletoprpg.weapon.WeaponDetailsViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
-import org.koin.core.module.Module
 import org.koin.dsl.module
 
-val diModules = module {
+val commonModule = module {
     // Services
     single<Logger> { TimberLogger() }
     single {
@@ -70,18 +69,6 @@ val diModules = module {
             .build()
     }
 
-    includeSpellDependencies()
-    includeFeatDependencies()
-    includeActionDependencies()
-    includeConditionDependencies()
-    includeDiseaseDependencies()
-    includeWeaponDependencies()
-    includeAmmunitionDependencies()
-    includeArmorDependencies()
-    includeImportDependencies()
-    includeTrackedThingGroupDependencies()
-    includeTrackedThingDependencies()
-
     single<IParseEdnAsMap> { ParseEdnAsMapEdnJava() }
     single<IProcessEdnMap> { ProcessEdnMapEdnJava() }
     single<IUserPreferences> { UserPreferences(get()) }
@@ -93,123 +80,129 @@ val diModules = module {
 
     // VMs
     viewModel { AppViewModel(get()) }
-    viewModel {
-        SearchAllViewModel(
-            listOf(
-                get<ActionDao>(),
-                get<AmmunitionDao>(),
-                get<ArmorDao>(),
-                get<ConditionDao>(),
-                get<DiseaseDao>(),
-                get<FeatDao>(),
-                get<SpellDao>(),
-                get<WeaponDao>(),
-            )
-        )
-    }
 }
 
-fun Module.includeSpellDependencies() {
+val spellModule = module {
     single {
-        val spellDao = get<GenericTabletopRpgDatabase>().spellDao()
-        spellDao.logger = get()
-        spellDao
+        get<GenericTabletopRpgDatabase>()
+            .spellDao()
+            .apply {
+                logger = get()
+            }
     }
 
     viewModel { SpellDetailsViewModel(get<SpellDao>()) }
 }
 
-fun Module.includeFeatDependencies() {
+val featModule = module {
     single {
-        val featDao = get<GenericTabletopRpgDatabase>().featDao()
-        featDao.logger = get()
-        featDao
+        get<GenericTabletopRpgDatabase>()
+            .featDao()
+            .apply {
+                logger = get()
+            }
     }
 
     viewModel { FeatDetailsViewModel(get<FeatDao>()) }
 }
 
-fun Module.includeActionDependencies() {
+val actionModule = module {
     single {
-        val actionDao = get<GenericTabletopRpgDatabase>().actionDao()
-        actionDao.logger = get()
-        actionDao
+        get<GenericTabletopRpgDatabase>()
+            .actionDao()
+            .apply {
+                logger = get()
+            }
     }
 
     viewModel { ActionDetailsViewModel(get<ActionDao>()) }
 }
 
-fun Module.includeConditionDependencies() {
+val conditionModule = module {
     single {
-        val conditionDao = get<GenericTabletopRpgDatabase>().conditionDao()
-        conditionDao.logger = get()
-        conditionDao
+        get<GenericTabletopRpgDatabase>()
+            .conditionDao()
+            .apply {
+                logger = get()
+            }
     }
 
     viewModel { ConditionDetailsViewModel(get<ConditionDao>()) }
 }
 
-fun Module.includeDiseaseDependencies() {
+val diseaseModule = module {
     single {
-        val diseaseDao = get<GenericTabletopRpgDatabase>().diseaseDao()
-        diseaseDao.logger = get()
-        diseaseDao
+        get<GenericTabletopRpgDatabase>()
+            .diseaseDao()
+            .apply {
+                logger = get()
+            }
     }
 
     viewModel { DiseaseDetailsViewModel(get<DiseaseDao>()) }
 }
 
-fun Module.includeWeaponDependencies() {
+val weaponModule = module {
     single {
-        val weaponDao = get<GenericTabletopRpgDatabase>().weaponDao()
-        weaponDao.logger = get()
-        weaponDao
+        get<GenericTabletopRpgDatabase>()
+            .weaponDao()
+            .apply {
+                logger = get()
+            }
     }
 
     viewModel { WeaponDetailsViewModel(get<WeaponDao>()) }
 }
 
-fun Module.includeAmmunitionDependencies() {
+val ammunitionModule = module {
     single {
-        val ammunitionDao = get<GenericTabletopRpgDatabase>().ammunitionDao()
-        ammunitionDao.logger = get()
-        ammunitionDao
+        get<GenericTabletopRpgDatabase>()
+            .ammunitionDao()
+            .apply {
+                logger = get()
+            }
     }
 
     viewModel { AmmunitionDetailsViewModel(get<AmmunitionDao>()) }
 }
 
-fun Module.includeArmorDependencies() {
+val armorModule = module {
     single {
-        val armorDao = get<GenericTabletopRpgDatabase>().armorDao()
-        armorDao.logger = get()
-        armorDao
+        get<GenericTabletopRpgDatabase>()
+            .armorDao()
+            .apply {
+                logger = get()
+            }
     }
 
     viewModel { ArmorDetailsViewModel(get<ArmorDao>()) }
 }
 
-fun Module.includeTrackedThingGroupDependencies() {
+val trackedThingGroupModule = module {
     single {
-        val trackedThingGroupDao = get<GenericTabletopRpgDatabase>().trackedThingGroupDao()
-        trackedThingGroupDao.logger = get()
-        trackedThingGroupDao
+        get<GenericTabletopRpgDatabase>()
+            .trackedThingGroupDao()
+            .apply {
+                logger = get()
+            }
     }
 
     viewModel { TrackerGroupViewModel(get()) }
 }
 
-fun Module.includeTrackedThingDependencies() {
+val trackedThingModule = module {
     single {
-        val trackedThingDao = get<GenericTabletopRpgDatabase>().trackedThingDao()
-        trackedThingDao.logger = get()
-        trackedThingDao
+        get<GenericTabletopRpgDatabase>()
+            .trackedThingDao()
+            .apply {
+                logger = get()
+            }
     }
 
     viewModel { params -> TrackerViewModel(params.get(), get()) }
 }
 
-fun Module.includeImportDependencies() {
+val importModule = module {
     single<OrcbrewImportSpellsUseCase> {
         OrcbrewImportSpellsUseCaseImpl(
             get(),
@@ -269,3 +262,36 @@ fun Module.includeImportDependencies() {
 
     viewModel { ImportViewModel(get()) }
 }
+
+val searchAllModule = module {
+    viewModel {
+        SearchAllViewModel(
+            listOf(
+                get<ActionDao>(),
+                get<AmmunitionDao>(),
+                get<ArmorDao>(),
+                get<ConditionDao>(),
+                get<DiseaseDao>(),
+                get<FeatDao>(),
+                get<SpellDao>(),
+                get<WeaponDao>(),
+            )
+        )
+    }
+}
+
+val diModules = listOf(
+    commonModule,
+    spellModule,
+    featModule,
+    actionModule,
+    conditionModule,
+    diseaseModule,
+    weaponModule,
+    ammunitionModule,
+    armorModule,
+    importModule,
+    trackedThingGroupModule,
+    trackedThingModule,
+    searchAllModule
+)
