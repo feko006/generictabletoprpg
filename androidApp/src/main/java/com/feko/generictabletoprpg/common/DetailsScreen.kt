@@ -5,7 +5,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -17,7 +16,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import com.feko.generictabletoprpg.ButtonState
+import com.feko.generictabletoprpg.AppViewModel
 import com.feko.generictabletoprpg.Navigation
 
 abstract class DetailsScreen<TViewModel, T>(
@@ -39,8 +38,7 @@ abstract class DetailsScreen<TViewModel, T>(
     final override fun navHostComposable(
         navGraphBuilder: NavGraphBuilder,
         navController: NavHostController,
-        appBarTitle: MutableState<String>,
-        setNavBarActions: (List<ButtonState>) -> Unit
+        appViewModel: AppViewModel
     ) {
         navGraphBuilder.composable(
             route = route,
@@ -48,8 +46,7 @@ abstract class DetailsScreen<TViewModel, T>(
                 type = NavType.LongType
             })
         ) { backStackEntry ->
-            appBarTitle.value = screenTitle
-            setNavBarActions(listOf())
+            appViewModel.set(appBarTitle = screenTitle, navBarActions = listOf())
             val id = backStackEntry.arguments!!.getLong(idArgumentName)
             Screen(id)
         }

@@ -54,6 +54,7 @@ import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
+import com.feko.generictabletoprpg.AppViewModel
 import com.feko.generictabletoprpg.ButtonState
 import com.feko.generictabletoprpg.Navigation
 import com.feko.generictabletoprpg.R
@@ -102,14 +103,15 @@ object Tracker
     }
 
     override fun setNavBarActionsInternal(
-        navBarActions: (List<ButtonState>) -> Unit,
+        appViewModel: AppViewModel,
         viewModel: TrackerViewModel
     ) {
-        navBarActions(
-            listOf(
-                ButtonState(Icons.Default.Refresh) { viewModel.refreshAllRequested() }
+        appViewModel
+            .set(
+                navBarActions = listOf(
+                    ButtonState(Icons.Default.Refresh) { viewModel.refreshAllRequested() }
+                )
             )
-        )
     }
 
     @Composable

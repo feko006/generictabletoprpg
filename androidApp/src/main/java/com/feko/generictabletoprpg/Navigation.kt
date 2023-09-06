@@ -8,7 +8,6 @@ import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -40,8 +39,7 @@ object Navigation {
         abstract fun navHostComposable(
             navGraphBuilder: NavGraphBuilder,
             navController: NavHostController,
-            appBarTitle: MutableState<String>,
-            setNavBarActions: (List<ButtonState>) -> Unit
+            appViewModel: AppViewModel
         )
     }
 
@@ -74,15 +72,14 @@ object Navigation {
     @Composable
     private fun Host(
         navController: NavHostController,
-        appBarTitle: MutableState<String>,
-        setNavBarActions: (List<ButtonState>) -> Unit
+        appViewModel: AppViewModel
     ) {
         NavHost(
             navController = navController,
             startDestination = firstDestination.route
         ) {
             destinations.forEach {
-                it.navHostComposable(this, navController, appBarTitle, setNavBarActions)
+                it.navHostComposable(this, navController, appViewModel)
             }
         }
     }
@@ -92,8 +89,7 @@ object Navigation {
         drawerState: DrawerState,
         paddingValues: PaddingValues,
         navController: NavHostController,
-        appBarTitle: MutableState<String>,
-        setNavBarActions: (List<ButtonState>) -> Unit
+        appViewModel: AppViewModel
     ) {
         val scope = rememberCoroutineScope()
         val activeDrawerItem = rememberSaveable { mutableStateOf(firstDestination.route) }
@@ -125,7 +121,7 @@ object Navigation {
             },
             modifier = Modifier.padding(paddingValues)
         ) {
-            Host(navController, appBarTitle, setNavBarActions)
+            Host(navController, appViewModel)
         }
     }
 }

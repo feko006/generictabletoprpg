@@ -25,7 +25,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -37,7 +36,7 @@ import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
-import com.feko.generictabletoprpg.ButtonState
+import com.feko.generictabletoprpg.AppViewModel
 import com.feko.generictabletoprpg.Navigation
 import com.feko.generictabletoprpg.theme.Typography
 
@@ -54,23 +53,22 @@ abstract class OverviewScreen<TViewModel, T>(
     final override fun navHostComposable(
         navGraphBuilder: NavGraphBuilder,
         navController: NavHostController,
-        appBarTitle: MutableState<String>,
-        setNavBarActions: (List<ButtonState>) -> Unit
+        appViewModel: AppViewModel
     ) {
         navGraphBuilder.composable(
             route,
             arguments = getNavArguments()
         ) {
-            appBarTitle.value = screenTitle
+            appViewModel.set(appBarTitle = screenTitle)
             readNavArguments(it)
-            Screen(navController, setNavBarActions)
+            Screen(navController, appViewModel)
         }
     }
 
     protected open fun setNavBarActionsInternal(
-        navBarActions: (List<ButtonState>) -> Unit,
+        appViewModel: AppViewModel,
         viewModel: TViewModel
-    ) = navBarActions(listOf())
+    ) = appViewModel.set(navBarActions = listOf())
 
     protected open fun readNavArguments(backStackEntry: NavBackStackEntry) {}
 
@@ -80,10 +78,10 @@ abstract class OverviewScreen<TViewModel, T>(
     @OptIn(ExperimentalMaterial3Api::class)
     private fun Screen(
         navController: NavHostController,
-        setNavBarActions: (List<ButtonState>) -> Unit
+        appViewModel: AppViewModel
     ) {
         val viewModel: TViewModel = getViewModel()
-        setNavBarActionsInternal(setNavBarActions, viewModel)
+        setNavBarActionsInternal(appViewModel, viewModel)
         val listItems by viewModel.items.collectAsState(listOf())
         val searchString by viewModel.searchString.collectAsState("")
         Column(Modifier.padding(8.dp)) {

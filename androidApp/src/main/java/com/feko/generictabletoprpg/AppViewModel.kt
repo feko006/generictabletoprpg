@@ -22,12 +22,36 @@ class AppViewModel(
             withContext(Dispatchers.Default) {
                 loadBaseContentUseCase.invoke()
             }
-            _appState.emit(AppState.ReadyToUse)
+            _appState.emit(AppState.ShowingScreen.Default)
+        }
+    }
+
+    fun set(
+        appBarTitle: String? = null,
+        navBarActions: List<ButtonState>? = null
+    ) {
+        viewModelScope.launch {
+            var nextAppState = appState.value
+            if (nextAppState is AppState.ShowingScreen) {
+                nextAppState =
+                    nextAppState.copy(
+                        appBarTitle ?: nextAppState.appBarTitle,
+                        navBarActions ?: nextAppState.navBarActions
+                    )
+                _appState.emit(nextAppState)
+            }
         }
     }
 
     sealed class AppState {
-        object ImportingBaseContent : AppState()
-        object ReadyToUse : AppState()
+        data object ImportingBaseContent : AppState()
+        data class ShowingScreen(
+            val appBarTitle: String,
+            val navBarActions: List<ButtonState>
+        ) : AppState() {
+            companion object {
+                val Default = ShowingScreen("", listOf())
+            }
+        }
     }
 }

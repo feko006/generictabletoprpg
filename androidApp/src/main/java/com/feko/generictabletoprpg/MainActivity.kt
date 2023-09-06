@@ -9,7 +9,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -44,18 +43,17 @@ class MainActivity : ComponentActivity() {
                         }
                     }
 
-                    is AppViewModel.AppState.ReadyToUse -> {
+                    is AppViewModel.AppState.ShowingScreen -> {
+                        val currentAppState = appState as AppViewModel.AppState.ShowingScreen
                         val drawerState = rememberDrawerState(DrawerValue.Closed)
                         val coroutineScope = rememberCoroutineScope()
                         val navController = rememberNavController()
-                        val appBarTitle = rememberSaveable { mutableStateOf("") }
-                        val navBarActions = remember { mutableStateListOf<ButtonState>() }
 
                         Scaffold(
                             topBar = {
                                 TopAppBar(
                                     title = {
-                                        Text(appBarTitle.value)
+                                        Text(currentAppState.appBarTitle)
                                     },
                                     navigationIcon = {
                                         IconButton(
@@ -71,24 +69,23 @@ class MainActivity : ComponentActivity() {
                                             Icon(Icons.Default.Menu, "")
                                         }
                                     }, actions = {
-                                        navBarActions.forEach {
-                                            IconButton(
-                                                onClick = it.onClick
-                                            ) {
-                                                Icon(it.icon, "")
+                                        currentAppState
+                                            .navBarActions
+                                            .forEach {
+                                                IconButton(
+                                                    onClick = it.onClick
+                                                ) {
+                                                    Icon(it.icon, "")
+                                                }
                                             }
-                                        }
                                     })
                             }) { paddingValues ->
                             Navigation.Drawer(
                                 drawerState,
                                 paddingValues,
                                 navController,
-                                appBarTitle
-                            ) {
-                                navBarActions.clear()
-                                navBarActions.addAll(it)
-                            }
+                                appViewModel
+                            )
                         }
                     }
                 }

@@ -12,7 +12,6 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -22,7 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
-import com.feko.generictabletoprpg.ButtonState
+import com.feko.generictabletoprpg.AppViewModel
 import com.feko.generictabletoprpg.Navigation
 import org.koin.androidx.compose.koinViewModel
 
@@ -35,12 +34,10 @@ object Import : Navigation.Destination(
     override fun navHostComposable(
         navGraphBuilder: NavGraphBuilder,
         navController: NavHostController,
-        appBarTitle: MutableState<String>,
-        setNavBarActions: (List<ButtonState>) -> Unit
+        appViewModel: AppViewModel
     ) {
         navGraphBuilder.composable(route) {
-            appBarTitle.value = screenTitle
-            setNavBarActions(listOf())
+            appViewModel.set(appBarTitle = screenTitle, navBarActions = listOf())
             Screen()
         }
     }
