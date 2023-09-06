@@ -15,22 +15,26 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import com.feko.generictabletoprpg.action.ActionDetails
 import com.feko.generictabletoprpg.ammunition.AmmunitionDetails
 import com.feko.generictabletoprpg.armor.ArmorDetails
-import com.feko.generictabletoprpg.com.feko.generictabletoprpg.tracker.Tracker
-import com.feko.generictabletoprpg.com.feko.generictabletoprpg.tracker.TrackerGroups
+import com.feko.generictabletoprpg.com.feko.generictabletoprpg.tracker.TrackerGroupsScreen
+import com.feko.generictabletoprpg.com.feko.generictabletoprpg.tracker.TrackerScreen
 import com.feko.generictabletoprpg.condition.ConditionDetails
 import com.feko.generictabletoprpg.disease.DiseaseDetails
 import com.feko.generictabletoprpg.feat.FeatDetails
 import com.feko.generictabletoprpg.import.Import
-import com.feko.generictabletoprpg.searchall.SearchAll
+import com.feko.generictabletoprpg.searchall.SearchAllScreen
 import com.feko.generictabletoprpg.spell.SpellDetails
 import com.feko.generictabletoprpg.weapon.WeaponDetails
 import kotlinx.coroutines.launch
 
 object Navigation {
+    @Deprecated("To be removed with compose destinations")
     abstract class Destination(
         var screenTitle: String,
         var route: String,
@@ -43,15 +47,14 @@ object Navigation {
         )
     }
 
+    @Deprecated("To be removed with compose destinations")
     interface DetailsNavRouteProvider {
         fun getNavRoute(id: Long): String
     }
 
+    @Deprecated("To be removed with compose destinations")
     private val destinations: List<Destination> =
         listOf(
-            SearchAll,
-            TrackerGroups,
-            Tracker,
             SpellDetails,
             WeaponDetails,
             ArmorDetails,
@@ -63,12 +66,6 @@ object Navigation {
             Import
         )
 
-    private val rootDestinations: List<Destination> =
-        destinations.filter { it.isRootDestination }
-
-    private val firstDestination: Destination =
-        destinations.first { it is SearchAll }
-
     @Composable
     private fun Host(
         navController: NavHostController,
@@ -76,8 +73,27 @@ object Navigation {
     ) {
         NavHost(
             navController = navController,
-            startDestination = firstDestination.route
+            startDestination = "searchall"
         ) {
+            composable(route = "searchall", arguments = listOf()) {
+                SearchAllScreen(navController, appViewModel)
+            }
+            composable(route = "trackergroups", arguments = listOf()) {
+                TrackerGroupsScreen(
+                    navController,
+                    appViewModel,
+                    getTrackerNavRoute = { "tracker/$it" })
+            }
+            composable(
+                route = "tracker/{id}",
+                arguments = listOf(
+                    navArgument("id") {
+                        type = NavType.LongType
+                    })
+            ) {
+                val groupId = it.arguments!!.getLong("id")
+                TrackerScreen(groupId, navController, appViewModel)
+            }
             destinations.forEach {
                 it.navHostComposable(this, navController, appViewModel)
             }
@@ -92,15 +108,19 @@ object Navigation {
         appViewModel: AppViewModel
     ) {
         val scope = rememberCoroutineScope()
-        val activeDrawerItem = rememberSaveable { mutableStateOf(firstDestination.route) }
+        val activeDrawerItem = rememberSaveable { mutableStateOf("") }
         ModalNavigationDrawer(
             drawerState = drawerState,
             drawerContent = {
                 ModalDrawerSheet {
-                    rootDestinations.forEach { destination ->
-                        val route = destination.route
+                    val drawerItemData = listOf(
+                        Pair("Search All", "searchall"),
+                        Pair("Tracker", "trackergroups"),
+                        Pair("Import", "import")
+                    )
+                    drawerItemData.forEach { (screenTitle, route) ->
                         NavigationDrawerItem(
-                            label = { Text(destination.screenTitle) },
+                            label = { Text(screenTitle) },
                             selected = activeDrawerItem.value == route,
                             onClick = {
                                 activeDrawerItem.value = route
@@ -115,7 +135,6 @@ object Navigation {
                                     restoreState = true
                                 }
                             })
-
                     }
                 }
             },
