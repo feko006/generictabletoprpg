@@ -20,7 +20,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.feko.generictabletoprpg.action.ActionDetailsScreen
-import com.feko.generictabletoprpg.ammunition.AmmunitionDetails
+import com.feko.generictabletoprpg.ammunition.AmmunitionDetailsScreen
 import com.feko.generictabletoprpg.armor.ArmorDetails
 import com.feko.generictabletoprpg.com.feko.generictabletoprpg.tracker.TrackerGroupsScreen
 import com.feko.generictabletoprpg.com.feko.generictabletoprpg.tracker.TrackerScreen
@@ -61,7 +61,6 @@ object Navigation {
             ConditionDetails,
             DiseaseDetails,
             FeatDetails,
-            AmmunitionDetails,
             Import
         )
 
@@ -99,6 +98,15 @@ object Navigation {
             ) {
                 val id = it.arguments!!.getLong("id")
                 ActionDetailsScreen(id, appViewModel)
+            }
+            composable(
+                route = "ammunition/{id}",
+                arguments = listOf(
+                    navArgument("id") { type = NavType.LongType }
+                )
+            ) {
+                val id = it.arguments!!.getLong("id")
+                AmmunitionDetailsScreen(id, appViewModel)
             }
             destinations.forEach {
                 it.navHostComposable(this, navController, appViewModel)

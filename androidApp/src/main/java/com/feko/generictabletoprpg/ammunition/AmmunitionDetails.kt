@@ -4,23 +4,22 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.Dp
+import com.feko.generictabletoprpg.AppViewModel
+import com.feko.generictabletoprpg.com.feko.generictabletoprpg.common.composable.DetailsScreen
 import com.feko.generictabletoprpg.common.Common.TextWithLabel
-import com.feko.generictabletoprpg.common.DetailsScreen
-import com.feko.generictabletoprpg.common.DetailsViewModel
 import org.koin.androidx.compose.koinViewModel
 
-object AmmunitionDetails :
+@Composable
+fun AmmunitionDetailsScreen(
+    id: Long,
+    appViewModel: AppViewModel
+) {
+    appViewModel.set(appBarTitle = "Ammunition Details", navBarActions = listOf())
     DetailsScreen<AmmunitionDetailsViewModel, Ammunition>(
-        "Ammunition Details",
-        "ammunition"
-    ) {
-    @Composable
-    override fun ScreenContent(
-        readiedItem: DetailsViewModel.DetailsScreenState.ItemReady<Ammunition>,
-        padding: Dp
-    ) {
-        readiedItem.item.run {
+        id,
+        koinViewModel()
+    ) { item, padding ->
+        item.run {
             TextWithLabel("Name", name)
             Spacer(Modifier.height(padding))
             TextWithLabel("Sell quantity", sellQuantity.toString())
@@ -30,7 +29,4 @@ object AmmunitionDetails :
             TextWithLabel("Weight", weight)
         }
     }
-
-    @Composable
-    override fun getViewModel(): AmmunitionDetailsViewModel = koinViewModel()
 }

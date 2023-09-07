@@ -5,7 +5,6 @@ import androidx.navigation.NavHostController
 import com.feko.generictabletoprpg.AppViewModel
 import com.feko.generictabletoprpg.action.Action
 import com.feko.generictabletoprpg.ammunition.Ammunition
-import com.feko.generictabletoprpg.ammunition.AmmunitionDetails
 import com.feko.generictabletoprpg.armor.Armor
 import com.feko.generictabletoprpg.armor.ArmorDetails
 import com.feko.generictabletoprpg.com.feko.generictabletoprpg.common.composable.OverviewListItem
@@ -56,7 +55,7 @@ fun getNavRouteInternal(item: Any): String {
         is Condition -> ConditionDetails.getNavRoute(id)
         is Disease -> DiseaseDetails.getNavRoute(id)
         is Weapon -> WeaponDetails.getNavRoute(id)
-        is Ammunition -> AmmunitionDetails.getNavRoute(id)
+        is Ammunition -> "ammunition/$id"
         is Armor -> ArmorDetails.getNavRoute(id)
         else -> throw IllegalStateException("Unknown list item")
     }
