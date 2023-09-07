@@ -26,7 +26,7 @@ import com.feko.generictabletoprpg.com.feko.generictabletoprpg.tracker.TrackerGr
 import com.feko.generictabletoprpg.com.feko.generictabletoprpg.tracker.TrackerScreen
 import com.feko.generictabletoprpg.condition.ConditionDetailsScreen
 import com.feko.generictabletoprpg.disease.DiseaseDetailsScreen
-import com.feko.generictabletoprpg.feat.FeatDetails
+import com.feko.generictabletoprpg.feat.FeatDetailsScreen
 import com.feko.generictabletoprpg.import.Import
 import com.feko.generictabletoprpg.searchall.SearchAllScreen
 import com.feko.generictabletoprpg.spell.SpellDetails
@@ -57,7 +57,6 @@ object Navigation {
         listOf(
             SpellDetails,
             WeaponDetails,
-            FeatDetails,
             Import
         )
 
@@ -131,6 +130,15 @@ object Navigation {
             ) {
                 val id = it.arguments!!.getLong("id")
                 DiseaseDetailsScreen(id, appViewModel)
+            }
+            composable(
+                route = "feat/{id}",
+                arguments = listOf(
+                    navArgument("id") { type = NavType.LongType }
+                )
+            ) {
+                val id = it.arguments!!.getLong("id")
+                FeatDetailsScreen(id, appViewModel)
             }
             destinations.forEach {
                 it.navHostComposable(this, navController, appViewModel)

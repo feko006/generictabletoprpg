@@ -12,7 +12,6 @@ import com.feko.generictabletoprpg.common.Identifiable
 import com.feko.generictabletoprpg.condition.Condition
 import com.feko.generictabletoprpg.disease.Disease
 import com.feko.generictabletoprpg.feat.Feat
-import com.feko.generictabletoprpg.feat.FeatDetails
 import com.feko.generictabletoprpg.spell.Spell
 import com.feko.generictabletoprpg.spell.SpellDetails
 import com.feko.generictabletoprpg.weapon.Weapon
@@ -47,7 +46,7 @@ fun getNavRouteInternal(item: Any): String {
     val id = (item as Identifiable).id
     return when (item) {
         is Spell -> SpellDetails.getNavRoute(id)
-        is Feat -> FeatDetails.getNavRoute(id)
+        is Feat -> "feat/$id"
         is Action -> "action/$id"
         is Condition -> "condition/$id"
         is Disease -> "disease/$id"
