@@ -38,6 +38,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavHostController
 import com.feko.generictabletoprpg.AppViewModel
+import com.feko.generictabletoprpg.com.feko.generictabletoprpg.common.composable.AddFABButton
 import com.feko.generictabletoprpg.com.feko.generictabletoprpg.common.composable.DialogTitle
 import com.feko.generictabletoprpg.com.feko.generictabletoprpg.common.composable.OverviewScreen
 import com.feko.generictabletoprpg.common.Named
@@ -67,9 +68,10 @@ fun TrackerGroupsScreen(
                 getNavRoute = getTrackerNavRoute
             )
         },
-        isFabEnabled = true,
-        onFabClicked = {
-            viewModel.newTrackedThingGroupRequested()
+        fabButton = { modifier ->
+            AddFABButton(modifier) {
+                viewModel.newTrackedThingGroupRequested()
+            }
         },
         alertDialogComposable = {
             AlertDialogComposable(viewModel)

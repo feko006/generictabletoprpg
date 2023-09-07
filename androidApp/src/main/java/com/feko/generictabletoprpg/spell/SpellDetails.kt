@@ -8,7 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.feko.generictabletoprpg.AppViewModel
 import com.feko.generictabletoprpg.com.feko.generictabletoprpg.common.composable.DetailsScreen
-import com.feko.generictabletoprpg.common.Common.TextWithLabel
+import com.feko.generictabletoprpg.com.feko.generictabletoprpg.common.composable.TextWithLabel
 import org.koin.androidx.compose.koinViewModel
 
 @Composable

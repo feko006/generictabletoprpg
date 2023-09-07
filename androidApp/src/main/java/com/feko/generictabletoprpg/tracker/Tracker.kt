@@ -53,6 +53,7 @@ import androidx.navigation.NavHostController
 import com.feko.generictabletoprpg.AppViewModel
 import com.feko.generictabletoprpg.ButtonState
 import com.feko.generictabletoprpg.R
+import com.feko.generictabletoprpg.com.feko.generictabletoprpg.common.composable.AddFABButtonWithDropdown
 import com.feko.generictabletoprpg.com.feko.generictabletoprpg.common.composable.DialogTitle
 import com.feko.generictabletoprpg.com.feko.generictabletoprpg.common.composable.OverviewScreen
 import com.feko.generictabletoprpg.theme.Typography
@@ -83,10 +84,16 @@ fun TrackerScreen(
         listItem = { item, _ ->
             OverviewListItem(item = item)
         },
-        isFabEnabled = true,
-        isFabDropdownMenuEnabled = true,
-        dropdownMenuContent = {
-            DropdownMenuContent(viewModel)
+        fabButton = { modifier ->
+            val expanded by viewModel.isFabDropdownMenuExpanded.collectAsState(false)
+            AddFABButtonWithDropdown(
+                expanded = expanded,
+                modifier = modifier,
+                onDismissRequest = { viewModel.onDismissFabDropdownMenuRequested() },
+                onFabClicked = { viewModel.toggleFabDropdownMenu() }
+            ) {
+                DropdownMenuContent(viewModel)
+            }
         },
         alertDialogComposable = {
             AlertDialogComposable(viewModel)

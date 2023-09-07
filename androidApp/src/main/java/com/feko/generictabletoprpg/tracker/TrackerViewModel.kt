@@ -1,7 +1,7 @@
 package com.feko.generictabletoprpg.com.feko.generictabletoprpg.tracker
 
 import androidx.lifecycle.viewModelScope
-import com.feko.generictabletoprpg.common.Common
+import com.feko.generictabletoprpg.com.feko.generictabletoprpg.common.composable.InputFieldData
 import com.feko.generictabletoprpg.common.OverviewViewModel
 import com.feko.generictabletoprpg.tracker.Health
 import com.feko.generictabletoprpg.tracker.SpellSlot
@@ -15,9 +15,9 @@ class TrackerViewModel(
     private val groupId: Long,
     private val trackedThingDao: TrackedThingDao
 ) : OverviewViewModel<TrackedThing>(trackedThingDao) {
-    val editedTrackedThingName = MutableStateFlow(Common.InputFieldData.EMPTY)
-    val editedTrackedThingSpellSlotLevel = MutableStateFlow(Common.InputFieldData.EMPTY)
-    val editedTrackedThingValue = MutableStateFlow(Common.InputFieldData.EMPTY)
+    val editedTrackedThingName = MutableStateFlow(InputFieldData.EMPTY)
+    val editedTrackedThingSpellSlotLevel = MutableStateFlow(InputFieldData.EMPTY)
+    val editedTrackedThingValue = MutableStateFlow(InputFieldData.EMPTY)
     val editedTrackedThingType = MutableStateFlow(TrackedThing.Type.None)
     val confirmButtonEnabled = MutableStateFlow(false)
 
@@ -31,9 +31,9 @@ class TrackerViewModel(
             dialogTitle = type.name
             dialogType = DialogType.Create
             editedTrackedThing = TrackedThing.emptyOfType(type, groupId)
-            editedTrackedThingName.emit(Common.InputFieldData.EMPTY)
-            editedTrackedThingSpellSlotLevel.emit(Common.InputFieldData.EMPTY)
-            editedTrackedThingValue.emit(Common.InputFieldData.EMPTY)
+            editedTrackedThingName.emit(InputFieldData.EMPTY)
+            editedTrackedThingSpellSlotLevel.emit(InputFieldData.EMPTY)
+            editedTrackedThingValue.emit(InputFieldData.EMPTY)
             editedTrackedThingType.emit(type)
             validateModel()
             _isFabDropdownMenuExpanded.emit(false)
@@ -47,16 +47,16 @@ class TrackerViewModel(
             dialogType = DialogType.Edit
             val copy = item.copy()
             editedTrackedThing = copy
-            editedTrackedThingName.emit(Common.InputFieldData(copy.name, isValid = true))
+            editedTrackedThingName.emit(InputFieldData(copy.name, isValid = true))
             if (copy is SpellSlot) {
                 editedTrackedThingSpellSlotLevel.emit(
-                    Common.InputFieldData(
+                    InputFieldData(
                         copy.level.toString(),
                         isValid = true
                     )
                 )
             }
-            editedTrackedThingValue.emit(Common.InputFieldData(copy.defaultValue, isValid = true))
+            editedTrackedThingValue.emit(InputFieldData(copy.defaultValue, isValid = true))
             editedTrackedThingType.emit(copy.type)
             validateModel()
             _isFabDropdownMenuExpanded.emit(false)
@@ -226,7 +226,7 @@ class TrackerViewModel(
         viewModelScope.launch {
             editedTrackedThing.name = name
             editedTrackedThingName.emit(
-                Common.InputFieldData(
+                InputFieldData(
                     name,
                     editedTrackedThing.isNameValid()
                 )
@@ -241,7 +241,7 @@ class TrackerViewModel(
             require(trackedThing is SpellSlot)
             trackedThing.level = level.toIntOrNull() ?: 0
             editedTrackedThingSpellSlotLevel.emit(
-                Common.InputFieldData(
+                InputFieldData(
                     level,
                     trackedThing.isLevelValid()
                 )
@@ -255,7 +255,7 @@ class TrackerViewModel(
             editedTrackedThing.setNewValue(value)
             editedTrackedThing.defaultValue = value
             editedTrackedThingValue.emit(
-                Common.InputFieldData(
+                InputFieldData(
                     value,
                     editedTrackedThing.isValueValid()
                 )
@@ -300,7 +300,7 @@ class TrackerViewModel(
             dialogType = type
             dialogTitle = title
             editedTrackedThing = item.copy()
-            editedTrackedThingValue.emit(Common.InputFieldData.EMPTY)
+            editedTrackedThingValue.emit(InputFieldData.EMPTY)
             validateModel()
             _isDialogVisible.emit(true)
         }
@@ -309,7 +309,7 @@ class TrackerViewModel(
     fun updateValueInputField(delta: String) {
         viewModelScope.launch {
             editedTrackedThingValue.emit(
-                Common.InputFieldData(
+                InputFieldData(
                     delta,
                     editedTrackedThing.isValueValid()
                 )

@@ -1,7 +1,7 @@
 package com.feko.generictabletoprpg.com.feko.generictabletoprpg.tracker
 
 import androidx.lifecycle.viewModelScope
-import com.feko.generictabletoprpg.common.Common
+import com.feko.generictabletoprpg.com.feko.generictabletoprpg.common.composable.InputFieldData
 import com.feko.generictabletoprpg.common.OverviewViewModel
 import com.feko.generictabletoprpg.tracker.TrackedThingGroup
 import kotlinx.coroutines.Dispatchers
@@ -12,7 +12,7 @@ import kotlinx.coroutines.withContext
 class TrackerGroupViewModel(
     private val trackedThingGroupDao: TrackedThingGroupDao
 ) : OverviewViewModel<TrackedThingGroup>(trackedThingGroupDao) {
-    val groupName = MutableStateFlow(Common.InputFieldData.EMPTY)
+    val groupName = MutableStateFlow(InputFieldData.EMPTY)
     val confirmButtonEnabled = MutableStateFlow(false)
 
     lateinit var dialogType: DialogType
@@ -24,7 +24,7 @@ class TrackerGroupViewModel(
             dialogType = DialogType.NewOrUpdate
             dialogTitle = "Create new group"
             groupId = 0
-            groupName.emit(Common.InputFieldData.EMPTY)
+            groupName.emit(InputFieldData.EMPTY)
             confirmButtonEnabled.emit(false)
             _isDialogVisible.emit(true)
         }
@@ -35,7 +35,7 @@ class TrackerGroupViewModel(
             dialogType = DialogType.NewOrUpdate
             dialogTitle = "Edit group"
             groupId = item.id
-            groupName.emit(Common.InputFieldData(item.name, true))
+            groupName.emit(InputFieldData(item.name, true))
             confirmButtonEnabled.emit(true)
             _isDialogVisible.emit(true)
         }
@@ -55,7 +55,7 @@ class TrackerGroupViewModel(
         viewModelScope.launch {
             val isNewNameValid = name.isNotBlank()
             groupName.emit(
-                Common.InputFieldData(
+                InputFieldData(
                     name,
                     isNewNameValid
                 )
