@@ -3,29 +3,25 @@ package com.feko.generictabletoprpg.condition
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.unit.Dp
+import com.feko.generictabletoprpg.AppViewModel
+import com.feko.generictabletoprpg.com.feko.generictabletoprpg.common.composable.DetailsScreen
 import com.feko.generictabletoprpg.common.Common.TextWithLabel
-import com.feko.generictabletoprpg.common.DetailsScreen
-import com.feko.generictabletoprpg.common.DetailsViewModel
 import org.koin.androidx.compose.koinViewModel
 
-object ConditionDetails
-    : DetailsScreen<ConditionDetailsViewModel, Condition>(
-    "Condition Details",
-    "condition"
+@Composable
+fun ConditionDetailsScreen(
+    id: Long,
+    appViewModel: AppViewModel
 ) {
-    @Composable
-    override fun ScreenContent(
-        readiedItem: DetailsViewModel.DetailsScreenState.ItemReady<Condition>,
-        padding: Dp
-    ) {
-        readiedItem.item.run {
+    appViewModel.set(appBarTitle = "Condition Details", navBarActions = listOf())
+    DetailsScreen<ConditionDetailsViewModel, Condition>(
+        id,
+        koinViewModel()
+    ) { item, padding ->
+        item.run {
             TextWithLabel("Name", name)
             HorizontalDivider(thickness = padding)
             Text(description)
         }
     }
-
-    @Composable
-    override fun getViewModel(): ConditionDetailsViewModel = koinViewModel()
 }
