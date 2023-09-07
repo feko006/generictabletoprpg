@@ -4,7 +4,6 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import com.feko.generictabletoprpg.AppViewModel
 import com.feko.generictabletoprpg.action.Action
-import com.feko.generictabletoprpg.action.ActionDetails
 import com.feko.generictabletoprpg.ammunition.Ammunition
 import com.feko.generictabletoprpg.ammunition.AmmunitionDetails
 import com.feko.generictabletoprpg.armor.Armor
@@ -53,7 +52,7 @@ fun getNavRouteInternal(item: Any): String {
     return when (item) {
         is Spell -> SpellDetails.getNavRoute(id)
         is Feat -> FeatDetails.getNavRoute(id)
-        is Action -> ActionDetails.getNavRoute(id)
+        is Action -> "action/$id"
         is Condition -> ConditionDetails.getNavRoute(id)
         is Disease -> DiseaseDetails.getNavRoute(id)
         is Weapon -> WeaponDetails.getNavRoute(id)
