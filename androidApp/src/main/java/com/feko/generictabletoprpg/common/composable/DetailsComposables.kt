@@ -22,8 +22,7 @@ fun <TViewModel, T> DetailsScreen(
     id: Long,
     viewModel: TViewModel,
     screenContent: @Composable (T, Dp) -> Unit
-)
-        where TViewModel : DetailsViewModel<T> {
+) where TViewModel : DetailsViewModel<T> {
     val screenState by viewModel.screenState.collectAsState(
         DetailsViewModel.DetailsScreenState.Loading
     )
