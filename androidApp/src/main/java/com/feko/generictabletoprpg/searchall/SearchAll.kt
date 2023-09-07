@@ -6,7 +6,6 @@ import com.feko.generictabletoprpg.AppViewModel
 import com.feko.generictabletoprpg.action.Action
 import com.feko.generictabletoprpg.ammunition.Ammunition
 import com.feko.generictabletoprpg.armor.Armor
-import com.feko.generictabletoprpg.armor.ArmorDetails
 import com.feko.generictabletoprpg.com.feko.generictabletoprpg.common.composable.OverviewListItem
 import com.feko.generictabletoprpg.com.feko.generictabletoprpg.common.composable.OverviewScreen
 import com.feko.generictabletoprpg.common.Identifiable
@@ -56,7 +55,7 @@ fun getNavRouteInternal(item: Any): String {
         is Disease -> DiseaseDetails.getNavRoute(id)
         is Weapon -> WeaponDetails.getNavRoute(id)
         is Ammunition -> "ammunition/$id"
-        is Armor -> ArmorDetails.getNavRoute(id)
+        is Armor -> "armor/$id"
         else -> throw IllegalStateException("Unknown list item")
     }
 }
