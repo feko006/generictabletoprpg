@@ -3,29 +3,25 @@ package com.feko.generictabletoprpg.disease
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.unit.Dp
+import com.feko.generictabletoprpg.AppViewModel
+import com.feko.generictabletoprpg.com.feko.generictabletoprpg.common.composable.DetailsScreen
 import com.feko.generictabletoprpg.common.Common.TextWithLabel
-import com.feko.generictabletoprpg.common.DetailsScreen
-import com.feko.generictabletoprpg.common.DetailsViewModel
 import org.koin.androidx.compose.koinViewModel
 
-object DiseaseDetails
-    : DetailsScreen<DiseaseDetailsViewModel, Disease>(
-    "Disease Details",
-    "disease"
+@Composable
+fun DiseaseDetailsScreen(
+    id: Long,
+    appViewModel: AppViewModel
 ) {
-    @Composable
-    override fun ScreenContent(
-        readiedItem: DetailsViewModel.DetailsScreenState.ItemReady<Disease>,
-        padding: Dp
-    ) {
-        readiedItem.item.run {
+    appViewModel.set(appBarTitle = "Disease Details", navBarActions = listOf())
+    DetailsScreen<DiseaseDetailsViewModel, Disease>(
+        id,
+        koinViewModel()
+    ) { item, padding ->
+        item.run {
             TextWithLabel("Name", name)
             HorizontalDivider(thickness = padding)
             Text(description)
         }
     }
-
-    @Composable
-    override fun getViewModel(): DiseaseDetailsViewModel = koinViewModel()
 }

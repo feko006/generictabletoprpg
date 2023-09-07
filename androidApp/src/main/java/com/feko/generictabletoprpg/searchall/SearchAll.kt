@@ -11,7 +11,6 @@ import com.feko.generictabletoprpg.com.feko.generictabletoprpg.common.composable
 import com.feko.generictabletoprpg.common.Identifiable
 import com.feko.generictabletoprpg.condition.Condition
 import com.feko.generictabletoprpg.disease.Disease
-import com.feko.generictabletoprpg.disease.DiseaseDetails
 import com.feko.generictabletoprpg.feat.Feat
 import com.feko.generictabletoprpg.feat.FeatDetails
 import com.feko.generictabletoprpg.spell.Spell
@@ -51,7 +50,7 @@ fun getNavRouteInternal(item: Any): String {
         is Feat -> FeatDetails.getNavRoute(id)
         is Action -> "action/$id"
         is Condition -> "condition/$id"
-        is Disease -> DiseaseDetails.getNavRoute(id)
+        is Disease -> "disease/$id"
         is Weapon -> WeaponDetails.getNavRoute(id)
         is Ammunition -> "ammunition/$id"
         is Armor -> "armor/$id"
