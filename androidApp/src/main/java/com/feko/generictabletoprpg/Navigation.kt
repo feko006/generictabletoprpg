@@ -30,7 +30,7 @@ import com.feko.generictabletoprpg.feat.FeatDetailsScreen
 import com.feko.generictabletoprpg.import.Import
 import com.feko.generictabletoprpg.searchall.SearchAllScreen
 import com.feko.generictabletoprpg.spell.SpellDetailsScreen
-import com.feko.generictabletoprpg.weapon.WeaponDetails
+import com.feko.generictabletoprpg.weapon.WeaponDetailsScreen
 import kotlinx.coroutines.launch
 
 object Navigation {
@@ -53,11 +53,7 @@ object Navigation {
     }
 
     @Deprecated("To be removed with compose destinations")
-    private val destinations: List<Destination> =
-        listOf(
-            WeaponDetails,
-            Import
-        )
+    private val destinations: List<Destination> = listOf(Import)
 
     @Composable
     private fun Host(
@@ -147,6 +143,15 @@ object Navigation {
             ) {
                 val id = it.arguments!!.getLong("id")
                 SpellDetailsScreen(id, appViewModel)
+            }
+            composable(
+                route = "weapon/{id}",
+                arguments = listOf(
+                    navArgument("id") { type = NavType.LongType }
+                )
+            ) {
+                val id = it.arguments!!.getLong("id")
+                WeaponDetailsScreen(id, appViewModel)
             }
             destinations.forEach {
                 it.navHostComposable(this, navController, appViewModel)

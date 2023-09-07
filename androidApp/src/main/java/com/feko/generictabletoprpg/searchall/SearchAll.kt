@@ -14,7 +14,6 @@ import com.feko.generictabletoprpg.disease.Disease
 import com.feko.generictabletoprpg.feat.Feat
 import com.feko.generictabletoprpg.spell.Spell
 import com.feko.generictabletoprpg.weapon.Weapon
-import com.feko.generictabletoprpg.weapon.WeaponDetails
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -49,7 +48,7 @@ fun getNavRouteInternal(item: Any): String {
         is Action -> "action/$id"
         is Condition -> "condition/$id"
         is Disease -> "disease/$id"
-        is Weapon -> WeaponDetails.getNavRoute(id)
+        is Weapon -> "weapon/$id"
         is Ammunition -> "ammunition/$id"
         is Armor -> "armor/$id"
         else -> throw IllegalStateException("Unknown list item")

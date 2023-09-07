@@ -4,27 +4,22 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.Dp
+import com.feko.generictabletoprpg.AppViewModel
+import com.feko.generictabletoprpg.com.feko.generictabletoprpg.common.composable.DetailsScreen
 import com.feko.generictabletoprpg.common.Common.TextWithLabel
-import com.feko.generictabletoprpg.common.DetailsScreen
-import com.feko.generictabletoprpg.common.DetailsViewModel
 import org.koin.androidx.compose.koinViewModel
 
-
-object WeaponDetails
-    : DetailsScreen<WeaponDetailsViewModel, Weapon>(
-    "Weapon Details",
-    "weapon"
+@Composable
+fun WeaponDetailsScreen(
+    id: Long,
+    appViewModel: AppViewModel
 ) {
-    @Composable
-    override fun getViewModel(): WeaponDetailsViewModel = koinViewModel()
-
-    @Composable
-    override fun ScreenContent(
-        readiedItem: DetailsViewModel.DetailsScreenState.ItemReady<Weapon>,
-        padding: Dp
-    ) {
-        readiedItem.item.run {
+    appViewModel.set(appBarTitle = "Weapon Details", navBarActions = listOf())
+    DetailsScreen<WeaponDetailsViewModel, Weapon>(
+        id,
+        koinViewModel()
+    ) { item, padding ->
+        item.run {
             TextWithLabel("Name", name)
             Spacer(Modifier.height(padding))
             TextWithLabel("Type", type)
