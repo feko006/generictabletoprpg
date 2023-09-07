@@ -13,7 +13,6 @@ import com.feko.generictabletoprpg.condition.Condition
 import com.feko.generictabletoprpg.disease.Disease
 import com.feko.generictabletoprpg.feat.Feat
 import com.feko.generictabletoprpg.spell.Spell
-import com.feko.generictabletoprpg.spell.SpellDetails
 import com.feko.generictabletoprpg.weapon.Weapon
 import com.feko.generictabletoprpg.weapon.WeaponDetails
 import org.koin.androidx.compose.koinViewModel
@@ -45,7 +44,7 @@ fun SearchAllScreen(
 fun getNavRouteInternal(item: Any): String {
     val id = (item as Identifiable).id
     return when (item) {
-        is Spell -> SpellDetails.getNavRoute(id)
+        is Spell -> "spell/$id"
         is Feat -> "feat/$id"
         is Action -> "action/$id"
         is Condition -> "condition/$id"
