@@ -49,7 +49,6 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
-import androidx.navigation.NavHostController
 import com.feko.generictabletoprpg.AppViewModel
 import com.feko.generictabletoprpg.ButtonState
 import com.feko.generictabletoprpg.R
@@ -60,13 +59,14 @@ import com.feko.generictabletoprpg.theme.Typography
 import com.feko.generictabletoprpg.tracker.Health
 import com.feko.generictabletoprpg.tracker.SpellSlot
 import com.feko.generictabletoprpg.tracker.TrackedThing
+import com.ramcosta.composedestinations.annotation.Destination
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parameterSetOf
 
+@Destination
 @Composable
 fun TrackerScreen(
     groupId: Long,
-    navHostController: NavHostController,
     appViewModel: AppViewModel
 ) {
     val viewModel: TrackerViewModel =
@@ -79,10 +79,9 @@ fun TrackerScreen(
             )
         )
     OverviewScreen(
-        navController = navHostController,
         viewModel = viewModel,
-        listItem = { item, _ ->
-            OverviewListItem(item = item)
+        listItem = { item ->
+            OverviewListItem(item)
         },
         fabButton = { modifier ->
             val expanded by viewModel.isFabDropdownMenuExpanded.collectAsState(false)
@@ -97,8 +96,7 @@ fun TrackerScreen(
         },
         alertDialogComposable = {
             AlertDialogComposable(viewModel)
-        }
-    )
+        })
 }
 
 @Composable

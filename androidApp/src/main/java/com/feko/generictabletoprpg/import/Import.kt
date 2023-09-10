@@ -18,83 +18,67 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavGraphBuilder
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.composable
 import com.feko.generictabletoprpg.AppViewModel
-import com.feko.generictabletoprpg.Navigation
+import com.ramcosta.composedestinations.annotation.Destination
 import org.koin.androidx.compose.koinViewModel
 
-
-object Import : Navigation.Destination(
-    "Import",
-    "import",
-    isRootDestination = true
+@Destination
+@Composable
+fun ImportScreen(
+    appViewModel: AppViewModel
 ) {
-    override fun navHostComposable(
-        navGraphBuilder: NavGraphBuilder,
-        navController: NavHostController,
-        appViewModel: AppViewModel
+    val viewModel: ImportViewModel = koinViewModel()
+    appViewModel.set(appBarTitle = "Import", navBarActions = listOf())
+    Box(
+        Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
     ) {
-        navGraphBuilder.composable(route) {
-            appViewModel.set(appBarTitle = screenTitle, navBarActions = listOf())
-            Screen()
-        }
-    }
-
-    @Composable
-    private fun Screen(importViewModel: ImportViewModel = koinViewModel()) {
-        Box(
-            Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
-            val context = LocalContext.current
-            val pickFileLauncher =
-                rememberLauncherForActivityResult(
-                    ActivityResultContracts.GetContent()
-                ) launch@{ fileUri ->
-                    if (fileUri == null) {
-                        return@launch
-                    }
-                    val contents = context
-                        .contentResolver
-                        .openInputStream(fileUri)
-                        ?.use { inputStream ->
-                            inputStream.bufferedReader()
-                                .use {
-                                    it.readText()
-                                }
-                        }
-                    importViewModel.fileSelected(contents)
+        val context = LocalContext.current
+        val pickFileLauncher =
+            rememberLauncherForActivityResult(
+                ActivityResultContracts.GetContent()
+            ) launch@{ fileUri ->
+                if (fileUri == null) {
+                    return@launch
                 }
-            val screenState by importViewModel.screenState.collectAsState()
-            val toastMessage by importViewModel.toastMessage.collectAsState("")
-            if (toastMessage.isNotBlank()) {
-                Toast
-                    .makeText(LocalContext.current, toastMessage, Toast.LENGTH_SHORT)
-                    .show()
+                val contents = context
+                    .contentResolver
+                    .openInputStream(fileUri)
+                    ?.use { inputStream ->
+                        inputStream.bufferedReader()
+                            .use {
+                                it.readText()
+                            }
+                    }
+                viewModel.fileSelected(contents)
             }
-            when (screenState) {
-                is ImportViewModel.ImportScreenState.ReadyToImport -> {
-                    FloatingActionButton(
-                        onClick = {
-                            pickFileLauncher.launch("*/*")
-                        }
-                    ) {
-                        Icon(Icons.Default.Add, "")
+        val screenState by viewModel.screenState.collectAsState()
+        val toastMessage by viewModel.toastMessage.collectAsState("")
+        if (toastMessage.isNotBlank()) {
+            Toast
+                .makeText(LocalContext.current, toastMessage, Toast.LENGTH_SHORT)
+                .show()
+        }
+        when (screenState) {
+            is ImportViewModel.ImportScreenState.ReadyToImport -> {
+                FloatingActionButton(
+                    onClick = {
+                        pickFileLauncher.launch("*/*")
                     }
+                ) {
+                    Icon(Icons.Default.Add, "")
                 }
+            }
 
-                is ImportViewModel.ImportScreenState.Importing -> {
-                    Box(
-                        Modifier.fillMaxSize()
-                    ) {
-                        CircularProgressIndicator(
-                            Modifier
-                                .size(100.dp)
-                                .align(Alignment.Center)
-                        )
-                    }
+            is ImportViewModel.ImportScreenState.Importing -> {
+                Box(
+                    Modifier.fillMaxSize()
+                ) {
+                    CircularProgressIndicator(
+                        Modifier
+                            .size(100.dp)
+                            .align(Alignment.Center)
+                    )
                 }
             }
         }

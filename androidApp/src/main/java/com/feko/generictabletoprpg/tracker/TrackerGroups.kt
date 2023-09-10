@@ -36,20 +36,22 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.text.input.ImeAction.Companion.Done
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
-import androidx.navigation.NavHostController
 import com.feko.generictabletoprpg.AppViewModel
 import com.feko.generictabletoprpg.com.feko.generictabletoprpg.common.composable.AddFABButton
 import com.feko.generictabletoprpg.com.feko.generictabletoprpg.common.composable.DialogTitle
 import com.feko.generictabletoprpg.com.feko.generictabletoprpg.common.composable.OverviewScreen
 import com.feko.generictabletoprpg.common.Named
+import com.feko.generictabletoprpg.destinations.TrackerScreenDestination
 import com.feko.generictabletoprpg.tracker.TrackedThingGroup
+import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import org.koin.androidx.compose.koinViewModel
 
+@Destination
 @Composable
 fun TrackerGroupsScreen(
-    navHostController: NavHostController,
-    appViewModel: AppViewModel,
-    getTrackerNavRoute: (Long) -> String
+    navigator: DestinationsNavigator,
+    appViewModel: AppViewModel
 ) {
     val viewModel: TrackerGroupViewModel = koinViewModel()
     appViewModel
@@ -58,14 +60,12 @@ fun TrackerGroupsScreen(
             navBarActions = listOf()
         )
     OverviewScreen(
-        navController = navHostController,
         viewModel = viewModel,
-        listItem = { item, navController ->
+        listItem = { item ->
             OverviewListItem(
                 item = item,
-                navController = navController,
-                viewModel = viewModel,
-                getNavRoute = getTrackerNavRoute
+                navigator = navigator,
+                viewModel = viewModel
             )
         },
         fabButton = { modifier ->
@@ -75,16 +75,14 @@ fun TrackerGroupsScreen(
         },
         alertDialogComposable = {
             AlertDialogComposable(viewModel)
-        }
-    )
+        })
 }
 
 @Composable
 fun OverviewListItem(
     item: TrackedThingGroup,
-    navController: NavHostController,
+    navigator: DestinationsNavigator,
     viewModel: TrackerGroupViewModel,
-    getNavRoute: (Long) -> String
 ) {
     ListItem(
         headlineContent = {
@@ -101,7 +99,7 @@ fun OverviewListItem(
         modifier = Modifier
             .fillMaxWidth()
             .clickable {
-                navController.navigate(getNavRoute(item.id))
+                navigator.navigate(TrackerScreenDestination(item.id))
             })
 }
 

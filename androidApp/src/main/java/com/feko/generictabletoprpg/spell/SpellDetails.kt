@@ -9,8 +9,10 @@ import androidx.compose.ui.Modifier
 import com.feko.generictabletoprpg.AppViewModel
 import com.feko.generictabletoprpg.com.feko.generictabletoprpg.common.composable.DetailsScreen
 import com.feko.generictabletoprpg.com.feko.generictabletoprpg.common.composable.TextWithLabel
+import com.ramcosta.composedestinations.annotation.Destination
 import org.koin.androidx.compose.koinViewModel
 
+@Destination
 @Composable
 fun SpellDetailsScreen(
     id: Long,

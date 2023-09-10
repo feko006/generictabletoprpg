@@ -24,7 +24,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavHostController
 import com.feko.generictabletoprpg.common.Identifiable
 import com.feko.generictabletoprpg.common.Named
 import com.feko.generictabletoprpg.common.OverviewViewModel
@@ -32,9 +31,8 @@ import com.feko.generictabletoprpg.theme.Typography
 
 @Composable
 fun <TViewModel, T> OverviewScreen(
-    navController: NavHostController,
     viewModel: TViewModel,
-    listItem: @Composable (T, NavHostController) -> Unit,
+    listItem: @Composable (T) -> Unit,
     uniqueListItemKey: (Any) -> Any = { (it as Identifiable).id },
     fabButton: @Composable ((Modifier) -> Unit)? = null,
     alertDialogComposable: @Composable () -> Unit = {}
@@ -56,7 +54,7 @@ fun <TViewModel, T> OverviewScreen(
                     listItems,
                     key = uniqueListItemKey
                 ) { item ->
-                    listItem(item, navController)
+                    listItem(item)
                 }
             }
         } else {
@@ -107,8 +105,7 @@ private fun EmptyList() {
 @Composable
 fun <T> OverviewListItem(
     item: T,
-    navController: NavHostController,
-    getNavRoute: (T) -> String
+    navigateToDetails: () -> Unit
 ) {
     ListItem(
         headlineContent = {
@@ -116,7 +113,6 @@ fun <T> OverviewListItem(
         },
         modifier = Modifier
             .fillMaxWidth()
-            .clickable {
-                navController.navigate(getNavRoute(item))
-            })
+            .clickable(onClick = navigateToDetails)
+    )
 }

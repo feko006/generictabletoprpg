@@ -9,11 +9,20 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.feko.generictabletoprpg.destinations.ImportScreenDestination
+import com.feko.generictabletoprpg.destinations.SearchAllScreenDestination
+import com.feko.generictabletoprpg.destinations.TrackerGroupsScreenDestination
 import com.feko.generictabletoprpg.theme.GenerictabletoprpgTheme
+import com.ramcosta.composedestinations.DestinationsNavHost
+import com.ramcosta.composedestinations.navigation.dependency
+import com.ramcosta.composedestinations.navigation.navigate
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
@@ -80,7 +89,7 @@ class MainActivity : ComponentActivity() {
                                             }
                                     })
                             }) { paddingValues ->
-                            Navigation.Drawer(
+                            NavigationDrawer(
                                 drawerState,
                                 paddingValues,
                                 navController,
@@ -94,3 +103,52 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+@Composable
+fun NavigationDrawer(
+    drawerState: DrawerState,
+    paddingValues: PaddingValues,
+    navController: NavHostController,
+    appViewModel: AppViewModel
+) {
+    val scope = rememberCoroutineScope()
+    val activeDrawerItem = rememberSaveable { mutableStateOf("") }
+    ModalNavigationDrawer(
+        drawerState = drawerState,
+        drawerContent = {
+            ModalDrawerSheet {
+                val drawerItemData = listOf(
+                    Pair("Search All", SearchAllScreenDestination()),
+                    Pair("Tracker", TrackerGroupsScreenDestination()),
+                    Pair("Import", ImportScreenDestination())
+                )
+                drawerItemData.forEach { (screenTitle, direction) ->
+                    NavigationDrawerItem(
+                        label = { Text(screenTitle) },
+                        selected = activeDrawerItem.value == direction.route,
+                        onClick = {
+                            activeDrawerItem.value = direction.route
+                            scope.launch {
+                                drawerState.close()
+                            }
+                            navController.navigate(direction) {
+                                popUpTo(navController.graph.findStartDestination().id) {
+                                    saveState = true
+                                }
+                                launchSingleTop = true
+                                restoreState = true
+                            }
+                        })
+                }
+            }
+        },
+        modifier = Modifier.padding(paddingValues)
+    ) {
+        DestinationsNavHost(
+            navGraph = NavGraphs.root,
+            navController = navController,
+            dependenciesContainerBuilder = {
+                dependency(appViewModel)
+            }
+        )
+    }
+}
