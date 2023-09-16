@@ -1,7 +1,9 @@
 package com.feko.generictabletoprpg.searchall
 
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.stringResource
 import com.feko.generictabletoprpg.AppViewModel
+import com.feko.generictabletoprpg.R
 import com.feko.generictabletoprpg.action.Action
 import com.feko.generictabletoprpg.ammunition.Ammunition
 import com.feko.generictabletoprpg.armor.Armor
@@ -36,7 +38,7 @@ fun SearchAllScreen(
 ) {
     appViewModel
         .set(
-            appBarTitle = "Search All",
+            appBarTitle = stringResource(R.string.search_all_title),
             navBarActions = listOf()
         )
     OverviewScreen<SearchAllViewModel, Any>(

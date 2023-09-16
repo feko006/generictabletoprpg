@@ -23,7 +23,9 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.feko.generictabletoprpg.R
 import com.feko.generictabletoprpg.common.Identifiable
 import com.feko.generictabletoprpg.common.Named
 import com.feko.generictabletoprpg.common.OverviewViewModel
@@ -94,7 +96,7 @@ private fun EmptyList() {
             )
             Spacer(Modifier.height(8.dp))
             Text(
-                "Nothing here...",
+                stringResource(R.string.empty_list),
                 Modifier.align(Alignment.CenterHorizontally),
                 style = Typography.titleLarge
             )

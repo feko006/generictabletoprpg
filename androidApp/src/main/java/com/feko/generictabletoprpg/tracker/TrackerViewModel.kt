@@ -1,6 +1,8 @@
 package com.feko.generictabletoprpg.com.feko.generictabletoprpg.tracker
 
+import androidx.annotation.StringRes
 import androidx.lifecycle.viewModelScope
+import com.feko.generictabletoprpg.R
 import com.feko.generictabletoprpg.com.feko.generictabletoprpg.common.composable.InputFieldData
 import com.feko.generictabletoprpg.common.OverviewViewModel
 import com.feko.generictabletoprpg.tracker.Health
@@ -28,7 +30,7 @@ class TrackerViewModel(
 
     fun showCreateDialog(type: TrackedThing.Type) {
         viewModelScope.launch {
-            dialogTitle = type.name
+            dialogTitleResource = type.nameResource
             dialogType = DialogType.Create
             editedTrackedThing = TrackedThing.emptyOfType(type, groupId)
             editedTrackedThingName.emit(InputFieldData.EMPTY)
@@ -43,7 +45,7 @@ class TrackerViewModel(
 
     fun showEditDialog(item: TrackedThing) {
         viewModelScope.launch {
-            dialogTitle = "Edit"
+            dialogTitleResource = R.string.edit
             dialogType = DialogType.Edit
             val copy = item.copy()
             editedTrackedThing = copy
@@ -271,34 +273,47 @@ class TrackerViewModel(
     }
 
     fun addToPercentageRequested(item: TrackedThing) =
-        setupValueChangeDialog(item, DialogType.AddPercentage, "Increase percentage")
+        setupValueChangeDialog(
+            item,
+            DialogType.AddPercentage,
+            R.string.increase_percentage_dialog_title
+        )
 
     fun subtractFromPercentageRequested(item: TrackedThing) =
-        setupValueChangeDialog(item, DialogType.ReducePercentage, "Reduce percentage")
+        setupValueChangeDialog(
+            item,
+            DialogType.ReducePercentage,
+            R.string.reduce_percentage_dialog_title
+        )
 
     fun addToNumberRequested(item: TrackedThing) =
-        setupValueChangeDialog(item, DialogType.AddNumber, "Add")
+        setupValueChangeDialog(item, DialogType.AddNumber, R.string.add)
 
     fun subtractFromNumberRequested(item: TrackedThing) =
-        setupValueChangeDialog(item, DialogType.ReduceNumber, "Subtract")
+        setupValueChangeDialog(item, DialogType.ReduceNumber, R.string.subtract)
 
     fun takeDamageRequested(item: TrackedThing) =
-        setupValueChangeDialog(item, DialogType.DamageHealth, "Take damage")
+        setupValueChangeDialog(item, DialogType.DamageHealth, R.string.take_damage_dialog_title)
 
     fun healRequested(item: TrackedThing) =
-        setupValueChangeDialog(item, DialogType.HealHealth, "Heal")
+        setupValueChangeDialog(item, DialogType.HealHealth, R.string.heal_dialog_title)
 
     fun addTemporaryHp(item: TrackedThing) =
-        setupValueChangeDialog(item, DialogType.AddTemporaryHp, "Add temporary HP")
+        setupValueChangeDialog(
+            item,
+            DialogType.AddTemporaryHp,
+            R.string.add_temporary_hp_dialog_title
+        )
 
     private fun setupValueChangeDialog(
         item: TrackedThing,
         type: DialogType,
-        title: String
+        @StringRes
+        titleResource: Int
     ) {
         viewModelScope.launch {
             dialogType = type
-            dialogTitle = title
+            dialogTitleResource = titleResource
             editedTrackedThing = item.copy()
             editedTrackedThingValue.emit(InputFieldData.EMPTY)
             validateModel()
@@ -320,7 +335,7 @@ class TrackerViewModel(
     fun deleteItemRequested(item: TrackedThing) {
         viewModelScope.launch {
             dialogType = DialogType.ConfirmDeletion
-            dialogTitle = "Delete?"
+            dialogTitleResource = R.string.delete_tracked_thing_dialog_title
             editedTrackedThing = item
             _isDialogVisible.emit(true)
         }
@@ -329,7 +344,7 @@ class TrackerViewModel(
     fun refreshAllRequested() {
         viewModelScope.launch {
             dialogType = DialogType.RefreshAll
-            dialogTitle = "Refresh all?"
+            dialogTitleResource = R.string.refresh_all_tracked_things_dialog_title
             _isDialogVisible.emit(true)
         }
     }

@@ -1,5 +1,7 @@
 package com.feko.generictabletoprpg.tracker
 
+import androidx.annotation.StringRes
+import com.feko.generictabletoprpg.R
 import com.feko.generictabletoprpg.common.MutableIdentifiable
 import com.feko.generictabletoprpg.common.Named
 
@@ -11,13 +13,13 @@ sealed class TrackedThing(
     val groupId: Long
 ) : MutableIdentifiable,
     Named {
-    enum class Type {
-        None,
-        Percentage,
-        Health,
-        Ability,
-        SpellSlot,
-        Number
+    enum class Type(@StringRes val nameResource: Int) {
+        None(0),
+        Percentage(R.string.percentage),
+        Health(R.string.health),
+        Ability(R.string.ability),
+        SpellSlot(R.string.spell_slot),
+        Number(R.string.number)
     }
 
     var value: String = value

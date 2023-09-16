@@ -4,7 +4,9 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import com.feko.generictabletoprpg.AppViewModel
+import com.feko.generictabletoprpg.R
 import com.feko.generictabletoprpg.com.feko.generictabletoprpg.common.composable.DetailsScreen
 import com.feko.generictabletoprpg.com.feko.generictabletoprpg.common.composable.TextWithLabel
 import com.ramcosta.composedestinations.annotation.Destination
@@ -16,35 +18,38 @@ fun ArmorDetailsScreen(
     id: Long,
     appViewModel: AppViewModel
 ) {
-    appViewModel.set(appBarTitle = "Armor Details", navBarActions = listOf())
+    appViewModel.set(
+        appBarTitle = stringResource(R.string.armor_details_title),
+        navBarActions = listOf()
+    )
     DetailsScreen<ArmorDetailsViewModel, Armor>(
         id,
         koinViewModel()
     ) { item, padding ->
 
         item.run {
-            TextWithLabel("Name", name)
+            TextWithLabel(R.string.name, name)
             Spacer(Modifier.height(padding))
-            TextWithLabel("Type", type)
+            TextWithLabel(R.string.type, type)
             Spacer(Modifier.height(padding))
             baseAc?.let {
-                TextWithLabel("Base AC", it.toString())
+                TextWithLabel(R.string.base_ac, it.toString())
                 Spacer(Modifier.height(padding))
             }
             maxDexModifier?.let {
-                TextWithLabel("Maximum DEX modifier", it.toString())
+                TextWithLabel(R.string.maximum_dex_modifier, it.toString())
                 Spacer(Modifier.height(padding))
             }
             stealthDisadvantage?.let {
-                TextWithLabel("Stealth disadvantage", it.toString())
+                TextWithLabel(R.string.stealth_disadvantage, it.toString())
                 Spacer(Modifier.height(padding))
             }
             weight?.let {
-                TextWithLabel("Weight", weightInLbs)
+                TextWithLabel(R.string.weight, weightInLbs)
                 Spacer(Modifier.height(padding))
             }
             minimumStrength?.let {
-                TextWithLabel("Minimum STR", minimumStrength.toString())
+                TextWithLabel(R.string.minimum_str, minimumStrength.toString())
                 Spacer(Modifier.height(padding))
             }
         }

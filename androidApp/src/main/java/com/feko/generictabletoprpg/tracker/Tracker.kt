@@ -45,6 +45,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -73,7 +74,7 @@ fun TrackerScreen(
         koinViewModel(parameters = { parameterSetOf(groupId) })
     appViewModel
         .set(
-            appBarTitle = "Tracker",
+            appBarTitle = stringResource(R.string.tracker_title),
             navBarActions = listOf(
                 ButtonState(Icons.Default.Refresh) { viewModel.refreshAllRequested() }
             )
@@ -357,20 +358,20 @@ private fun ConfirmDialog(viewModel: TrackerViewModel) {
         Modifier.padding(16.dp),
         Arrangement.spacedBy(16.dp)
     ) {
-        DialogTitle(viewModel.dialogTitle)
+        DialogTitle(viewModel.dialogTitleResource)
         Row(horizontalArrangement = Arrangement.End) {
             Spacer(Modifier.weight(1f))
             TextButton(
                 onClick = { viewModel.hideDialog() },
                 modifier = Modifier.wrapContentWidth()
             ) {
-                Text("Cancel")
+                Text(stringResource(R.string.cancel))
             }
             TextButton(
                 onClick = { viewModel.confirmDialogAction() },
                 modifier = Modifier.wrapContentWidth()
             ) {
-                Text("Confirm")
+                Text(stringResource(R.string.confirm))
             }
         }
     }
@@ -399,7 +400,7 @@ private fun DialogBase(
         Modifier.padding(16.dp),
         Arrangement.spacedBy(16.dp)
     ) {
-        DialogTitle(viewModel.dialogTitle)
+        DialogTitle(viewModel.dialogTitleResource)
         inputFields()
         val buttonEnabled by viewModel.confirmButtonEnabled.collectAsState()
         TextButton(
@@ -409,7 +410,7 @@ private fun DialogBase(
                 .wrapContentWidth()
                 .align(Alignment.End)
         ) {
-            Text("Confirm")
+            Text(stringResource(R.string.confirm))
         }
     }
 }
@@ -428,7 +429,7 @@ private fun NameTextField(
         isError = !nameInputData.isValid,
         label = {
             Text(
-                "Name",
+                stringResource(R.string.name),
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
             )
         },
@@ -469,7 +470,7 @@ private fun SpellSlotLevelTextField(
             isError = !spellSlotLevelInputData.isValid,
             label = {
                 Text(
-                    "Level",
+                    stringResource(R.string.level),
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
                 )
             },
@@ -512,7 +513,7 @@ private fun ValueTextField(
         },
         label = {
             Text(
-                "Amount",
+                stringResource(R.string.amount),
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
             )
         },

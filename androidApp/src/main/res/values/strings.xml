@@ -1,3 +1,72 @@
 <resources>
     <string name="app_name">generictabletoprpg</string>
+    <!--Common-->
+    <string name="name">Name</string>
+    <string name="sell_quantity">Sell quantity</string>
+    <string name="cost">Cost</string>
+    <string name="weight">Weight</string>
+    <string name="type">Type</string>
+    <string name="base_ac">Base AC</string>
+    <string name="maximum_dex_modifier">Maximum DEX modifier</string>
+    <string name="stealth_disadvantage">Stealth disadvantage</string>
+    <string name="minimum_str">Minimum STR</string>
+    <string name="search">Search</string>
+    <string name="requirements">Requirements</string>
+    <string name="empty_list">Nothing here…</string>
+    <string name="level">Level</string>
+    <string name="school">School</string>
+    <string name="casting_time">Casting time</string>
+    <string name="range">Range</string>
+    <string name="components">Components</string>
+    <string name="duration">Duration</string>
+    <string name="cancel">Cancel</string>
+    <string name="confirm">Confirm</string>
+    <string name="amount">Amount</string>
+    <string name="edit">Edit</string>
+    <string name="percentage">Percentage</string>
+    <string name="health">Health</string>
+    <string name="ability">Ability</string>
+    <string name="spell_slot">Spell Slot</string>
+    <string name="number">Number</string>
+    <string name="subtype">Subtype</string>
+    <string name="damage">Damage</string>
+    <string name="properties">Properties</string>
+    <string name="add">Add</string>
+    <string name="subtract">Subtract</string>
+    <!--Action-->
+    <string name="action_details_title">Action Details</string>
+    <!--Ammunition-->
+    <string name="ammunition_details_title">Ammunition Details</string>
+    <!--Armor-->
+    <string name="armor_details_title">Armor Details</string>
+    <!--Condition-->
+    <string name="condition_details_title">Condition Details</string>
+    <!--Disease-->
+    <string name="disease_details_title">Disease Details</string>
+    <!--Feat-->
+    <string name="feat_details_title">Feat Details</string>
+    <!--Import-->
+    <string name="import_title">Import</string>
+    <string name="error_reading_file_toast">Error reading file</string>
+    <string name="failed_to_import_data_toast">Failed to import data</string>
+    <string name="successfully_imported_data_toast">Successfully imported data</string>
+    <string name="partially_imported_data_toast">Data partially imported</string>
+    <!--Search All-->
+    <string name="search_all_title">Search All</string>
+    <!--Tracker-->
+    <string name="tracker_title">Tracker</string>
+    <string name="create_new_tracked_group_dialog_title">Create new group</string>
+    <string name="edit_tracked_group_dialog_title">Edit group</string>
+    <string name="delete_tracked_group_dialog_title">Delete group</string>
+    <string name="delete_tracked_thing_dialog_title">Delete?</string>
+    <string name="refresh_all_tracked_things_dialog_title">Refresh all?</string>
+    <string name="increase_percentage_dialog_title">Increase percentage</string>
+    <string name="reduce_percentage_dialog_title">Reduce percentage</string>
+    <string name="take_damage_dialog_title">Take damage</string>
+    <string name="heal_dialog_title">Heal</string>
+    <string name="add_temporary_hp_dialog_title">Add temporary HP</string>
+    <!--Spell-->
+    <string name="spell_details_title">Spell Details</string>
+    <!--Weapon-->
+    <string name="weapon_details_title">Weapon Details</string>
 </resources>

@@ -4,7 +4,9 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import com.feko.generictabletoprpg.AppViewModel
+import com.feko.generictabletoprpg.R
 import com.feko.generictabletoprpg.com.feko.generictabletoprpg.common.composable.DetailsScreen
 import com.feko.generictabletoprpg.com.feko.generictabletoprpg.common.composable.TextWithLabel
 import com.ramcosta.composedestinations.annotation.Destination
@@ -16,26 +18,29 @@ fun WeaponDetailsScreen(
     id: Long,
     appViewModel: AppViewModel
 ) {
-    appViewModel.set(appBarTitle = "Weapon Details", navBarActions = listOf())
+    appViewModel.set(
+        appBarTitle = stringResource(R.string.weapon_details_title),
+        navBarActions = listOf()
+    )
     DetailsScreen<WeaponDetailsViewModel, Weapon>(
         id,
         koinViewModel()
     ) { item, padding ->
         item.run {
-            TextWithLabel("Name", name)
+            TextWithLabel(R.string.name, name)
             Spacer(Modifier.height(padding))
-            TextWithLabel("Type", type)
+            TextWithLabel(R.string.type, type)
             if (subType.isNotBlank()) {
                 Spacer(Modifier.height(padding))
-                TextWithLabel("Type", subType)
+                TextWithLabel(R.string.subtype, subType)
             }
             Spacer(Modifier.height(padding))
-            TextWithLabel("Damage", damage.toString())
+            TextWithLabel(R.string.damage, damage.toString())
             Spacer(Modifier.height(padding))
-            TextWithLabel("Range", readableRange)
+            TextWithLabel(R.string.range, readableRange)
             if (hasAnyProperties) {
                 Spacer(Modifier.height(padding))
-                TextWithLabel("Properties", properties)
+                TextWithLabel(R.string.properties, properties)
             }
         }
     }

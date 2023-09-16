@@ -12,6 +12,7 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
@@ -117,13 +118,13 @@ fun NavigationDrawer(
         drawerContent = {
             ModalDrawerSheet {
                 val drawerItemData = listOf(
-                    Pair("Search All", SearchAllScreenDestination()),
-                    Pair("Tracker", TrackerGroupsScreenDestination()),
-                    Pair("Import", ImportScreenDestination())
+                    R.string.search_all_title to SearchAllScreenDestination(),
+                    R.string.tracker_title to TrackerGroupsScreenDestination(),
+                    R.string.import_title to ImportScreenDestination()
                 )
-                drawerItemData.forEach { (screenTitle, direction) ->
+                drawerItemData.forEach { (screenTitleResource, direction) ->
                     NavigationDrawerItem(
-                        label = { Text(screenTitle) },
+                        label = { Text(stringResource(screenTitleResource)) },
                         selected = activeDrawerItem.value == direction.route,
                         onClick = {
                             activeDrawerItem.value = direction.route

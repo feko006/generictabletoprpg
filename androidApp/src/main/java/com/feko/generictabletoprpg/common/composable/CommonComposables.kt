@@ -1,5 +1,6 @@
 package com.feko.generictabletoprpg.com.feko.generictabletoprpg.common.composable
 
+import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
@@ -10,11 +11,13 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import com.feko.generictabletoprpg.R
 
 data class InputFieldData(
     val value: String,
@@ -35,7 +38,7 @@ fun SearchTextField(
         onValueChange = onValueChange,
         label = {
             Text(
-                "Search",
+                stringResource(R.string.search),
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
             )
         },
@@ -53,13 +56,13 @@ fun SearchTextField(
 
 @Composable
 fun TextWithLabel(
-    label: String,
+    @StringRes labelResource: Int,
     text: String
 ) {
     Text(
         buildAnnotatedString {
             withStyle(SpanStyle(fontWeight = FontWeight.Bold)) {
-                append(label)
+                append(stringResource(labelResource))
             }
             append(": $text")
         }

@@ -1,6 +1,7 @@
 package com.feko.generictabletoprpg.com.feko.generictabletoprpg.tracker
 
 import androidx.lifecycle.viewModelScope
+import com.feko.generictabletoprpg.R
 import com.feko.generictabletoprpg.com.feko.generictabletoprpg.common.composable.InputFieldData
 import com.feko.generictabletoprpg.common.OverviewViewModel
 import com.feko.generictabletoprpg.tracker.TrackedThingGroup
@@ -22,7 +23,7 @@ class TrackerGroupViewModel(
     fun newTrackedThingGroupRequested() {
         viewModelScope.launch {
             dialogType = DialogType.NewOrUpdate
-            dialogTitle = "Create new group"
+            dialogTitleResource = R.string.create_new_tracked_group_dialog_title
             groupId = 0
             groupName.emit(InputFieldData.EMPTY)
             confirmButtonEnabled.emit(false)
@@ -33,7 +34,7 @@ class TrackerGroupViewModel(
     fun editItemRequested(item: TrackedThingGroup) {
         viewModelScope.launch {
             dialogType = DialogType.NewOrUpdate
-            dialogTitle = "Edit group"
+            dialogTitleResource = R.string.edit_tracked_group_dialog_title
             groupId = item.id
             groupName.emit(InputFieldData(item.name, true))
             confirmButtonEnabled.emit(true)
@@ -44,7 +45,7 @@ class TrackerGroupViewModel(
     fun deleteItemRequested(item: TrackedThingGroup) {
         viewModelScope.launch {
             dialogType = DialogType.Delete
-            dialogTitle = "Delete group"
+            dialogTitleResource = R.string.delete_tracked_group_dialog_title
             groupId = item.id
             confirmButtonEnabled.emit(true)
             _isDialogVisible.emit(true)

@@ -17,8 +17,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.feko.generictabletoprpg.AppViewModel
+import com.feko.generictabletoprpg.R
 import com.ramcosta.composedestinations.annotation.Destination
 import org.koin.androidx.compose.koinViewModel
 
@@ -28,7 +30,10 @@ fun ImportScreen(
     appViewModel: AppViewModel
 ) {
     val viewModel: ImportViewModel = koinViewModel()
-    appViewModel.set(appBarTitle = "Import", navBarActions = listOf())
+    appViewModel.set(
+        appBarTitle = stringResource(R.string.import_title),
+        navBarActions = listOf()
+    )
     Box(
         Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
@@ -53,10 +58,14 @@ fun ImportScreen(
                 viewModel.fileSelected(contents)
             }
         val screenState by viewModel.screenState.collectAsState()
-        val toastMessage by viewModel.toastMessage.collectAsState("")
-        if (toastMessage.isNotBlank()) {
+        val toastMessageResource by viewModel.toastMessage.collectAsState(0)
+        if (toastMessageResource != 0) {
             Toast
-                .makeText(LocalContext.current, toastMessage, Toast.LENGTH_SHORT)
+                .makeText(
+                    LocalContext.current,
+                    toastMessageResource,
+                    Toast.LENGTH_SHORT
+                )
                 .show()
         }
         when (screenState) {

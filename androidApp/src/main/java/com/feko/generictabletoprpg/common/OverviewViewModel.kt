@@ -1,5 +1,6 @@
 package com.feko.generictabletoprpg.common
 
+import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
@@ -31,7 +32,8 @@ open class OverviewViewModel<T>(
         get() = _isDialogVisible
     protected val _isDialogVisible = MutableStateFlow(false)
 
-    var dialogTitle: String = ""
+    @StringRes
+    var dialogTitleResource: Int = 0
 
     val isFabDropdownMenuExpanded: Flow<Boolean>
         get() = _isFabDropdownMenuExpanded

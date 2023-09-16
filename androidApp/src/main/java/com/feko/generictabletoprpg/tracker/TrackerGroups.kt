@@ -33,10 +33,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction.Companion.Done
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import com.feko.generictabletoprpg.AppViewModel
+import com.feko.generictabletoprpg.R
 import com.feko.generictabletoprpg.com.feko.generictabletoprpg.common.composable.AddFABButton
 import com.feko.generictabletoprpg.com.feko.generictabletoprpg.common.composable.DialogTitle
 import com.feko.generictabletoprpg.com.feko.generictabletoprpg.common.composable.OverviewScreen
@@ -56,7 +58,7 @@ fun TrackerGroupsScreen(
     val viewModel: TrackerGroupViewModel = koinViewModel()
     appViewModel
         .set(
-            appBarTitle = "Tracker",
+            appBarTitle = stringResource(R.string.tracker_title),
             navBarActions = listOf()
         )
     OverviewScreen(
@@ -115,7 +117,7 @@ fun AlertDialogComposable(viewModel: TrackerGroupViewModel) {
                 Modifier.padding(16.dp),
                 Arrangement.spacedBy(16.dp)
             ) {
-                DialogTitle(viewModel.dialogTitle)
+                DialogTitle(viewModel.dialogTitleResource)
                 val focusRequester = remember { FocusRequester() }
                 val nameInputData by viewModel.groupName.collectAsState()
                 if (viewModel.dialogType == TrackerGroupViewModel.DialogType.NewOrUpdate) {
@@ -125,7 +127,7 @@ fun AlertDialogComposable(viewModel: TrackerGroupViewModel) {
                         isError = !nameInputData.isValid,
                         label = {
                             Text(
-                                "Name",
+                                stringResource(R.string.name),
                                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
                             )
                         },
@@ -156,7 +158,7 @@ fun AlertDialogComposable(viewModel: TrackerGroupViewModel) {
                             enabled = true,
                             modifier = Modifier.wrapContentWidth()
                         ) {
-                            Text("Cancel")
+                            Text(stringResource(R.string.cancel))
                         }
                     }
                     val buttonEnabled by viewModel.confirmButtonEnabled.collectAsState()
@@ -165,7 +167,7 @@ fun AlertDialogComposable(viewModel: TrackerGroupViewModel) {
                         enabled = buttonEnabled,
                         modifier = Modifier.wrapContentWidth()
                     ) {
-                        Text("Confirm")
+                        Text(stringResource(R.string.confirm))
                     }
                 }
             }

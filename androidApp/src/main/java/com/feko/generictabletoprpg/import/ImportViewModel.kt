@@ -1,7 +1,9 @@
 package com.feko.generictabletoprpg.import
 
+import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.feko.generictabletoprpg.R
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -16,15 +18,15 @@ class ImportViewModel(
     val screenState: StateFlow<ImportScreenState>
         get() = _screenState
     private val _screenState = MutableStateFlow<ImportScreenState>(ImportScreenState.ReadyToImport)
-    val toastMessage: SharedFlow<String>
+    val toastMessage: SharedFlow<Int>
         get() = _toastMessage
-    private val _toastMessage = MutableSharedFlow<String>()
+    private val _toastMessage: MutableSharedFlow<Int> = MutableSharedFlow(0)
 
     fun fileSelected(contents: String?) {
         viewModelScope.launch {
             _screenState.emit(ImportScreenState.Importing)
             if (contents == null) {
-                showToastAndResetScreen("Error reading file")
+                showToastAndResetScreen(R.string.error_reading_file_toast)
                 return@launch
             }
             val result: Result<Boolean> =
@@ -32,19 +34,19 @@ class ImportViewModel(
                     importAllUseCase.import(contents)
                 }
             if (result.isFailure) {
-                showToastAndResetScreen("Failed to import data")
+                showToastAndResetScreen(R.string.failed_to_import_data_toast)
             } else {
                 val successfullyImported = result.getOrDefault(false)
                 if (successfullyImported) {
-                    showToastAndResetScreen("Successfully imported all data")
+                    showToastAndResetScreen(R.string.successfully_imported_data_toast)
                 } else {
-                    showToastAndResetScreen("Data partially imported")
+                    showToastAndResetScreen(R.string.partially_imported_data_toast)
                 }
             }
         }
     }
 
-    private suspend fun showToastAndResetScreen(toastMessage: String) {
+    private suspend fun showToastAndResetScreen(@StringRes toastMessage: Int) {
         _toastMessage.emit(toastMessage)
         _screenState.emit(ImportScreenState.ReadyToImport)
     }
