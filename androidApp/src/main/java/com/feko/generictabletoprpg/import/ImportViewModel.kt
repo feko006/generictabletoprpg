@@ -52,7 +52,7 @@ class ImportViewModel(
     }
 
     sealed class ImportScreenState {
-        object ReadyToImport : ImportScreenState()
-        object Importing : ImportScreenState()
+        data object ReadyToImport : ImportScreenState()
+        data object Importing : ImportScreenState()
     }
 }

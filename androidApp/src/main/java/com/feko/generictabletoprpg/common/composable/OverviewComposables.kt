@@ -30,14 +30,23 @@ import com.feko.generictabletoprpg.common.Identifiable
 import com.feko.generictabletoprpg.common.Named
 import com.feko.generictabletoprpg.common.OverviewViewModel
 import com.feko.generictabletoprpg.theme.Typography
+import org.burnoutcrew.reorderable.ItemPosition
+import org.burnoutcrew.reorderable.ReorderableItem
+import org.burnoutcrew.reorderable.ReorderableLazyListState
+import org.burnoutcrew.reorderable.detectReorderAfterLongPress
+import org.burnoutcrew.reorderable.rememberReorderableLazyListState
+import org.burnoutcrew.reorderable.reorderable
 
 @Composable
 fun <TViewModel, T> OverviewScreen(
     viewModel: TViewModel,
-    listItem: @Composable (T) -> Unit,
+    listItem: @Composable (T, ReorderableLazyListState?) -> Unit,
     uniqueListItemKey: (Any) -> Any = { (it as Identifiable).id },
-    fabButton: @Composable ((Modifier) -> Unit)? = null,
-    alertDialogComposable: @Composable () -> Unit = {}
+    fabButton: @Composable() ((Modifier) -> Unit)? = null,
+    alertDialogComposable: @Composable () -> Unit = {},
+    isReorderable: Boolean = false,
+    onItemReordered: (ItemPosition, ItemPosition) -> Unit = { _, _ -> }
+
 ) where TViewModel : OverviewViewModel<T>,
         T : Any {
     val listItems by viewModel.items.collectAsState(listOf())
@@ -48,15 +57,39 @@ fun <TViewModel, T> OverviewScreen(
         }
         Spacer(Modifier.height(8.dp))
         if (listItems.isNotEmpty()) {
-            LazyColumn(
-                Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                items(
-                    listItems,
-                    key = uniqueListItemKey
-                ) { item ->
-                    listItem(item)
+            if (isReorderable) {
+                val state = rememberReorderableLazyListState(onMove = onItemReordered)
+                LazyColumn(
+                    Modifier
+                        .fillMaxSize()
+                        .reorderable(state)
+                        .detectReorderAfterLongPress(state),
+                    state = state.listState,
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    items(
+                        listItems,
+                        key = uniqueListItemKey
+                    ) { item ->
+                        ReorderableItem(
+                            reorderableState = state,
+                            key = uniqueListItemKey
+                        ) { _ ->
+                            listItem(item, state)
+                        }
+                    }
+                }
+            } else {
+                LazyColumn(
+                    Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    items(
+                        listItems,
+                        key = uniqueListItemKey
+                    ) { item ->
+                        listItem(item, null)
+                    }
                 }
             }
         } else {

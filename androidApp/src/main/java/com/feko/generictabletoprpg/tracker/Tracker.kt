@@ -21,6 +21,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
@@ -61,6 +62,8 @@ import com.feko.generictabletoprpg.tracker.Health
 import com.feko.generictabletoprpg.tracker.SpellSlot
 import com.feko.generictabletoprpg.tracker.TrackedThing
 import com.ramcosta.composedestinations.annotation.Destination
+import org.burnoutcrew.reorderable.ReorderableLazyListState
+import org.burnoutcrew.reorderable.detectReorder
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parameterSetOf
 
@@ -81,8 +84,8 @@ fun TrackerScreen(
         )
     OverviewScreen(
         viewModel = viewModel,
-        listItem = { item ->
-            OverviewListItem(item)
+        listItem = { item, state ->
+            OverviewListItem(item, state!!)
         },
         fabButton = { modifier ->
             val expanded by viewModel.isFabDropdownMenuExpanded.collectAsState(false)
@@ -97,72 +100,91 @@ fun TrackerScreen(
         },
         alertDialogComposable = {
             AlertDialogComposable(viewModel)
-        })
+        },
+        isReorderable = true,
+        onItemReordered = { from, to ->
+            viewModel.itemReordered(from.index, to.index)
+        }
+    )
 }
 
 @Composable
-fun OverviewListItem(item: TrackedThing) {
+fun OverviewListItem(item: TrackedThing, state: ReorderableLazyListState) {
     Card(Modifier.fillMaxWidth()) {
-        Column(
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-            modifier = Modifier.padding(16.dp, 16.dp, 16.dp)
-        ) {
-            Row(
-                modifier = Modifier.height(IntrinsicSize.Min),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalAlignment = Alignment.CenterVertically
+        Row(modifier = Modifier.height(IntrinsicSize.Min)) {
+            Box(
+                Modifier
+                    .fillMaxHeight()
+                    .padding(8.dp)
+                    .detectReorder(state)
             ) {
-                Text(
-                    item.name,
-                    style = Typography.titleMedium,
-                    modifier = Modifier.weight(1f)
+                Icon(
+                    Icons.Default.Menu,
+                    "",
+                    Modifier.align(Alignment.Center)
                 )
-                Box(
-                    Modifier
-                        .fillMaxHeight()
-                        .width(1.dp)
-                        .padding(vertical = 4.dp)
-                        .background(Color.Gray)
-                )
-                Column(
-                    verticalArrangement = Arrangement.SpaceAround,
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier.width(85.dp)
+            }
+            Column(
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier.padding(16.dp, 16.dp, 16.dp)
+            ) {
+                Row(
+                    modifier = Modifier.height(IntrinsicSize.Min),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(item.getPrintableValue())
-                    if (item is Health) {
-                        if (item.temporaryHp > 0) {
-                            Row(
-                                horizontalArrangement = Arrangement.spacedBy(4.dp),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Icon(
-                                    painterResource(R.drawable.shield_with_heart),
-                                    "",
-                                    modifier = Modifier.size(12.dp)
-                                )
-                                Text(item.temporaryHp.toString(), style = Typography.bodySmall)
+                    Text(
+                        item.name,
+                        style = Typography.titleMedium,
+                        modifier = Modifier.weight(1f)
+                    )
+                    Box(
+                        Modifier
+                            .fillMaxHeight()
+                            .width(1.dp)
+                            .padding(vertical = 4.dp)
+                            .background(Color.Gray)
+                    )
+                    Column(
+                        verticalArrangement = Arrangement.SpaceAround,
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier.width(85.dp)
+                    ) {
+                        Text(item.getPrintableValue())
+                        if (item is Health) {
+                            if (item.temporaryHp > 0) {
+                                Row(
+                                    horizontalArrangement = Arrangement.spacedBy(4.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Icon(
+                                        painterResource(R.drawable.shield_with_heart),
+                                        "",
+                                        modifier = Modifier.size(12.dp)
+                                    )
+                                    Text(item.temporaryHp.toString(), style = Typography.bodySmall)
+                                }
+                            }
+                        }
+                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) row@{
+                            if (item.type == TrackedThing.Type.Percentage) {
+                                return@row
+                            }
+                            Text(item.type.name, style = Typography.bodySmall)
+                            if (item is SpellSlot) {
+                                Text("Lv ${item.level}", style = Typography.bodySmall)
                             }
                         }
                     }
-                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) row@{
-                        if (item.type == TrackedThing.Type.Percentage) {
-                            return@row
-                        }
-                        Text(item.type.name, style = Typography.bodySmall)
-                        if (item is SpellSlot) {
-                            Text("Lv ${item.level}", style = Typography.bodySmall)
-                        }
-                    }
                 }
-            }
-            when (item.type) {
-                TrackedThing.Type.Percentage -> PercentageActions(item)
-                TrackedThing.Type.Number -> NumberActions(item)
-                TrackedThing.Type.Health -> HealthActions(item)
-                TrackedThing.Type.Ability -> AbilityActions(item)
-                TrackedThing.Type.SpellSlot -> SpellSlotActions(item)
-                TrackedThing.Type.None -> {}
+                when (item.type) {
+                    TrackedThing.Type.Percentage -> PercentageActions(item)
+                    TrackedThing.Type.Number -> NumberActions(item)
+                    TrackedThing.Type.Health -> HealthActions(item)
+                    TrackedThing.Type.Ability -> AbilityActions(item)
+                    TrackedThing.Type.SpellSlot -> SpellSlotActions(item)
+                    TrackedThing.Type.None -> {}
+                }
             }
         }
     }

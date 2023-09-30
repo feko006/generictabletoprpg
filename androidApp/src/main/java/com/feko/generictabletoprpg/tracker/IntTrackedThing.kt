@@ -5,8 +5,9 @@ abstract class IntTrackedThing(
     name: String,
     amount: Int,
     type: Type,
+    index: Int,
     groupId: Long
-) : GenericTrackedThing<Int>(id, name, amount, type, groupId) {
+) : GenericTrackedThing<Int>(id, name, amount, type, index, groupId) {
 
     init {
         value = toValue(amount)

@@ -1,10 +1,10 @@
 package com.feko.generictabletoprpg.tracker
 
-class Number(id: Long, name: String, amount: Int, groupId: Long) :
-    IntTrackedThing(id, name, amount, Type.Number, groupId) {
+class Number(id: Long, name: String, amount: Int, index: Int, groupId: Long) :
+    IntTrackedThing(id, name, amount, Type.Number, index, groupId) {
 
     override fun copy(): TrackedThing =
-        Number(id, name, amount, groupId).also { it.defaultValue = defaultValue }
+        Number(id, name, amount, index, groupId).also { it.defaultValue = defaultValue }
 
     override fun isValueValid(): Boolean = true
 

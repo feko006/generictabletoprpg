@@ -10,6 +10,7 @@ sealed class TrackedThing(
     override var name: String,
     value: String,
     val type: Type,
+    var index: Int,
     val groupId: Long
 ) : MutableIdentifiable,
     Named {
@@ -27,14 +28,14 @@ sealed class TrackedThing(
     var defaultValue: String = ""
 
     companion object {
-        fun emptyOfType(type: Type, groupId: Long): TrackedThing =
+        fun emptyOfType(type: Type, index: Int, groupId: Long): TrackedThing =
             when (type) {
                 Type.None -> throw Exception("Cannot create tracked thing of type None.")
-                Type.Percentage -> Percentage(0, "", 0f, groupId)
-                Type.Health -> Health(0, 0, "", 0, groupId)
-                Type.Ability -> Ability(0, "", 0, groupId)
-                Type.SpellSlot -> SpellSlot(1, 0, "", 0, groupId)
-                Type.Number -> Number(0, "", 0, groupId)
+                Type.Percentage -> Percentage(0, "", 0f, index, groupId)
+                Type.Health -> Health(0, 0, "", 0, index, groupId)
+                Type.Ability -> Ability(0, "", 0, index, groupId)
+                Type.SpellSlot -> SpellSlot(1, 0, "", 0, index, groupId)
+                Type.Number -> Number(0, "", 0, index, groupId)
                     .apply { defaultValue = Int.MAX_VALUE.toString() }
             }
     }

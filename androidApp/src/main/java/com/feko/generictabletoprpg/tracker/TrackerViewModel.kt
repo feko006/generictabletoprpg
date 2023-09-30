@@ -26,13 +26,13 @@ class TrackerViewModel(
     private lateinit var editedTrackedThing: TrackedThing
     lateinit var dialogType: DialogType
 
-    override fun getAllItems(): List<TrackedThing> = trackedThingDao.getAllSortedByName(groupId)
+    override fun getAllItems(): List<TrackedThing> = trackedThingDao.getAllSortedByIndex(groupId)
 
     fun showCreateDialog(type: TrackedThing.Type) {
         viewModelScope.launch {
             dialogTitleResource = type.nameResource
             dialogType = DialogType.Create
-            editedTrackedThing = TrackedThing.emptyOfType(type, groupId)
+            editedTrackedThing = TrackedThing.emptyOfType(type, _items.value.size, groupId)
             editedTrackedThingName.emit(InputFieldData.EMPTY)
             editedTrackedThingSpellSlotLevel.emit(InputFieldData.EMPTY)
             editedTrackedThingValue.emit(InputFieldData.EMPTY)
@@ -346,6 +346,27 @@ class TrackerViewModel(
             dialogType = DialogType.RefreshAll
             dialogTitleResource = R.string.refresh_all_tracked_things_dialog_title
             _isDialogVisible.emit(true)
+        }
+    }
+
+    fun itemReordered(from: Int, to: Int) {
+        viewModelScope.launch {
+            val newList =
+                _items
+                    .value
+                    .toMutableList()
+                    .apply {
+                        add(from, removeAt(to))
+                        forEachIndexed { index, item ->
+                            item.index = index
+                        }
+                    }
+            _items.emit(newList)
+            withContext(Dispatchers.Default) {
+                newList.forEach {
+                    trackedThingDao.insertOrUpdate(it)
+                }
+            }
         }
     }
 

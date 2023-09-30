@@ -63,7 +63,7 @@ fun TrackerGroupsScreen(
         )
     OverviewScreen(
         viewModel = viewModel,
-        listItem = { item ->
+        listItem = { item, _ ->
             OverviewListItem(
                 item = item,
                 navigator = navigator,
@@ -77,7 +77,8 @@ fun TrackerGroupsScreen(
         },
         alertDialogComposable = {
             AlertDialogComposable(viewModel)
-        })
+        }
+    )
 }
 
 @Composable

@@ -1,10 +1,12 @@
 package com.feko.generictabletoprpg.tracker
 
-class Health(var temporaryHp: Int, id: Long, name: String, amount: Int, groupId: Long) :
-    IntTrackedThing(id, name, amount, Type.Health, groupId) {
+class Health(var temporaryHp: Int, id: Long, name: String, amount: Int, index: Int, groupId: Long) :
+    IntTrackedThing(id, name, amount, Type.Health, index, groupId) {
 
     override fun copy(): TrackedThing =
-        Health(temporaryHp, id, name, amount, groupId).also { it.defaultValue = defaultValue }
+        Health(temporaryHp, id, name, amount, index, groupId).also {
+            it.defaultValue = defaultValue
+        }
 
     override fun subtract(delta: String) {
         var intDelta = toAmount(delta)

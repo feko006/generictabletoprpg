@@ -1,7 +1,7 @@
 package com.feko.generictabletoprpg.tracker
 
-class Percentage(id: Long, name: String, var amount: Float, groupId: Long) :
-    TrackedThing(id, name, "", Type.Percentage, groupId) {
+class Percentage(id: Long, name: String, var amount: Float, index: Int, groupId: Long) :
+    TrackedThing(id, name, "", Type.Percentage, index, groupId) {
 
     init {
         value = toValue(amount)
@@ -34,7 +34,7 @@ class Percentage(id: Long, name: String, var amount: Float, groupId: Long) :
     }
 
     override fun copy(): TrackedThing =
-        Percentage(id, name, amount, groupId).also { it.defaultValue = defaultValue }
+        Percentage(id, name, amount, index, groupId).also { it.defaultValue = defaultValue }
 
     override fun canAdd(): Boolean = amount < 100f
 

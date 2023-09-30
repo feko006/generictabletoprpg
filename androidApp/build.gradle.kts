@@ -87,4 +87,5 @@ dependencies {
     val composeDestinationsVersion = "1.9.51"
     implementation("io.github.raamcosta.compose-destinations:core:$composeDestinationsVersion")
     ksp("io.github.raamcosta.compose-destinations:ksp:$composeDestinationsVersion")
+    implementation("org.burnoutcrew.composereorderable:reorderable:0.9.6")
 }

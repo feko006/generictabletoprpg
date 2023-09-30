@@ -36,6 +36,8 @@ data class TrackedThingEntity(
     @ColumnInfo(defaultValue = "")
     var defaultValue: String,
     val type: Int,
+    @ColumnInfo(defaultValue = "0")
+    val idx: Int,
     @ColumnInfo(
         index = true,
         defaultValue = "0"
@@ -49,19 +51,19 @@ data class TrackedThingEntity(
         val trackedThing =
             when (TrackedThing.Type.values()[type]) {
                 TrackedThing.Type.Percentage ->
-                    Percentage(id, name, value.toFloat(), groupId)
+                    Percentage(id, name, value.toFloat(), idx, groupId)
 
                 TrackedThing.Type.Health ->
-                    Health(temporaryHp, id, name, value.toInt(), groupId)
+                    Health(temporaryHp, id, name, value.toInt(), idx, groupId)
 
                 TrackedThing.Type.Ability ->
-                    Ability(id, name, value.toInt(), groupId)
+                    Ability(id, name, value.toInt(), idx, groupId)
 
                 TrackedThing.Type.SpellSlot ->
-                    SpellSlot(level, id, name, value.toInt(), groupId)
+                    SpellSlot(level, id, name, value.toInt(), idx, groupId)
 
                 TrackedThing.Type.Number ->
-                    Number(id, name, value.toInt(), groupId)
+                    Number(id, name, value.toInt(), idx, groupId)
 
                 TrackedThing.Type.None -> throw Exception("Tracked thing not supported.")
             }

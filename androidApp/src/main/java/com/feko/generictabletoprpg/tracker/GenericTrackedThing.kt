@@ -5,5 +5,6 @@ abstract class GenericTrackedThing<T>(
     name: String,
     var amount: T,
     type: Type,
+    index: Int,
     groupId: Long
-) : TrackedThing(id, name, amount.toString(), type, groupId)
+) : TrackedThing(id, name, amount.toString(), type, index, groupId)
