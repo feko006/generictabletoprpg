@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import com.feko.generictabletoprpg.AppViewModel
 import com.feko.generictabletoprpg.R
+import com.feko.generictabletoprpg.RootDestinations
 import com.feko.generictabletoprpg.action.Action
 import com.feko.generictabletoprpg.ammunition.Ammunition
 import com.feko.generictabletoprpg.armor.Armor
@@ -36,11 +37,13 @@ fun SearchAllScreen(
     navigator: DestinationsNavigator,
     appViewModel: AppViewModel
 ) {
-    appViewModel
-        .set(
+    appViewModel.run {
+        set(
             appBarTitle = stringResource(R.string.search_all_title),
             navBarActions = listOf()
         )
+        updateActiveDrawerItem(RootDestinations.SearchAll)
+    }
     OverviewScreen<SearchAllViewModel, Any>(
         koinViewModel(),
         listItem = { item, _, _ ->

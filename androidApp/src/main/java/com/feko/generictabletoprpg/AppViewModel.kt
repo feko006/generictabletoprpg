@@ -17,6 +17,10 @@ class AppViewModel(
     private val _appState: MutableStateFlow<AppState> =
         MutableStateFlow(AppState.ImportingBaseContent)
 
+    val activeDrawerItemRoute: StateFlow<String>
+        get() = _activeDrawerItemRoute
+    private val _activeDrawerItemRoute = MutableStateFlow("")
+
     init {
         viewModelScope.launch {
             withContext(Dispatchers.Default) {
@@ -40,6 +44,12 @@ class AppViewModel(
                     )
                 _appState.emit(nextAppState)
             }
+        }
+    }
+
+    fun updateActiveDrawerItem(destination: RootDestinations) {
+        viewModelScope.launch {
+            _activeDrawerItemRoute.emit(destination.direction.route)
         }
     }
 

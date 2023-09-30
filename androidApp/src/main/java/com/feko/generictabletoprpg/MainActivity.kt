@@ -9,7 +9,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -17,9 +16,6 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import com.feko.generictabletoprpg.destinations.ImportScreenDestination
-import com.feko.generictabletoprpg.destinations.SearchAllScreenDestination
-import com.feko.generictabletoprpg.destinations.TrackerGroupsScreenDestination
 import com.feko.generictabletoprpg.theme.GenerictabletoprpgTheme
 import com.ramcosta.composedestinations.DestinationsNavHost
 import com.ramcosta.composedestinations.navigation.dependency
@@ -112,26 +108,21 @@ fun NavigationDrawer(
     appViewModel: AppViewModel
 ) {
     val scope = rememberCoroutineScope()
-    val activeDrawerItem = rememberSaveable { mutableStateOf("") }
+    val activeDrawerItemRoute = appViewModel.activeDrawerItemRoute.collectAsState()
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
             ModalDrawerSheet {
-                val drawerItemData = listOf(
-                    R.string.search_all_title to SearchAllScreenDestination(),
-                    R.string.tracker_title to TrackerGroupsScreenDestination(),
-                    R.string.import_title to ImportScreenDestination()
-                )
-                drawerItemData.forEach { (screenTitleResource, direction) ->
+                RootDestinations.values().forEach { rootDestination ->
                     NavigationDrawerItem(
-                        label = { Text(stringResource(screenTitleResource)) },
-                        selected = activeDrawerItem.value == direction.route,
+                        label = { Text(stringResource(rootDestination.title)) },
+                        selected = activeDrawerItemRoute.value == rootDestination.direction.route,
                         onClick = {
-                            activeDrawerItem.value = direction.route
+                            appViewModel.updateActiveDrawerItem(rootDestination)
                             scope.launch {
                                 drawerState.close()
                             }
-                            navController.navigate(direction) {
+                            navController.navigate(rootDestination.direction) {
                                 popUpTo(navController.graph.findStartDestination().id) {
                                     saveState = true
                                 }

@@ -39,6 +39,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import com.feko.generictabletoprpg.AppViewModel
 import com.feko.generictabletoprpg.R
+import com.feko.generictabletoprpg.RootDestinations
 import com.feko.generictabletoprpg.com.feko.generictabletoprpg.common.composable.AddFABButton
 import com.feko.generictabletoprpg.com.feko.generictabletoprpg.common.composable.DialogTitle
 import com.feko.generictabletoprpg.com.feko.generictabletoprpg.common.composable.OverviewScreen
@@ -56,11 +57,13 @@ fun TrackerGroupsScreen(
     appViewModel: AppViewModel
 ) {
     val viewModel: TrackerGroupViewModel = koinViewModel()
-    appViewModel
-        .set(
+    appViewModel.run {
+        set(
             appBarTitle = stringResource(R.string.tracker_title),
             navBarActions = listOf()
         )
+        updateActiveDrawerItem(RootDestinations.Tracker)
+    }
     OverviewScreen(
         viewModel = viewModel,
         listItem = { item, _, _ ->

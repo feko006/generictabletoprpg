@@ -21,6 +21,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.feko.generictabletoprpg.AppViewModel
 import com.feko.generictabletoprpg.R
+import com.feko.generictabletoprpg.RootDestinations
 import com.ramcosta.composedestinations.annotation.Destination
 import org.koin.androidx.compose.koinViewModel
 
@@ -30,10 +31,13 @@ fun ImportScreen(
     appViewModel: AppViewModel
 ) {
     val viewModel: ImportViewModel = koinViewModel()
-    appViewModel.set(
-        appBarTitle = stringResource(R.string.import_title),
-        navBarActions = listOf()
-    )
+    appViewModel.run {
+        set(
+            appBarTitle = stringResource(R.string.import_title),
+            navBarActions = listOf()
+        )
+        updateActiveDrawerItem(RootDestinations.Import)
+    }
     Box(
         Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
