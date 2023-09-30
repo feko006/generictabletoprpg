@@ -1,17 +1,15 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
-    id("com.google.devtools.ksp") version "1.9.0-1.0.12"
+    alias(libs.plugins.google.ksp)
 }
 
 android {
     signingConfigs {
-        create("release") {
-        }
+        create("release") { }
     }
     namespace = "com.feko.generictabletoprpg"
     compileSdk = 34
-    buildToolsVersion = "34.0.0"
 
     defaultConfig {
         applicationId = "com.feko.generictabletoprpg"
@@ -61,31 +59,27 @@ android {
 }
 
 dependencies {
-    implementation("androidx.core:core-ktx:1.10.1")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.1")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.1")
-    implementation("androidx.activity:activity-compose:1.7.2")
-    val composeUiVersion = "1.5.0"
-    implementation("androidx.compose.ui:ui:$composeUiVersion")
-    implementation("androidx.compose.ui:ui-tooling-preview:$composeUiVersion")
-    implementation("androidx.compose.material3:material3:1.2.0-alpha06")
-    implementation("androidx.navigation:navigation-compose:2.7.1")
-    debugImplementation("androidx.compose.ui:ui-tooling:$composeUiVersion")
-    debugImplementation("androidx.compose.ui:ui-test-manifest:$composeUiVersion")
-    implementation("us.bpsm:edn-java:0.7.1")
-    implementation("com.jakewharton.timber:timber:5.0.1")
-    implementation("io.insert-koin:koin-core:3.4.3")
-    implementation("io.insert-koin:koin-android:3.4.3")
-    implementation("io.insert-koin:koin-androidx-compose:3.4.6")
-    val roomVersion = "2.5.2"
-    implementation("androidx.room:room-runtime:$roomVersion")
-    ksp("androidx.room:room-compiler:$roomVersion")
-    implementation("androidx.room:room-ktx:$roomVersion")
-    val moshiVersion = "1.15.0"
-    implementation("com.squareup.moshi:moshi:$moshiVersion")
-    implementation("com.squareup.moshi:moshi-kotlin:$moshiVersion")
-    val composeDestinationsVersion = "1.9.51"
-    implementation("io.github.raamcosta.compose-destinations:core:$composeDestinationsVersion")
-    ksp("io.github.raamcosta.compose-destinations:ksp:$composeDestinationsVersion")
-    implementation("org.burnoutcrew.composereorderable:reorderable:0.9.6")
+    implementation(libs.androidx.activity.compose)
+    implementation(libs.androidx.compose.material3)
+    implementation(libs.androidx.compose.navigation)
+    implementation(libs.androidx.compose.ui)
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
+    implementation(libs.androidx.room.ktx)
+    implementation(libs.androidx.room.runtime)
+    implementation(libs.bpsm.edn.java)
+    implementation(libs.burnoutcrew.composereorderable)
+    implementation(libs.insert.koin)
+    implementation(libs.jakewharton.timber)
+    implementation(libs.raamcosta.compose.destinations.core)
+    implementation(libs.squareup.moshi)
+    implementation(libs.squareup.moshi.kotlin)
+
+    debugImplementation(libs.androidx.compose.ui.test.manifest)
+    debugImplementation(libs.androidx.compose.ui.tooling)
+    debugImplementation(libs.androidx.compose.ui.tooling.preview)
+
+    ksp(libs.androidx.room.compiler)
+    ksp(libs.raamcosta.compose.destinations.ksp)
 }
