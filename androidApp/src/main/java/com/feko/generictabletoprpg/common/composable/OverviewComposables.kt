@@ -40,7 +40,7 @@ import org.burnoutcrew.reorderable.reorderable
 @Composable
 fun <TViewModel, T> OverviewScreen(
     viewModel: TViewModel,
-    listItem: @Composable (T, ReorderableLazyListState?) -> Unit,
+    listItem: @Composable (T, Boolean, ReorderableLazyListState?) -> Unit,
     uniqueListItemKey: (Any) -> Any = { (it as Identifiable).id },
     fabButton: @Composable() ((Modifier) -> Unit)? = null,
     alertDialogComposable: @Composable () -> Unit = {},
@@ -73,9 +73,9 @@ fun <TViewModel, T> OverviewScreen(
                     ) { item ->
                         ReorderableItem(
                             reorderableState = state,
-                            key = uniqueListItemKey
-                        ) { _ ->
-                            listItem(item, state)
+                            key = uniqueListItemKey(item)
+                        ) { isDragging ->
+                            listItem(item, isDragging, state)
                         }
                     }
                 }
@@ -88,7 +88,7 @@ fun <TViewModel, T> OverviewScreen(
                         listItems,
                         key = uniqueListItemKey
                     ) { item ->
-                        listItem(item, null)
+                        listItem(item, false, null)
                     }
                 }
             }

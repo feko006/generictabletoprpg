@@ -1,5 +1,7 @@
 package com.feko.generictabletoprpg.com.feko.generictabletoprpg.tracker
 
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -40,6 +42,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -49,6 +53,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import com.feko.generictabletoprpg.AppViewModel
@@ -84,8 +89,8 @@ fun TrackerScreen(
         )
     OverviewScreen(
         viewModel = viewModel,
-        listItem = { item, state ->
-            OverviewListItem(item, state!!)
+        listItem = { item, isDragged, state ->
+            OverviewListItem(item, isDragged, state!!)
         },
         fabButton = { modifier ->
             val expanded by viewModel.isFabDropdownMenuExpanded.collectAsState(false)
@@ -109,8 +114,30 @@ fun TrackerScreen(
 }
 
 @Composable
-fun OverviewListItem(item: TrackedThing, state: ReorderableLazyListState) {
-    Card(Modifier.fillMaxWidth()) {
+fun OverviewListItem(
+    item: TrackedThing,
+    isDragged: Boolean,
+    state: ReorderableLazyListState
+) {
+    val targetElevation: Dp
+    val targetScale: Float
+    if (isDragged) {
+        targetElevation = 16.dp
+        targetScale = 1.05f
+    } else {
+        targetElevation = 0.dp
+        targetScale = 1f
+    }
+    val elevation =
+        animateDpAsState(targetElevation, label = "Tracked thing dragging elevation")
+    val scale =
+        animateFloatAsState(targetScale, label = "Tracked thing dragging scale")
+    Card(
+        Modifier
+            .fillMaxWidth()
+            .scale(scale.value)
+            .shadow(elevation.value)
+    ) {
         Row(modifier = Modifier.height(IntrinsicSize.Min)) {
             Box(
                 Modifier

@@ -43,7 +43,7 @@ fun SearchAllScreen(
         )
     OverviewScreen<SearchAllViewModel, Any>(
         koinViewModel(),
-        listItem = { item, _ ->
+        listItem = { item, _, _ ->
             OverviewListItem(item) {
                 navigator.navigate(getNavRouteInternal(item))
             }

@@ -63,7 +63,7 @@ fun TrackerGroupsScreen(
         )
     OverviewScreen(
         viewModel = viewModel,
-        listItem = { item, _ ->
+        listItem = { item, _, _ ->
             OverviewListItem(
                 item = item,
                 navigator = navigator,
