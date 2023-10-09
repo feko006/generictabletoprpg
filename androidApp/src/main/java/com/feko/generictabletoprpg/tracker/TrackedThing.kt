@@ -42,11 +42,9 @@ sealed class TrackedThing(
 
     abstract fun setNewValue(value: String)
 
-    fun isNameValid(): Boolean = name.isNotBlank()
-
     open fun isValueValid(): Boolean = value.isNotBlank()
 
-    open fun validate(): Boolean = isNameValid() && isValueValid()
+    open fun validate(): Boolean = isValueValid()
 
     open fun resetValueToDefault() = setNewValue(defaultValue)
 

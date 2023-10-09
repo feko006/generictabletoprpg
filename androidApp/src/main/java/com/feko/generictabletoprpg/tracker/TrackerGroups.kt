@@ -106,7 +106,7 @@ fun OverviewListItem(
         modifier = Modifier
             .fillMaxWidth()
             .clickable {
-                navigator.navigate(TrackerScreenDestination(item.id))
+                navigator.navigate(TrackerScreenDestination(item.id, item.name))
             })
 }
 

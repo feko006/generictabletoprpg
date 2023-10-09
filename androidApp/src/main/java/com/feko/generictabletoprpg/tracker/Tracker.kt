@@ -76,11 +76,12 @@ import org.koin.core.parameter.parameterSetOf
 @Composable
 fun TrackerScreen(
     groupId: Long,
+    groupName: String,
     appViewModel: AppViewModel,
     navigator: DestinationsNavigator
 ) {
     val viewModel: TrackerViewModel =
-        koinViewModel(parameters = { parameterSetOf(groupId) })
+        koinViewModel(parameters = { parameterSetOf(groupId, groupName) })
     appViewModel
         .set(
             appBarTitle = stringResource(R.string.tracker_title),
@@ -108,7 +109,7 @@ fun TrackerScreen(
             }
         },
         alertDialogComposable = {
-            AlertDialogComposable(viewModel)
+            AlertDialogComposable(viewModel, groupName)
         },
         isReorderable = true,
         onItemReordered = { from, to ->
@@ -380,7 +381,10 @@ fun DropdownMenuContent(viewModel: TrackerViewModel) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AlertDialogComposable(viewModel: TrackerViewModel) {
+fun AlertDialogComposable(
+    viewModel: TrackerViewModel,
+    defaultName: String
+) {
     AlertDialog(
         onDismissRequest = { viewModel.hideDialog() },
         properties = DialogProperties()
@@ -389,7 +393,7 @@ fun AlertDialogComposable(viewModel: TrackerViewModel) {
             when (viewModel.dialogType) {
                 TrackerViewModel.DialogType.Create,
                 TrackerViewModel.DialogType.Edit ->
-                    EditDialog(viewModel)
+                    EditDialog(viewModel, defaultName)
 
                 TrackerViewModel.DialogType.ConfirmDeletion,
                 TrackerViewModel.DialogType.RefreshAll ->
@@ -413,10 +417,13 @@ fun AlertDialogComposable(viewModel: TrackerViewModel) {
 }
 
 @Composable
-private fun EditDialog(viewModel: TrackerViewModel) {
+private fun EditDialog(
+    viewModel: TrackerViewModel,
+    defaultName: String
+) {
     DialogBase(viewModel) {
         val type by viewModel.editedTrackedThingType.collectAsState()
-        NameTextField(viewModel, autoFocus = true)
+        NameTextField(viewModel, autoFocus = true, defaultValue = defaultName)
         SpellSlotLevelTextField(type, viewModel)
         ValueTextField(viewModel, type) { viewModel.setValue(it) }
     }
@@ -488,7 +495,8 @@ private fun DialogBase(
 @Composable
 private fun NameTextField(
     viewModel: TrackerViewModel,
-    autoFocus: Boolean = false
+    autoFocus: Boolean = false,
+    defaultValue: String
 ) {
     val focusRequester = remember { FocusRequester() }
     val nameInputData by viewModel.editedTrackedThingName.collectAsState()
@@ -499,7 +507,7 @@ private fun NameTextField(
         isError = !nameInputData.isValid,
         label = {
             Text(
-                stringResource(R.string.name),
+                "${stringResource(R.string.name)} ($defaultValue)",
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
             )
         },

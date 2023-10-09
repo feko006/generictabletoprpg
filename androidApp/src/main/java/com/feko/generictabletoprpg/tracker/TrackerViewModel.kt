@@ -16,6 +16,7 @@ import kotlinx.coroutines.withContext
 
 class TrackerViewModel(
     private val groupId: Long,
+    private val groupName: String,
     private val trackedThingDao: TrackedThingDao,
     searchAllUseCase: SearchAllUseCase
 ) : OverviewViewModel<Any>(trackedThingDao) {
@@ -122,6 +123,7 @@ class TrackerViewModel(
     private fun createNewTrackedThing() {
         viewModelScope.launch {
             withContext(Dispatchers.Default) {
+                ensureNonEmptyName(editedTrackedThing)
                 val id = trackedThingDao.insertOrUpdate(editedTrackedThing)
                 editedTrackedThing.id = id
             }
@@ -133,6 +135,7 @@ class TrackerViewModel(
     private fun editExistingTrackedThing() {
         viewModelScope.launch {
             val trackedThingToUpdate = editedTrackedThing
+            ensureNonEmptyName(trackedThingToUpdate)
             if (trackedThingToUpdate is Health) {
                 trackedThingToUpdate.temporaryHp = 0
             }
@@ -141,6 +144,12 @@ class TrackerViewModel(
             }
             replaceItem(trackedThingToUpdate)
             _isDialogVisible.emit(false)
+        }
+    }
+
+    private fun ensureNonEmptyName(trackedThing: TrackedThing) {
+        if (trackedThing.name.isBlank()) {
+            trackedThing.name = groupName
         }
     }
 
@@ -255,10 +264,7 @@ class TrackerViewModel(
         viewModelScope.launch {
             editedTrackedThing.name = name
             editedTrackedThingName.emit(
-                InputFieldData(
-                    name,
-                    editedTrackedThing.isNameValid()
-                )
+                InputFieldData(name, true)
             )
             validateModel()
         }

@@ -201,7 +201,7 @@ val trackedThingModule = module {
             }
     }
 
-    viewModel { params -> TrackerViewModel(params.get(), get(), get()) }
+    viewModel { params -> TrackerViewModel(params.get(), params.get(), get(), get()) }
 }
 
 val importModule = module {
