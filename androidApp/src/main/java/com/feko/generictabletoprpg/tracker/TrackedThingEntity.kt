@@ -1,4 +1,4 @@
-package com.feko.generictabletoprpg.com.feko.generictabletoprpg.tracker
+package com.feko.generictabletoprpg.tracker
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
@@ -7,12 +7,6 @@ import androidx.room.PrimaryKey
 import com.feko.generictabletoprpg.common.CoreConvertible
 import com.feko.generictabletoprpg.common.MutableIdentifiable
 import com.feko.generictabletoprpg.common.Named
-import com.feko.generictabletoprpg.tracker.Ability
-import com.feko.generictabletoprpg.tracker.Health
-import com.feko.generictabletoprpg.tracker.Number
-import com.feko.generictabletoprpg.tracker.Percentage
-import com.feko.generictabletoprpg.tracker.SpellSlot
-import com.feko.generictabletoprpg.tracker.TrackedThing
 
 @Entity(
     tableName = "tracked_things",

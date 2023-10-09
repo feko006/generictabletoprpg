@@ -8,8 +8,6 @@ import com.feko.generictabletoprpg.ammunition.AmmunitionDao
 import com.feko.generictabletoprpg.ammunition.AmmunitionDetailsViewModel
 import com.feko.generictabletoprpg.armor.ArmorDao
 import com.feko.generictabletoprpg.armor.ArmorDetailsViewModel
-import com.feko.generictabletoprpg.com.feko.generictabletoprpg.tracker.TrackerGroupViewModel
-import com.feko.generictabletoprpg.com.feko.generictabletoprpg.tracker.TrackerViewModel
 import com.feko.generictabletoprpg.common.IUserPreferences
 import com.feko.generictabletoprpg.common.Logger
 import com.feko.generictabletoprpg.common.TimberLogger
@@ -48,9 +46,13 @@ import com.feko.generictabletoprpg.init.LoadBaseContentPort
 import com.feko.generictabletoprpg.init.LoadBaseContentUseCase
 import com.feko.generictabletoprpg.init.LoadBaseContentUseCaseImpl
 import com.feko.generictabletoprpg.room.GenericTabletopRpgDatabase
+import com.feko.generictabletoprpg.searchall.SearchAllUseCase
+import com.feko.generictabletoprpg.searchall.SearchAllUseCaseImpl
 import com.feko.generictabletoprpg.searchall.SearchAllViewModel
 import com.feko.generictabletoprpg.spell.SpellDao
 import com.feko.generictabletoprpg.spell.SpellDetailsViewModel
+import com.feko.generictabletoprpg.tracker.TrackerGroupViewModel
+import com.feko.generictabletoprpg.tracker.TrackerViewModel
 import com.feko.generictabletoprpg.weapon.WeaponDao
 import com.feko.generictabletoprpg.weapon.WeaponDetailsViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
@@ -199,7 +201,7 @@ val trackedThingModule = module {
             }
     }
 
-    viewModel { params -> TrackerViewModel(params.get(), get()) }
+    viewModel { params -> TrackerViewModel(params.get(), get(), get()) }
 }
 
 val importModule = module {
@@ -264,8 +266,8 @@ val importModule = module {
 }
 
 val searchAllModule = module {
-    viewModel {
-        SearchAllViewModel(
+    single<SearchAllUseCase> {
+        SearchAllUseCaseImpl(
             listOf(
                 get<ActionDao>(),
                 get<AmmunitionDao>(),
@@ -278,6 +280,7 @@ val searchAllModule = module {
             )
         )
     }
+    viewModel { SearchAllViewModel(get()) }
 }
 
 val diModules = listOf(

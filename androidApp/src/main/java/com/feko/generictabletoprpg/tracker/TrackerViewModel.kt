@@ -1,30 +1,55 @@
-package com.feko.generictabletoprpg.com.feko.generictabletoprpg.tracker
+package com.feko.generictabletoprpg.tracker
 
 import androidx.annotation.StringRes
 import androidx.lifecycle.viewModelScope
 import com.feko.generictabletoprpg.R
-import com.feko.generictabletoprpg.com.feko.generictabletoprpg.common.composable.InputFieldData
+import com.feko.generictabletoprpg.common.Named
 import com.feko.generictabletoprpg.common.OverviewViewModel
-import com.feko.generictabletoprpg.tracker.Health
-import com.feko.generictabletoprpg.tracker.SpellSlot
-import com.feko.generictabletoprpg.tracker.TrackedThing
+import com.feko.generictabletoprpg.common.composable.InputFieldData
+import com.feko.generictabletoprpg.searchall.SearchAllUseCase
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class TrackerViewModel(
     private val groupId: Long,
-    private val trackedThingDao: TrackedThingDao
-) : OverviewViewModel<TrackedThing>(trackedThingDao) {
+    private val trackedThingDao: TrackedThingDao,
+    searchAllUseCase: SearchAllUseCase
+) : OverviewViewModel<Any>(trackedThingDao) {
     val editedTrackedThingName = MutableStateFlow(InputFieldData.EMPTY)
     val editedTrackedThingSpellSlotLevel = MutableStateFlow(InputFieldData.EMPTY)
     val editedTrackedThingValue = MutableStateFlow(InputFieldData.EMPTY)
     val editedTrackedThingType = MutableStateFlow(TrackedThing.Type.None)
     val confirmButtonEnabled = MutableStateFlow(false)
 
+    private lateinit var allItems: List<Any>
+
     private lateinit var editedTrackedThing: TrackedThing
     lateinit var dialogType: DialogType
+
+    override val combinedItemFlow: Flow<List<Any>> =
+        _items.combine(_searchString) { items, searchString ->
+            if (searchString.isBlank()) {
+                items
+            } else {
+                (items + allItems)
+                    .filter { item ->
+                        item is Named
+                                && item.name.lowercase().contains(searchString.lowercase())
+                    }
+            }
+        }
+
+    init {
+        viewModelScope.launch {
+            withContext(Dispatchers.Default) {
+                allItems = searchAllUseCase.getAllItems()
+            }
+        }
+    }
 
     override fun getAllItems(): List<TrackedThing> = trackedThingDao.getAllSortedByIndex(groupId)
 
@@ -184,9 +209,11 @@ class TrackerViewModel(
 
     private fun refreshAll() {
         viewModelScope.launch {
-            _items.value.forEach {
-                resetValueToDefault(it)
-            }
+            _items.value
+                .filterIsInstance<TrackedThing>()
+                .forEach {
+                    resetValueToDefault(it)
+                }
             _isDialogVisible.emit(false)
         }
     }
@@ -354,6 +381,7 @@ class TrackerViewModel(
             val newList =
                 _items
                     .value
+                    .filterIsInstance<TrackedThing>()
                     .toMutableList()
                     .apply {
                         add(from, removeAt(to))

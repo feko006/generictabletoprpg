@@ -8,9 +8,9 @@ import com.feko.generictabletoprpg.RootDestinations
 import com.feko.generictabletoprpg.action.Action
 import com.feko.generictabletoprpg.ammunition.Ammunition
 import com.feko.generictabletoprpg.armor.Armor
-import com.feko.generictabletoprpg.com.feko.generictabletoprpg.common.composable.OverviewListItem
-import com.feko.generictabletoprpg.com.feko.generictabletoprpg.common.composable.OverviewScreen
 import com.feko.generictabletoprpg.common.Identifiable
+import com.feko.generictabletoprpg.common.composable.OverviewListItem
+import com.feko.generictabletoprpg.common.composable.OverviewScreen
 import com.feko.generictabletoprpg.condition.Condition
 import com.feko.generictabletoprpg.destinations.ActionDetailsScreenDestination
 import com.feko.generictabletoprpg.destinations.AmmunitionDetailsScreenDestination
@@ -25,12 +25,10 @@ import com.feko.generictabletoprpg.feat.Feat
 import com.feko.generictabletoprpg.spell.Spell
 import com.feko.generictabletoprpg.weapon.Weapon
 import com.ramcosta.composedestinations.annotation.Destination
-import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.spec.Direction
 import org.koin.androidx.compose.koinViewModel
 
-@RootNavGraph(start = true)
 @Destination
 @Composable
 fun SearchAllScreen(
@@ -51,9 +49,12 @@ fun SearchAllScreen(
                 navigator.navigate(getNavRouteInternal(item))
             }
         },
-        uniqueListItemKey = { "${it::class}${(it as Identifiable).id}" }
+        uniqueListItemKey = { getUniqueListItemKey(it) },
+        searchFieldHintResource = R.string.search_everywhere
     )
 }
+
+fun getUniqueListItemKey(it: Any) = "${it::class}${(it as Identifiable).id}"
 
 fun getNavRouteInternal(item: Any): Direction {
     val id = (item as Identifiable).id

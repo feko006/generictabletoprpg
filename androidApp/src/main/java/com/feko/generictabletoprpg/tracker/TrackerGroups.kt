@@ -1,4 +1,4 @@
-package com.feko.generictabletoprpg.com.feko.generictabletoprpg.tracker
+package com.feko.generictabletoprpg.tracker
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -40,16 +40,17 @@ import androidx.compose.ui.window.DialogProperties
 import com.feko.generictabletoprpg.AppViewModel
 import com.feko.generictabletoprpg.R
 import com.feko.generictabletoprpg.RootDestinations
-import com.feko.generictabletoprpg.com.feko.generictabletoprpg.common.composable.AddFABButton
-import com.feko.generictabletoprpg.com.feko.generictabletoprpg.common.composable.DialogTitle
-import com.feko.generictabletoprpg.com.feko.generictabletoprpg.common.composable.OverviewScreen
 import com.feko.generictabletoprpg.common.Named
+import com.feko.generictabletoprpg.common.composable.AddFABButton
+import com.feko.generictabletoprpg.common.composable.DialogTitle
+import com.feko.generictabletoprpg.common.composable.OverviewScreen
 import com.feko.generictabletoprpg.destinations.TrackerScreenDestination
-import com.feko.generictabletoprpg.tracker.TrackedThingGroup
 import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import org.koin.androidx.compose.koinViewModel
 
+@RootNavGraph(start = true)
 @Destination
 @Composable
 fun TrackerGroupsScreen(

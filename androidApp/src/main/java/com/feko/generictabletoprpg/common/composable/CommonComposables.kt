@@ -1,4 +1,4 @@
-package com.feko.generictabletoprpg.com.feko.generictabletoprpg.common.composable
+package com.feko.generictabletoprpg.common.composable
 
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -31,14 +31,16 @@ data class InputFieldData(
 @Composable
 fun SearchTextField(
     searchString: String,
-    onValueChange: (String) -> Unit
+    onValueChange: (String) -> Unit,
+    @StringRes
+    hintResource: Int = R.string.search
 ) {
     TextField(
         value = searchString,
         onValueChange = onValueChange,
         label = {
             Text(
-                stringResource(R.string.search),
+                stringResource(hintResource),
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
             )
         },

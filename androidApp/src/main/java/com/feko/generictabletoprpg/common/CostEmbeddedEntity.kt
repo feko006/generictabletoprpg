@@ -1,7 +1,4 @@
-package com.feko.generictabletoprpg.com.feko.generictabletoprpg.common
-
-import com.feko.generictabletoprpg.common.CoreConvertible
-import com.feko.generictabletoprpg.common.Cost
+package com.feko.generictabletoprpg.common
 
 data class CostEmbeddedEntity(
     val number: Long,

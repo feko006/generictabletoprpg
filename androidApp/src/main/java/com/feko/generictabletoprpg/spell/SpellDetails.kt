@@ -9,8 +9,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.feko.generictabletoprpg.AppViewModel
 import com.feko.generictabletoprpg.R
-import com.feko.generictabletoprpg.com.feko.generictabletoprpg.common.composable.DetailsScreen
-import com.feko.generictabletoprpg.com.feko.generictabletoprpg.common.composable.TextWithLabel
+import com.feko.generictabletoprpg.common.composable.DetailsScreen
+import com.feko.generictabletoprpg.common.composable.TextWithLabel
 import com.ramcosta.composedestinations.annotation.Destination
 import org.koin.androidx.compose.koinViewModel
 

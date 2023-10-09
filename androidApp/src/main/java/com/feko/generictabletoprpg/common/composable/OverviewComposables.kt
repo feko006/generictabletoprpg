@@ -1,5 +1,6 @@
-package com.feko.generictabletoprpg.com.feko.generictabletoprpg.common.composable
+package com.feko.generictabletoprpg.common.composable
 
+import androidx.annotation.StringRes
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -14,7 +15,7 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.List
+import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.Text
@@ -45,16 +46,21 @@ fun <TViewModel, T> OverviewScreen(
     fabButton: @Composable() ((Modifier) -> Unit)? = null,
     alertDialogComposable: @Composable () -> Unit = {},
     isReorderable: Boolean = false,
-    onItemReordered: (ItemPosition, ItemPosition) -> Unit = { _, _ -> }
+    onItemReordered: (ItemPosition, ItemPosition) -> Unit = { _, _ -> },
+    @StringRes
+    searchFieldHintResource: Int = R.string.search
 
 ) where TViewModel : OverviewViewModel<T>,
         T : Any {
     val listItems by viewModel.items.collectAsState(listOf())
     val searchString by viewModel.searchString.collectAsState("")
     Column(Modifier.padding(8.dp)) {
-        SearchTextField(searchString) {
-            viewModel.searchStringUpdated(it)
-        }
+        SearchTextField(
+            searchString, {
+                viewModel.searchStringUpdated(it)
+            },
+            searchFieldHintResource
+        )
         Spacer(Modifier.height(8.dp))
         if (listItems.isNotEmpty()) {
             if (isReorderable) {
@@ -122,7 +128,8 @@ private fun EmptyList() {
                 .align(Alignment.Center)
         ) {
             Icon(
-                Icons.Default.List, "",
+                Icons.AutoMirrored.Filled.List,
+                "",
                 Modifier
                     .size(80.dp)
                     .align(Alignment.CenterHorizontally)

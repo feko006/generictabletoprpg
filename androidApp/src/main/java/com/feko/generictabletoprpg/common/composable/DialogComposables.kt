@@ -1,4 +1,4 @@
-package com.feko.generictabletoprpg.com.feko.generictabletoprpg.common.composable
+package com.feko.generictabletoprpg.common.composable
 
 import androidx.annotation.StringRes
 import androidx.compose.material3.Text

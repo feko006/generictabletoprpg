@@ -17,10 +17,10 @@ open class OverviewViewModel<T>(
         MutableStateFlow<List<T>>(listOf())
     val searchString: Flow<String>
         get() = _searchString
-    private var _searchString: MutableStateFlow<String> = MutableStateFlow("")
+    protected var _searchString: MutableStateFlow<String> = MutableStateFlow("")
     val items: Flow<List<T>>
         get() = combinedItemFlow
-    private val combinedItemFlow: Flow<List<T>> =
+    protected open val combinedItemFlow: Flow<List<T>> =
         _items.combine(_searchString) { items, searchString ->
             items.filter { item ->
                 item is Named

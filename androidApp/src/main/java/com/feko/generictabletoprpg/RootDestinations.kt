@@ -11,7 +11,7 @@ enum class RootDestinations(
     val title: Int,
     val direction: Direction
 ) {
-    SearchAll(R.string.search_all_title, SearchAllScreenDestination()),
     Tracker(R.string.tracker_title, TrackerGroupsScreenDestination()),
+    SearchAll(R.string.search_all_title, SearchAllScreenDestination()),
     Import(R.string.import_title, ImportScreenDestination())
 }

@@ -1,10 +1,9 @@
-package com.feko.generictabletoprpg.com.feko.generictabletoprpg.tracker
+package com.feko.generictabletoprpg.tracker
 
 import androidx.lifecycle.viewModelScope
 import com.feko.generictabletoprpg.R
-import com.feko.generictabletoprpg.com.feko.generictabletoprpg.common.composable.InputFieldData
 import com.feko.generictabletoprpg.common.OverviewViewModel
-import com.feko.generictabletoprpg.tracker.TrackedThingGroup
+import com.feko.generictabletoprpg.common.composable.InputFieldData
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch

@@ -52,7 +52,7 @@
     <string name="successfully_imported_data_toast">Successfully imported data</string>
     <string name="partially_imported_data_toast">Data partially imported</string>
     <!--Search All-->
-    <string name="search_all_title">Search All</string>
+    <string name="search_all_title">Index</string>
     <!--Tracker-->
     <string name="tracker_title">Tracker</string>
     <string name="create_new_tracked_group_dialog_title">Create new group</string>
@@ -69,4 +69,5 @@
     <string name="spell_details_title">Spell Details</string>
     <!--Weapon-->
     <string name="weapon_details_title">Weapon Details</string>
+    <string name="search_everywhere">Search everywhere</string>
 </resources>

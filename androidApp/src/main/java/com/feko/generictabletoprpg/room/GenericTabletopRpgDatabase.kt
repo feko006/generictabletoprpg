@@ -10,10 +10,6 @@ import com.feko.generictabletoprpg.ammunition.AmmunitionDao
 import com.feko.generictabletoprpg.ammunition.AmmunitionEntity
 import com.feko.generictabletoprpg.armor.ArmorDao
 import com.feko.generictabletoprpg.armor.ArmorEntity
-import com.feko.generictabletoprpg.com.feko.generictabletoprpg.tracker.TrackedThingDao
-import com.feko.generictabletoprpg.com.feko.generictabletoprpg.tracker.TrackedThingEntity
-import com.feko.generictabletoprpg.com.feko.generictabletoprpg.tracker.TrackedThingGroupDao
-import com.feko.generictabletoprpg.com.feko.generictabletoprpg.tracker.TrackedThingGroupEntity
 import com.feko.generictabletoprpg.common.StatListTypeConverter
 import com.feko.generictabletoprpg.common.StringListTypeConverter
 import com.feko.generictabletoprpg.condition.ConditionDao
@@ -24,6 +20,10 @@ import com.feko.generictabletoprpg.feat.FeatDao
 import com.feko.generictabletoprpg.feat.FeatEntity
 import com.feko.generictabletoprpg.spell.SpellDao
 import com.feko.generictabletoprpg.spell.SpellEntity
+import com.feko.generictabletoprpg.tracker.TrackedThingDao
+import com.feko.generictabletoprpg.tracker.TrackedThingEntity
+import com.feko.generictabletoprpg.tracker.TrackedThingGroupDao
+import com.feko.generictabletoprpg.tracker.TrackedThingGroupEntity
 import com.feko.generictabletoprpg.weapon.WeaponDao
 import com.feko.generictabletoprpg.weapon.WeaponEntity
 

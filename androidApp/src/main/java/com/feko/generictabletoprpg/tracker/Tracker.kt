@@ -1,4 +1,4 @@
-package com.feko.generictabletoprpg.com.feko.generictabletoprpg.tracker
+package com.feko.generictabletoprpg.tracker
 
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
@@ -59,14 +59,14 @@ import androidx.compose.ui.window.DialogProperties
 import com.feko.generictabletoprpg.AppViewModel
 import com.feko.generictabletoprpg.ButtonState
 import com.feko.generictabletoprpg.R
-import com.feko.generictabletoprpg.com.feko.generictabletoprpg.common.composable.AddFABButtonWithDropdown
-import com.feko.generictabletoprpg.com.feko.generictabletoprpg.common.composable.DialogTitle
-import com.feko.generictabletoprpg.com.feko.generictabletoprpg.common.composable.OverviewScreen
+import com.feko.generictabletoprpg.common.composable.AddFABButtonWithDropdown
+import com.feko.generictabletoprpg.common.composable.DialogTitle
+import com.feko.generictabletoprpg.common.composable.OverviewScreen
+import com.feko.generictabletoprpg.searchall.getNavRouteInternal
+import com.feko.generictabletoprpg.searchall.getUniqueListItemKey
 import com.feko.generictabletoprpg.theme.Typography
-import com.feko.generictabletoprpg.tracker.Health
-import com.feko.generictabletoprpg.tracker.SpellSlot
-import com.feko.generictabletoprpg.tracker.TrackedThing
 import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import org.burnoutcrew.reorderable.ReorderableLazyListState
 import org.burnoutcrew.reorderable.detectReorder
 import org.koin.androidx.compose.koinViewModel
@@ -76,7 +76,8 @@ import org.koin.core.parameter.parameterSetOf
 @Composable
 fun TrackerScreen(
     groupId: Long,
-    appViewModel: AppViewModel
+    appViewModel: AppViewModel,
+    navigator: DestinationsNavigator
 ) {
     val viewModel: TrackerViewModel =
         koinViewModel(parameters = { parameterSetOf(groupId) })
@@ -90,7 +91,10 @@ fun TrackerScreen(
     OverviewScreen(
         viewModel = viewModel,
         listItem = { item, isDragged, state ->
-            OverviewListItem(item, isDragged, state!!)
+            OverviewListItem(item, isDragged, state!!, navigator)
+        },
+        uniqueListItemKey = {
+            getUniqueListItemKey(it)
         },
         fabButton = { modifier ->
             val expanded by viewModel.isFabDropdownMenuExpanded.collectAsState(false)
@@ -109,12 +113,29 @@ fun TrackerScreen(
         isReorderable = true,
         onItemReordered = { from, to ->
             viewModel.itemReordered(from.index, to.index)
-        }
+        },
+        searchFieldHintResource = R.string.search_everywhere
     )
 }
 
 @Composable
 fun OverviewListItem(
+    item: Any,
+    isDragged: Boolean,
+    state: ReorderableLazyListState,
+    navigator: DestinationsNavigator
+) {
+    if (item is TrackedThing) {
+        TrackedThing(item, isDragged, state)
+    } else {
+        com.feko.generictabletoprpg.common.composable.OverviewListItem(item = item) {
+            navigator.navigate(getNavRouteInternal(item))
+        }
+    }
+}
+
+@Composable
+private fun TrackedThing(
     item: TrackedThing,
     isDragged: Boolean,
     state: ReorderableLazyListState
