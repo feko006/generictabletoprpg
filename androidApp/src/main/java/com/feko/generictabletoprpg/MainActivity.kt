@@ -3,6 +3,7 @@ package com.feko.generictabletoprpg
 import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
@@ -86,6 +87,13 @@ class MainActivity : ComponentActivity() {
                                             }
                                     })
                             }) { paddingValues ->
+                            if (drawerState.isOpen) {
+                                BackHandler {
+                                    coroutineScope.launch {
+                                        drawerState.close()
+                                    }
+                                }
+                            }
                             NavigationDrawer(
                                 drawerState,
                                 paddingValues,
