@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.feko.generictabletoprpg.R
 import com.feko.generictabletoprpg.common.Named
 import com.feko.generictabletoprpg.common.OverviewViewModel
+import com.feko.generictabletoprpg.common.SmartNamedSearchComparator
 import com.feko.generictabletoprpg.common.composable.InputFieldData
 import com.feko.generictabletoprpg.searchall.SearchAllUseCase
 import kotlinx.coroutines.Dispatchers
@@ -41,6 +42,7 @@ class TrackerViewModel(
                         item is Named
                                 && item.name.lowercase().contains(searchString.lowercase())
                     }
+                    .sortedWith(SmartNamedSearchComparator(searchString))
             }
         }
 

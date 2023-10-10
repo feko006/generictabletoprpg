@@ -13,8 +13,7 @@ import kotlinx.coroutines.withContext
 open class OverviewViewModel<T>(
     private val getAll: IGetAll<T>?
 ) : ViewModel() {
-    protected val _items =
-        MutableStateFlow<List<T>>(listOf())
+    protected val _items = MutableStateFlow<List<T>>(listOf())
     val searchString: Flow<String>
         get() = _searchString
     protected var _searchString: MutableStateFlow<String> = MutableStateFlow("")
@@ -22,10 +21,12 @@ open class OverviewViewModel<T>(
         get() = combinedItemFlow
     protected open val combinedItemFlow: Flow<List<T>> =
         _items.combine(_searchString) { items, searchString ->
-            items.filter { item ->
-                item is Named
-                        && item.name.lowercase().contains(searchString.lowercase())
-            }
+            items
+                .filter { item ->
+                    item is Named
+                            && item.name.lowercase().contains(searchString.lowercase())
+                }
+                .sortedWith(SmartNamedSearchComparator(searchString))
         }
 
     val isDialogVisible: Flow<Boolean>
