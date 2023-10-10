@@ -13,13 +13,16 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -63,8 +66,10 @@ fun <TViewModel, T> OverviewScreen(
         )
         Spacer(Modifier.height(8.dp))
         if (listItems.isNotEmpty()) {
+            val listState: LazyListState
             if (isReorderable) {
                 val state = rememberReorderableLazyListState(onMove = onItemReordered)
+                listState = state.listState
                 LazyColumn(
                     Modifier
                         .fillMaxSize()
@@ -86,8 +91,10 @@ fun <TViewModel, T> OverviewScreen(
                     }
                 }
             } else {
+                listState = rememberLazyListState()
                 LazyColumn(
                     Modifier.fillMaxSize(),
+                    listState,
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     items(
@@ -97,6 +104,9 @@ fun <TViewModel, T> OverviewScreen(
                         listItem(item, false, null)
                     }
                 }
+            }
+            LaunchedEffect(key1 = searchString) {
+                listState.scrollToItem(0)
             }
         } else {
             EmptyList()
