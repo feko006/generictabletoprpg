@@ -4,17 +4,23 @@ import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import com.feko.generictabletoprpg.R
@@ -35,9 +41,11 @@ fun SearchTextField(
     @StringRes
     hintResource: Int = R.string.search
 ) {
+    val donePressed = remember { mutableStateOf(false) }
     TextField(
         value = searchString,
         onValueChange = onValueChange,
+        modifier = Modifier.fillMaxWidth(),
         label = {
             Text(
                 stringResource(hintResource),
@@ -52,8 +60,15 @@ fun SearchTextField(
                 Icon(Icons.Default.Clear, "")
             }
         },
-        modifier = Modifier.fillMaxWidth()
+        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+        keyboardActions = KeyboardActions(onDone = {
+            donePressed.value = true
+        })
     )
+    if (donePressed.value) {
+        LocalFocusManager.current.clearFocus()
+        donePressed.value = false
+    }
 }
 
 @Composable
