@@ -1,7 +1,12 @@
 package com.feko.generictabletoprpg.tracker
 
-class Percentage(id: Long, name: String, var amount: Float, index: Int, groupId: Long) :
-    TrackedThing(id, name, "", Type.Percentage, index, groupId) {
+class Percentage(
+    id: Long,
+    name: String,
+    var amount: Float,
+    index: Int = 0,
+    groupId: Long = 0L
+) : TrackedThing(id, name, "", Type.Percentage, index, groupId) {
 
     init {
         value = toValue(amount)

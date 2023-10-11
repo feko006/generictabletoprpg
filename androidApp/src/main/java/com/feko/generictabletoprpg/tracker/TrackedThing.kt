@@ -8,10 +8,10 @@ import com.feko.generictabletoprpg.common.Named
 sealed class TrackedThing(
     override var id: Long,
     override var name: String,
-    value: String,
+    var value: String = "",
     val type: Type,
-    var index: Int,
-    val groupId: Long
+    var index: Int = 0,
+    var groupId: Long = 0L
 ) : MutableIdentifiable,
     Named {
     enum class Type(@StringRes val nameResource: Int) {
@@ -23,8 +23,6 @@ sealed class TrackedThing(
         Number(R.string.number)
     }
 
-    var value: String = value
-        protected set
     var defaultValue: String = ""
 
     companion object {

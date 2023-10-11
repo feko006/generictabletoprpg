@@ -51,6 +51,8 @@ import com.feko.generictabletoprpg.searchall.SearchAllUseCaseImpl
 import com.feko.generictabletoprpg.searchall.SearchAllViewModel
 import com.feko.generictabletoprpg.spell.SpellDao
 import com.feko.generictabletoprpg.spell.SpellDetailsViewModel
+import com.feko.generictabletoprpg.tracker.TrackedThingDao
+import com.feko.generictabletoprpg.tracker.TrackedThingGroupDao
 import com.feko.generictabletoprpg.tracker.TrackerGroupViewModel
 import com.feko.generictabletoprpg.tracker.TrackerViewModel
 import com.feko.generictabletoprpg.weapon.WeaponDao
@@ -257,7 +259,9 @@ val importModule = module {
             get(),
             get<ActionDao>(),
             get<ConditionDao>(),
-            get<DiseaseDao>()
+            get<DiseaseDao>(),
+            get<TrackedThingGroupDao>(),
+            get<TrackedThingDao>()
         )
     }
     single<ImportAllUseCase> { ImportAllUseCaseImpl(get(), get()) }

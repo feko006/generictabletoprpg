@@ -1,6 +1,13 @@
 package com.feko.generictabletoprpg.tracker
 
-class Health(var temporaryHp: Int, id: Long, name: String, amount: Int, index: Int, groupId: Long) :
+class Health(
+    var temporaryHp: Int,
+    id: Long,
+    name: String,
+    amount: Int,
+    index: Int = 0,
+    groupId: Long = 0L
+) :
     IntTrackedThing(id, name, amount, Type.Health, index, groupId) {
 
     override fun copy(): TrackedThing =

@@ -3,20 +3,25 @@ package com.feko.generictabletoprpg.import
 import com.feko.generictabletoprpg.action.Action
 import com.feko.generictabletoprpg.app.AppModel
 import com.feko.generictabletoprpg.common.IInsertAll
+import com.feko.generictabletoprpg.common.IInsertOrUpdate
 import com.feko.generictabletoprpg.common.Logger
 import com.feko.generictabletoprpg.condition.Condition
 import com.feko.generictabletoprpg.disease.Disease
+import com.feko.generictabletoprpg.tracker.TrackedThing
+import com.feko.generictabletoprpg.tracker.TrackedThingGroup
 
 class JsonImportAllUseCaseImpl(
     private val logger: Logger,
-    private val jsonPort: IJson,
-    private val insertActionsPort: IInsertAll<Action>,
-    private val insertConditionsPort: IInsertAll<Condition>,
-    private val insertDiseasesPort: IInsertAll<Disease>
+    private val json: IJson,
+    private val insertActions: IInsertAll<Action>,
+    private val insertConditions: IInsertAll<Condition>,
+    private val insertDiseases: IInsertAll<Disease>,
+    private val insertTrackedGroup: IInsertOrUpdate<TrackedThingGroup>,
+    private val insertTrackedThings: IInsertAll<TrackedThing>
 ) : JsonImportAllUseCase {
     override fun import(content: String): Result<Boolean> {
         try {
-            val appModel = jsonPort.from(content, AppModel::class.java)
+            val appModel = json.from(content, AppModel::class.java)
             val results = mutableListOf<Result<Boolean>>()
 
             val actionsImported = importActions(appModel)
@@ -28,6 +33,9 @@ class JsonImportAllUseCaseImpl(
             val diseasesImported = importDiseases(appModel)
             results.add(diseasesImported)
 
+            val trackedGroupsImported = importTrackedGroups(appModel.trackedGroups)
+            results.add(trackedGroupsImported)
+
             return results.fold(Result.success(true)) { current, result ->
                 val currentResult = current.getOrDefault(false)
                 val nextResult = result.getOrDefault(false)
@@ -36,6 +44,28 @@ class JsonImportAllUseCaseImpl(
         } catch (e: Exception) {
             logger.error(e, "Failed to process file")
             return Result.failure(e)
+        }
+    }
+
+    private fun importTrackedGroups(trackedGroups: List<TrackedThingGroup>): Result<Boolean> {
+        return if (trackedGroups.isEmpty()) {
+            Result.success(true)
+        } else {
+            val results = mutableListOf<Result<Boolean>>()
+            trackedGroups.forEach { trackedThingGroup ->
+                val id = insertTrackedGroup.insertOrUpdate(trackedThingGroup)
+                trackedThingGroup.trackedThings
+                    .forEach { trackedThing ->
+                        trackedThing.groupId = id
+                    }
+                val result = insertTrackedThings.insertAll(trackedThingGroup.trackedThings)
+                results.add(result)
+            }
+            results.fold(Result.success(true)) { current, result ->
+                val currentResult = current.getOrDefault(false)
+                val nextResult = result.getOrDefault(false)
+                Result.success(currentResult && nextResult)
+            }
         }
     }
 
@@ -49,7 +79,7 @@ class JsonImportAllUseCaseImpl(
         return if (actions.isEmpty()) {
             Result.success(true)
         } else {
-            insertActionsPort.insertAll(actions)
+            insertActions.insertAll(actions)
         }
     }
 
@@ -63,7 +93,7 @@ class JsonImportAllUseCaseImpl(
         return if (conditions.isEmpty()) {
             Result.success(true)
         } else {
-            insertConditionsPort.insertAll(conditions)
+            insertConditions.insertAll(conditions)
         }
     }
 
@@ -77,7 +107,7 @@ class JsonImportAllUseCaseImpl(
         return if (diseases.isEmpty()) {
             Result.success(true)
         } else {
-            insertDiseasesPort.insertAll(diseases)
+            insertDiseases.insertAll(diseases)
         }
     }
 }

@@ -39,6 +39,7 @@ raamcosta-compose-destinations-core = { group = "io.github.raamcosta.compose-des
 raamcosta-compose-destinations-ksp = { group = "io.github.raamcosta.compose-destinations", name = "ksp", version.ref = "compose-destinations" }
 squareup-moshi = { group = "com.squareup.moshi", name = "moshi", version.ref = "moshi" }
 squareup-moshi-kotlin = { group = "com.squareup.moshi", name = "moshi-kotlin", version.ref = "moshi" }
+squareup-moshi-adapters = { group = "com.squareup.moshi", name = "moshi-adapters", version.ref = "moshi" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

@@ -1,7 +1,13 @@
 package com.feko.generictabletoprpg.tracker
 
-class SpellSlot(var level: Int, id: Long, name: String, amount: Int, index: Int, groupId: Long) :
-    IntTrackedThing(id, name, amount, Type.SpellSlot, index, groupId) {
+class SpellSlot(
+    var level: Int,
+    id: Long,
+    name: String,
+    amount: Int,
+    index: Int = 0,
+    groupId: Long = 0L
+) : IntTrackedThing(id, name, amount, Type.SpellSlot, index, groupId) {
 
     fun isLevelValid(): Boolean = level > 0
 

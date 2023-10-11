@@ -76,6 +76,7 @@ dependencies {
     implementation(libs.raamcosta.compose.destinations.core)
     implementation(libs.squareup.moshi)
     implementation(libs.squareup.moshi.kotlin)
+    implementation(libs.squareup.moshi.adapters)
 
     debugImplementation(libs.androidx.compose.ui.test.manifest)
     debugImplementation(libs.androidx.compose.ui.tooling)
