@@ -109,7 +109,7 @@ fun TrackerGroupsScreen(
             appBarTitle = stringResource(R.string.tracker_title),
             navBarActions = listOf(
                 ButtonState(
-                    painter = painterResource(R.drawable.import_export)
+                    painter = painterResource(R.drawable.send_to_mobile)
                 ) {
                     viewModel.exportAllRequested()
                     pickDirectoryLauncher.launch(null)
@@ -154,7 +154,7 @@ fun OverviewListItem(
                     viewModel.exportSingleRequested(item)
                     pickDirectoryLauncher.launch(null)
                 }) {
-                    Icon(painterResource(R.drawable.import_export), "")
+                    Icon(painterResource(R.drawable.send_to_mobile), "")
                 }
                 IconButton(onClick = { viewModel.editItemRequested(item) }) {
                     Icon(Icons.Default.Edit, "")
