@@ -4,13 +4,13 @@ import androidx.room.Dao
 import androidx.room.Query
 import com.feko.generictabletoprpg.common.BaseDao
 import com.feko.generictabletoprpg.common.IDelete
-import com.feko.generictabletoprpg.common.IGetAllByParent
+import com.feko.generictabletoprpg.common.IGetAllByParentSortedByIndex
 import com.feko.generictabletoprpg.common.IInsertOrUpdate
 
 @Dao
 abstract class TrackedThingDao :
     BaseDao<TrackedThingEntity, TrackedThing>(),
-    IGetAllByParent<TrackedThing>,
+    IGetAllByParentSortedByIndex<TrackedThing>,
     IInsertOrUpdate<TrackedThing>,
     IDelete {
     override fun getEntityFromCoreModel(item: TrackedThing): TrackedThingEntity {
@@ -48,7 +48,7 @@ abstract class TrackedThingDao :
     @Query("select * from tracked_things where groupId = :parentId order by idx")
     abstract fun getAllSortedByIndexInternal(parentId: Long): List<TrackedThingEntity>
 
-    fun getAllSortedByIndex(groupId: Long): List<TrackedThing> =
-        getAllSortedByIndexInternal(groupId)
+    override fun getAllSortedByIndex(parentId: Long): List<TrackedThing> =
+        getAllSortedByIndexInternal(parentId)
             .map { it.toCoreModel() }
 }

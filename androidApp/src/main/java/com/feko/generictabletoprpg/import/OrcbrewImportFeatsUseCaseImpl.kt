@@ -1,14 +1,14 @@
 package com.feko.generictabletoprpg.import
 
 import com.feko.generictabletoprpg.common.IInsertAll
-import com.feko.generictabletoprpg.common.Logger
+import com.feko.generictabletoprpg.common.ILogger
 import com.feko.generictabletoprpg.feat.Feat
 
 @Suppress("UNCHECKED_CAST")
 class OrcbrewImportFeatsUseCaseImpl(
     private val processEdnMapPort: IProcessEdnMap,
     private val insertFeatsPort: IInsertAll<Feat>,
-    private val logger: Logger
+    private val logger: ILogger
 ) : OrcbrewImportFeatsUseCase {
     override fun import(
         sources: Map<Any, Any>

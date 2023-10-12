@@ -8,8 +8,8 @@ import com.feko.generictabletoprpg.ammunition.AmmunitionDao
 import com.feko.generictabletoprpg.ammunition.AmmunitionDetailsViewModel
 import com.feko.generictabletoprpg.armor.ArmorDao
 import com.feko.generictabletoprpg.armor.ArmorDetailsViewModel
+import com.feko.generictabletoprpg.common.ILogger
 import com.feko.generictabletoprpg.common.IUserPreferences
-import com.feko.generictabletoprpg.common.Logger
 import com.feko.generictabletoprpg.common.TimberLogger
 import com.feko.generictabletoprpg.common.UserPreferences
 import com.feko.generictabletoprpg.condition.ConditionDao
@@ -53,6 +53,7 @@ import com.feko.generictabletoprpg.spell.SpellDao
 import com.feko.generictabletoprpg.spell.SpellDetailsViewModel
 import com.feko.generictabletoprpg.tracker.TrackedThingDao
 import com.feko.generictabletoprpg.tracker.TrackedThingGroupDao
+import com.feko.generictabletoprpg.tracker.TrackerGroupExportViewModel
 import com.feko.generictabletoprpg.tracker.TrackerGroupViewModel
 import com.feko.generictabletoprpg.tracker.TrackerViewModel
 import com.feko.generictabletoprpg.weapon.WeaponDao
@@ -62,7 +63,7 @@ import org.koin.dsl.module
 
 val commonModule = module {
     // Services
-    single<Logger> { TimberLogger() }
+    single<ILogger> { TimberLogger() }
     single {
         Room
             .databaseBuilder(
@@ -190,8 +191,15 @@ val trackedThingGroupModule = module {
                 logger = get()
             }
     }
-
-    viewModel { TrackerGroupViewModel(get()) }
+    single {
+        TrackerGroupExportViewModel(
+            get<TrackedThingGroupDao>(),
+            get<TrackedThingDao>(),
+            get(),
+            get()
+        )
+    }
+    viewModel { TrackerGroupViewModel(get(), get<TrackerGroupExportViewModel>()) }
 }
 
 val trackedThingModule = module {

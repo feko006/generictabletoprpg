@@ -4,14 +4,17 @@ import androidx.lifecycle.viewModelScope
 import com.feko.generictabletoprpg.R
 import com.feko.generictabletoprpg.common.OverviewViewModel
 import com.feko.generictabletoprpg.common.composable.InputFieldData
+import com.feko.generictabletoprpg.export.IExportViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class TrackerGroupViewModel(
-    private val trackedThingGroupDao: TrackedThingGroupDao
-) : OverviewViewModel<TrackedThingGroup>(trackedThingGroupDao) {
+    private val trackedThingGroupDao: TrackedThingGroupDao,
+    trackedThingGroupExportViewModel: IExportViewModel<TrackedThingGroup>,
+) : OverviewViewModel<TrackedThingGroup>(trackedThingGroupDao),
+    IExportViewModel<TrackedThingGroup> by trackedThingGroupExportViewModel {
     val groupName = MutableStateFlow(InputFieldData.EMPTY)
     val confirmButtonEnabled = MutableStateFlow(false)
 

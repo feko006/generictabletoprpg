@@ -6,11 +6,13 @@ import com.feko.generictabletoprpg.common.MutableIdentifiable
 import com.feko.generictabletoprpg.common.Named
 
 sealed class TrackedThing(
+    @Transient
     override var id: Long = 0L,
     override var name: String,
     var value: String = "",
     val type: Type,
     var index: Int = 0,
+    @Transient
     var groupId: Long = 0L
 ) : MutableIdentifiable,
     Named {

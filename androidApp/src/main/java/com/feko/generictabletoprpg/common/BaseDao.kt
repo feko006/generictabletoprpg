@@ -13,7 +13,7 @@ abstract class BaseDao<TEntity, TCore> :
               TEntity : Named,
               TEntity : MutableIdentifiable,
               TEntity : CoreConvertible<TCore> {
-    lateinit var logger: Logger
+    lateinit var logger: ILogger
 
     @Insert
     abstract fun insert(entity: TEntity): Long

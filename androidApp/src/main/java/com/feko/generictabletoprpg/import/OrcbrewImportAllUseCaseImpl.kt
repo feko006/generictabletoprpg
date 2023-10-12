@@ -1,6 +1,6 @@
 package com.feko.generictabletoprpg.import
 
-import com.feko.generictabletoprpg.common.Logger
+import com.feko.generictabletoprpg.common.ILogger
 
 class OrcbrewImportAllUseCaseImpl(
     private val parseEdnAsMapPort: IParseEdnAsMap,
@@ -9,7 +9,7 @@ class OrcbrewImportAllUseCaseImpl(
     private val orcbrewImportWeaponsUseCase: OrcbrewImportWeaponsUseCase,
     private val orcbrewImportAmmunitionsUseCase: OrcbrewImportAmmunitionsUseCase,
     private val orcbrewImportArmorsUseCase: OrcbrewImportArmorsUseCase,
-    private val logger: Logger
+    private val logger: ILogger
 ) : OrcbrewImportAllUseCase {
     override fun import(content: String): Result<Boolean> {
         try {

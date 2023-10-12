@@ -1,5 +1,10 @@
 package com.feko.generictabletoprpg.tracker
 
+import android.net.Uri
+import android.widget.Toast
+import androidx.activity.compose.ManagedActivityResultLauncher
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -33,11 +38,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction.Companion.Done
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
+import androidx.documentfile.provider.DocumentFile
 import com.feko.generictabletoprpg.AppViewModel
+import com.feko.generictabletoprpg.ButtonState
 import com.feko.generictabletoprpg.R
 import com.feko.generictabletoprpg.RootDestinations
 import com.feko.generictabletoprpg.common.Named
@@ -48,6 +57,9 @@ import com.feko.generictabletoprpg.destinations.TrackerScreenDestination
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
 @RootNavGraph(start = true)
@@ -58,10 +70,51 @@ fun TrackerGroupsScreen(
     appViewModel: AppViewModel
 ) {
     val viewModel: TrackerGroupViewModel = koinViewModel()
+    val context = LocalContext.current
+    val exportToastMessageResource by viewModel.exportToastMessage.collectAsState(0)
+    if (exportToastMessageResource != 0) {
+        Toast
+            .makeText(
+                context,
+                exportToastMessageResource,
+                Toast.LENGTH_SHORT
+            )
+            .show()
+    }
+    val pickDirectoryLauncher =
+        rememberLauncherForActivityResult(
+            ActivityResultContracts.OpenDocumentTree()
+        ) launch@{ directoryUri ->
+            if (directoryUri == null) {
+                viewModel.exportCancelled()
+                return@launch
+            }
+            try {
+                val directoryFile = DocumentFile.fromTreeUri(context, directoryUri)
+                val (mimeType, displayName) = viewModel.getExportedFileData()
+                val newFile = directoryFile!!.createFile(mimeType, displayName)
+                CoroutineScope(Dispatchers.Default).launch {
+                    context.contentResolver
+                        .openOutputStream(newFile!!.uri)
+                        .use {
+                            viewModel.exportData(it)
+                        }
+                }
+            } catch (e: Exception) {
+                viewModel.exportFailed(e)
+            }
+        }
     appViewModel.run {
         set(
             appBarTitle = stringResource(R.string.tracker_title),
-            navBarActions = listOf()
+            navBarActions = listOf(
+                ButtonState(
+                    painter = painterResource(R.drawable.import_export)
+                ) {
+                    viewModel.exportAllRequested()
+                    pickDirectoryLauncher.launch(null)
+                }
+            )
         )
         updateActiveDrawerItem(RootDestinations.Tracker)
     }
@@ -71,7 +124,8 @@ fun TrackerGroupsScreen(
             OverviewListItem(
                 item = item,
                 navigator = navigator,
-                viewModel = viewModel
+                viewModel = viewModel,
+                pickDirectoryLauncher
             )
         },
         fabButton = { modifier ->
@@ -90,11 +144,18 @@ fun OverviewListItem(
     item: TrackedThingGroup,
     navigator: DestinationsNavigator,
     viewModel: TrackerGroupViewModel,
+    pickDirectoryLauncher: ManagedActivityResultLauncher<Uri?, Uri?>,
 ) {
     ListItem(
         headlineContent = {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text((item as Named).name, modifier = Modifier.weight(1f))
+                IconButton(onClick = {
+                    viewModel.exportSingleRequested(item)
+                    pickDirectoryLauncher.launch(null)
+                }) {
+                    Icon(painterResource(R.drawable.import_export), "")
+                }
                 IconButton(onClick = { viewModel.editItemRequested(item) }) {
                     Icon(Icons.Default.Edit, "")
                 }

@@ -1,14 +1,14 @@
 package com.feko.generictabletoprpg.import
 
 import com.feko.generictabletoprpg.common.IInsertAll
-import com.feko.generictabletoprpg.common.Logger
+import com.feko.generictabletoprpg.common.ILogger
 import com.feko.generictabletoprpg.spell.Spell
 
 @Suppress("UNCHECKED_CAST")
 class OrcbrewImportSpellsUseCaseImpl(
     private val processEdnMapPort: IProcessEdnMap,
     private val insertSpellsPort: IInsertAll<Spell>,
-    private val logger: Logger
+    private val logger: ILogger
 ) : OrcbrewImportSpellsUseCase {
     override fun import(
         sources: Map<Any, Any>

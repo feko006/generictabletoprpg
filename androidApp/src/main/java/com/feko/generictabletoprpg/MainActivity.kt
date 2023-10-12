@@ -36,6 +36,7 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             GenerictabletoprpgTheme {
+
                 val appViewModel: AppViewModel = koinViewModel()
                 val appState by appViewModel.appState.collectAsState()
 
@@ -82,7 +83,12 @@ class MainActivity : ComponentActivity() {
                                                 IconButton(
                                                     onClick = it.onClick
                                                 ) {
-                                                    Icon(it.icon, "")
+                                                    if (it.icon != null) {
+                                                        Icon(it.icon, "")
+                                                    } else {
+                                                        requireNotNull(it.painter)
+                                                        Icon(it.painter, "")
+                                                    }
                                                 }
                                             }
                                     })

@@ -70,4 +70,7 @@
     <!--Weapon-->
     <string name="weapon_details_title">Weapon Details</string>
     <string name="search_everywhere">Search everywhere</string>
+    <!--Export-->
+    <string name="export_failed">Export failed</string>
+    <string name="export_successful">Export successful</string>
 </resources>

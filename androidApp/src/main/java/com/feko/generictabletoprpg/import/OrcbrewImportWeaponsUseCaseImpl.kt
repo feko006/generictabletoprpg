@@ -1,14 +1,14 @@
 package com.feko.generictabletoprpg.import
 
 import com.feko.generictabletoprpg.common.IInsertAll
-import com.feko.generictabletoprpg.common.Logger
+import com.feko.generictabletoprpg.common.ILogger
 import com.feko.generictabletoprpg.weapon.Weapon
 
 @Suppress("UNCHECKED_CAST")
 class OrcbrewImportWeaponsUseCaseImpl(
     private val processEdnMapPort: IProcessEdnMap,
     private val insertWeaponsPort: IInsertAll<Weapon>,
-    private val logger: Logger
+    private val logger: ILogger
 ) : OrcbrewImportWeaponsUseCase {
     override fun import(
         sources: Map<Any, Any>

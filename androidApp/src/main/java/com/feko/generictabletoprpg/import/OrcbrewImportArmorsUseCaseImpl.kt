@@ -2,13 +2,13 @@ package com.feko.generictabletoprpg.import
 
 import com.feko.generictabletoprpg.armor.Armor
 import com.feko.generictabletoprpg.common.IInsertAll
-import com.feko.generictabletoprpg.common.Logger
+import com.feko.generictabletoprpg.common.ILogger
 
 @Suppress("UNCHECKED_CAST")
 class OrcbrewImportArmorsUseCaseImpl(
     private val processEdnMapPort: IProcessEdnMap,
     private val insertArmorsPort: IInsertAll<Armor>,
-    private val logger: Logger
+    private val logger: ILogger
 
 ) : OrcbrewImportArmorsUseCase {
     override fun import(sources: Map<Any, Any>): Result<Boolean> {
