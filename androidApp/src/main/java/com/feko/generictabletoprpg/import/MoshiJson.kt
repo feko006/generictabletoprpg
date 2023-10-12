@@ -14,7 +14,10 @@ import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 class MoshiJson : IJson {
     private val moshiJson =
         Moshi.Builder()
-            // Has to be first, otherwise Moshi complains...
+            .add(
+                TrackedThing.Type::class.java,
+                EnumJsonAdapter.create(TrackedThing.Type::class.java)
+            )
             .add(
                 PolymorphicJsonAdapterFactory
                     .of(TrackedThing::class.java, TrackedThing::type.name)
@@ -25,10 +28,6 @@ class MoshiJson : IJson {
                     .withSubtype(SpellSlot::class.java, TrackedThing.Type.SpellSlot.name)
             )
             .add(KotlinJsonAdapterFactory())
-            .add(
-                TrackedThing.Type::class.java,
-                EnumJsonAdapter.create(TrackedThing.Type::class.java)
-            )
             .build()
 
     @Suppress("UNCHECKED_CAST")

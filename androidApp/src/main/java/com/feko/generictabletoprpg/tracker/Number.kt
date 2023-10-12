@@ -1,7 +1,7 @@
 package com.feko.generictabletoprpg.tracker
 
 class Number(
-    id: Long,
+    id: Long = 0L,
     name: String,
     amount: Int,
     index: Int = 0,

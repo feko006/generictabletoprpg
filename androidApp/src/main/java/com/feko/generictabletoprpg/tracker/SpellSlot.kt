@@ -2,7 +2,7 @@ package com.feko.generictabletoprpg.tracker
 
 class SpellSlot(
     var level: Int,
-    id: Long,
+    id: Long = 0L,
     name: String,
     amount: Int,
     index: Int = 0,

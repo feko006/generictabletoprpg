@@ -6,7 +6,7 @@ import com.feko.generictabletoprpg.common.MutableIdentifiable
 import com.feko.generictabletoprpg.common.Named
 
 sealed class TrackedThing(
-    override var id: Long,
+    override var id: Long = 0L,
     override var name: String,
     var value: String = "",
     val type: Type,

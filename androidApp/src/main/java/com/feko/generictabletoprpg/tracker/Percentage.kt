@@ -1,7 +1,7 @@
 package com.feko.generictabletoprpg.tracker
 
 class Percentage(
-    id: Long,
+    id: Long = 0L,
     name: String,
     var amount: Float,
     index: Int = 0,
