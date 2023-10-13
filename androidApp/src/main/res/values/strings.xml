@@ -74,4 +74,5 @@
     <string name="export_failed">Export failed</string>
     <string name="export_successful">Export successful</string>
     <string name="file_import_hint">Select a .json or .orcbrew file</string>
+    <string name="export_location_hint">Select a directory where the export will be generated</string>
 </resources>

@@ -81,6 +81,7 @@ fun TrackerGroupsScreen(
                 Toast.LENGTH_SHORT
             )
             .show()
+        viewModel.exportToastMessageConsumed()
     }
     val pickDirectoryLauncher =
         rememberLauncherForActivityResult(

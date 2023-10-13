@@ -11,4 +11,5 @@ interface IExportViewModel<T> {
     fun exportFailed(e: Exception)
     fun exportAllRequested()
     fun exportSingleRequested(item: T)
+    fun exportToastMessageConsumed()
 }

@@ -49,10 +49,22 @@ abstract class ExportViewModel<T> : IExportViewModel<T> {
     }
 
     override fun exportAllRequested() {
-        exportState = ExportState.ExportingAll
+        CoroutineScope(Dispatchers.Main).launch {
+            exportState = ExportState.ExportingAll
+            _exportToastMessage.emit(R.string.export_location_hint)
+        }
     }
 
     override fun exportSingleRequested(item: T) {
-        exportState = ExportState.ExportingSingle(item)
+        CoroutineScope(Dispatchers.Main).launch {
+            exportState = ExportState.ExportingSingle(item)
+            _exportToastMessage.emit(R.string.export_location_hint)
+        }
+    }
+
+    override fun exportToastMessageConsumed() {
+        CoroutineScope(Dispatchers.Main).launch {
+            _exportToastMessage.emit(0)
+        }
     }
 }
