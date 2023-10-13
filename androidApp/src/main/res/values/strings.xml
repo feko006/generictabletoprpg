@@ -73,4 +73,5 @@
     <!--Export-->
     <string name="export_failed">Export failed</string>
     <string name="export_successful">Export successful</string>
+    <string name="file_import_hint">Select a .json or .orcbrew file</string>
 </resources>
