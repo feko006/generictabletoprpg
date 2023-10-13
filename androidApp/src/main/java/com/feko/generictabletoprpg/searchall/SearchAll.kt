@@ -1,6 +1,8 @@
 package com.feko.generictabletoprpg.searchall
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.res.stringResource
 import com.feko.generictabletoprpg.AppViewModel
 import com.feko.generictabletoprpg.R
@@ -42,8 +44,14 @@ fun SearchAllScreen(
         )
         updateActiveDrawerItem(RootDestinations.SearchAll)
     }
-    OverviewScreen<SearchAllViewModel, Any>(
-        koinViewModel(),
+    val refreshesPending by appViewModel.refreshesPending.collectAsState()
+    val viewModel: SearchAllViewModel = koinViewModel()
+    if (RootDestinations.SearchAll in refreshesPending) {
+        viewModel.refreshItems()
+        appViewModel.itemsRefreshed(RootDestinations.SearchAll)
+    }
+    OverviewScreen(
+        viewModel,
         listItem = { item, _, _ ->
             OverviewListItem(item) {
                 navigator.navigate(getNavRouteInternal(item))

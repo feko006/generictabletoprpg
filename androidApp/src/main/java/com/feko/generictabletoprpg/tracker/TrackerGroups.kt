@@ -1,5 +1,6 @@
 package com.feko.generictabletoprpg.tracker
 
+import android.content.Context
 import android.net.Uri
 import android.widget.Toast
 import androidx.activity.compose.ManagedActivityResultLauncher
@@ -85,24 +86,7 @@ fun TrackerGroupsScreen(
         rememberLauncherForActivityResult(
             ActivityResultContracts.OpenDocumentTree()
         ) launch@{ directoryUri ->
-            if (directoryUri == null) {
-                viewModel.exportCancelled()
-                return@launch
-            }
-            try {
-                val directoryFile = DocumentFile.fromTreeUri(context, directoryUri)
-                val (mimeType, displayName) = viewModel.getExportedFileData()
-                val newFile = directoryFile!!.createFile(mimeType, displayName)
-                CoroutineScope(Dispatchers.Default).launch {
-                    context.contentResolver
-                        .openOutputStream(newFile!!.uri)
-                        .use {
-                            viewModel.exportData(it)
-                        }
-                }
-            } catch (e: Exception) {
-                viewModel.exportFailed(e)
-            }
+            onDirectorySelected(directoryUri, viewModel, context)
         }
     appViewModel.run {
         set(
@@ -117,6 +101,11 @@ fun TrackerGroupsScreen(
             )
         )
         updateActiveDrawerItem(RootDestinations.Tracker)
+    }
+    val refreshables by appViewModel.refreshesPending.collectAsState()
+    if (refreshables.contains(RootDestinations.Tracker)) {
+        viewModel.refreshItems()
+        appViewModel.itemsRefreshed(RootDestinations.Tracker)
     }
     OverviewScreen(
         viewModel = viewModel,
@@ -137,6 +126,31 @@ fun TrackerGroupsScreen(
             AlertDialogComposable(viewModel)
         }
     )
+}
+
+private fun onDirectorySelected(
+    directoryUri: Uri?,
+    viewModel: TrackerGroupViewModel,
+    context: Context
+) {
+    if (directoryUri == null) {
+        viewModel.exportCancelled()
+        return
+    }
+    try {
+        val directoryFile = DocumentFile.fromTreeUri(context, directoryUri)
+        val (mimeType, displayName) = viewModel.getExportedFileData()
+        val newFile = directoryFile!!.createFile(mimeType, displayName)
+        CoroutineScope(Dispatchers.Default).launch {
+            context.contentResolver
+                .openOutputStream(newFile!!.uri)
+                .use {
+                    viewModel.exportData(it)
+                }
+        }
+    } catch (e: Exception) {
+        viewModel.exportFailed(e)
+    }
 }
 
 @Composable

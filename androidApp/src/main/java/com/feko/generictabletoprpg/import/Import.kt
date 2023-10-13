@@ -59,6 +59,7 @@ fun ImportScreen(
                                 it.readText()
                             }
                     }
+                appViewModel.contentImported()
                 viewModel.fileSelected(contents)
             }
         val screenState by viewModel.screenState.collectAsState()

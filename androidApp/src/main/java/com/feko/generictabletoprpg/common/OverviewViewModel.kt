@@ -41,6 +41,10 @@ open class OverviewViewModel<T>(
     protected val _isFabDropdownMenuExpanded = MutableStateFlow(false)
 
     init {
+        refreshItems()
+    }
+
+    fun refreshItems() {
         viewModelScope.launch {
             val allItems =
                 withContext(Dispatchers.Default) {

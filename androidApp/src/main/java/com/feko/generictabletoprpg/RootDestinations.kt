@@ -13,5 +13,10 @@ enum class RootDestinations(
 ) {
     Tracker(R.string.tracker_title, TrackerGroupsScreenDestination()),
     SearchAll(R.string.search_all_title, SearchAllScreenDestination()),
-    Import(R.string.import_title, ImportScreenDestination())
+    Import(R.string.import_title, ImportScreenDestination());
+
+    companion object {
+        fun refreshables(): List<RootDestinations> =
+            entries.dropLast(1)
+    }
 }

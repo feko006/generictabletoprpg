@@ -46,13 +46,12 @@ fun <TViewModel, T> OverviewScreen(
     viewModel: TViewModel,
     listItem: @Composable (T, Boolean, ReorderableLazyListState?) -> Unit,
     uniqueListItemKey: (Any) -> Any = { (it as Identifiable).id },
-    fabButton: @Composable() ((Modifier) -> Unit)? = null,
+    fabButton: @Composable ((Modifier) -> Unit)? = null,
     alertDialogComposable: @Composable () -> Unit = {},
     isReorderable: Boolean = false,
     onItemReordered: (ItemPosition, ItemPosition) -> Unit = { _, _ -> },
     @StringRes
     searchFieldHintResource: Int = R.string.search
-
 ) where TViewModel : OverviewViewModel<T>,
         T : Any {
     val listItems by viewModel.items.collectAsState(listOf())
