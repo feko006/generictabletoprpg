@@ -3,7 +3,6 @@ package com.feko.generictabletoprpg.tracker
 import com.feko.generictabletoprpg.app.AppModel
 import com.feko.generictabletoprpg.common.IGetAll
 import com.feko.generictabletoprpg.common.IGetAllByParentSortedByIndex
-import com.feko.generictabletoprpg.common.ILogger
 import com.feko.generictabletoprpg.export.ExportState
 import com.feko.generictabletoprpg.export.ExportViewModel
 import com.feko.generictabletoprpg.import.IJson
@@ -14,9 +13,8 @@ import java.util.Date
 class TrackerGroupExportViewModel(
     private val getAllTrackedThingGroups: IGetAll<TrackedThingGroup>,
     private val getAllTrackedThings: IGetAllByParentSortedByIndex<TrackedThing>,
-    private val json: IJson,
-    logger: ILogger
-) : ExportViewModel<TrackedThingGroup>(logger) {
+    private val json: IJson
+) : ExportViewModel<TrackedThingGroup>() {
 
     override fun getExportedFileData(): Pair<String, String> {
         val dereferencedState = exportState

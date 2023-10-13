@@ -4,14 +4,13 @@ import com.feko.generictabletoprpg.action.Action
 import com.feko.generictabletoprpg.app.AppModel
 import com.feko.generictabletoprpg.common.IInsertAll
 import com.feko.generictabletoprpg.common.IInsertOrUpdate
-import com.feko.generictabletoprpg.common.ILogger
 import com.feko.generictabletoprpg.condition.Condition
 import com.feko.generictabletoprpg.disease.Disease
 import com.feko.generictabletoprpg.tracker.TrackedThing
 import com.feko.generictabletoprpg.tracker.TrackedThingGroup
+import timber.log.Timber
 
 class JsonImportAllUseCaseImpl(
-    private val logger: ILogger,
     private val json: IJson,
     private val insertActions: IInsertAll<Action>,
     private val insertConditions: IInsertAll<Condition>,
@@ -42,7 +41,7 @@ class JsonImportAllUseCaseImpl(
                 Result.success(currentResult && nextResult)
             }
         } catch (e: Exception) {
-            logger.error(e, "Failed to process file")
+            Timber.e(e, "Failed to process file")
             return Result.failure(e)
         }
     }

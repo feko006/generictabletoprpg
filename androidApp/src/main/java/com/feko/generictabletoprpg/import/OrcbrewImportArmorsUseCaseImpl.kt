@@ -2,13 +2,12 @@ package com.feko.generictabletoprpg.import
 
 import com.feko.generictabletoprpg.armor.Armor
 import com.feko.generictabletoprpg.common.IInsertAll
-import com.feko.generictabletoprpg.common.ILogger
+import timber.log.Timber
 
 @Suppress("UNCHECKED_CAST")
 class OrcbrewImportArmorsUseCaseImpl(
     private val processEdnMapPort: IProcessEdnMap,
-    private val insertArmorsPort: IInsertAll<Armor>,
-    private val logger: ILogger
+    private val insertArmorsPort: IInsertAll<Armor>
 
 ) : OrcbrewImportArmorsUseCase {
     override fun import(sources: Map<Any, Any>): Result<Boolean> {
@@ -30,7 +29,7 @@ class OrcbrewImportArmorsUseCaseImpl(
                         )
                         armorsToAdd.add(armorToAdd)
                     } catch (e: Exception) {
-                        logger.error(e, "Failed to process armor named '${armor.key}.")
+                        Timber.e(e, "Failed to process armor named '${armor.key}.")
                         exceptions.add(e)
                     }
                 }

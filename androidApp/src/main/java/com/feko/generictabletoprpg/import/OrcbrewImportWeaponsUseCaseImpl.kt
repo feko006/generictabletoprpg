@@ -1,14 +1,13 @@
 package com.feko.generictabletoprpg.import
 
 import com.feko.generictabletoprpg.common.IInsertAll
-import com.feko.generictabletoprpg.common.ILogger
 import com.feko.generictabletoprpg.weapon.Weapon
+import timber.log.Timber
 
 @Suppress("UNCHECKED_CAST")
 class OrcbrewImportWeaponsUseCaseImpl(
     private val processEdnMapPort: IProcessEdnMap,
-    private val insertWeaponsPort: IInsertAll<Weapon>,
-    private val logger: ILogger
+    private val insertWeaponsPort: IInsertAll<Weapon>
 ) : OrcbrewImportWeaponsUseCase {
     override fun import(
         sources: Map<Any, Any>
@@ -31,7 +30,7 @@ class OrcbrewImportWeaponsUseCaseImpl(
                         )
                         weaponsToAdd.add(weaponToAdd)
                     } catch (e: Exception) {
-                        logger.error(e, "Failed to process weapon named '${weapon.key}.")
+                        Timber.e(e, "Failed to process weapon named '${weapon.key}.")
                         exceptions.add(e)
                     }
                 }

@@ -1,6 +1,6 @@
 package com.feko.generictabletoprpg.import
 
-import com.feko.generictabletoprpg.common.ILogger
+import timber.log.Timber
 
 class OrcbrewImportAllUseCaseImpl(
     private val parseEdnAsMapPort: IParseEdnAsMap,
@@ -8,8 +8,7 @@ class OrcbrewImportAllUseCaseImpl(
     private val orcbrewImportFeatsUseCase: OrcbrewImportFeatsUseCase,
     private val orcbrewImportWeaponsUseCase: OrcbrewImportWeaponsUseCase,
     private val orcbrewImportAmmunitionsUseCase: OrcbrewImportAmmunitionsUseCase,
-    private val orcbrewImportArmorsUseCase: OrcbrewImportArmorsUseCase,
-    private val logger: ILogger
+    private val orcbrewImportArmorsUseCase: OrcbrewImportArmorsUseCase
 ) : OrcbrewImportAllUseCase {
     override fun import(content: String): Result<Boolean> {
         try {
@@ -38,7 +37,7 @@ class OrcbrewImportAllUseCaseImpl(
                 }
             return Result.success(everythingImported)
         } catch (e: Exception) {
-            logger.error(e, "Failed to process file")
+            Timber.e(e, "Failed to process file")
             return Result.failure(e)
         }
     }

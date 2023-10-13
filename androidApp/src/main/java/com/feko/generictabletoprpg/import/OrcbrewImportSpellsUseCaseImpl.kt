@@ -1,14 +1,13 @@
 package com.feko.generictabletoprpg.import
 
 import com.feko.generictabletoprpg.common.IInsertAll
-import com.feko.generictabletoprpg.common.ILogger
 import com.feko.generictabletoprpg.spell.Spell
+import timber.log.Timber
 
 @Suppress("UNCHECKED_CAST")
 class OrcbrewImportSpellsUseCaseImpl(
     private val processEdnMapPort: IProcessEdnMap,
-    private val insertSpellsPort: IInsertAll<Spell>,
-    private val logger: ILogger
+    private val insertSpellsPort: IInsertAll<Spell>
 ) : OrcbrewImportSpellsUseCase {
     override fun import(
         sources: Map<Any, Any>
@@ -31,7 +30,7 @@ class OrcbrewImportSpellsUseCaseImpl(
                         )
                         spellsToAdd.add(spellToAdd)
                     } catch (e: Exception) {
-                        logger.error(e, "Failed to process spell named '${spell.key}.")
+                        Timber.e(e, "Failed to process spell named '${spell.key}.")
                         exceptions.add(e)
                     }
                 }

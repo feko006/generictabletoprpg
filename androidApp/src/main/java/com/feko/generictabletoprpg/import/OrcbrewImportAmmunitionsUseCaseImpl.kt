@@ -2,13 +2,12 @@ package com.feko.generictabletoprpg.import
 
 import com.feko.generictabletoprpg.ammunition.Ammunition
 import com.feko.generictabletoprpg.common.IInsertAll
-import com.feko.generictabletoprpg.common.ILogger
+import timber.log.Timber
 
 @Suppress("UNCHECKED_CAST")
 class OrcbrewImportAmmunitionsUseCaseImpl(
     private val processEdnMapPort: IProcessEdnMap,
-    private val insertAmmunitionsPort: IInsertAll<Ammunition>,
-    private val logger: ILogger
+    private val insertAmmunitionsPort: IInsertAll<Ammunition>
 
 ) : OrcbrewImportAmmunitionsUseCase {
     override fun import(sources: Map<Any, Any>): Result<Boolean> {
@@ -30,7 +29,7 @@ class OrcbrewImportAmmunitionsUseCaseImpl(
                         )
                         ammunitionsToAdd.add(ammunitionToAdd)
                     } catch (e: Exception) {
-                        logger.error(e, "Failed to process ammunition named '${ammunition.key}.")
+                        Timber.e(e, "Failed to process ammunition named '${ammunition.key}.")
                         exceptions.add(e)
                     }
                 }

@@ -2,6 +2,7 @@ package com.feko.generictabletoprpg.common
 
 import androidx.room.Insert
 import androidx.room.Update
+import timber.log.Timber
 
 abstract class BaseDao<TEntity, TCore> :
     IInsertAll<TCore>,
@@ -13,7 +14,6 @@ abstract class BaseDao<TEntity, TCore> :
               TEntity : Named,
               TEntity : MutableIdentifiable,
               TEntity : CoreConvertible<TCore> {
-    lateinit var logger: ILogger
 
     @Insert
     abstract fun insert(entity: TEntity): Long
@@ -27,7 +27,7 @@ abstract class BaseDao<TEntity, TCore> :
             try {
                 insertOrUpdate(item)
             } catch (e: Exception) {
-                logger.error(e, "Saving spell with name ${item.name} failed.")
+                Timber.e(e, "Saving spell with name ${item.name} failed.")
                 errors.add(e)
             }
         }

@@ -8,9 +8,7 @@ import com.feko.generictabletoprpg.ammunition.AmmunitionDao
 import com.feko.generictabletoprpg.ammunition.AmmunitionDetailsViewModel
 import com.feko.generictabletoprpg.armor.ArmorDao
 import com.feko.generictabletoprpg.armor.ArmorDetailsViewModel
-import com.feko.generictabletoprpg.common.ILogger
 import com.feko.generictabletoprpg.common.IUserPreferences
-import com.feko.generictabletoprpg.common.TimberLogger
 import com.feko.generictabletoprpg.common.UserPreferences
 import com.feko.generictabletoprpg.condition.ConditionDao
 import com.feko.generictabletoprpg.condition.ConditionDetailsViewModel
@@ -63,7 +61,6 @@ import org.koin.dsl.module
 
 val commonModule = module {
     // Services
-    single<ILogger> { TimberLogger() }
     single {
         Room
             .databaseBuilder(
@@ -88,114 +85,59 @@ val commonModule = module {
 }
 
 val spellModule = module {
-    single {
-        get<GenericTabletopRpgDatabase>()
-            .spellDao()
-            .apply {
-                logger = get()
-            }
-    }
+    single { get<GenericTabletopRpgDatabase>().spellDao() }
 
     viewModel { SpellDetailsViewModel(get<SpellDao>()) }
 }
 
 val featModule = module {
-    single {
-        get<GenericTabletopRpgDatabase>()
-            .featDao()
-            .apply {
-                logger = get()
-            }
-    }
+    single { get<GenericTabletopRpgDatabase>().featDao() }
 
     viewModel { FeatDetailsViewModel(get<FeatDao>()) }
 }
 
 val actionModule = module {
-    single {
-        get<GenericTabletopRpgDatabase>()
-            .actionDao()
-            .apply {
-                logger = get()
-            }
-    }
+    single { get<GenericTabletopRpgDatabase>().actionDao() }
 
     viewModel { ActionDetailsViewModel(get<ActionDao>()) }
 }
 
 val conditionModule = module {
-    single {
-        get<GenericTabletopRpgDatabase>()
-            .conditionDao()
-            .apply {
-                logger = get()
-            }
-    }
+    single { get<GenericTabletopRpgDatabase>().conditionDao() }
 
     viewModel { ConditionDetailsViewModel(get<ConditionDao>()) }
 }
 
 val diseaseModule = module {
-    single {
-        get<GenericTabletopRpgDatabase>()
-            .diseaseDao()
-            .apply {
-                logger = get()
-            }
-    }
+    single { get<GenericTabletopRpgDatabase>().diseaseDao() }
 
     viewModel { DiseaseDetailsViewModel(get<DiseaseDao>()) }
 }
 
 val weaponModule = module {
-    single {
-        get<GenericTabletopRpgDatabase>()
-            .weaponDao()
-            .apply {
-                logger = get()
-            }
-    }
+    single { get<GenericTabletopRpgDatabase>().weaponDao() }
 
     viewModel { WeaponDetailsViewModel(get<WeaponDao>()) }
 }
 
 val ammunitionModule = module {
-    single {
-        get<GenericTabletopRpgDatabase>()
-            .ammunitionDao()
-            .apply {
-                logger = get()
-            }
-    }
+    single { get<GenericTabletopRpgDatabase>().ammunitionDao() }
 
     viewModel { AmmunitionDetailsViewModel(get<AmmunitionDao>()) }
 }
 
 val armorModule = module {
-    single {
-        get<GenericTabletopRpgDatabase>()
-            .armorDao()
-            .apply {
-                logger = get()
-            }
-    }
+    single { get<GenericTabletopRpgDatabase>().armorDao() }
 
     viewModel { ArmorDetailsViewModel(get<ArmorDao>()) }
 }
 
 val trackedThingGroupModule = module {
-    single {
-        get<GenericTabletopRpgDatabase>()
-            .trackedThingGroupDao()
-            .apply {
-                logger = get()
-            }
-    }
+    single { get<GenericTabletopRpgDatabase>().trackedThingGroupDao() }
     single {
         TrackerGroupExportViewModel(
             get<TrackedThingGroupDao>(),
             get<TrackedThingDao>(),
-            get(),
             get()
         )
     }
@@ -203,13 +145,7 @@ val trackedThingGroupModule = module {
 }
 
 val trackedThingModule = module {
-    single {
-        get<GenericTabletopRpgDatabase>()
-            .trackedThingDao()
-            .apply {
-                logger = get()
-            }
-    }
+    single { get<GenericTabletopRpgDatabase>().trackedThingDao() }
 
     viewModel { params -> TrackerViewModel(params.get(), params.get(), get(), get()) }
 }
@@ -218,41 +154,35 @@ val importModule = module {
     single<OrcbrewImportSpellsUseCase> {
         OrcbrewImportSpellsUseCaseImpl(
             get(),
-            get<SpellDao>(),
-            get()
+            get<SpellDao>()
         )
     }
     single<OrcbrewImportFeatsUseCase> {
         OrcbrewImportFeatsUseCaseImpl(
             get(),
-            get<FeatDao>(),
-            get()
+            get<FeatDao>()
         )
     }
     single<OrcbrewImportWeaponsUseCase> {
         OrcbrewImportWeaponsUseCaseImpl(
             get(),
-            get<WeaponDao>(),
-            get()
+            get<WeaponDao>()
         )
     }
     single<OrcbrewImportAmmunitionsUseCase> {
         OrcbrewImportAmmunitionsUseCaseImpl(
             get(),
-            get<AmmunitionDao>(),
-            get()
+            get<AmmunitionDao>()
         )
     }
     single<OrcbrewImportArmorsUseCase> {
         OrcbrewImportArmorsUseCaseImpl(
             get(),
-            get<ArmorDao>(),
-            get()
+            get<ArmorDao>()
         )
     }
     single<OrcbrewImportAllUseCase> {
         OrcbrewImportAllUseCaseImpl(
-            get(),
             get(),
             get(),
             get(),
@@ -263,7 +193,6 @@ val importModule = module {
     }
     single<JsonImportAllUseCase> {
         JsonImportAllUseCaseImpl(
-            get(),
             get(),
             get<ActionDao>(),
             get<ConditionDao>(),
