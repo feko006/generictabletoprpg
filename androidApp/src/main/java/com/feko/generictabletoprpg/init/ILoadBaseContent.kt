@@ -1,6 +1,6 @@
 package com.feko.generictabletoprpg.init
 
-interface LoadBaseContentPort {
+interface ILoadBaseContent {
     fun loadOrcbrewBaseContent(): String
     fun loadJsonBaseContent(): String
 }

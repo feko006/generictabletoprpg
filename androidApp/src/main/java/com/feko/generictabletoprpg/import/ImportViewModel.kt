@@ -13,7 +13,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class ImportViewModel(
-    private val importAllUseCase: ImportAllUseCase
+    private val importAllUseCase: IImportAllUseCase
 ) : ViewModel() {
     val screenState: StateFlow<ImportScreenState>
         get() = _screenState

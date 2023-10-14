@@ -3,7 +3,7 @@ package com.feko.generictabletoprpg.common
 data class CostEmbeddedEntity(
     val number: Long,
     val type: String
-) : CoreConvertible<Cost> {
+) : ICoreConvertible<Cost> {
     companion object {
         fun fromCoreModel(item: Cost): CostEmbeddedEntity =
             CostEmbeddedEntity(item.number, item.type)

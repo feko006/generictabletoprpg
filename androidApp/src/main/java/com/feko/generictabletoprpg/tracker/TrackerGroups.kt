@@ -50,7 +50,7 @@ import com.feko.generictabletoprpg.AppViewModel
 import com.feko.generictabletoprpg.ButtonState
 import com.feko.generictabletoprpg.R
 import com.feko.generictabletoprpg.RootDestinations
-import com.feko.generictabletoprpg.common.Named
+import com.feko.generictabletoprpg.common.INamed
 import com.feko.generictabletoprpg.common.composable.AddFABButton
 import com.feko.generictabletoprpg.common.composable.DialogTitle
 import com.feko.generictabletoprpg.common.composable.OverviewScreen
@@ -164,7 +164,7 @@ fun OverviewListItem(
     ListItem(
         headlineContent = {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text((item as Named).name, modifier = Modifier.weight(1f))
+                Text((item as INamed).name, modifier = Modifier.weight(1f))
                 IconButton(onClick = {
                     viewModel.exportSingleRequested(item)
                     pickDirectoryLauncher.launch(null)

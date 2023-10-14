@@ -3,11 +3,11 @@ package com.feko.generictabletoprpg.ammunition
 import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.feko.generictabletoprpg.common.CoreConvertible
 import com.feko.generictabletoprpg.common.CostEmbeddedEntity
-import com.feko.generictabletoprpg.common.FromSource
-import com.feko.generictabletoprpg.common.MutableIdentifiable
-import com.feko.generictabletoprpg.common.Named
+import com.feko.generictabletoprpg.common.ICoreConvertible
+import com.feko.generictabletoprpg.common.IFromSource
+import com.feko.generictabletoprpg.common.IMutableIdentifiable
+import com.feko.generictabletoprpg.common.INamed
 
 @Entity(tableName = "ammunitions")
 data class AmmunitionEntity(
@@ -19,10 +19,10 @@ data class AmmunitionEntity(
     val cost: CostEmbeddedEntity,
     val weight: String,
     override val source: String
-) : MutableIdentifiable,
-    Named,
-    FromSource,
-    CoreConvertible<Ammunition> {
+) : IMutableIdentifiable,
+    INamed,
+    IFromSource,
+    ICoreConvertible<Ammunition> {
     override fun toCoreModel(): Ammunition =
         Ammunition(id, name, sellQuantity, cost.toCoreModel(), weight, source)
 

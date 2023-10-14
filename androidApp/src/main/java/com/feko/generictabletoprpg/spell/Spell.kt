@@ -1,8 +1,8 @@
 package com.feko.generictabletoprpg.spell
 
-import com.feko.generictabletoprpg.common.FromSource
-import com.feko.generictabletoprpg.common.Identifiable
-import com.feko.generictabletoprpg.common.Named
+import com.feko.generictabletoprpg.common.IFromSource
+import com.feko.generictabletoprpg.common.IIdentifiable
+import com.feko.generictabletoprpg.common.INamed
 import com.feko.generictabletoprpg.import.IProcessEdnMap
 
 data class Spell(
@@ -19,9 +19,9 @@ data class Spell(
     val classesThatCanCast: List<String>,
     val range: SpellRange,
     val isRitual: Boolean
-) : Identifiable,
-    Named,
-    FromSource {
+) : IIdentifiable,
+    INamed,
+    IFromSource {
     val hasComponents: Boolean
         get() = components.any()
 

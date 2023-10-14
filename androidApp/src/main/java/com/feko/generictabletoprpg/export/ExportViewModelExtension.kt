@@ -10,7 +10,7 @@ import kotlinx.coroutines.withContext
 import timber.log.Timber
 import java.io.OutputStream
 
-abstract class ExportViewModel<T> : IExportViewModel<T> {
+abstract class ExportViewModelExtension<T> : IExportViewModelExtension<T> {
     protected var exportState: ExportState<T> = ExportState.None
 
     override val exportToastMessage: SharedFlow<Int>

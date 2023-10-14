@@ -2,10 +2,10 @@ package com.feko.generictabletoprpg.condition
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.feko.generictabletoprpg.common.CoreConvertible
-import com.feko.generictabletoprpg.common.FromSource
-import com.feko.generictabletoprpg.common.MutableIdentifiable
-import com.feko.generictabletoprpg.common.Named
+import com.feko.generictabletoprpg.common.ICoreConvertible
+import com.feko.generictabletoprpg.common.IFromSource
+import com.feko.generictabletoprpg.common.IMutableIdentifiable
+import com.feko.generictabletoprpg.common.INamed
 
 @Entity(tableName = "conditions")
 data class ConditionEntity(
@@ -14,10 +14,10 @@ data class ConditionEntity(
     override val name: String,
     val description: String,
     override val source: String
-) : MutableIdentifiable,
-    Named,
-    FromSource,
-    CoreConvertible<Condition> {
+) : IMutableIdentifiable,
+    INamed,
+    IFromSource,
+    ICoreConvertible<Condition> {
     override fun toCoreModel(): Condition =
         Condition(id, name, description, source)
 

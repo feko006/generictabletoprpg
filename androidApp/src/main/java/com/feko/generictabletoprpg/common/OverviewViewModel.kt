@@ -23,7 +23,7 @@ open class OverviewViewModel<T>(
         _items.combine(_searchString) { items, searchString ->
             items
                 .filter { item ->
-                    item is Named
+                    item is INamed
                             && item.name.lowercase().contains(searchString.lowercase())
                 }
                 .sortedWith(SmartNamedSearchComparator(searchString))
@@ -81,11 +81,11 @@ open class OverviewViewModel<T>(
     }
 
     protected suspend fun replaceItem(item: T) {
-        if (item !is Identifiable) return
+        if (item !is IIdentifiable) return
         val newList = _items.value.toMutableList()
         val index =
             newList.indexOfFirst {
-                if (it !is Identifiable) false
+                if (it !is IIdentifiable) false
                 else it.id == item.id
             }
         newList.removeAt(index)
@@ -98,16 +98,16 @@ open class OverviewViewModel<T>(
         items.add(item)
         _items.emit(
             items.sortedBy {
-                if (it !is Named) ""
+                if (it !is INamed) ""
                 else it.name
             })
     }
 
     protected suspend fun removeItem(item: T) {
-        if (item !is Identifiable) return
+        if (item !is IIdentifiable) return
         val newList = _items.value.toMutableList()
         newList.removeAll {
-            if (it !is Identifiable) false
+            if (it !is IIdentifiable) false
             else it.id == item.id
         }
         _items.emit(newList)

@@ -4,9 +4,9 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
-import com.feko.generictabletoprpg.common.CoreConvertible
-import com.feko.generictabletoprpg.common.MutableIdentifiable
-import com.feko.generictabletoprpg.common.Named
+import com.feko.generictabletoprpg.common.ICoreConvertible
+import com.feko.generictabletoprpg.common.IMutableIdentifiable
+import com.feko.generictabletoprpg.common.INamed
 
 @Entity(
     tableName = "tracked_things",
@@ -37,9 +37,9 @@ data class TrackedThingEntity(
         defaultValue = "0"
     )
     val groupId: Long
-) : MutableIdentifiable,
-    Named,
-    CoreConvertible<TrackedThing> {
+) : IMutableIdentifiable,
+    INamed,
+    ICoreConvertible<TrackedThing> {
 
     override fun toCoreModel(): TrackedThing {
         val trackedThing =

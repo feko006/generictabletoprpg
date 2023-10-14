@@ -3,7 +3,11 @@ package com.feko.generictabletoprpg.weapon
 import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.feko.generictabletoprpg.common.*
+import com.feko.generictabletoprpg.common.DamageEmbeddedEntity
+import com.feko.generictabletoprpg.common.ICoreConvertible
+import com.feko.generictabletoprpg.common.IFromSource
+import com.feko.generictabletoprpg.common.IMutableIdentifiable
+import com.feko.generictabletoprpg.common.INamed
 
 @Entity(
     tableName = "weapons"
@@ -29,10 +33,10 @@ data class WeaponEntity(
     val isReach: Boolean,
     val isSpecial: Boolean,
     val subType: String
-) : Named,
-    MutableIdentifiable,
-    FromSource,
-    CoreConvertible<Weapon> {
+) : INamed,
+    IMutableIdentifiable,
+    IFromSource,
+    ICoreConvertible<Weapon> {
 
     override fun toCoreModel(): Weapon =
         Weapon(
@@ -90,7 +94,7 @@ data class WeaponEntity(
     data class RangedWeaponRangeEmbeddedEntity(
         val minimum: Int,
         val maximum: Int
-    ) : CoreConvertible<Weapon.RangedWeaponRange> {
+    ) : ICoreConvertible<Weapon.RangedWeaponRange> {
         override fun toCoreModel(): Weapon.RangedWeaponRange =
             Weapon.RangedWeaponRange(minimum, maximum)
 

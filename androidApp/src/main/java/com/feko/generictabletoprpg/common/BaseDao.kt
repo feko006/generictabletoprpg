@@ -10,10 +10,10 @@ abstract class BaseDao<TEntity, TCore> :
     IGetAll<TCore>,
     IGetAllByParent<TCore>,
     IGetById<TCore>
-        where TCore : Named,
-              TEntity : Named,
-              TEntity : MutableIdentifiable,
-              TEntity : CoreConvertible<TCore> {
+        where TCore : INamed,
+              TEntity : INamed,
+              TEntity : IMutableIdentifiable,
+              TEntity : ICoreConvertible<TCore> {
 
     @Insert
     abstract fun insert(entity: TEntity): Long

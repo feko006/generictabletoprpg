@@ -10,7 +10,7 @@ import com.feko.generictabletoprpg.RootDestinations
 import com.feko.generictabletoprpg.action.Action
 import com.feko.generictabletoprpg.ammunition.Ammunition
 import com.feko.generictabletoprpg.armor.Armor
-import com.feko.generictabletoprpg.common.Identifiable
+import com.feko.generictabletoprpg.common.IIdentifiable
 import com.feko.generictabletoprpg.common.composable.OverviewListItem
 import com.feko.generictabletoprpg.common.composable.OverviewScreen
 import com.feko.generictabletoprpg.condition.Condition
@@ -62,10 +62,10 @@ fun SearchAllScreen(
     )
 }
 
-fun getUniqueListItemKey(it: Any) = "${it::class}${(it as Identifiable).id}"
+fun getUniqueListItemKey(it: Any) = "${it::class}${(it as IIdentifiable).id}"
 
 fun getNavRouteInternal(item: Any): Direction {
-    val id = (item as Identifiable).id
+    val id = (item as IIdentifiable).id
     return when (item) {
         is Action -> ActionDetailsScreenDestination(id)
         is Ammunition -> AmmunitionDetailsScreenDestination(id)

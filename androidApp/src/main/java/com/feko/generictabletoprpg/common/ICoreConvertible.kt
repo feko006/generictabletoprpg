@@ -1,5 +1,5 @@
 package com.feko.generictabletoprpg.common
 
-interface CoreConvertible<T> {
+interface ICoreConvertible<T> {
     fun toCoreModel(): T
 }

@@ -1,5 +1,5 @@
 package com.feko.generictabletoprpg.common
 
-interface FromSource {
+interface IFromSource {
     val source: String
 }

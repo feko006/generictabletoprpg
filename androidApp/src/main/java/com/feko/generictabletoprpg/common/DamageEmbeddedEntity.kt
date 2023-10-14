@@ -4,7 +4,7 @@ data class DamageEmbeddedEntity(
     val damageType: String,
     val damageDie: Int,
     val damageDieCount: Int
-) : CoreConvertible<Damage> {
+) : ICoreConvertible<Damage> {
     override fun toCoreModel(): Damage =
         Damage(damageType, damageDie, damageDieCount)
 

@@ -16,42 +16,42 @@ import com.feko.generictabletoprpg.disease.DiseaseDao
 import com.feko.generictabletoprpg.disease.DiseaseDetailsViewModel
 import com.feko.generictabletoprpg.feat.FeatDao
 import com.feko.generictabletoprpg.feat.FeatDetailsViewModel
+import com.feko.generictabletoprpg.import.IImportAllUseCase
 import com.feko.generictabletoprpg.import.IJson
+import com.feko.generictabletoprpg.import.IJsonImportAllUseCase
+import com.feko.generictabletoprpg.import.IOrcbrewImportAllUseCase
+import com.feko.generictabletoprpg.import.IOrcbrewImportAmmunitionsUseCase
+import com.feko.generictabletoprpg.import.IOrcbrewImportArmorsUseCase
+import com.feko.generictabletoprpg.import.IOrcbrewImportFeatsUseCase
+import com.feko.generictabletoprpg.import.IOrcbrewImportSpellsUseCase
+import com.feko.generictabletoprpg.import.IOrcbrewImportWeaponsUseCase
 import com.feko.generictabletoprpg.import.IParseEdnAsMap
 import com.feko.generictabletoprpg.import.IProcessEdnMap
 import com.feko.generictabletoprpg.import.ImportAllUseCase
-import com.feko.generictabletoprpg.import.ImportAllUseCaseImpl
 import com.feko.generictabletoprpg.import.ImportViewModel
 import com.feko.generictabletoprpg.import.JsonImportAllUseCase
-import com.feko.generictabletoprpg.import.JsonImportAllUseCaseImpl
 import com.feko.generictabletoprpg.import.MoshiJson
 import com.feko.generictabletoprpg.import.OrcbrewImportAllUseCase
-import com.feko.generictabletoprpg.import.OrcbrewImportAllUseCaseImpl
 import com.feko.generictabletoprpg.import.OrcbrewImportAmmunitionsUseCase
-import com.feko.generictabletoprpg.import.OrcbrewImportAmmunitionsUseCaseImpl
 import com.feko.generictabletoprpg.import.OrcbrewImportArmorsUseCase
-import com.feko.generictabletoprpg.import.OrcbrewImportArmorsUseCaseImpl
 import com.feko.generictabletoprpg.import.OrcbrewImportFeatsUseCase
-import com.feko.generictabletoprpg.import.OrcbrewImportFeatsUseCaseImpl
 import com.feko.generictabletoprpg.import.OrcbrewImportSpellsUseCase
-import com.feko.generictabletoprpg.import.OrcbrewImportSpellsUseCaseImpl
 import com.feko.generictabletoprpg.import.OrcbrewImportWeaponsUseCase
-import com.feko.generictabletoprpg.import.OrcbrewImportWeaponsUseCaseImpl
 import com.feko.generictabletoprpg.import.ParseEdnAsMapEdnJava
 import com.feko.generictabletoprpg.import.ProcessEdnMapEdnJava
+import com.feko.generictabletoprpg.init.ILoadBaseContent
+import com.feko.generictabletoprpg.init.ILoadBaseContentUseCase
 import com.feko.generictabletoprpg.init.LoadBaseContentAdapter
-import com.feko.generictabletoprpg.init.LoadBaseContentPort
 import com.feko.generictabletoprpg.init.LoadBaseContentUseCase
-import com.feko.generictabletoprpg.init.LoadBaseContentUseCaseImpl
 import com.feko.generictabletoprpg.room.GenericTabletopRpgDatabase
+import com.feko.generictabletoprpg.searchall.ISearchAllUseCase
 import com.feko.generictabletoprpg.searchall.SearchAllUseCase
-import com.feko.generictabletoprpg.searchall.SearchAllUseCaseImpl
 import com.feko.generictabletoprpg.searchall.SearchAllViewModel
 import com.feko.generictabletoprpg.spell.SpellDao
 import com.feko.generictabletoprpg.spell.SpellDetailsViewModel
 import com.feko.generictabletoprpg.tracker.TrackedThingDao
 import com.feko.generictabletoprpg.tracker.TrackedThingGroupDao
-import com.feko.generictabletoprpg.tracker.TrackerGroupExportViewModel
+import com.feko.generictabletoprpg.tracker.TrackerGroupExportViewModelExtension
 import com.feko.generictabletoprpg.tracker.TrackerGroupViewModel
 import com.feko.generictabletoprpg.tracker.TrackerViewModel
 import com.feko.generictabletoprpg.weapon.WeaponDao
@@ -74,11 +74,11 @@ val commonModule = module {
     single<IParseEdnAsMap> { ParseEdnAsMapEdnJava() }
     single<IProcessEdnMap> { ProcessEdnMapEdnJava() }
     single<IUserPreferences> { UserPreferences(get()) }
-    single<LoadBaseContentPort> { LoadBaseContentAdapter(get()) }
+    single<ILoadBaseContent> { LoadBaseContentAdapter(get()) }
     single<IJson> { MoshiJson() }
 
     // Use-cases
-    single<LoadBaseContentUseCase> { LoadBaseContentUseCaseImpl(get(), get(), get(), get()) }
+    single<ILoadBaseContentUseCase> { LoadBaseContentUseCase(get(), get(), get(), get()) }
 
     // VMs
     viewModel { AppViewModel(get()) }
@@ -135,13 +135,13 @@ val armorModule = module {
 val trackedThingGroupModule = module {
     single { get<GenericTabletopRpgDatabase>().trackedThingGroupDao() }
     single {
-        TrackerGroupExportViewModel(
+        TrackerGroupExportViewModelExtension(
             get<TrackedThingGroupDao>(),
             get<TrackedThingDao>(),
             get()
         )
     }
-    viewModel { TrackerGroupViewModel(get(), get<TrackerGroupExportViewModel>()) }
+    viewModel { TrackerGroupViewModel(get(), get<TrackerGroupExportViewModelExtension>()) }
 }
 
 val trackedThingModule = module {
@@ -151,38 +151,38 @@ val trackedThingModule = module {
 }
 
 val importModule = module {
-    single<OrcbrewImportSpellsUseCase> {
-        OrcbrewImportSpellsUseCaseImpl(
+    single<IOrcbrewImportSpellsUseCase> {
+        OrcbrewImportSpellsUseCase(
             get(),
             get<SpellDao>()
         )
     }
-    single<OrcbrewImportFeatsUseCase> {
-        OrcbrewImportFeatsUseCaseImpl(
+    single<IOrcbrewImportFeatsUseCase> {
+        OrcbrewImportFeatsUseCase(
             get(),
             get<FeatDao>()
         )
     }
-    single<OrcbrewImportWeaponsUseCase> {
-        OrcbrewImportWeaponsUseCaseImpl(
+    single<IOrcbrewImportWeaponsUseCase> {
+        OrcbrewImportWeaponsUseCase(
             get(),
             get<WeaponDao>()
         )
     }
-    single<OrcbrewImportAmmunitionsUseCase> {
-        OrcbrewImportAmmunitionsUseCaseImpl(
+    single<IOrcbrewImportAmmunitionsUseCase> {
+        OrcbrewImportAmmunitionsUseCase(
             get(),
             get<AmmunitionDao>()
         )
     }
-    single<OrcbrewImportArmorsUseCase> {
-        OrcbrewImportArmorsUseCaseImpl(
+    single<IOrcbrewImportArmorsUseCase> {
+        OrcbrewImportArmorsUseCase(
             get(),
             get<ArmorDao>()
         )
     }
-    single<OrcbrewImportAllUseCase> {
-        OrcbrewImportAllUseCaseImpl(
+    single<IOrcbrewImportAllUseCase> {
+        OrcbrewImportAllUseCase(
             get(),
             get(),
             get(),
@@ -191,8 +191,8 @@ val importModule = module {
             get()
         )
     }
-    single<JsonImportAllUseCase> {
-        JsonImportAllUseCaseImpl(
+    single<IJsonImportAllUseCase> {
+        JsonImportAllUseCase(
             get(),
             get<ActionDao>(),
             get<ConditionDao>(),
@@ -201,14 +201,14 @@ val importModule = module {
             get<TrackedThingDao>()
         )
     }
-    single<ImportAllUseCase> { ImportAllUseCaseImpl(get(), get()) }
+    single<IImportAllUseCase> { ImportAllUseCase(get(), get()) }
 
     viewModel { ImportViewModel(get()) }
 }
 
 val searchAllModule = module {
-    single<SearchAllUseCase> {
-        SearchAllUseCaseImpl(
+    single<ISearchAllUseCase> {
+        SearchAllUseCase(
             listOf(
                 get<ActionDao>(),
                 get<AmmunitionDao>(),

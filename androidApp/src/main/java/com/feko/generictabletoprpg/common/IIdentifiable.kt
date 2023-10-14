@@ -1,5 +1,5 @@
 package com.feko.generictabletoprpg.common
 
-interface Identifiable {
+interface IIdentifiable {
     val id: Long
 }

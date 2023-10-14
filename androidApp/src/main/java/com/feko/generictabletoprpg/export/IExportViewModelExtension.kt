@@ -3,7 +3,7 @@ package com.feko.generictabletoprpg.export
 import kotlinx.coroutines.flow.SharedFlow
 import java.io.OutputStream
 
-interface IExportViewModel<T> {
+interface IExportViewModelExtension<T> {
     val exportToastMessage: SharedFlow<Int>
     fun exportCancelled()
     fun getExportedFileData(): Pair<String, String>

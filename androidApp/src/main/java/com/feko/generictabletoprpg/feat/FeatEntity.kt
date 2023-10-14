@@ -2,7 +2,11 @@ package com.feko.generictabletoprpg.feat
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.feko.generictabletoprpg.common.*
+import com.feko.generictabletoprpg.common.ICoreConvertible
+import com.feko.generictabletoprpg.common.IFromSource
+import com.feko.generictabletoprpg.common.IMutableIdentifiable
+import com.feko.generictabletoprpg.common.INamed
+import com.feko.generictabletoprpg.common.Stat
 
 @Entity(tableName = "feats")
 data class FeatEntity(
@@ -16,10 +20,10 @@ data class FeatEntity(
     val statRequirements: List<Stat>,
     val raceRequirements: List<String>,
     val savingThrow: Boolean
-) : Named,
-    MutableIdentifiable,
-    FromSource,
-    CoreConvertible<Feat> {
+) : INamed,
+    IMutableIdentifiable,
+    IFromSource,
+    ICoreConvertible<Feat> {
     override fun toCoreModel(): Feat =
         Feat(
             id,

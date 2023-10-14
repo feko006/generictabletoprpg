@@ -4,7 +4,7 @@ import android.content.Context
 import android.content.res.Resources
 import com.feko.generictabletoprpg.R
 
-class LoadBaseContentAdapter(context: Context) : LoadBaseContentPort {
+class LoadBaseContentAdapter(context: Context) : ILoadBaseContent {
     private var resources: Resources
 
     init {

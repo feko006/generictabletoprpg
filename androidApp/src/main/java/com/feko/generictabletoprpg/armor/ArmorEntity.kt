@@ -2,10 +2,10 @@ package com.feko.generictabletoprpg.armor
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.feko.generictabletoprpg.common.CoreConvertible
-import com.feko.generictabletoprpg.common.FromSource
-import com.feko.generictabletoprpg.common.MutableIdentifiable
-import com.feko.generictabletoprpg.common.Named
+import com.feko.generictabletoprpg.common.ICoreConvertible
+import com.feko.generictabletoprpg.common.IFromSource
+import com.feko.generictabletoprpg.common.IMutableIdentifiable
+import com.feko.generictabletoprpg.common.INamed
 
 @Entity(
     tableName = "armors"
@@ -22,10 +22,10 @@ data class ArmorEntity(
     // In lb
     val weight: Int?,
     val minimumStrength: Int?
-) : Named,
-    MutableIdentifiable,
-    FromSource,
-    CoreConvertible<Armor> {
+) : INamed,
+    IMutableIdentifiable,
+    IFromSource,
+    ICoreConvertible<Armor> {
 
     override fun toCoreModel(): Armor =
         Armor(

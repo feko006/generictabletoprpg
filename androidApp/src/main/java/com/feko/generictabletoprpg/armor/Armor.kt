@@ -1,8 +1,8 @@
 package com.feko.generictabletoprpg.armor
 
-import com.feko.generictabletoprpg.common.FromSource
-import com.feko.generictabletoprpg.common.Identifiable
-import com.feko.generictabletoprpg.common.Named
+import com.feko.generictabletoprpg.common.IFromSource
+import com.feko.generictabletoprpg.common.IIdentifiable
+import com.feko.generictabletoprpg.common.INamed
 import com.feko.generictabletoprpg.import.IProcessEdnMap
 
 
@@ -17,9 +17,9 @@ data class Armor(
     // In lb
     val weight: Int?,
     val minimumStrength: Int?
-) : Identifiable,
-    Named,
-    FromSource {
+) : IIdentifiable,
+    INamed,
+    IFromSource {
     val weightInLbs
         get() = "$weight lbs"
 

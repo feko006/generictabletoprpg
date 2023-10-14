@@ -1,14 +1,14 @@
 package com.feko.generictabletoprpg.action
 
-import com.feko.generictabletoprpg.common.FromSource
-import com.feko.generictabletoprpg.common.Identifiable
-import com.feko.generictabletoprpg.common.Named
+import com.feko.generictabletoprpg.common.IFromSource
+import com.feko.generictabletoprpg.common.IIdentifiable
+import com.feko.generictabletoprpg.common.INamed
 
 data class Action(
     override val id: Long = 0,
     override val name: String,
     val description: String,
     override var source: String = ""
-) : Identifiable,
-    Named,
-    FromSource
+) : IIdentifiable,
+    INamed,
+    IFromSource

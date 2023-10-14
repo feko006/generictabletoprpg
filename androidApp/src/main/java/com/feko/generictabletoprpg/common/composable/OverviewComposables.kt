@@ -31,8 +31,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.feko.generictabletoprpg.R
-import com.feko.generictabletoprpg.common.Identifiable
-import com.feko.generictabletoprpg.common.Named
+import com.feko.generictabletoprpg.common.IIdentifiable
+import com.feko.generictabletoprpg.common.INamed
 import com.feko.generictabletoprpg.common.OverviewViewModel
 import com.feko.generictabletoprpg.theme.Typography
 import org.burnoutcrew.reorderable.ItemPosition
@@ -46,7 +46,7 @@ import org.burnoutcrew.reorderable.reorderable
 fun <TViewModel, T> OverviewScreen(
     viewModel: TViewModel,
     listItem: @Composable (T, Boolean, ReorderableLazyListState?) -> Unit,
-    uniqueListItemKey: (Any) -> Any = { (it as Identifiable).id },
+    uniqueListItemKey: (Any) -> Any = { (it as IIdentifiable).id },
     fabButton: @Composable ((Modifier) -> Unit)? = null,
     alertDialogComposable: @Composable () -> Unit = {},
     isReorderable: Boolean = false,
@@ -173,7 +173,7 @@ fun <T> OverviewListItem(
 ) {
     ListItem(
         headlineContent = {
-            Text((item as Named).name)
+            Text((item as INamed).name)
         },
         modifier = Modifier
             .fillMaxWidth()

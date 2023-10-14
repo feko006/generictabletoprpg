@@ -1,9 +1,9 @@
 package com.feko.generictabletoprpg.ammunition
 
 import com.feko.generictabletoprpg.common.Cost
-import com.feko.generictabletoprpg.common.FromSource
-import com.feko.generictabletoprpg.common.Identifiable
-import com.feko.generictabletoprpg.common.Named
+import com.feko.generictabletoprpg.common.IFromSource
+import com.feko.generictabletoprpg.common.IIdentifiable
+import com.feko.generictabletoprpg.common.INamed
 import com.feko.generictabletoprpg.import.IProcessEdnMap
 
 data class Ammunition(
@@ -13,9 +13,9 @@ data class Ammunition(
     val cost: Cost,
     val weight: String,
     override var source: String = ""
-) : Identifiable,
-    Named,
-    FromSource {
+) : IIdentifiable,
+    INamed,
+    IFromSource {
     companion object {
         fun createFromOrcbrewData(
             processEdnMapPort: IProcessEdnMap,

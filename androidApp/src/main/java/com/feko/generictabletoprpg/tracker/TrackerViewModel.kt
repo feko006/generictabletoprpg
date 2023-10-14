@@ -3,11 +3,11 @@ package com.feko.generictabletoprpg.tracker
 import androidx.annotation.StringRes
 import androidx.lifecycle.viewModelScope
 import com.feko.generictabletoprpg.R
-import com.feko.generictabletoprpg.common.Named
+import com.feko.generictabletoprpg.common.INamed
 import com.feko.generictabletoprpg.common.OverviewViewModel
 import com.feko.generictabletoprpg.common.SmartNamedSearchComparator
 import com.feko.generictabletoprpg.common.composable.InputFieldData
-import com.feko.generictabletoprpg.searchall.SearchAllUseCase
+import com.feko.generictabletoprpg.searchall.ISearchAllUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,7 +19,7 @@ class TrackerViewModel(
     private val groupId: Long,
     private val groupName: String,
     private val trackedThingDao: TrackedThingDao,
-    searchAllUseCase: SearchAllUseCase
+    searchAllUseCase: ISearchAllUseCase
 ) : OverviewViewModel<Any>(trackedThingDao) {
     val editedTrackedThingName = MutableStateFlow(InputFieldData.EMPTY)
     val editedTrackedThingSpellSlotLevel = MutableStateFlow(InputFieldData.EMPTY)
@@ -39,7 +39,7 @@ class TrackerViewModel(
             } else {
                 (items + allItems)
                     .filter { item ->
-                        item is Named
+                        item is INamed
                                 && item.name.lowercase().contains(searchString.lowercase())
                     }
                     .sortedWith(SmartNamedSearchComparator(searchString))

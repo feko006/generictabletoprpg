@@ -2,7 +2,7 @@ package com.feko.generictabletoprpg
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.feko.generictabletoprpg.init.LoadBaseContentUseCase
+import com.feko.generictabletoprpg.init.ILoadBaseContentUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -10,7 +10,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class AppViewModel(
-    loadBaseContentUseCase: LoadBaseContentUseCase
+    loadBaseContentUseCase: ILoadBaseContentUseCase
 ) : ViewModel() {
     val refreshesPending: StateFlow<List<RootDestinations>>
         get() = _refreshesPending

@@ -1,5 +1,5 @@
 package com.feko.generictabletoprpg.common
 
-interface MutableIdentifiable : Identifiable {
+interface IMutableIdentifiable : IIdentifiable {
     override var id: Long
 }

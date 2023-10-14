@@ -1,6 +1,6 @@
 package com.feko.generictabletoprpg.common
 
-interface OrcbrewImportUseCase {
+interface IOrcbrewImportUseCase {
     fun import(
         sources: Map<Any, Any>
     ): Result<Boolean>

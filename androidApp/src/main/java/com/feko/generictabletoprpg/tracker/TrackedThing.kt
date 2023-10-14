@@ -2,8 +2,8 @@ package com.feko.generictabletoprpg.tracker
 
 import androidx.annotation.StringRes
 import com.feko.generictabletoprpg.R
-import com.feko.generictabletoprpg.common.MutableIdentifiable
-import com.feko.generictabletoprpg.common.Named
+import com.feko.generictabletoprpg.common.IMutableIdentifiable
+import com.feko.generictabletoprpg.common.INamed
 
 sealed class TrackedThing(
     @Transient
@@ -14,8 +14,8 @@ sealed class TrackedThing(
     var index: Int = 0,
     @Transient
     var groupId: Long = 0L
-) : MutableIdentifiable,
-    Named {
+) : IMutableIdentifiable,
+    INamed {
     enum class Type(@StringRes val nameResource: Int) {
         None(0),
         Percentage(R.string.percentage),

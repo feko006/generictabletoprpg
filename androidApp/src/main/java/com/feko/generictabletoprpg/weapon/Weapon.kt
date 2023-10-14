@@ -1,9 +1,9 @@
 package com.feko.generictabletoprpg.weapon
 
 import com.feko.generictabletoprpg.common.Damage
-import com.feko.generictabletoprpg.common.FromSource
-import com.feko.generictabletoprpg.common.Identifiable
-import com.feko.generictabletoprpg.common.Named
+import com.feko.generictabletoprpg.common.IFromSource
+import com.feko.generictabletoprpg.common.IIdentifiable
+import com.feko.generictabletoprpg.common.INamed
 import com.feko.generictabletoprpg.import.IProcessEdnMap
 
 
@@ -25,9 +25,9 @@ data class Weapon(
     val isReach: Boolean,
     val isSpecial: Boolean,
     val subType: String
-) : Identifiable,
-    Named,
-    FromSource {
+) : IIdentifiable,
+    INamed,
+    IFromSource {
 
     init {
         if (!isMelee && !isRanged) {
