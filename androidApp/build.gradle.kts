@@ -28,6 +28,8 @@ android {
             arg("room.incremental", "true")
             arg("room.expandProjection", "true")
         }
+
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
@@ -78,6 +80,11 @@ dependencies {
     implementation(libs.squareup.moshi)
     implementation(libs.squareup.moshi.kotlin)
     implementation(libs.squareup.moshi.adapters)
+
+    androidTestImplementation(libs.junit)
+    androidTestImplementation(libs.androidx.test.runner)
+    androidTestImplementation(libs.androidx.test.rules)
+    androidTestImplementation(libs.androidx.test.ext.junit)
 
     debugImplementation(libs.androidx.compose.ui.test.manifest)
     debugImplementation(libs.androidx.compose.ui.tooling)
