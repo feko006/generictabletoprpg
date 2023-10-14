@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -56,14 +57,16 @@ fun <TViewModel, T> OverviewScreen(
         T : Any {
     val listItems by viewModel.items.collectAsState(listOf())
     val searchString by viewModel.searchString.collectAsState("")
-    Column(Modifier.padding(8.dp)) {
+    Column(
+        modifier = Modifier.padding(8.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
         SearchTextField(
             searchString, {
                 viewModel.searchStringUpdated(it)
             },
             searchFieldHintResource
         )
-        Spacer(Modifier.height(8.dp))
         if (listItems.isNotEmpty()) {
             val listState: LazyListState
             if (isReorderable) {
@@ -88,6 +91,7 @@ fun <TViewModel, T> OverviewScreen(
                             listItem(item, isDragging, state)
                         }
                     }
+                    fabButtonSpacer(fabButton != null)
                 }
             } else {
                 listState = rememberLazyListState()
@@ -102,6 +106,7 @@ fun <TViewModel, T> OverviewScreen(
                     ) { item ->
                         listItem(item, false, null)
                     }
+                    fabButtonSpacer(fabButton != null)
                 }
             }
             LaunchedEffect(key1 = searchString) {
@@ -124,6 +129,14 @@ fun <TViewModel, T> OverviewScreen(
     val isDialogVisible by viewModel.isDialogVisible.collectAsState(false)
     if (isDialogVisible) {
         alertDialogComposable()
+    }
+}
+
+fun LazyListScope.fabButtonSpacer(isFabButtonVisible: Boolean) {
+    if (isFabButtonVisible) {
+        item {
+            Spacer(Modifier.height(40.dp))
+        }
     }
 }
 
