@@ -1,7 +1,7 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
-    alias(libs.plugins.google.ksp)
+    id("com.google.devtools.ksp")
 }
 
 android {
