@@ -3,10 +3,13 @@ buildscript {
     project.extra.set("composeVersion", "1.5.3")
 }
 
-@Suppress("DSL_SCOPE_VIOLATION")
 plugins {
+    @Suppress("DSL_SCOPE_VIOLATION")
     alias(libs.plugins.android.application) apply false
+    @Suppress("DSL_SCOPE_VIOLATION")
     alias(libs.plugins.jetbrains.kotlin.android) apply false
+    @Suppress("DSL_SCOPE_VIOLATION")
     alias(libs.plugins.jetbrains.kotlin.jvm) apply false
+    @Suppress("DSL_SCOPE_VIOLATION")
     alias(libs.plugins.google.ksp) apply false
 }
