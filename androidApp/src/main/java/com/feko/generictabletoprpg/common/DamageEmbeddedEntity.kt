@@ -1,5 +1,6 @@
 package com.feko.generictabletoprpg.common
 
+@DoNotObfuscate
 data class DamageEmbeddedEntity(
     val damageType: String,
     val damageDie: Int,

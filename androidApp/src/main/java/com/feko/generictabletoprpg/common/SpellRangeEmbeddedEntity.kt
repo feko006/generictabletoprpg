@@ -2,6 +2,7 @@ package com.feko.generictabletoprpg.common
 
 import com.feko.generictabletoprpg.spell.SpellRange
 
+@DoNotObfuscate
 data class SpellRangeEmbeddedEntity(
     val isSelf: Boolean,
     val isTouch: Boolean,

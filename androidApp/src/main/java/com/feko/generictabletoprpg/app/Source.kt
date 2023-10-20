@@ -3,12 +3,14 @@ package com.feko.generictabletoprpg.app
 import com.feko.generictabletoprpg.action.Action
 import com.feko.generictabletoprpg.ammunition.Ammunition
 import com.feko.generictabletoprpg.armor.Armor
+import com.feko.generictabletoprpg.common.DoNotObfuscate
 import com.feko.generictabletoprpg.condition.Condition
 import com.feko.generictabletoprpg.disease.Disease
 import com.feko.generictabletoprpg.feat.Feat
 import com.feko.generictabletoprpg.spell.Spell
 import com.feko.generictabletoprpg.weapon.Weapon
 
+@DoNotObfuscate
 data class Source(
     val name: String,
     val actions: List<Action> = mutableListOf(),

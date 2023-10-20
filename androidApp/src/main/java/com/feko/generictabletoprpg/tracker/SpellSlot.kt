@@ -1,5 +1,8 @@
 package com.feko.generictabletoprpg.tracker
 
+import com.feko.generictabletoprpg.common.DoNotObfuscate
+
+@DoNotObfuscate
 class SpellSlot(
     var level: Int,
     id: Long = 0L,

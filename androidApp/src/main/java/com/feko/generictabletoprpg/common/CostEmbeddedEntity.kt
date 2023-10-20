@@ -1,5 +1,6 @@
 package com.feko.generictabletoprpg.common
 
+@DoNotObfuscate
 data class CostEmbeddedEntity(
     val number: Long,
     val type: String

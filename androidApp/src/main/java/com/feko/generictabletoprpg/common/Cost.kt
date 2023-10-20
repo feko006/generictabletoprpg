@@ -2,6 +2,7 @@ package com.feko.generictabletoprpg.common
 
 import com.feko.generictabletoprpg.import.IProcessEdnMap
 
+@DoNotObfuscate
 data class Cost(
     val number: Long,
     val type: String

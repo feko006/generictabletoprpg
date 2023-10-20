@@ -1,5 +1,6 @@
 package com.feko.generictabletoprpg.common
 
+@DoNotObfuscate
 data class Damage(
     val damageType: String,
     val damageDie: Int,

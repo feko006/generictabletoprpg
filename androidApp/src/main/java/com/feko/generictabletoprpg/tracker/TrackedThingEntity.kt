@@ -4,10 +4,12 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
+import com.feko.generictabletoprpg.common.DoNotObfuscate
 import com.feko.generictabletoprpg.common.ICoreConvertible
 import com.feko.generictabletoprpg.common.IMutableIdentifiable
 import com.feko.generictabletoprpg.common.INamed
 
+@DoNotObfuscate
 @Entity(
     tableName = "tracked_things",
     foreignKeys = [

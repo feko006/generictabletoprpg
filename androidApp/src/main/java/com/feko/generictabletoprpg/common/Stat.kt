@@ -1,5 +1,6 @@
 package com.feko.generictabletoprpg.common
 
+@DoNotObfuscate
 enum class Stat {
     Str,
     Dex,

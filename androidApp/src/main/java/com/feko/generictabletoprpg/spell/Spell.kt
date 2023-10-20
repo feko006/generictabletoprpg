@@ -1,10 +1,12 @@
 package com.feko.generictabletoprpg.spell
 
+import com.feko.generictabletoprpg.common.DoNotObfuscate
 import com.feko.generictabletoprpg.common.IFromSource
 import com.feko.generictabletoprpg.common.IIdentifiable
 import com.feko.generictabletoprpg.common.INamed
 import com.feko.generictabletoprpg.import.IProcessEdnMap
 
+@DoNotObfuscate
 data class Spell(
     override val id: Long = 0,
     override val name: String,

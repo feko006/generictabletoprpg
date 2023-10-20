@@ -1,12 +1,14 @@
 package com.feko.generictabletoprpg.weapon
 
 import com.feko.generictabletoprpg.common.Damage
+import com.feko.generictabletoprpg.common.DoNotObfuscate
 import com.feko.generictabletoprpg.common.IFromSource
 import com.feko.generictabletoprpg.common.IIdentifiable
 import com.feko.generictabletoprpg.common.INamed
 import com.feko.generictabletoprpg.import.IProcessEdnMap
 
 
+@DoNotObfuscate
 data class Weapon(
     override val id: Long = 0,
     override val name: String,
