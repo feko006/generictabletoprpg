@@ -1,5 +1,4 @@
 name: develop
-run-name: develop ${{ github.run_number }}
 on: push
 jobs:
   verify-instrumentation-tests:
