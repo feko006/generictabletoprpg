@@ -14,7 +14,7 @@ jobs:
           java-version: 17
           cache: gradle
       - name: Setup Gradle
-        uses: gradle/gradle-build-action@v2
+        run: chmod +x gradlew
       - name: Assemble app
         run: ./gradlew assembleDebug assembleAndroidTest
       - name: Run instrumentation tests
