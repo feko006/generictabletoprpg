@@ -2,7 +2,7 @@ name: develop
 on: push
 jobs:
   verify-instrumentation-tests:
-    runs-on: ubuntu-latest
+    runs-on: macOS-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -19,5 +19,5 @@ jobs:
       - name: Run instrumentation tests
         uses: reactivecircus/android-emulator-runner@v2
         with:
-          api-level: 29
+          api-level: 34
           script: ./gradlew connectedCheck
