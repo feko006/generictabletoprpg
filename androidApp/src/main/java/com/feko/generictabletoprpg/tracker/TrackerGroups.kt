@@ -89,17 +89,22 @@ fun TrackerGroupsScreen(
         ) launch@{ directoryUri ->
             onDirectorySelected(directoryUri, viewModel, context)
         }
+    val exportButtonVisible by viewModel.exportButtonVisible.collectAsState(false)
+    val navBarActions = mutableListOf<ButtonState>()
+    if (exportButtonVisible) {
+        navBarActions.add(
+            ButtonState(
+                painter = painterResource(R.drawable.send_to_mobile)
+            ) {
+                viewModel.exportAllRequested()
+                pickDirectoryLauncher.launch(null)
+            }
+        )
+    }
     appViewModel.run {
         set(
             appBarTitle = stringResource(R.string.tracker_title),
-            navBarActions = listOf(
-                ButtonState(
-                    painter = painterResource(R.drawable.send_to_mobile)
-                ) {
-                    viewModel.exportAllRequested()
-                    pickDirectoryLauncher.launch(null)
-                }
-            )
+            navBarActions = navBarActions
         )
         updateActiveDrawerItem(RootDestinations.Tracker)
     }
