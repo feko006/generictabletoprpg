@@ -81,6 +81,7 @@ data class Spell(
         }
     }
 
+    @DoNotObfuscate
     data class SpellComponents(
         val verbal: Boolean,
         val somatic: Boolean,
