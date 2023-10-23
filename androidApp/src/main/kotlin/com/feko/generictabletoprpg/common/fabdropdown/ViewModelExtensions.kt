@@ -4,18 +4,18 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 
-fun <T> T.onDismissFabDropdownMenuRequested()
+fun <T> T.onDismissFabDropdownRequested()
         where T : ViewModel,
               T : IFabDropdownViewModelExtension {
     viewModelScope.launch {
-        dismiss()
+        dismissFabDropdown()
     }
 }
 
-fun <T> T.toggleFabDropdownMenu()
+fun <T> T.toggleFabDropdownRequested()
         where T : ViewModel,
               T : IFabDropdownViewModelExtension {
     viewModelScope.launch {
-        toggle()
+        toggleFabDropdown()
     }
 }

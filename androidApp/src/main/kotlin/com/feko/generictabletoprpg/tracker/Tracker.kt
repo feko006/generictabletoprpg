@@ -59,12 +59,12 @@ import androidx.compose.ui.window.DialogProperties
 import com.feko.generictabletoprpg.AppViewModel
 import com.feko.generictabletoprpg.ButtonState
 import com.feko.generictabletoprpg.R
-import com.feko.generictabletoprpg.common.alertdialog.hideDialog
+import com.feko.generictabletoprpg.common.alertdialog.onAlertDialogDismissRequested
 import com.feko.generictabletoprpg.common.composable.AddFABButtonWithDropdown
 import com.feko.generictabletoprpg.common.composable.DialogTitle
 import com.feko.generictabletoprpg.common.composable.OverviewScreen
-import com.feko.generictabletoprpg.common.fabdropdown.onDismissFabDropdownMenuRequested
-import com.feko.generictabletoprpg.common.fabdropdown.toggleFabDropdownMenu
+import com.feko.generictabletoprpg.common.fabdropdown.onDismissFabDropdownRequested
+import com.feko.generictabletoprpg.common.fabdropdown.toggleFabDropdownRequested
 import com.feko.generictabletoprpg.searchall.getNavRouteInternal
 import com.feko.generictabletoprpg.searchall.getUniqueListItemKey
 import com.feko.generictabletoprpg.theme.Typography
@@ -106,8 +106,8 @@ fun TrackerScreen(
             AddFABButtonWithDropdown(
                 expanded = expanded,
                 modifier = modifier,
-                onDismissRequest = { viewModel.onDismissFabDropdownMenuRequested() },
-                onFabClicked = { viewModel.toggleFabDropdownMenu() }
+                onDismissRequest = { viewModel.onDismissFabDropdownRequested() },
+                onFabClicked = { viewModel.toggleFabDropdownRequested() }
             ) {
                 DropdownMenuContent(viewModel)
             }
@@ -391,7 +391,7 @@ fun AlertDialogComposable(
     defaultName: String
 ) {
     AlertDialog(
-        onDismissRequest = { viewModel.hideDialog() },
+        onDismissRequest = { viewModel.onAlertDialogDismissRequested() },
         properties = DialogProperties()
     ) {
         Card {
@@ -444,7 +444,7 @@ private fun ConfirmDialog(viewModel: TrackerViewModel) {
         Row(horizontalArrangement = Arrangement.End) {
             Spacer(Modifier.weight(1f))
             TextButton(
-                onClick = { viewModel.hideDialog() },
+                onClick = { viewModel.onAlertDialogDismissRequested() },
                 modifier = Modifier.wrapContentWidth()
             ) {
                 Text(stringResource(R.string.cancel))

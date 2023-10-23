@@ -51,7 +51,7 @@ import com.feko.generictabletoprpg.ButtonState
 import com.feko.generictabletoprpg.R
 import com.feko.generictabletoprpg.RootDestinations
 import com.feko.generictabletoprpg.common.INamed
-import com.feko.generictabletoprpg.common.alertdialog.hideDialog
+import com.feko.generictabletoprpg.common.alertdialog.onAlertDialogDismissRequested
 import com.feko.generictabletoprpg.common.composable.AddFABButton
 import com.feko.generictabletoprpg.common.composable.DialogTitle
 import com.feko.generictabletoprpg.common.composable.OverviewScreen
@@ -198,7 +198,7 @@ fun OverviewListItem(
 @OptIn(ExperimentalMaterial3Api::class)
 fun AlertDialogComposable(viewModel: TrackerGroupViewModel) {
     AlertDialog(
-        onDismissRequest = { viewModel.hideDialog() },
+        onDismissRequest = { viewModel.onAlertDialogDismissRequested() },
         properties = DialogProperties()
     ) {
         Card {
@@ -243,7 +243,7 @@ fun AlertDialogComposable(viewModel: TrackerGroupViewModel) {
                     Spacer(Modifier.weight(1f))
                     if (viewModel.dialogType == TrackerGroupViewModel.DialogType.Delete) {
                         TextButton(
-                            onClick = { viewModel.hideDialog() },
+                            onClick = { viewModel.onAlertDialogDismissRequested() },
                             enabled = true,
                             modifier = Modifier.wrapContentWidth()
                         ) {

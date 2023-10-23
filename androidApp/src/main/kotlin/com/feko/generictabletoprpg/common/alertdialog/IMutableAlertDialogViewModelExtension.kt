@@ -8,11 +8,11 @@ interface IMutableAlertDialogViewModelExtension : IAlertDialogViewModelExtension
         get() = _isDialogVisible
     val _isDialogVisible: MutableStateFlow<Boolean>
 
-    override suspend fun hide() {
+    override suspend fun hideAlertDialog() {
         _isDialogVisible.emit(false)
     }
 
-    suspend fun show() {
+    suspend fun showAlertDialog() {
         _isDialogVisible.emit(true)
     }
 }

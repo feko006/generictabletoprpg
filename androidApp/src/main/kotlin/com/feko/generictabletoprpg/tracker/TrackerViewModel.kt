@@ -74,8 +74,8 @@ class TrackerViewModel(
             editedTrackedThingValue.emit(InputFieldData.EMPTY)
             editedTrackedThingType.emit(type)
             validateModel()
-            fabDropdownViewModelExtension.dismiss()
-            alertDialogViewModelExtension.show()
+            fabDropdownViewModelExtension.dismissFabDropdown()
+            alertDialogViewModelExtension.showAlertDialog()
         }
     }
 
@@ -97,8 +97,8 @@ class TrackerViewModel(
             editedTrackedThingValue.emit(InputFieldData(copy.defaultValue, isValid = true))
             editedTrackedThingType.emit(copy.type)
             validateModel()
-            fabDropdownViewModelExtension.dismiss()
-            alertDialogViewModelExtension.show()
+            fabDropdownViewModelExtension.dismissFabDropdown()
+            alertDialogViewModelExtension.showAlertDialog()
         }
     }
 
@@ -138,7 +138,7 @@ class TrackerViewModel(
                 editedTrackedThing.id = id
             }
             addItem(editedTrackedThing)
-            alertDialogViewModelExtension.hide()
+            alertDialogViewModelExtension.hideAlertDialog()
         }
     }
 
@@ -153,7 +153,7 @@ class TrackerViewModel(
                 trackedThingDao.insertOrUpdate(trackedThingToUpdate)
             }
             replaceItem(trackedThingToUpdate)
-            alertDialogViewModelExtension.hide()
+            alertDialogViewModelExtension.hideAlertDialog()
         }
     }
 
@@ -169,7 +169,7 @@ class TrackerViewModel(
                 trackedThingDao.delete(editedTrackedThing.id)
             }
             removeItem(editedTrackedThing)
-            alertDialogViewModelExtension.hide()
+            alertDialogViewModelExtension.hideAlertDialog()
         }
     }
 
@@ -189,7 +189,7 @@ class TrackerViewModel(
             withContext(Dispatchers.Default) {
                 trackedThingDao.insertOrUpdate(editedTrackedThing)
             }
-            alertDialogViewModelExtension.hide()
+            alertDialogViewModelExtension.hideAlertDialog()
             replaceItem(editedTrackedThing)
         }
     }
@@ -208,7 +208,7 @@ class TrackerViewModel(
             withContext(Dispatchers.Default) {
                 trackedThingDao.insertOrUpdate(editedTrackedThing)
             }
-            alertDialogViewModelExtension.hide()
+            alertDialogViewModelExtension.hideAlertDialog()
             replaceItem(editedTrackedThing)
         }
     }
@@ -221,7 +221,7 @@ class TrackerViewModel(
             withContext(Dispatchers.Default) {
                 trackedThingDao.insertOrUpdate(editedTrackedThing)
             }
-            alertDialogViewModelExtension.hide()
+            alertDialogViewModelExtension.hideAlertDialog()
             replaceItem(editedTrackedThing)
         }
     }
@@ -233,7 +233,7 @@ class TrackerViewModel(
                 .forEach {
                     resetValueToDefault(it)
                 }
-            alertDialogViewModelExtension.hide()
+            alertDialogViewModelExtension.hideAlertDialog()
         }
     }
 
@@ -360,7 +360,7 @@ class TrackerViewModel(
             editedTrackedThing = item.copy()
             editedTrackedThingValue.emit(InputFieldData.EMPTY)
             validateModel()
-            alertDialogViewModelExtension.show()
+            alertDialogViewModelExtension.showAlertDialog()
         }
     }
 
@@ -380,7 +380,7 @@ class TrackerViewModel(
             dialogType = DialogType.ConfirmDeletion
             dialogTitleResource = R.string.delete_tracked_thing_dialog_title
             editedTrackedThing = item
-            alertDialogViewModelExtension.show()
+            alertDialogViewModelExtension.showAlertDialog()
         }
     }
 
@@ -388,7 +388,7 @@ class TrackerViewModel(
         viewModelScope.launch {
             dialogType = DialogType.RefreshAll
             dialogTitleResource = R.string.refresh_all_tracked_things_dialog_title
-            alertDialogViewModelExtension.show()
+            alertDialogViewModelExtension.showAlertDialog()
         }
     }
 

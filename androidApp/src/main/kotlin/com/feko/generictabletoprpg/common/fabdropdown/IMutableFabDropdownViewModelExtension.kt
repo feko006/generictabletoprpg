@@ -8,11 +8,11 @@ interface IMutableFabDropdownViewModelExtension : IFabDropdownViewModelExtension
         get() = _isFabDropdownMenuExpanded
     val _isFabDropdownMenuExpanded: MutableStateFlow<Boolean>
 
-    override suspend fun toggle() {
+    override suspend fun toggleFabDropdown() {
         _isFabDropdownMenuExpanded.emit(!_isFabDropdownMenuExpanded.value)
     }
 
-    override suspend fun dismiss() {
+    override suspend fun dismissFabDropdown() {
         _isFabDropdownMenuExpanded.emit(false)
     }
 }

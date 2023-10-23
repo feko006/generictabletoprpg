@@ -4,6 +4,6 @@ import kotlinx.coroutines.flow.Flow
 
 interface IFabDropdownViewModelExtension {
     val isFabDropdownMenuExpanded: Flow<Boolean>
-    suspend fun toggle()
-    suspend fun dismiss()
+    suspend fun toggleFabDropdown()
+    suspend fun dismissFabDropdown()
 }

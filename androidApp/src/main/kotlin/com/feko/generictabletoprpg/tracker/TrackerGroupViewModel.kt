@@ -37,7 +37,7 @@ class TrackerGroupViewModel(
             groupId = 0
             groupName.emit(InputFieldData.EMPTY)
             confirmButtonEnabled.emit(false)
-            alertDialogViewModelExtension.show()
+            alertDialogViewModelExtension.showAlertDialog()
         }
     }
 
@@ -48,7 +48,7 @@ class TrackerGroupViewModel(
             groupId = item.id
             groupName.emit(InputFieldData(item.name, true))
             confirmButtonEnabled.emit(true)
-            alertDialogViewModelExtension.show()
+            alertDialogViewModelExtension.showAlertDialog()
         }
     }
 
@@ -58,7 +58,7 @@ class TrackerGroupViewModel(
             dialogTitleResource = R.string.delete_tracked_group_dialog_title
             groupId = item.id
             confirmButtonEnabled.emit(true)
-            alertDialogViewModelExtension.show()
+            alertDialogViewModelExtension.showAlertDialog()
         }
     }
 
@@ -81,7 +81,7 @@ class TrackerGroupViewModel(
                 DialogType.NewOrUpdate -> insertOrUpdateGroup()
                 DialogType.Delete -> deleteGroup()
             }
-            alertDialogViewModelExtension.hide()
+            alertDialogViewModelExtension.hideAlertDialog()
         }
     }
 
