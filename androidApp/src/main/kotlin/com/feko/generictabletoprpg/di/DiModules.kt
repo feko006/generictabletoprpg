@@ -12,6 +12,8 @@ import com.feko.generictabletoprpg.common.IUserPreferences
 import com.feko.generictabletoprpg.common.UserPreferences
 import com.feko.generictabletoprpg.common.alertdialog.AlertDialogViewModelExtension
 import com.feko.generictabletoprpg.common.alertdialog.IMutableAlertDialogViewModelExtension
+import com.feko.generictabletoprpg.common.fabdropdown.FabDropdownViewModelExtension
+import com.feko.generictabletoprpg.common.fabdropdown.IMutableFabDropdownViewModelExtension
 import com.feko.generictabletoprpg.condition.ConditionDao
 import com.feko.generictabletoprpg.condition.ConditionDetailsViewModel
 import com.feko.generictabletoprpg.disease.DiseaseDao
@@ -84,6 +86,7 @@ val commonModule = module {
 
     // ViewModel extensions
     single<IMutableAlertDialogViewModelExtension> { AlertDialogViewModelExtension() }
+    single<IMutableFabDropdownViewModelExtension> { FabDropdownViewModelExtension() }
 
     // VMs
     viewModel { AppViewModel(get()) }
@@ -152,7 +155,7 @@ val trackedThingGroupModule = module {
 val trackedThingModule = module {
     single { get<GenericTabletopRpgDatabase>().trackedThingDao() }
 
-    viewModel { params -> TrackerViewModel(params.get(), params.get(), get(), get(), get()) }
+    viewModel { params -> TrackerViewModel(params.get(), params.get(), get(), get(), get(), get()) }
 }
 
 val importModule = module {

@@ -28,10 +28,6 @@ open class OverviewViewModel<T>(
                 .sortedWith(SmartNamedSearchComparator(searchString))
         }
 
-    val isFabDropdownMenuExpanded: Flow<Boolean>
-        get() = _isFabDropdownMenuExpanded
-    protected val _isFabDropdownMenuExpanded = MutableStateFlow(false)
-
     init {
         refreshItems()
     }
@@ -51,18 +47,6 @@ open class OverviewViewModel<T>(
     fun searchStringUpdated(searchString: String) {
         viewModelScope.launch {
             _searchString.emit(searchString)
-        }
-    }
-
-    fun onDismissFabDropdownMenuRequested() {
-        viewModelScope.launch {
-            _isFabDropdownMenuExpanded.emit(false)
-        }
-    }
-
-    fun toggleFabDropdownMenu() {
-        viewModelScope.launch {
-            _isFabDropdownMenuExpanded.emit(!_isFabDropdownMenuExpanded.value)
         }
     }
 

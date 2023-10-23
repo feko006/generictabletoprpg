@@ -9,6 +9,7 @@ import com.feko.generictabletoprpg.common.SmartNamedSearchComparator
 import com.feko.generictabletoprpg.common.alertdialog.IAlertDialogViewModelExtension
 import com.feko.generictabletoprpg.common.alertdialog.IMutableAlertDialogViewModelExtension
 import com.feko.generictabletoprpg.common.composable.InputFieldData
+import com.feko.generictabletoprpg.common.fabdropdown.IFabDropdownViewModelExtension
 import com.feko.generictabletoprpg.common.fabdropdown.IMutableFabDropdownViewModelExtension
 import com.feko.generictabletoprpg.searchall.ISearchAllUseCase
 import kotlinx.coroutines.Dispatchers
@@ -23,9 +24,11 @@ class TrackerViewModel(
     private val groupName: String,
     private val trackedThingDao: TrackedThingDao,
     private val alertDialogViewModelExtension: IMutableAlertDialogViewModelExtension,
+    private val fabDropdownViewModelExtension: IMutableFabDropdownViewModelExtension,
     searchAllUseCase: ISearchAllUseCase
 ) : OverviewViewModel<Any>(trackedThingDao),
-    IAlertDialogViewModelExtension by alertDialogViewModelExtension {
+    IAlertDialogViewModelExtension by alertDialogViewModelExtension,
+    IFabDropdownViewModelExtension by fabDropdownViewModelExtension {
     val editedTrackedThingName = MutableStateFlow(InputFieldData.EMPTY)
     val editedTrackedThingSpellSlotLevel = MutableStateFlow(InputFieldData.EMPTY)
     val editedTrackedThingValue = MutableStateFlow(InputFieldData.EMPTY)
@@ -71,7 +74,7 @@ class TrackerViewModel(
             editedTrackedThingValue.emit(InputFieldData.EMPTY)
             editedTrackedThingType.emit(type)
             validateModel()
-            _isFabDropdownMenuExpanded.emit(false)
+            fabDropdownViewModelExtension.dismiss()
             alertDialogViewModelExtension.show()
         }
     }
@@ -94,7 +97,7 @@ class TrackerViewModel(
             editedTrackedThingValue.emit(InputFieldData(copy.defaultValue, isValid = true))
             editedTrackedThingType.emit(copy.type)
             validateModel()
-            _isFabDropdownMenuExpanded.emit(false)
+            fabDropdownViewModelExtension.dismiss()
             alertDialogViewModelExtension.show()
         }
     }
