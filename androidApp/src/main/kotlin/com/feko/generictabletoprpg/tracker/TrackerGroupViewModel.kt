@@ -109,12 +109,6 @@ class TrackerGroupViewModel(
         removeItem(item)
     }
 
-    fun hideDialog() {
-        viewModelScope.launch {
-            alertDialogViewModelExtension.hide()
-        }
-    }
-
     enum class DialogType {
         NewOrUpdate,
         Delete

@@ -9,6 +9,7 @@ import com.feko.generictabletoprpg.common.SmartNamedSearchComparator
 import com.feko.generictabletoprpg.common.alertdialog.IAlertDialogViewModelExtension
 import com.feko.generictabletoprpg.common.alertdialog.IMutableAlertDialogViewModelExtension
 import com.feko.generictabletoprpg.common.composable.InputFieldData
+import com.feko.generictabletoprpg.common.fabdropdown.IMutableFabDropdownViewModelExtension
 import com.feko.generictabletoprpg.searchall.ISearchAllUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -407,12 +408,6 @@ class TrackerViewModel(
                     trackedThingDao.insertOrUpdate(it)
                 }
             }
-        }
-    }
-
-    fun hideDialog() {
-        viewModelScope.launch {
-            alertDialogViewModelExtension.hide()
         }
     }
 
