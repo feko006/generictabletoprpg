@@ -48,6 +48,7 @@ fun <TViewModel, T> OverviewScreen(
     listItem: @Composable (T, Boolean, ReorderableLazyListState?) -> Unit,
     uniqueListItemKey: (Any) -> Any = { (it as IIdentifiable).id },
     fabButton: @Composable ((Modifier) -> Unit)? = null,
+    isAlertDialogVisible: Boolean = false,
     alertDialogComposable: @Composable () -> Unit = {},
     isReorderable: Boolean = false,
     onItemReordered: (ItemPosition, ItemPosition) -> Unit = { _, _ -> },
@@ -126,8 +127,7 @@ fun <TViewModel, T> OverviewScreen(
             fabButton(Modifier.align(Alignment.BottomEnd))
         }
     }
-    val isDialogVisible by viewModel.isDialogVisible.collectAsState(false)
-    if (isDialogVisible) {
+    if (isAlertDialogVisible) {
         alertDialogComposable()
     }
 }

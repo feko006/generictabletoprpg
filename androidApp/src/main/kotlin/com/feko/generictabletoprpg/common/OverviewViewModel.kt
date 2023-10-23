@@ -1,6 +1,5 @@
 package com.feko.generictabletoprpg.common
 
-import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
@@ -29,13 +28,6 @@ open class OverviewViewModel<T>(
                 .sortedWith(SmartNamedSearchComparator(searchString))
         }
 
-    val isDialogVisible: Flow<Boolean>
-        get() = _isDialogVisible
-    protected val _isDialogVisible = MutableStateFlow(false)
-
-    @StringRes
-    var dialogTitleResource: Int = 0
-
     val isFabDropdownMenuExpanded: Flow<Boolean>
         get() = _isFabDropdownMenuExpanded
     protected val _isFabDropdownMenuExpanded = MutableStateFlow(false)
@@ -59,12 +51,6 @@ open class OverviewViewModel<T>(
     fun searchStringUpdated(searchString: String) {
         viewModelScope.launch {
             _searchString.emit(searchString)
-        }
-    }
-
-    fun hideDialog() {
-        viewModelScope.launch {
-            _isDialogVisible.emit(false)
         }
     }
 

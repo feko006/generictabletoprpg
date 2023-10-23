@@ -6,6 +6,8 @@ import com.feko.generictabletoprpg.R
 import com.feko.generictabletoprpg.common.INamed
 import com.feko.generictabletoprpg.common.OverviewViewModel
 import com.feko.generictabletoprpg.common.SmartNamedSearchComparator
+import com.feko.generictabletoprpg.common.alertdialog.IAlertDialogViewModelExtension
+import com.feko.generictabletoprpg.common.alertdialog.IMutableAlertDialogViewModelExtension
 import com.feko.generictabletoprpg.common.composable.InputFieldData
 import com.feko.generictabletoprpg.searchall.ISearchAllUseCase
 import kotlinx.coroutines.Dispatchers
@@ -19,8 +21,10 @@ class TrackerViewModel(
     private val groupId: Long,
     private val groupName: String,
     private val trackedThingDao: TrackedThingDao,
+    private val alertDialogViewModelExtension: IMutableAlertDialogViewModelExtension,
     searchAllUseCase: ISearchAllUseCase
-) : OverviewViewModel<Any>(trackedThingDao) {
+) : OverviewViewModel<Any>(trackedThingDao),
+    IAlertDialogViewModelExtension by alertDialogViewModelExtension {
     val editedTrackedThingName = MutableStateFlow(InputFieldData.EMPTY)
     val editedTrackedThingSpellSlotLevel = MutableStateFlow(InputFieldData.EMPTY)
     val editedTrackedThingValue = MutableStateFlow(InputFieldData.EMPTY)
@@ -67,7 +71,7 @@ class TrackerViewModel(
             editedTrackedThingType.emit(type)
             validateModel()
             _isFabDropdownMenuExpanded.emit(false)
-            _isDialogVisible.emit(true)
+            alertDialogViewModelExtension.show()
         }
     }
 
@@ -90,7 +94,7 @@ class TrackerViewModel(
             editedTrackedThingType.emit(copy.type)
             validateModel()
             _isFabDropdownMenuExpanded.emit(false)
-            _isDialogVisible.emit(true)
+            alertDialogViewModelExtension.show()
         }
     }
 
@@ -130,7 +134,7 @@ class TrackerViewModel(
                 editedTrackedThing.id = id
             }
             addItem(editedTrackedThing)
-            _isDialogVisible.emit(false)
+            alertDialogViewModelExtension.hide()
         }
     }
 
@@ -145,7 +149,7 @@ class TrackerViewModel(
                 trackedThingDao.insertOrUpdate(trackedThingToUpdate)
             }
             replaceItem(trackedThingToUpdate)
-            _isDialogVisible.emit(false)
+            alertDialogViewModelExtension.hide()
         }
     }
 
@@ -161,7 +165,7 @@ class TrackerViewModel(
                 trackedThingDao.delete(editedTrackedThing.id)
             }
             removeItem(editedTrackedThing)
-            _isDialogVisible.emit(false)
+            alertDialogViewModelExtension.hide()
         }
     }
 
@@ -181,7 +185,7 @@ class TrackerViewModel(
             withContext(Dispatchers.Default) {
                 trackedThingDao.insertOrUpdate(editedTrackedThing)
             }
-            _isDialogVisible.emit(false)
+            alertDialogViewModelExtension.hide()
             replaceItem(editedTrackedThing)
         }
     }
@@ -200,7 +204,7 @@ class TrackerViewModel(
             withContext(Dispatchers.Default) {
                 trackedThingDao.insertOrUpdate(editedTrackedThing)
             }
-            _isDialogVisible.emit(false)
+            alertDialogViewModelExtension.hide()
             replaceItem(editedTrackedThing)
         }
     }
@@ -213,7 +217,7 @@ class TrackerViewModel(
             withContext(Dispatchers.Default) {
                 trackedThingDao.insertOrUpdate(editedTrackedThing)
             }
-            _isDialogVisible.emit(false)
+            alertDialogViewModelExtension.hide()
             replaceItem(editedTrackedThing)
         }
     }
@@ -225,7 +229,7 @@ class TrackerViewModel(
                 .forEach {
                     resetValueToDefault(it)
                 }
-            _isDialogVisible.emit(false)
+            alertDialogViewModelExtension.hide()
         }
     }
 
@@ -352,7 +356,7 @@ class TrackerViewModel(
             editedTrackedThing = item.copy()
             editedTrackedThingValue.emit(InputFieldData.EMPTY)
             validateModel()
-            _isDialogVisible.emit(true)
+            alertDialogViewModelExtension.show()
         }
     }
 
@@ -372,7 +376,7 @@ class TrackerViewModel(
             dialogType = DialogType.ConfirmDeletion
             dialogTitleResource = R.string.delete_tracked_thing_dialog_title
             editedTrackedThing = item
-            _isDialogVisible.emit(true)
+            alertDialogViewModelExtension.show()
         }
     }
 
@@ -380,7 +384,7 @@ class TrackerViewModel(
         viewModelScope.launch {
             dialogType = DialogType.RefreshAll
             dialogTitleResource = R.string.refresh_all_tracked_things_dialog_title
-            _isDialogVisible.emit(true)
+            alertDialogViewModelExtension.show()
         }
     }
 
@@ -403,6 +407,12 @@ class TrackerViewModel(
                     trackedThingDao.insertOrUpdate(it)
                 }
             }
+        }
+    }
+
+    fun hideDialog() {
+        viewModelScope.launch {
+            alertDialogViewModelExtension.hide()
         }
     }
 

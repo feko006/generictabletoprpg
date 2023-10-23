@@ -113,6 +113,7 @@ fun TrackerGroupsScreen(
         viewModel.refreshItems()
         appViewModel.itemsRefreshed(RootDestinations.Tracker)
     }
+    val isAlertDialogVisible by viewModel.isDialogVisible.collectAsState(false)
     OverviewScreen(
         viewModel = viewModel,
         listItem = { item, _, _ ->
@@ -128,6 +129,7 @@ fun TrackerGroupsScreen(
                 viewModel.newTrackedThingGroupRequested()
             }
         },
+        isAlertDialogVisible = isAlertDialogVisible,
         alertDialogComposable = {
             AlertDialogComposable(viewModel)
         }

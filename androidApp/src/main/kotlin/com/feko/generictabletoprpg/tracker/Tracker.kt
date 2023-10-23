@@ -89,6 +89,7 @@ fun TrackerScreen(
                 ButtonState(Icons.Default.Refresh) { viewModel.refreshAllRequested() }
             )
         )
+    val isAlertDialogVisible by viewModel.isDialogVisible.collectAsState(false)
     OverviewScreen(
         viewModel = viewModel,
         listItem = { item, isDragged, state ->
@@ -108,6 +109,7 @@ fun TrackerScreen(
                 DropdownMenuContent(viewModel)
             }
         },
+        isAlertDialogVisible = isAlertDialogVisible,
         alertDialogComposable = {
             AlertDialogComposable(viewModel, groupName)
         },
