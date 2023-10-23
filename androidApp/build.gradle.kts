@@ -34,9 +34,9 @@ android {
 
     signingConfigs.getByName("release") {
         storeFile = File("${project.rootDir}/build-data/release.jks")
-        storePassword = property("storePassword") as String
-        keyAlias = property("keyAlias") as String
-        keyPassword = property("keyPassword") as String
+        storePassword = providers.gradleProperty("storePassword").get()
+        keyAlias = providers.gradleProperty("keyAlias").get()
+        keyPassword = providers.gradleProperty("keyPassword").get()
     }
 
     buildTypes {
