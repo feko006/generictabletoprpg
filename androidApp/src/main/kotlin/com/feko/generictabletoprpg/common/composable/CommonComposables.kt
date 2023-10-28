@@ -24,6 +24,14 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import com.feko.generictabletoprpg.R
+import com.feko.generictabletoprpg.action.Action
+import com.feko.generictabletoprpg.ammunition.Ammunition
+import com.feko.generictabletoprpg.armor.Armor
+import com.feko.generictabletoprpg.condition.Condition
+import com.feko.generictabletoprpg.disease.Disease
+import com.feko.generictabletoprpg.feat.Feat
+import com.feko.generictabletoprpg.spell.Spell
+import com.feko.generictabletoprpg.weapon.Weapon
 
 data class InputFieldData(
     val value: String,
@@ -160,5 +168,31 @@ fun AddFABButton(
             .then(modifier)
     ) {
         Icon(Icons.Default.Add, "")
+    }
+}
+
+val appTypes = listOf(
+    Action::class.java,
+    Ammunition::class.java,
+    Armor::class.java,
+    Condition::class.java,
+    Disease::class.java,
+    Feat::class.java,
+    Spell::class.java,
+    Weapon::class.java
+)
+
+@Composable
+fun <T> getTypeName(type: Class<T>): String {
+    return when (type) {
+        Action::class.java -> stringResource(R.string.action)
+        Ammunition::class.java -> stringResource(R.string.ammunition)
+        Armor::class.java -> stringResource(R.string.armor)
+        Condition::class.java -> stringResource(R.string.condition)
+        Disease::class.java -> stringResource(R.string.disease)
+        Feat::class.java -> stringResource(R.string.feat)
+        Spell::class.java -> stringResource(R.string.spell)
+        Weapon::class.java -> stringResource(R.string.weapon)
+        else -> throw IllegalStateException()
     }
 }

@@ -14,6 +14,8 @@ import com.feko.generictabletoprpg.common.alertdialog.AlertDialogViewModelExtens
 import com.feko.generictabletoprpg.common.alertdialog.IMutableAlertDialogViewModelExtension
 import com.feko.generictabletoprpg.common.fabdropdown.FabDropdownViewModelExtension
 import com.feko.generictabletoprpg.common.fabdropdown.IMutableFabDropdownViewModelExtension
+import com.feko.generictabletoprpg.common.filter.FilterViewModelExtension
+import com.feko.generictabletoprpg.common.filter.IMutableFilterViewModelExtension
 import com.feko.generictabletoprpg.condition.ConditionDao
 import com.feko.generictabletoprpg.condition.ConditionDetailsViewModel
 import com.feko.generictabletoprpg.disease.DiseaseDao
@@ -85,8 +87,9 @@ val commonModule = module {
     single<ILoadBaseContentUseCase> { LoadBaseContentUseCase(get(), get(), get(), get()) }
 
     // ViewModel extensions
-    single<IMutableAlertDialogViewModelExtension> { AlertDialogViewModelExtension() }
-    single<IMutableFabDropdownViewModelExtension> { FabDropdownViewModelExtension() }
+    factory<IMutableAlertDialogViewModelExtension> { AlertDialogViewModelExtension() }
+    factory<IMutableFabDropdownViewModelExtension> { FabDropdownViewModelExtension() }
+    factory<IMutableFilterViewModelExtension> { FilterViewModelExtension() }
 
     // VMs
     viewModel { AppViewModel(get()) }
@@ -229,7 +232,7 @@ val searchAllModule = module {
             )
         )
     }
-    viewModel { SearchAllViewModel(get()) }
+    viewModel { SearchAllViewModel(get(), get()) }
 }
 
 val diModules = listOf(

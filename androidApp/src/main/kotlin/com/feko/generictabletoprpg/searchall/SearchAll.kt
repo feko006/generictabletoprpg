@@ -1,15 +1,21 @@
 package com.feko.generictabletoprpg.searchall
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import com.feko.generictabletoprpg.AppViewModel
+import com.feko.generictabletoprpg.ButtonState
 import com.feko.generictabletoprpg.R
 import com.feko.generictabletoprpg.RootDestinations
 import com.feko.generictabletoprpg.action.Action
 import com.feko.generictabletoprpg.ammunition.Ammunition
 import com.feko.generictabletoprpg.armor.Armor
+import com.feko.generictabletoprpg.com.feko.generictabletoprpg.common.filter.filterUpdateRequested
 import com.feko.generictabletoprpg.common.IIdentifiable
 import com.feko.generictabletoprpg.common.composable.OverviewListItem
 import com.feko.generictabletoprpg.common.composable.OverviewScreen
@@ -24,6 +30,7 @@ import com.feko.generictabletoprpg.destinations.SpellDetailsScreenDestination
 import com.feko.generictabletoprpg.destinations.WeaponDetailsScreenDestination
 import com.feko.generictabletoprpg.disease.Disease
 import com.feko.generictabletoprpg.feat.Feat
+import com.feko.generictabletoprpg.filters.Filter
 import com.feko.generictabletoprpg.spell.Spell
 import com.feko.generictabletoprpg.weapon.Weapon
 import com.ramcosta.composedestinations.annotation.Destination
@@ -37,19 +44,29 @@ fun SearchAllScreen(
     navigator: DestinationsNavigator,
     appViewModel: AppViewModel
 ) {
+    val refreshesPending by appViewModel.refreshesPending.collectAsState()
+    val viewModel: SearchAllViewModel = koinViewModel()
+    val filterButtonVisible by viewModel.filterButtonVisible.collectAsState(false)
+    val navBarActions = mutableListOf<ButtonState>()
+    if (filterButtonVisible) {
+        navBarActions.add(
+            ButtonState(painter = painterResource(R.drawable.filter_list)) {
+                viewModel.filterRequested()
+            }
+        )
+    }
     appViewModel.run {
         set(
             appBarTitle = stringResource(R.string.search_all_title),
-            navBarActions = listOf()
+            navBarActions = navBarActions
         )
         updateActiveDrawerItem(RootDestinations.SearchAll)
     }
-    val refreshesPending by appViewModel.refreshesPending.collectAsState()
-    val viewModel: SearchAllViewModel = koinViewModel()
     if (RootDestinations.SearchAll in refreshesPending) {
         viewModel.refreshItems()
         appViewModel.itemsRefreshed(RootDestinations.SearchAll)
     }
+    val isBottomSheetVisible = viewModel.isBottomSheetVisible.collectAsState(false)
     OverviewScreen(
         viewModel,
         listItem = { item, _, _ ->
@@ -58,7 +75,17 @@ fun SearchAllScreen(
             }
         },
         uniqueListItemKey = { getUniqueListItemKey(it) },
-        searchFieldHintResource = R.string.search_everywhere
+        searchFieldHintResource = R.string.search_everywhere,
+        isBottomSheetVisible = isBottomSheetVisible.value,
+        onBottomSheetHidden = { viewModel.bottomSheetHidden() },
+        bottomSheetContent = {
+            Box(Modifier.padding(it)) {
+                val filter = viewModel.filter.collectAsState(null)
+                Filter(filter.value) {
+                    viewModel.filterUpdateRequested(it)
+                }
+            }
+        }
     )
 }
 
