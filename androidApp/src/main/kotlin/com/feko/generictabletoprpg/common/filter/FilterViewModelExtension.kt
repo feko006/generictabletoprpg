@@ -3,9 +3,10 @@ package com.feko.generictabletoprpg.common.filter
 import com.feko.generictabletoprpg.filters.Filter
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 
 class FilterViewModelExtension : IMutableFilterViewModelExtension {
-    override val filter: Flow<Filter?>
+    override val filter: StateFlow<Filter?>
         get() = _filter
     private val _filter = MutableStateFlow<Filter?>(null)
     override val filterButtonVisible: Flow<Boolean>

@@ -6,13 +6,15 @@ import com.feko.generictabletoprpg.common.BaseDao
 import com.feko.generictabletoprpg.common.IGetAll
 import com.feko.generictabletoprpg.common.IGetById
 import com.feko.generictabletoprpg.common.IInsertAll
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 abstract class SpellDao
     : BaseDao<SpellEntity, Spell>(),
     IInsertAll<Spell>,
     IGetAll<Spell>,
-    IGetById<Spell> {
+    IGetById<Spell>,
+    IGetAllSpellSchools {
     override fun getEntityFromCoreModel(item: Spell): SpellEntity =
         SpellEntity.fromCoreModel(item)
 
@@ -24,4 +26,7 @@ abstract class SpellDao
 
     @Query("select * from spells where id = :id")
     abstract override fun getByIdInternal(id: Long): SpellEntity
+
+    @Query("select distinct(school) from spells order by school asc")
+    abstract override fun getAllSchools(): Flow<List<String>>
 }

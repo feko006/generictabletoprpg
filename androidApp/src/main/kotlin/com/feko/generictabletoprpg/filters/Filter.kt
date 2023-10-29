@@ -45,5 +45,23 @@ sealed class Filter(
             }
             return isAccepted
         }
+
+        fun copy(
+            school: String? = null,
+            concentration: Boolean? = null,
+            level: Int? = null,
+            `class`: String? = null,
+            isRitual: Boolean? = null,
+            spellComponents: Spell.SpellComponents? = null
+        ): SpellFilter =
+            SpellFilter(
+                name,
+                school ?: this.school,
+                concentration ?: this.concentration,
+                level ?: this.level,
+                `class` ?: this.`class`,
+                isRitual ?: this.isRitual,
+                spellComponents ?: this.spellComponents
+            )
     }
 }

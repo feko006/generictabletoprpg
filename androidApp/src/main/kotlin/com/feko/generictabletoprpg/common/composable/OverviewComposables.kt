@@ -5,7 +5,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
@@ -37,7 +36,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.feko.generictabletoprpg.R
 import com.feko.generictabletoprpg.common.IIdentifiable
@@ -67,7 +65,7 @@ fun <TViewModel, T> OverviewScreen(
     searchFieldHintResource: Int = R.string.search,
     isBottomSheetVisible: Boolean = false,
     onBottomSheetHidden: () -> Unit = {},
-    bottomSheetContent: @Composable ColumnScope.(padding: Dp) -> Unit = {}
+    bottomSheetContent: @Composable () -> Unit = {}
 ) where TViewModel : OverviewViewModel<T>,
         T : Any {
     val listItems by viewModel.items.collectAsState(listOf())
@@ -154,7 +152,9 @@ fun <TViewModel, T> OverviewScreen(
             },
             sheetState = bottomSheetState
         ) {
-            bottomSheetContent(16.dp)
+            Box(Modifier.padding(16.dp)) {
+                bottomSheetContent()
+            }
             Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.systemBars))
         }
     }
@@ -165,7 +165,7 @@ fun <TViewModel, T> OverviewScreen(
 
 fun LazyListScope.fabButtonSpacer(isFabButtonVisible: Boolean) {
     if (isFabButtonVisible) {
-        item {
+        item(key = "fabSpacer") {
             Spacer(Modifier.height(40.dp))
         }
     }

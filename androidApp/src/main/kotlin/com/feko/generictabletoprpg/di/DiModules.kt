@@ -22,6 +22,7 @@ import com.feko.generictabletoprpg.disease.DiseaseDao
 import com.feko.generictabletoprpg.disease.DiseaseDetailsViewModel
 import com.feko.generictabletoprpg.feat.FeatDao
 import com.feko.generictabletoprpg.feat.FeatDetailsViewModel
+import com.feko.generictabletoprpg.filters.SpellFilterViewModel
 import com.feko.generictabletoprpg.import.IImportAllUseCase
 import com.feko.generictabletoprpg.import.IJson
 import com.feko.generictabletoprpg.import.IJsonImportAllUseCase
@@ -235,6 +236,10 @@ val searchAllModule = module {
     viewModel { SearchAllViewModel(get(), get()) }
 }
 
+val filterModule = module {
+    viewModel { SpellFilterViewModel(get<SpellDao>()) }
+}
+
 val diModules = listOf(
     commonModule,
     spellModule,
@@ -248,5 +253,6 @@ val diModules = listOf(
     importModule,
     trackedThingGroupModule,
     trackedThingModule,
-    searchAllModule
+    searchAllModule,
+    filterModule
 )

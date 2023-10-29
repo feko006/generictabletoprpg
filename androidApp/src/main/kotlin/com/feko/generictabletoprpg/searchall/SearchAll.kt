@@ -1,11 +1,8 @@
 package com.feko.generictabletoprpg.searchall
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import com.feko.generictabletoprpg.AppViewModel
@@ -79,11 +76,9 @@ fun SearchAllScreen(
         isBottomSheetVisible = isBottomSheetVisible.value,
         onBottomSheetHidden = { viewModel.bottomSheetHidden() },
         bottomSheetContent = {
-            Box(Modifier.padding(it)) {
-                val filter = viewModel.filter.collectAsState(null)
-                Filter(filter.value) {
-                    viewModel.filterUpdateRequested(it)
-                }
+            val filter = viewModel.filter.collectAsState()
+            Filter(filter.value) { updatedFilter ->
+                viewModel.filterUpdateRequested(updatedFilter)
             }
         }
     )

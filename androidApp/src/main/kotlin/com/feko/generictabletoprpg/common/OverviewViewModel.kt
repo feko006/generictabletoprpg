@@ -2,14 +2,17 @@ package com.feko.generictabletoprpg.common
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.feko.generictabletoprpg.com.feko.generictabletoprpg.common.filter.FilterPredicate
+import com.feko.generictabletoprpg.filters.Filter
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-open class OverviewViewModel<T>(
+open class OverviewViewModel<T : Any>(
     private val getAll: IGetAll<T>?
 ) : ViewModel() {
     protected val _items = MutableStateFlow<List<T>>(listOf())
@@ -18,8 +21,16 @@ open class OverviewViewModel<T>(
     protected var _searchString: MutableStateFlow<String> = MutableStateFlow("")
     val items: Flow<List<T>>
         get() = combinedItemFlow
-    protected open val combinedItemFlow: Flow<List<T>> =
-        _items.combine(_searchString) { items, searchString ->
+    protected open val combinedItemFlow: Flow<List<T>> by lazy {
+        var itemsToSearchThrough: Flow<List<T>> = _items
+        val filterFlow = getFilterFlow()
+        if (filterFlow != null) {
+            itemsToSearchThrough =
+                itemsToSearchThrough.combine(filterFlow) { items, filter ->
+                    items.filter(FilterPredicate(filter))
+                }
+        }
+        itemsToSearchThrough.combine(_searchString) { items, searchString ->
             items
                 .filter { item ->
                     item is INamed
@@ -27,6 +38,9 @@ open class OverviewViewModel<T>(
                 }
                 .sortedWith(SmartNamedSearchComparator(searchString))
         }
+    }
+
+    open fun getFilterFlow(): StateFlow<Filter?>? = null
 
     init {
         refreshItems()
