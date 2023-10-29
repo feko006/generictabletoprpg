@@ -5,7 +5,9 @@ androidx-test-runner = "1.5.2"
 androidx-test-rules = "1.5.0"
 androidx-test-ext-junit = "1.1.5"
 compose-destinations = "1.9.51"
-compose-material3 = "1.2.0-alpha10"
+# alpha10 has a bug which causes an IndexOutOfBoundsException when the
+# list items are replaced with a smaller list than the current one
+compose-material3 = "1.2.0-alpha09"
 compose-navigation = "2.7.4"
 compose-reorderable = "0.9.6"
 compose-ui = "1.5.4"
