@@ -75,6 +75,7 @@
     <!--Spell-->
     <string name="spell">Spell</string>
     <string name="spell_details_title">Spell Details</string>
+    <string name="concentration">Concentration</string>
     <!--Weapon-->
     <string name="weapon">Weapon</string>
     <string name="weapon_details_title">Weapon Details</string>
