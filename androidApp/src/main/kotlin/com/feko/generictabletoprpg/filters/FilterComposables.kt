@@ -103,6 +103,26 @@ fun SpellFilterFields(
         stringResource(R.string.concentration),
         filter.concentration
     ) { onFilterUpdated(filter.copy(concentration = it)) }
+    val levels = spellFilterViewModel.levels.collectAsState(listOf())
+    val levelTextFieldInitialValue = filter.level?.toString() ?: stringResource(R.string.level)
+    var levelTextFieldValue by remember { mutableStateOf(levelTextFieldInitialValue) }
+    var levelDropdownExpanded by remember { mutableStateOf(false) }
+    Dropdown(
+        levelTextFieldValue,
+        levelDropdownExpanded,
+        onDropdownExpandedStateChanged = { levelDropdownExpanded = it }
+    ) {
+        levels.value.forEach { level ->
+            DropdownMenuItem(
+                text = { Text(level.toString()) },
+                onClick = {
+                    levelTextFieldValue = level.toString()
+                    levelDropdownExpanded = false
+                    onFilterUpdated(filter.copy(level = level))
+                }
+            )
+        }
+    }
 }
 
 @Composable

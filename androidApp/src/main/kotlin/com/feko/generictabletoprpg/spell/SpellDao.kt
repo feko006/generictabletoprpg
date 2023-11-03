@@ -14,7 +14,7 @@ abstract class SpellDao
     IInsertAll<Spell>,
     IGetAll<Spell>,
     IGetById<Spell>,
-    IGetAllSpellSchools {
+    ISpellFilterDao {
     override fun getEntityFromCoreModel(item: Spell): SpellEntity =
         SpellEntity.fromCoreModel(item)
 
@@ -27,6 +27,9 @@ abstract class SpellDao
     @Query("select * from spells where id = :id")
     abstract override fun getByIdInternal(id: Long): SpellEntity
 
-    @Query("select distinct(school) from spells order by school asc")
+    @Query("select distinct school from spells order by school asc")
     abstract override fun getAllSchools(): Flow<List<String>>
+
+    @Query("select distinct level from spells order by level asc")
+    abstract override fun getAllLevels(): Flow<List<Int>>
 }

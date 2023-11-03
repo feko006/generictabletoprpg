@@ -38,6 +38,12 @@ class FilterPredicate(val filter: Filter?) : (Any) -> Boolean {
             }
         }
 
+        spellFilter.level?.let {
+            if (item.level != it) {
+                return false
+            }
+        }
+
         return true
     }
 }

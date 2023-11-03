@@ -21,7 +21,7 @@ class SearchAllViewModel(
     val isBottomSheetVisible: Flow<Boolean> = _isBottomSheetVisible
 
     override val filterButtonVisible: Flow<Boolean> =
-        items.map { it.any() }
+        _items.map { it.any() }
 
     override fun filterRequested() {
         viewModelScope.launch {
