@@ -9,6 +9,7 @@ import com.feko.generictabletoprpg.import.JsonImportAllUseCase
 import com.feko.generictabletoprpg.import.MoshiJson
 import com.feko.generictabletoprpg.room.GenericTabletopRpgDatabase
 import com.feko.generictabletoprpg.test.R
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.test.runTest
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.CoreMatchers.instanceOf
@@ -168,6 +169,7 @@ class ImportExportTrackerDataTest {
 
         // When
         trackerGroupExportViewModelExtension.exportAllRequested()
+        delay(timeMillis = 100) // The user needs to pick a file, so a delay is simulated
         trackerGroupExportViewModelExtension.exportData(outputStream)
         jsonImportAllUseCase.import(outputStream.toString())
 
