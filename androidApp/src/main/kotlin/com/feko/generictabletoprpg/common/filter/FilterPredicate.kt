@@ -59,6 +59,12 @@ class FilterPredicate(val filter: Filter?) : (Any) -> Boolean {
             }
         }
 
+        spellFilter.isRitual?.let {
+            if (item.isRitual != it) {
+                return false
+            }
+        }
+
         return true
     }
 }

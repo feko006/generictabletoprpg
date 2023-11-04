@@ -171,28 +171,18 @@ fun AddFABButton(
     }
 }
 
-val appTypes = listOf(
-    Action::class.java,
-    Ammunition::class.java,
-    Armor::class.java,
-    Condition::class.java,
-    Disease::class.java,
-    Feat::class.java,
-    Spell::class.java,
-    Weapon::class.java
+val appNamesByType = mapOf(
+    Action::class.java to R.string.action,
+    Ammunition::class.java to R.string.ammunition,
+    Armor::class.java to R.string.armor,
+    Condition::class.java to R.string.condition,
+    Disease::class.java to R.string.disease,
+    Feat::class.java to R.string.feat,
+    Spell::class.java to R.string.spell,
+    Weapon::class.java to R.string.weapon
 )
 
+val appTypes = appNamesByType.keys
+
 @Composable
-fun <T> getTypeName(type: Class<T>): String {
-    return when (type) {
-        Action::class.java -> stringResource(R.string.action)
-        Ammunition::class.java -> stringResource(R.string.ammunition)
-        Armor::class.java -> stringResource(R.string.armor)
-        Condition::class.java -> stringResource(R.string.condition)
-        Disease::class.java -> stringResource(R.string.disease)
-        Feat::class.java -> stringResource(R.string.feat)
-        Spell::class.java -> stringResource(R.string.spell)
-        Weapon::class.java -> stringResource(R.string.weapon)
-        else -> throw IllegalStateException()
-    }
-}
+fun <T> getTypeName(type: Class<T>): String = stringResource(appNamesByType[type]!!)

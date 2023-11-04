@@ -77,72 +77,70 @@ fun SpellFilterFields(
     onFilterUpdated: (Filter) -> Unit
 ) {
     val spellFilterViewModel = koinViewModel<SpellFilterViewModel>()
+
     val schools = spellFilterViewModel.schools.collectAsState(listOf())
-    val schoolTextFieldInitialValue = filter.school ?: stringResource(R.string.school)
-    var schoolTextFieldValue by remember { mutableStateOf(schoolTextFieldInitialValue) }
-    var schoolDropdownExpanded by remember { mutableStateOf(false) }
-    Dropdown(
-        schoolTextFieldValue,
-        schoolDropdownExpanded,
-        onDropdownExpandedStateChanged = {
-            schoolDropdownExpanded = it
-        }
-    ) {
-        schools.value.forEach { school ->
-            DropdownMenuItem(
-                text = { Text(school) },
-                onClick = {
-                    schoolTextFieldValue = school
-                    schoolDropdownExpanded = false
-                    onFilterUpdated(filter.copy(school = school))
-                }
-            )
-        }
-    }
+    StringFilterField(
+        options = schools.value,
+        stringResource(R.string.school),
+        filter.school
+    ) { value -> onFilterUpdated(filter.copy(school = value)) }
+
     BooleanFilterField(
         stringResource(R.string.concentration),
         filter.concentration
-    ) { onFilterUpdated(filter.copy(concentration = it)) }
+    ) { onFilterUpdated(filter.copyWithNewConcentration(it)) }
+
     val levels = spellFilterViewModel.levels.collectAsState(listOf())
-    val levelTextFieldInitialValue = filter.level?.toString() ?: stringResource(R.string.level)
-    var levelTextFieldValue by remember { mutableStateOf(levelTextFieldInitialValue) }
-    var levelDropdownExpanded by remember { mutableStateOf(false) }
-    Dropdown(
-        levelTextFieldValue,
-        levelDropdownExpanded,
-        onDropdownExpandedStateChanged = { levelDropdownExpanded = it }
-    ) {
-        levels.value.forEach { level ->
-            DropdownMenuItem(
-                text = { Text(level.toString()) },
-                onClick = {
-                    levelTextFieldValue = level.toString()
-                    levelDropdownExpanded = false
-                    onFilterUpdated(filter.copy(level = level))
-                }
-            )
-        }
-    }
+    StringFilterField(
+        options = levels.value,
+        stringResource(R.string.level),
+        filter.level?.toString()
+    ) { onFilterUpdated(filter.copy(level = it.toInt())) }
+
     val classes = spellFilterViewModel.classes.collectAsState(listOf())
     if (classes.value.any()) {
-        val classTextFieldInitialValue = filter.`class` ?: stringResource(R.string.class_term)
-        var classTextFieldValue by remember { mutableStateOf(classTextFieldInitialValue) }
-        var classDropdownExpanded by remember { mutableStateOf(false) }
-        Dropdown(
-            classTextFieldValue,
-            classDropdownExpanded,
-            onDropdownExpandedStateChanged = { classDropdownExpanded = it }
-        ) {
-            classes.value.forEach { `class` ->
-                DropdownMenuItem(
-                    text = { Text(`class`) },
-                    onClick = {
-                        classTextFieldValue = `class`
-                        classDropdownExpanded = false
-                        onFilterUpdated(filter.copy(`class` = `class`))
+        StringFilterField(
+            options = classes.value,
+            stringResource(R.string.class_term),
+            filter.`class`
+        ) { onFilterUpdated(filter.copy(`class` = it)) }
+    }
+
+    BooleanFilterField(
+        stringResource(R.string.ritual),
+        filter.isRitual
+    ) { onFilterUpdated(filter.copyWithNewRitual(it)) }
+}
+
+@Composable
+fun StringFilterField(
+    options: List<Any>,
+    name: String,
+    value: String?,
+    onValueChanged: (String) -> Unit
+) {
+    val initialValue = value ?: name
+    var textFieldValue by remember { mutableStateOf(initialValue) }
+    var dropdownExpanded by remember { mutableStateOf(false) }
+    Dropdown(
+        textFieldValue,
+        dropdownExpanded,
+        onDropdownExpandedStateChanged = {
+            dropdownExpanded = it
+        }
+    ) {
+        options.forEach { option ->
+            DropdownMenuItem(
+                text = { Text(option.toString()) },
+                onClick = onClick@{
+                    if (value == option) {
+                        return@onClick
                     }
-                )
-            }
+                    textFieldValue = option.toString()
+                    dropdownExpanded = false
+                    onValueChanged(option.toString())
+                }
+            )
         }
     }
 }
@@ -180,4 +178,3 @@ fun BooleanFilterField(
         )
     }
 }
-

@@ -33,7 +33,6 @@ class SpellFilter(
         school: String? = null,
         level: Int? = null,
         `class`: String? = null,
-        isRitual: Boolean? = null,
         spellComponents: Spell.SpellComponents? = null
     ) = SpellFilter(
         name,
@@ -41,11 +40,22 @@ class SpellFilter(
         concentration,
         level ?: this.level,
         `class` ?: this.`class`,
-        isRitual ?: this.isRitual,
+        isRitual,
         spellComponents ?: this.spellComponents
     )
 
-    fun copy(concentration: Boolean? = null) =
+    fun copyWithNewConcentration(concentration: Boolean? = null) =
+        SpellFilter(
+            name,
+            school,
+            concentration,
+            level,
+            `class`,
+            isRitual,
+            spellComponents
+        )
+
+    fun copyWithNewRitual(isRitual: Boolean? = null) =
         SpellFilter(
             name,
             school,

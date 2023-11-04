@@ -77,6 +77,7 @@
     <string name="spell_details_title">Spell Details</string>
     <string name="concentration">Concentration</string>
     <string name="class_term">Class</string>
+    <string name="ritual">Ritual</string>
     <!--Weapon-->
     <string name="weapon">Weapon</string>
     <string name="weapon_details_title">Weapon Details</string>
