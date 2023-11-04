@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Text
 import androidx.compose.material3.TriStateCheckbox
@@ -85,7 +86,7 @@ fun SpellFilterFields(
         filter.school
     ) { value -> onFilterUpdated(filter.copy(school = value)) }
 
-    BooleanFilterField(
+    TriStateBooleanFilterField(
         stringResource(R.string.concentration),
         filter.concentration
     ) { onFilterUpdated(filter.copyWithNewConcentration(it)) }
@@ -106,10 +107,95 @@ fun SpellFilterFields(
         ) { onFilterUpdated(filter.copy(`class` = it)) }
     }
 
-    BooleanFilterField(
+    TriStateBooleanFilterField(
         stringResource(R.string.ritual),
         filter.isRitual
     ) { onFilterUpdated(filter.copyWithNewRitual(it)) }
+
+    MaterialComponentsFilter(filter, onFilterUpdated)
+}
+
+@Composable
+private fun MaterialComponentsFilter(
+    filter: SpellFilter,
+    onFilterUpdated: (Filter) -> Unit
+) {
+    val isFilteringByComponents = filter.spellComponents != null
+    BooleanFilterField(
+        stringResource(R.string.components),
+        isFilteringByComponents
+    ) {
+        onFilterUpdated(
+            filter.copyWithNewSpellComponents(
+                if (it) {
+                    Spell.SpellComponents(
+                        verbal = false,
+                        somatic = false,
+                        material = false,
+                        materialComponent = null
+                    )
+                } else {
+                    null
+                }
+            )
+        )
+    }
+    if (isFilteringByComponents) {
+        Row(
+            Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceEvenly,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text("V")
+                Checkbox(
+                    checked = filter.spellComponents!!.verbal,
+                    onCheckedChange = {
+                        onFilterUpdated(
+                            filter.copyWithNewSpellComponents(
+                                filter.spellComponents.copy(verbal = it)
+                            )
+                        )
+                    }
+                )
+            }
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text("S")
+                Checkbox(
+                    checked = filter.spellComponents!!.somatic,
+                    onCheckedChange = {
+                        onFilterUpdated(
+                            filter.copyWithNewSpellComponents(
+                                filter.spellComponents.copy(somatic = it)
+                            )
+                        )
+                    }
+                )
+            }
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text("M")
+                Checkbox(
+                    checked = filter.spellComponents!!.material,
+                    onCheckedChange = {
+                        onFilterUpdated(
+                            filter.copyWithNewSpellComponents(
+                                filter.spellComponents.copy(material = it)
+                            )
+                        )
+                    }
+                )
+            }
+        }
+    }
 }
 
 @Composable
@@ -146,7 +232,7 @@ fun StringFilterField(
 }
 
 @Composable
-fun BooleanFilterField(
+fun TriStateBooleanFilterField(
     name: String,
     value: Boolean?,
     onValueChanged: (Boolean?) -> Unit
@@ -175,6 +261,27 @@ fun BooleanFilterField(
         TriStateCheckbox(
             state = checkboxState,
             onClick = { advanceState() }
+        )
+    }
+}
+
+@Composable
+fun BooleanFilterField(
+    name: String,
+    checked: Boolean,
+    onValueChanged: (Boolean) -> Unit
+) {
+    Row(
+        horizontalArrangement = Arrangement.SpaceBetween,
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onValueChanged(!checked) },
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(name)
+        Checkbox(
+            checked = checked,
+            onCheckedChange = onValueChanged
         )
     }
 }

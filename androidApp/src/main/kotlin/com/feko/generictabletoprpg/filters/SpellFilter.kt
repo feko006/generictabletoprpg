@@ -32,8 +32,7 @@ class SpellFilter(
     fun copy(
         school: String? = null,
         level: Int? = null,
-        `class`: String? = null,
-        spellComponents: Spell.SpellComponents? = null
+        `class`: String? = null
     ) = SpellFilter(
         name,
         school ?: this.school,
@@ -56,6 +55,19 @@ class SpellFilter(
         )
 
     fun copyWithNewRitual(isRitual: Boolean? = null) =
+        SpellFilter(
+            name,
+            school,
+            concentration,
+            level,
+            `class`,
+            isRitual,
+            spellComponents
+        )
+
+    fun copyWithNewSpellComponents(
+        spellComponents: Spell.SpellComponents? = null
+    ) =
         SpellFilter(
             name,
             school,

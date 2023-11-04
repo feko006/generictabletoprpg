@@ -65,6 +65,16 @@ class FilterPredicate(val filter: Filter?) : (Any) -> Boolean {
             }
         }
 
+        spellFilter.spellComponents?.let {
+            if (!item.hasComponents
+                || item.components.verbal != it.verbal
+                || item.components.somatic != it.somatic
+                || item.components.material != it.material
+            ) {
+                return false
+            }
+        }
+
         return true
     }
 }
