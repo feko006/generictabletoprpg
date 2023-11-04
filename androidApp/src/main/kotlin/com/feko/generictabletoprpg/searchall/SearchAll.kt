@@ -43,8 +43,16 @@ fun SearchAllScreen(
 ) {
     val refreshesPending by appViewModel.refreshesPending.collectAsState()
     val viewModel: SearchAllViewModel = koinViewModel()
-    val filterButtonVisible by viewModel.filterButtonVisible.collectAsState(false)
     val navBarActions = mutableListOf<ButtonState>()
+    val filterOffButtonVisible by viewModel.filterOffButtonVisible.collectAsState(false)
+    if (filterOffButtonVisible) {
+        navBarActions.add(
+            ButtonState(painter = painterResource(R.drawable.filter_list_off)) {
+                viewModel.filterUpdateRequested(null)
+            }
+        )
+    }
+    val filterButtonVisible by viewModel.filterButtonVisible.collectAsState(false)
     if (filterButtonVisible) {
         navBarActions.add(
             ButtonState(painter = painterResource(R.drawable.filter_list)) {

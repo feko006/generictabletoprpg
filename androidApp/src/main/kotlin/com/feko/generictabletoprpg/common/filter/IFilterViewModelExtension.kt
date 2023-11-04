@@ -7,9 +7,11 @@ import kotlinx.coroutines.flow.StateFlow
 interface IFilterViewModelExtension {
     val filter: StateFlow<Filter?>
     val filterButtonVisible: Flow<Boolean>
+    val filterOffButtonVisible: Flow<Boolean>
+
     fun filterRequested() {
         throw NotImplementedError()
     }
 
-    suspend fun filterUpdated(newFilter: Filter)
+    suspend fun filterUpdated(newFilter: Filter?)
 }

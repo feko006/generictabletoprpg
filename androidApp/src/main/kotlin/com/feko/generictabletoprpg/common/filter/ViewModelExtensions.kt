@@ -7,7 +7,7 @@ import com.feko.generictabletoprpg.filters.Filter
 import kotlinx.coroutines.launch
 
 
-fun <T> T.filterUpdateRequested(newFilter: Filter)
+fun <T> T.filterUpdateRequested(newFilter: Filter?)
         where T : ViewModel,
               T : IFilterViewModelExtension {
     viewModelScope.launch {
