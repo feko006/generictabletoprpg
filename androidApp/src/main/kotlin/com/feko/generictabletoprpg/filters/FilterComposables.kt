@@ -123,6 +123,28 @@ fun SpellFilterFields(
             )
         }
     }
+    val classes = spellFilterViewModel.classes.collectAsState(listOf())
+    if (classes.value.any()) {
+        val classTextFieldInitialValue = filter.`class` ?: stringResource(R.string.class_term)
+        var classTextFieldValue by remember { mutableStateOf(classTextFieldInitialValue) }
+        var classDropdownExpanded by remember { mutableStateOf(false) }
+        Dropdown(
+            classTextFieldValue,
+            classDropdownExpanded,
+            onDropdownExpandedStateChanged = { classDropdownExpanded = it }
+        ) {
+            classes.value.forEach { `class` ->
+                DropdownMenuItem(
+                    text = { Text(`class`) },
+                    onClick = {
+                        classTextFieldValue = `class`
+                        classDropdownExpanded = false
+                        onFilterUpdated(filter.copy(`class` = `class`))
+                    }
+                )
+            }
+        }
+    }
 }
 
 @Composable

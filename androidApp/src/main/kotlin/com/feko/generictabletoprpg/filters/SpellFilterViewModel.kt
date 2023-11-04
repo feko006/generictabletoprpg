@@ -15,6 +15,8 @@ class SpellFilterViewModel(
     val schools: Flow<List<String>> = _schools
     private val _levels = MutableStateFlow(listOf<Int>())
     val levels: Flow<List<Int>> = _levels
+    private val _classes = MutableStateFlow(listOf<String>())
+    val classes: Flow<List<String>> = _classes
 
     init {
         viewModelScope.launch {
@@ -34,6 +36,24 @@ class SpellFilterViewModel(
                 .getAllLevels()
                 .map { it.sorted() }
                 .collect(_levels)
+        }
+        viewModelScope.launch {
+            spellFilterDao
+                .getAllClasses()
+                .map { classes ->
+                    classes.map { it.split(", ") }
+                }
+                .map { classes ->
+                    classes
+                        .asSequence()
+                        .flatten()
+                        .filterNot { it.isBlank() }
+                        .map { `class` -> `class`.replaceFirstChar(Char::uppercase) }
+                        .distinct()
+                        .sorted()
+                        .toList()
+                }
+                .collect(_classes)
         }
     }
 }

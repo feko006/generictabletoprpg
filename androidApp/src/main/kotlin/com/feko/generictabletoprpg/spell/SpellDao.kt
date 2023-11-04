@@ -32,4 +32,7 @@ abstract class SpellDao
 
     @Query("select distinct level from spells order by level asc")
     abstract override fun getAllLevels(): Flow<List<Int>>
+
+    @Query("select distinct classesThatCanCast from spells")
+    abstract override fun getAllClasses(): Flow<List<String>>
 }

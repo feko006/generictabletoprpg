@@ -44,6 +44,21 @@ class FilterPredicate(val filter: Filter?) : (Any) -> Boolean {
             }
         }
 
+        spellFilter.`class`?.let { classFilter ->
+            val classCanCast =
+                item.classesThatCanCast
+                    .isEmpty()
+                    .or(
+                        item.classesThatCanCast
+                            .any {
+                                it.lowercase() == classFilter.lowercase()
+                            }
+                    )
+            if (!classCanCast) {
+                return false
+            }
+        }
+
         return true
     }
 }
