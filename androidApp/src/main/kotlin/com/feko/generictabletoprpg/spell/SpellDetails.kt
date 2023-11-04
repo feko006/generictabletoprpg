@@ -44,6 +44,10 @@ fun SpellDetailsScreen(
             }
             Spacer(Modifier.height(padding))
             TextWithLabel(R.string.duration, duration)
+            if (classesThatCanCast.isNotEmpty()) {
+                Spacer(Modifier.height(padding))
+                TextWithLabel(R.string.classes, classesThatCanCast.joinToString())
+            }
             HorizontalDivider(thickness = padding)
             Text(description)
         }

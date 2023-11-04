@@ -78,6 +78,7 @@
     <string name="concentration">Concentration</string>
     <string name="class_term">Class</string>
     <string name="ritual">Ritual</string>
+    <string name="classes">Classes</string>
     <!--Weapon-->
     <string name="weapon">Weapon</string>
     <string name="weapon_details_title">Weapon Details</string>
@@ -88,4 +89,5 @@
     <string name="export_location_hint">Select a directory where the export will be generated</string>
     <!--Filter-->
     <string name="filter_type_placeholder">Type</string>
+    <string name="class_filter_disclaimer">* Not all imported spells have classes set, so results may not be accurate</string>
 </resources>
