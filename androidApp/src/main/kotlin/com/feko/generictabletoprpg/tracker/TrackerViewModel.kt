@@ -393,6 +393,8 @@ class TrackerViewModel(
     }
 
     fun itemReordered(from: Int, to: Int) {
+        if (to == _items.value.size) return
+
         viewModelScope.launch {
             val newList =
                 _items
@@ -400,7 +402,7 @@ class TrackerViewModel(
                     .filterIsInstance<TrackedThing>()
                     .toMutableList()
                     .apply {
-                        add(from, removeAt(to))
+                        add(to, removeAt(from))
                         forEachIndexed { index, item ->
                             item.index = index
                         }
