@@ -5,7 +5,7 @@ import com.feko.generictabletoprpg.R
 import com.feko.generictabletoprpg.common.OverviewViewModel
 import com.feko.generictabletoprpg.common.alertdialog.AlertDialogSubViewModel
 import com.feko.generictabletoprpg.common.composable.InputFieldData
-import com.feko.generictabletoprpg.export.IExportViewModelExtension
+import com.feko.generictabletoprpg.export.IExportSubViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,9 +15,8 @@ import kotlinx.coroutines.withContext
 
 class TrackerGroupViewModel(
     private val trackedThingGroupDao: TrackedThingGroupDao,
-    trackedThingGroupExportViewModel: IExportViewModelExtension<TrackedThingGroup>
-) : OverviewViewModel<TrackedThingGroup>(trackedThingGroupDao),
-    IExportViewModelExtension<TrackedThingGroup> by trackedThingGroupExportViewModel {
+    val export: IExportSubViewModel<TrackedThingGroup>
+) : OverviewViewModel<TrackedThingGroup>(trackedThingGroupDao) {
 
     val alertDialog = AlertDialogSubViewModel(viewModelScope)
     val exportButtonVisible: Flow<Boolean> =

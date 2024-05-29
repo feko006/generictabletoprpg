@@ -10,20 +10,20 @@ import kotlinx.coroutines.withContext
 import timber.log.Timber
 import java.io.OutputStream
 
-abstract class ExportViewModelExtension<T> : IExportViewModelExtension<T> {
+abstract class ExportSubViewModel<T> : IExportSubViewModel<T> {
     protected var exportState: ExportState<T> = ExportState.None
 
-    override val exportToastMessage: SharedFlow<Int>
+    override val toastMessage: SharedFlow<Int>
         get() = _exportToastMessage
     private val _exportToastMessage: MutableSharedFlow<Int> = MutableSharedFlow(0)
 
-    override fun exportCancelled() {
+    override fun notifyCancelled() {
         exportState = ExportState.None
     }
 
     override suspend fun exportData(outputStream: OutputStream?) {
         if (outputStream == null) {
-            exportFailed(NullPointerException("OutputStream is null."))
+            notifyFailed(NullPointerException("OutputStream is null."))
         } else {
             try {
                 exportDataInternal(outputStream)
@@ -32,7 +32,7 @@ abstract class ExportViewModelExtension<T> : IExportViewModelExtension<T> {
                     _exportToastMessage.emit(R.string.export_successful)
                 }
             } catch (e: Exception) {
-                exportFailed(e)
+                notifyFailed(e)
             }
             exportState = ExportState.None
         }
@@ -40,7 +40,7 @@ abstract class ExportViewModelExtension<T> : IExportViewModelExtension<T> {
 
     abstract suspend fun exportDataInternal(outputStream: OutputStream)
 
-    override fun exportFailed(e: Exception) {
+    override fun notifyFailed(e: Exception) {
         CoroutineScope(Dispatchers.Main).launch {
             Timber.e(e, "Export failed.")
             _exportToastMessage.emit(R.string.export_failed)
@@ -62,7 +62,7 @@ abstract class ExportViewModelExtension<T> : IExportViewModelExtension<T> {
         }
     }
 
-    override fun exportToastMessageConsumed() {
+    override fun toastMessageConsumed() {
         CoroutineScope(Dispatchers.Main).launch {
             _exportToastMessage.emit(0)
         }

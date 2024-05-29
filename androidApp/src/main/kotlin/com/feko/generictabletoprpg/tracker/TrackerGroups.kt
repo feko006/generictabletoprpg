@@ -72,7 +72,7 @@ fun TrackerGroupsScreen(
 ) {
     val viewModel: TrackerGroupViewModel = koinViewModel()
     val context = LocalContext.current
-    val exportToastMessageResource by viewModel.exportToastMessage.collectAsState(0)
+    val exportToastMessageResource by viewModel.export.toastMessage.collectAsState(0)
     if (exportToastMessageResource != 0) {
         Toast
             .makeText(
@@ -81,7 +81,7 @@ fun TrackerGroupsScreen(
                 Toast.LENGTH_SHORT
             )
             .show()
-        viewModel.exportToastMessageConsumed()
+        viewModel.export.toastMessageConsumed()
     }
     val pickDirectoryLauncher =
         rememberLauncherForActivityResult(
@@ -96,7 +96,7 @@ fun TrackerGroupsScreen(
             ButtonState(
                 painter = painterResource(R.drawable.send_to_mobile)
             ) {
-                viewModel.exportAllRequested()
+                viewModel.export.exportAllRequested()
                 pickDirectoryLauncher.launch(null)
             }
         )
@@ -142,22 +142,22 @@ private fun onDirectorySelected(
     context: Context
 ) {
     if (directoryUri == null) {
-        viewModel.exportCancelled()
+        viewModel.export.notifyCancelled()
         return
     }
     try {
         val directoryFile = DocumentFile.fromTreeUri(context, directoryUri)
-        val (mimeType, displayName) = viewModel.getExportedFileData()
+        val (mimeType, displayName) = viewModel.export.getExportedFileData()
         val newFile = directoryFile!!.createFile(mimeType, displayName)
         CoroutineScope(Dispatchers.Default).launch {
             context.contentResolver
                 .openOutputStream(newFile!!.uri)
                 .use {
-                    viewModel.exportData(it)
+                    viewModel.export.exportData(it)
                 }
         }
     } catch (e: Exception) {
-        viewModel.exportFailed(e)
+        viewModel.export.notifyFailed(e)
     }
 }
 
@@ -173,7 +173,7 @@ fun OverviewListItem(
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text((item as INamed).name, modifier = Modifier.weight(1f))
                 IconButton(onClick = {
-                    viewModel.exportSingleRequested(item)
+                    viewModel.export.exportSingleRequested(item)
                     pickDirectoryLauncher.launch(null)
                 }) {
                     Icon(painterResource(R.drawable.send_to_mobile), "")

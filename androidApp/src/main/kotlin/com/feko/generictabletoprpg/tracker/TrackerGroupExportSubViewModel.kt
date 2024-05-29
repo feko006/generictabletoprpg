@@ -4,17 +4,17 @@ import com.feko.generictabletoprpg.app.AppModel
 import com.feko.generictabletoprpg.common.IGetAll
 import com.feko.generictabletoprpg.common.IGetAllByParentSortedByIndex
 import com.feko.generictabletoprpg.export.ExportState
-import com.feko.generictabletoprpg.export.ExportViewModelExtension
+import com.feko.generictabletoprpg.export.ExportSubViewModel
 import com.feko.generictabletoprpg.import.IJson
 import java.io.OutputStream
 import java.text.SimpleDateFormat
 import java.util.Date
 
-class TrackerGroupExportViewModelExtension(
+class TrackerGroupExportSubViewModel(
     private val getAllTrackedThingGroups: IGetAll<TrackedThingGroup>,
     private val getAllTrackedThings: IGetAllByParentSortedByIndex<TrackedThing>,
     private val json: IJson
-) : ExportViewModelExtension<TrackedThingGroup>() {
+) : ExportSubViewModel<TrackedThingGroup>() {
 
     override fun getExportedFileData(): Pair<String, String> {
         val dereferencedState = exportState

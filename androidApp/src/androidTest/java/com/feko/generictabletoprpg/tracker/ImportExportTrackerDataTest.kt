@@ -26,7 +26,7 @@ class ImportExportTrackerDataTest {
     private lateinit var db: GenericTabletopRpgDatabase
     private lateinit var trackedThingGroupDao: TrackedThingGroupDao
     private lateinit var trackedThingDao: TrackedThingDao
-    private lateinit var trackerGroupExportViewModelExtension: TrackerGroupExportViewModelExtension
+    private lateinit var exportSubViewModel: TrackerGroupExportSubViewModel
     private lateinit var jsonImportAllUseCase: JsonImportAllUseCase
 
     @Before
@@ -41,8 +41,8 @@ class ImportExportTrackerDataTest {
         trackedThingGroupDao = db.trackedThingGroupDao()
         trackedThingDao = db.trackedThingDao()
         val json = MoshiJson()
-        trackerGroupExportViewModelExtension =
-            TrackerGroupExportViewModelExtension(
+        exportSubViewModel =
+            TrackerGroupExportSubViewModel(
                 trackedThingGroupDao,
                 trackedThingDao,
                 json
@@ -168,9 +168,9 @@ class ImportExportTrackerDataTest {
         val outputStream = ByteArrayOutputStream()
 
         // When
-        trackerGroupExportViewModelExtension.exportAllRequested()
+        exportSubViewModel.exportAllRequested()
         delay(timeMillis = 100) // The user needs to pick a file, so a delay is simulated
-        trackerGroupExportViewModelExtension.exportData(outputStream)
+        exportSubViewModel.exportData(outputStream)
         jsonImportAllUseCase.import(outputStream.toString())
 
         // Then

@@ -56,7 +56,7 @@ import com.feko.generictabletoprpg.spell.SpellDao
 import com.feko.generictabletoprpg.spell.SpellDetailsViewModel
 import com.feko.generictabletoprpg.tracker.TrackedThingDao
 import com.feko.generictabletoprpg.tracker.TrackedThingGroupDao
-import com.feko.generictabletoprpg.tracker.TrackerGroupExportViewModelExtension
+import com.feko.generictabletoprpg.tracker.TrackerGroupExportSubViewModel
 import com.feko.generictabletoprpg.tracker.TrackerGroupViewModel
 import com.feko.generictabletoprpg.tracker.TrackerViewModel
 import com.feko.generictabletoprpg.weapon.WeaponDao
@@ -144,13 +144,13 @@ val armorModule = module {
 val trackedThingGroupModule = module {
     single { get<GenericTabletopRpgDatabase>().trackedThingGroupDao() }
     single {
-        TrackerGroupExportViewModelExtension(
+        TrackerGroupExportSubViewModel(
             get<TrackedThingGroupDao>(),
             get<TrackedThingDao>(),
             get()
         )
     }
-    viewModel { TrackerGroupViewModel(get(), get<TrackerGroupExportViewModelExtension>()) }
+    viewModel { TrackerGroupViewModel(get(), get<TrackerGroupExportSubViewModel>()) }
 }
 
 val trackedThingModule = module {
