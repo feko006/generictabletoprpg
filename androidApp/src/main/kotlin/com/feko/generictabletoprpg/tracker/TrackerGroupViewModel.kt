@@ -2,6 +2,7 @@ package com.feko.generictabletoprpg.tracker
 
 import androidx.lifecycle.viewModelScope
 import com.feko.generictabletoprpg.R
+import com.feko.generictabletoprpg.com.feko.generictabletoprpg.common.alertdialog.IAlertDialogSubViewModel
 import com.feko.generictabletoprpg.common.OverviewViewModel
 import com.feko.generictabletoprpg.common.alertdialog.AlertDialogSubViewModel
 import com.feko.generictabletoprpg.common.composable.InputFieldData
@@ -18,7 +19,8 @@ class TrackerGroupViewModel(
     val export: IExportSubViewModel<TrackedThingGroup>
 ) : OverviewViewModel<TrackedThingGroup>(trackedThingGroupDao) {
 
-    val alertDialog = AlertDialogSubViewModel(viewModelScope)
+    private val _alertDialog = AlertDialogSubViewModel(viewModelScope)
+    val alertDialog: IAlertDialogSubViewModel = _alertDialog
     val exportButtonVisible: Flow<Boolean> =
         _items.map { it.any() }
     val groupName = MutableStateFlow(InputFieldData.EMPTY)
@@ -31,32 +33,32 @@ class TrackerGroupViewModel(
     fun newTrackedThingGroupRequested() {
         viewModelScope.launch {
             dialogType = DialogType.NewOrUpdate
-            alertDialog.titleResource = R.string.create_new_tracked_group_dialog_title
+            _alertDialog.titleResource = R.string.create_new_tracked_group_dialog_title
             groupId = 0
             groupName.emit(InputFieldData.EMPTY)
             confirmButtonEnabled.emit(false)
-            alertDialog.show()
+            _alertDialog.show()
         }
     }
 
     fun editItemRequested(item: TrackedThingGroup) {
         viewModelScope.launch {
             dialogType = DialogType.NewOrUpdate
-            alertDialog.titleResource = R.string.edit_tracked_group_dialog_title
+            _alertDialog.titleResource = R.string.edit_tracked_group_dialog_title
             groupId = item.id
             groupName.emit(InputFieldData(item.name, true))
             confirmButtonEnabled.emit(true)
-            alertDialog.show()
+            _alertDialog.show()
         }
     }
 
     fun deleteItemRequested(item: TrackedThingGroup) {
         viewModelScope.launch {
             dialogType = DialogType.Delete
-            alertDialog.titleResource = R.string.delete_tracked_group_dialog_title
+            _alertDialog.titleResource = R.string.delete_tracked_group_dialog_title
             groupId = item.id
             confirmButtonEnabled.emit(true)
-            alertDialog.show()
+            _alertDialog.show()
         }
     }
 
@@ -79,7 +81,7 @@ class TrackerGroupViewModel(
                 DialogType.NewOrUpdate -> insertOrUpdateGroup()
                 DialogType.Delete -> deleteGroup()
             }
-            alertDialog.hide()
+            _alertDialog.hide()
         }
     }
 

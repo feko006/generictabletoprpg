@@ -1,6 +1,7 @@
 package com.feko.generictabletoprpg.common.alertdialog
 
 import androidx.annotation.StringRes
+import com.feko.generictabletoprpg.com.feko.generictabletoprpg.common.alertdialog.IAlertDialogSubViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -8,23 +9,23 @@ import kotlinx.coroutines.launch
 
 class AlertDialogSubViewModel(
     private val coroutineScope: CoroutineScope
-) {
+) : IAlertDialogSubViewModel {
     @StringRes
-    var titleResource: Int = 0
+    override var titleResource: Int = 0
 
-    val isVisible: Flow<Boolean>
-        get() = _isDialogVisible
-    val _isDialogVisible: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    override val isVisible: Flow<Boolean>
+        get() = _isVisible
+    val _isVisible: MutableStateFlow<Boolean> = MutableStateFlow(false)
 
     suspend fun hide() {
-        _isDialogVisible.emit(false)
+        _isVisible.emit(false)
     }
 
     suspend fun show() {
-        _isDialogVisible.emit(true)
+        _isVisible.emit(true)
     }
 
-    fun dismiss() {
+    override fun dismiss() {
         coroutineScope.launch { hide() }
     }
 }
