@@ -10,8 +10,6 @@ import com.feko.generictabletoprpg.armor.ArmorDao
 import com.feko.generictabletoprpg.armor.ArmorDetailsViewModel
 import com.feko.generictabletoprpg.common.IUserPreferences
 import com.feko.generictabletoprpg.common.UserPreferences
-import com.feko.generictabletoprpg.common.filter.FilterViewModelExtension
-import com.feko.generictabletoprpg.common.filter.IMutableFilterViewModelExtension
 import com.feko.generictabletoprpg.condition.ConditionDao
 import com.feko.generictabletoprpg.condition.ConditionDetailsViewModel
 import com.feko.generictabletoprpg.disease.DiseaseDao
@@ -82,9 +80,6 @@ val commonModule = module {
 
     // Use-cases
     single<ILoadBaseContentUseCase> { LoadBaseContentUseCase(get(), get(), get(), get()) }
-
-    // ViewModel extensions
-    factory<IMutableFilterViewModelExtension> { FilterViewModelExtension() }
 
     // VMs
     viewModel { AppViewModel(get()) }
@@ -227,7 +222,7 @@ val searchAllModule = module {
             )
         )
     }
-    viewModel { SearchAllViewModel(get(), get()) }
+    viewModel { SearchAllViewModel(get()) }
 }
 
 val filterModule = module {

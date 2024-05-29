@@ -12,7 +12,6 @@ import com.feko.generictabletoprpg.RootDestinations
 import com.feko.generictabletoprpg.action.Action
 import com.feko.generictabletoprpg.ammunition.Ammunition
 import com.feko.generictabletoprpg.armor.Armor
-import com.feko.generictabletoprpg.com.feko.generictabletoprpg.common.filter.filterUpdateRequested
 import com.feko.generictabletoprpg.common.IIdentifiable
 import com.feko.generictabletoprpg.common.composable.OverviewListItem
 import com.feko.generictabletoprpg.common.composable.OverviewScreen
@@ -44,15 +43,15 @@ fun SearchAllScreen(
     val refreshesPending by appViewModel.refreshesPending.collectAsState()
     val viewModel: SearchAllViewModel = koinViewModel()
     val navBarActions = mutableListOf<ButtonState>()
-    val filterOffButtonVisible by viewModel.filterOffButtonVisible.collectAsState(false)
+    val filterOffButtonVisible by viewModel.filter.offButtonVisible.collectAsState(false)
     if (filterOffButtonVisible) {
         navBarActions.add(
             ButtonState(painter = painterResource(R.drawable.filter_list_off)) {
-                viewModel.filterUpdateRequested(null)
+                viewModel.filter.resetFilter()
             }
         )
     }
-    val filterButtonVisible by viewModel.filterButtonVisible.collectAsState(false)
+    val filterButtonVisible by viewModel.filter.isButtonVisible.collectAsState(false)
     if (filterButtonVisible) {
         navBarActions.add(
             ButtonState(painter = painterResource(R.drawable.filter_list)) {
@@ -84,9 +83,9 @@ fun SearchAllScreen(
         isBottomSheetVisible = isBottomSheetVisible.value,
         onBottomSheetHidden = { viewModel.bottomSheetHidden() },
         bottomSheetContent = {
-            val filter = viewModel.filter.collectAsState()
+            val filter = viewModel.filter.activeFilter.collectAsState()
             Filter(filter.value) { updatedFilter ->
-                viewModel.filterUpdateRequested(updatedFilter)
+                viewModel.filter.filterUpdated(updatedFilter)
             }
         }
     )
