@@ -10,8 +10,6 @@ import com.feko.generictabletoprpg.armor.ArmorDao
 import com.feko.generictabletoprpg.armor.ArmorDetailsViewModel
 import com.feko.generictabletoprpg.common.IUserPreferences
 import com.feko.generictabletoprpg.common.UserPreferences
-import com.feko.generictabletoprpg.common.fabdropdown.FabDropdownViewModelExtension
-import com.feko.generictabletoprpg.common.fabdropdown.IMutableFabDropdownViewModelExtension
 import com.feko.generictabletoprpg.common.filter.FilterViewModelExtension
 import com.feko.generictabletoprpg.common.filter.IMutableFilterViewModelExtension
 import com.feko.generictabletoprpg.condition.ConditionDao
@@ -86,7 +84,6 @@ val commonModule = module {
     single<ILoadBaseContentUseCase> { LoadBaseContentUseCase(get(), get(), get(), get()) }
 
     // ViewModel extensions
-    factory<IMutableFabDropdownViewModelExtension> { FabDropdownViewModelExtension() }
     factory<IMutableFilterViewModelExtension> { FilterViewModelExtension() }
 
     // VMs
@@ -156,7 +153,7 @@ val trackedThingGroupModule = module {
 val trackedThingModule = module {
     single { get<GenericTabletopRpgDatabase>().trackedThingDao() }
 
-    viewModel { params -> TrackerViewModel(params.get(), params.get(), get(), get(), get()) }
+    viewModel { params -> TrackerViewModel(params.get(), params.get(), get(), get()) }
 }
 
 val importModule = module {

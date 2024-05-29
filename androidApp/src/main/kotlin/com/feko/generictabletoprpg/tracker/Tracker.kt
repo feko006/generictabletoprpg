@@ -62,8 +62,6 @@ import com.feko.generictabletoprpg.R
 import com.feko.generictabletoprpg.common.composable.AddFABButtonWithDropdown
 import com.feko.generictabletoprpg.common.composable.DialogTitle
 import com.feko.generictabletoprpg.common.composable.OverviewScreen
-import com.feko.generictabletoprpg.common.fabdropdown.onDismissFabDropdownRequested
-import com.feko.generictabletoprpg.common.fabdropdown.toggleFabDropdownRequested
 import com.feko.generictabletoprpg.searchall.getNavRouteInternal
 import com.feko.generictabletoprpg.searchall.getUniqueListItemKey
 import com.feko.generictabletoprpg.theme.Typography
@@ -101,12 +99,12 @@ fun TrackerScreen(
             getUniqueListItemKey(it)
         },
         fabButton = { modifier ->
-            val expanded by viewModel.isFabDropdownMenuExpanded.collectAsState(false)
+            val expanded by viewModel.fabDropdown.isMenuExpanded.collectAsState(false)
             AddFABButtonWithDropdown(
                 expanded = expanded,
                 modifier = modifier,
-                onDismissRequest = { viewModel.onDismissFabDropdownRequested() },
-                onFabClicked = { viewModel.toggleFabDropdownRequested() }
+                onDismissRequest = { viewModel.fabDropdown.dismiss() },
+                onFabClicked = { viewModel.fabDropdown.toggleFabDropdownRequested() }
             ) {
                 DropdownMenuContent(viewModel)
             }
