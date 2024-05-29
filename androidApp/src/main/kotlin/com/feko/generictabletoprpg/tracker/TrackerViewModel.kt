@@ -6,8 +6,7 @@ import com.feko.generictabletoprpg.R
 import com.feko.generictabletoprpg.common.INamed
 import com.feko.generictabletoprpg.common.OverviewViewModel
 import com.feko.generictabletoprpg.common.SmartNamedSearchComparator
-import com.feko.generictabletoprpg.common.alertdialog.IAlertDialogViewModelExtension
-import com.feko.generictabletoprpg.common.alertdialog.IMutableAlertDialogViewModelExtension
+import com.feko.generictabletoprpg.common.alertdialog.AlertDialogSubViewModel
 import com.feko.generictabletoprpg.common.composable.InputFieldData
 import com.feko.generictabletoprpg.common.fabdropdown.IFabDropdownViewModelExtension
 import com.feko.generictabletoprpg.common.fabdropdown.IMutableFabDropdownViewModelExtension
@@ -23,12 +22,12 @@ class TrackerViewModel(
     private val groupId: Long,
     private val groupName: String,
     private val trackedThingDao: TrackedThingDao,
-    private val alertDialogViewModelExtension: IMutableAlertDialogViewModelExtension,
     private val fabDropdownViewModelExtension: IMutableFabDropdownViewModelExtension,
     searchAllUseCase: ISearchAllUseCase
 ) : OverviewViewModel<Any>(trackedThingDao),
-    IAlertDialogViewModelExtension by alertDialogViewModelExtension,
     IFabDropdownViewModelExtension by fabDropdownViewModelExtension {
+
+    val alertDialog = AlertDialogSubViewModel(viewModelScope)
     val editedTrackedThingName = MutableStateFlow(InputFieldData.EMPTY)
     val editedTrackedThingSpellSlotLevel = MutableStateFlow(InputFieldData.EMPTY)
     val editedTrackedThingValue = MutableStateFlow(InputFieldData.EMPTY)
@@ -66,7 +65,7 @@ class TrackerViewModel(
 
     fun showCreateDialog(type: TrackedThing.Type) {
         viewModelScope.launch {
-            dialogTitleResource = type.nameResource
+            alertDialog.titleResource = type.nameResource
             dialogType = DialogType.Create
             editedTrackedThing = TrackedThing.emptyOfType(type, _items.value.size, groupId)
             editedTrackedThingName.emit(InputFieldData.EMPTY)
@@ -75,13 +74,13 @@ class TrackerViewModel(
             editedTrackedThingType.emit(type)
             validateModel()
             fabDropdownViewModelExtension.dismissFabDropdown()
-            alertDialogViewModelExtension.showAlertDialog()
+            alertDialog.show()
         }
     }
 
     fun showEditDialog(item: TrackedThing) {
         viewModelScope.launch {
-            dialogTitleResource = R.string.edit
+            alertDialog.titleResource = R.string.edit
             dialogType = DialogType.Edit
             val copy = item.copy()
             editedTrackedThing = copy
@@ -98,7 +97,7 @@ class TrackerViewModel(
             editedTrackedThingType.emit(copy.type)
             validateModel()
             fabDropdownViewModelExtension.dismissFabDropdown()
-            alertDialogViewModelExtension.showAlertDialog()
+            alertDialog.show()
         }
     }
 
@@ -138,7 +137,7 @@ class TrackerViewModel(
                 editedTrackedThing.id = id
             }
             addItem(editedTrackedThing)
-            alertDialogViewModelExtension.hideAlertDialog()
+            alertDialog.hide()
         }
     }
 
@@ -153,7 +152,7 @@ class TrackerViewModel(
                 trackedThingDao.insertOrUpdate(trackedThingToUpdate)
             }
             replaceItem(trackedThingToUpdate)
-            alertDialogViewModelExtension.hideAlertDialog()
+            alertDialog.hide()
         }
     }
 
@@ -169,7 +168,7 @@ class TrackerViewModel(
                 trackedThingDao.delete(editedTrackedThing.id)
             }
             removeItem(editedTrackedThing)
-            alertDialogViewModelExtension.hideAlertDialog()
+            alertDialog.hide()
         }
     }
 
@@ -189,7 +188,7 @@ class TrackerViewModel(
             withContext(Dispatchers.Default) {
                 trackedThingDao.insertOrUpdate(editedTrackedThing)
             }
-            alertDialogViewModelExtension.hideAlertDialog()
+            alertDialog.hide()
             replaceItem(editedTrackedThing)
         }
     }
@@ -208,7 +207,7 @@ class TrackerViewModel(
             withContext(Dispatchers.Default) {
                 trackedThingDao.insertOrUpdate(editedTrackedThing)
             }
-            alertDialogViewModelExtension.hideAlertDialog()
+            alertDialog.hide()
             replaceItem(editedTrackedThing)
         }
     }
@@ -221,7 +220,7 @@ class TrackerViewModel(
             withContext(Dispatchers.Default) {
                 trackedThingDao.insertOrUpdate(editedTrackedThing)
             }
-            alertDialogViewModelExtension.hideAlertDialog()
+            alertDialog.hide()
             replaceItem(editedTrackedThing)
         }
     }
@@ -233,7 +232,7 @@ class TrackerViewModel(
                 .forEach {
                     resetValueToDefault(it)
                 }
-            alertDialogViewModelExtension.hideAlertDialog()
+            alertDialog.hide()
         }
     }
 
@@ -356,11 +355,11 @@ class TrackerViewModel(
     ) {
         viewModelScope.launch {
             dialogType = type
-            dialogTitleResource = titleResource
+            alertDialog.titleResource = titleResource
             editedTrackedThing = item.copy()
             editedTrackedThingValue.emit(InputFieldData.EMPTY)
             validateModel()
-            alertDialogViewModelExtension.showAlertDialog()
+            alertDialog.show()
         }
     }
 
@@ -378,17 +377,17 @@ class TrackerViewModel(
     fun deleteItemRequested(item: TrackedThing) {
         viewModelScope.launch {
             dialogType = DialogType.ConfirmDeletion
-            dialogTitleResource = R.string.delete_tracked_thing_dialog_title
+            alertDialog.titleResource = R.string.delete_tracked_thing_dialog_title
             editedTrackedThing = item
-            alertDialogViewModelExtension.showAlertDialog()
+            alertDialog.show()
         }
     }
 
     fun refreshAllRequested() {
         viewModelScope.launch {
             dialogType = DialogType.RefreshAll
-            dialogTitleResource = R.string.refresh_all_tracked_things_dialog_title
-            alertDialogViewModelExtension.showAlertDialog()
+            alertDialog.titleResource = R.string.refresh_all_tracked_things_dialog_title
+            alertDialog.show()
         }
     }
 

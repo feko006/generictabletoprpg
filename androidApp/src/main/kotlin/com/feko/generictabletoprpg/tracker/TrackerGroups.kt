@@ -20,7 +20,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -51,7 +51,6 @@ import com.feko.generictabletoprpg.ButtonState
 import com.feko.generictabletoprpg.R
 import com.feko.generictabletoprpg.RootDestinations
 import com.feko.generictabletoprpg.common.INamed
-import com.feko.generictabletoprpg.common.alertdialog.onAlertDialogDismissRequested
 import com.feko.generictabletoprpg.common.composable.AddFABButton
 import com.feko.generictabletoprpg.common.composable.DialogTitle
 import com.feko.generictabletoprpg.common.composable.OverviewScreen
@@ -114,7 +113,7 @@ fun TrackerGroupsScreen(
         viewModel.refreshItems()
         appViewModel.itemsRefreshed(RootDestinations.Tracker)
     }
-    val isAlertDialogVisible by viewModel.isDialogVisible.collectAsState(false)
+    val isAlertDialogVisible by viewModel.alertDialog.isVisible.collectAsState(false)
     OverviewScreen(
         viewModel = viewModel,
         listItem = { item, _, _ ->
@@ -197,8 +196,8 @@ fun OverviewListItem(
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
 fun AlertDialogComposable(viewModel: TrackerGroupViewModel) {
-    AlertDialog(
-        onDismissRequest = { viewModel.onAlertDialogDismissRequested() },
+    BasicAlertDialog(
+        onDismissRequest = { viewModel.alertDialog.dismiss() },
         properties = DialogProperties()
     ) {
         Card {
@@ -206,7 +205,7 @@ fun AlertDialogComposable(viewModel: TrackerGroupViewModel) {
                 Modifier.padding(16.dp),
                 Arrangement.spacedBy(16.dp)
             ) {
-                DialogTitle(viewModel.dialogTitleResource)
+                DialogTitle(viewModel.alertDialog.titleResource)
                 val focusRequester = remember { FocusRequester() }
                 val nameInputData by viewModel.groupName.collectAsState()
                 if (viewModel.dialogType == TrackerGroupViewModel.DialogType.NewOrUpdate) {
@@ -243,7 +242,7 @@ fun AlertDialogComposable(viewModel: TrackerGroupViewModel) {
                     Spacer(Modifier.weight(1f))
                     if (viewModel.dialogType == TrackerGroupViewModel.DialogType.Delete) {
                         TextButton(
-                            onClick = { viewModel.onAlertDialogDismissRequested() },
+                            onClick = { viewModel.alertDialog.dismiss() },
                             enabled = true,
                             modifier = Modifier.wrapContentWidth()
                         ) {

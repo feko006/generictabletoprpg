@@ -25,7 +25,7 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Refresh
-import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -59,7 +59,6 @@ import androidx.compose.ui.window.DialogProperties
 import com.feko.generictabletoprpg.AppViewModel
 import com.feko.generictabletoprpg.ButtonState
 import com.feko.generictabletoprpg.R
-import com.feko.generictabletoprpg.common.alertdialog.onAlertDialogDismissRequested
 import com.feko.generictabletoprpg.common.composable.AddFABButtonWithDropdown
 import com.feko.generictabletoprpg.common.composable.DialogTitle
 import com.feko.generictabletoprpg.common.composable.OverviewScreen
@@ -92,7 +91,7 @@ fun TrackerScreen(
                 ButtonState(Icons.Default.Refresh) { viewModel.refreshAllRequested() }
             )
         )
-    val isAlertDialogVisible by viewModel.isDialogVisible.collectAsState(false)
+    val isAlertDialogVisible by viewModel.alertDialog.isVisible.collectAsState(false)
     OverviewScreen(
         viewModel = viewModel,
         listItem = { item, isDragged, state ->
@@ -373,7 +372,7 @@ private fun ItemActionsBase(
 @Composable
 fun DropdownMenuContent(viewModel: TrackerViewModel) {
     TrackedThing.Type
-        .values()
+        .entries
         .drop(1) // None is dropped
         .forEach { type ->
             DropdownMenuItem(
@@ -390,8 +389,8 @@ fun AlertDialogComposable(
     viewModel: TrackerViewModel,
     defaultName: String
 ) {
-    AlertDialog(
-        onDismissRequest = { viewModel.onAlertDialogDismissRequested() },
+    BasicAlertDialog(
+        onDismissRequest = { viewModel.alertDialog.dismiss() },
         properties = DialogProperties()
     ) {
         Card {
@@ -440,11 +439,11 @@ private fun ConfirmDialog(viewModel: TrackerViewModel) {
         Modifier.padding(16.dp),
         Arrangement.spacedBy(16.dp)
     ) {
-        DialogTitle(viewModel.dialogTitleResource)
+        DialogTitle(viewModel.alertDialog.titleResource)
         Row(horizontalArrangement = Arrangement.End) {
             Spacer(Modifier.weight(1f))
             TextButton(
-                onClick = { viewModel.onAlertDialogDismissRequested() },
+                onClick = { viewModel.alertDialog.dismiss() },
                 modifier = Modifier.wrapContentWidth()
             ) {
                 Text(stringResource(R.string.cancel))
@@ -482,7 +481,7 @@ private fun DialogBase(
         Modifier.padding(16.dp),
         Arrangement.spacedBy(16.dp)
     ) {
-        DialogTitle(viewModel.dialogTitleResource)
+        DialogTitle(viewModel.alertDialog.titleResource)
         inputFields()
         val buttonEnabled by viewModel.confirmButtonEnabled.collectAsState()
         TextButton(
@@ -500,6 +499,7 @@ private fun DialogBase(
 @Composable
 private fun NameTextField(
     viewModel: TrackerViewModel,
+    @Suppress("SameParameterValue")
     autoFocus: Boolean = false,
     defaultValue: String
 ) {
