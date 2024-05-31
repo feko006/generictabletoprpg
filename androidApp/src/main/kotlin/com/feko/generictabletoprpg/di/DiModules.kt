@@ -148,7 +148,7 @@ val trackedThingGroupModule = module {
 val trackedThingModule = module {
     single { get<GenericTabletopRpgDatabase>().trackedThingDao() }
 
-    viewModel { params -> TrackerViewModel(params.get(), params.get(), get(), get()) }
+    viewModel { params -> TrackerViewModel(params.get(), params.get(), get(), get(), get(), get()) }
 }
 
 val importModule = module {
@@ -222,7 +222,7 @@ val searchAllModule = module {
             )
         )
     }
-    viewModel { SearchAllViewModel(get()) }
+    viewModel { params -> SearchAllViewModel(params.getOrNull(), get()) }
 }
 
 val filterModule = module {

@@ -33,6 +33,7 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun Filter(
     filter: Filter?,
+    isTypeFixed: Boolean = false,
     onFilterUpdated: (Filter) -> Unit
 ) {
     val textFieldInitialValue =
@@ -45,6 +46,7 @@ fun Filter(
         Dropdown(
             textFieldValue,
             dropdownExpanded,
+            enabled = !isTypeFixed,
             onDropdownExpandedStateChanged = { dropdownExpanded = it }
         ) {
             appTypes.forEach {
@@ -222,24 +224,26 @@ fun StringFilterField(
     Dropdown(
         textFieldValue,
         dropdownExpanded,
+        enabled = true,
         onDropdownExpandedStateChanged = {
             dropdownExpanded = it
-        }
-    ) {
-        options.forEach { option ->
-            DropdownMenuItem(
-                text = { Text(option.toString()) },
-                onClick = onClick@{
-                    if (value == option) {
-                        return@onClick
+        },
+        {
+            options.forEach { option ->
+                DropdownMenuItem(
+                    text = { Text(option.toString()) },
+                    onClick = onClick@{
+                        if (value == option) {
+                            return@onClick
+                        }
+                        textFieldValue = option.toString()
+                        dropdownExpanded = false
+                        onValueChanged(option.toString())
                     }
-                    textFieldValue = option.toString()
-                    dropdownExpanded = false
-                    onValueChanged(option.toString())
-                }
-            )
+                )
+            }
         }
-    }
+    )
 }
 
 @Composable

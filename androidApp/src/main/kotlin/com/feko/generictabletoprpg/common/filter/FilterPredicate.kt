@@ -1,4 +1,4 @@
-package com.feko.generictabletoprpg.com.feko.generictabletoprpg.common.filter
+package com.feko.generictabletoprpg.common.filter
 
 import com.feko.generictabletoprpg.filters.Filter
 import com.feko.generictabletoprpg.filters.GenericFilter

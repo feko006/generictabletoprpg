@@ -1,8 +1,11 @@
 package com.feko.generictabletoprpg.searchall
 
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import com.feko.generictabletoprpg.AppViewModel
@@ -27,21 +30,27 @@ import com.feko.generictabletoprpg.destinations.WeaponDetailsScreenDestination
 import com.feko.generictabletoprpg.disease.Disease
 import com.feko.generictabletoprpg.feat.Feat
 import com.feko.generictabletoprpg.filters.Filter
+import com.feko.generictabletoprpg.filters.asFilter
 import com.feko.generictabletoprpg.spell.Spell
 import com.feko.generictabletoprpg.weapon.Weapon
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import com.ramcosta.composedestinations.result.ResultBackNavigator
 import com.ramcosta.composedestinations.spec.Direction
 import org.koin.androidx.compose.koinViewModel
+import org.koin.core.parameter.parametersOf
 
 @Destination
 @Composable
 fun SearchAllScreen(
+    defaultFilter: Int? = null,
+    startedForResult: Boolean = false,
+    resultNavigator: ResultBackNavigator<Long>,
     navigator: DestinationsNavigator,
     appViewModel: AppViewModel
 ) {
     val refreshesPending by appViewModel.refreshesPending.collectAsState()
-    val viewModel: SearchAllViewModel = koinViewModel()
+    val viewModel: SearchAllViewModel = koinViewModel { parametersOf(defaultFilter?.asFilter()) }
     val navBarActions = mutableListOf<ButtonState>()
     val filterOffButtonVisible by viewModel.filter.offButtonVisible.collectAsState(false)
     if (filterOffButtonVisible) {
@@ -74,9 +83,17 @@ fun SearchAllScreen(
     OverviewScreen(
         viewModel,
         listItem = { item, _, _ ->
-            OverviewListItem(item) {
-                navigator.navigate(getNavRouteInternal(item))
-            }
+            OverviewListItem(
+                item,
+                Modifier
+                    .fillMaxWidth()
+                    .clickable {
+                        if (startedForResult) {
+                            resultNavigator.navigateBack((item as IIdentifiable).id)
+                        } else {
+                            navigator.navigate(getNavRouteInternal(item))
+                        }
+                    })
         },
         uniqueListItemKey = { getUniqueListItemKey(it) },
         searchFieldHintResource = R.string.search_everywhere,
@@ -84,7 +101,10 @@ fun SearchAllScreen(
         onBottomSheetHidden = { viewModel.bottomSheetHidden() },
         bottomSheetContent = {
             val filter = viewModel.filter.activeFilter.collectAsState()
-            Filter(filter.value) { updatedFilter ->
+            Filter(
+                filter.value,
+                isTypeFixed = startedForResult
+            ) { updatedFilter ->
                 viewModel.filter.filterUpdated(updatedFilter)
             }
         }

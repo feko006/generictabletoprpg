@@ -1,7 +1,6 @@
 package com.feko.generictabletoprpg.common.composable
 
 import androidx.annotation.StringRes
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -25,6 +24,8 @@ import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemColors
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -41,6 +42,7 @@ import com.feko.generictabletoprpg.R
 import com.feko.generictabletoprpg.common.IIdentifiable
 import com.feko.generictabletoprpg.common.INamed
 import com.feko.generictabletoprpg.common.OverviewViewModel
+import com.feko.generictabletoprpg.spell.Spell
 import com.feko.generictabletoprpg.theme.Typography
 import kotlinx.coroutines.launch
 import org.burnoutcrew.reorderable.ItemPosition
@@ -200,14 +202,19 @@ private fun EmptyList() {
 @Composable
 fun <T> OverviewListItem(
     item: T,
-    navigateToDetails: () -> Unit
+    modifier: Modifier = Modifier,
+    colors: ListItemColors = ListItemDefaults.colors()
 ) {
     ListItem(
         headlineContent = {
             Text((item as INamed).name)
         },
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(onClick = navigateToDetails)
+        supportingContent = {
+            if (item is Spell) {
+                Text("${stringResource(R.string.level)} ${item.level}, ${item.school}")
+            }
+        },
+        modifier = modifier,
+        colors = colors
     )
 }

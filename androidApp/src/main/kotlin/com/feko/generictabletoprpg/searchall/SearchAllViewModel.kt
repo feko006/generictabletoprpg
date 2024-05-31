@@ -11,10 +11,11 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class SearchAllViewModel(
+    defaultFilter: Filter? = null,
     private val searchAllUseCase: ISearchAllUseCase
 ) : OverviewViewModel<Any>(null) {
 
-    private val _filter = FilterSubViewModel(viewModelScope)
+    private val _filter = FilterSubViewModel(viewModelScope, defaultFilter)
     val filter: IFilterSubViewModel = _filter
 
     private val _isBottomSheetVisible = MutableStateFlow(false)

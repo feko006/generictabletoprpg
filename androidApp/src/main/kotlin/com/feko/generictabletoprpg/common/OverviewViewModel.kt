@@ -2,7 +2,7 @@ package com.feko.generictabletoprpg.common
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.feko.generictabletoprpg.com.feko.generictabletoprpg.common.filter.FilterPredicate
+import com.feko.generictabletoprpg.common.filter.FilterPredicate
 import com.feko.generictabletoprpg.filters.Filter
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow

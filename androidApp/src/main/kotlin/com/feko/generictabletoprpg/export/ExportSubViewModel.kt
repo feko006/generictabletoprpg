@@ -1,10 +1,9 @@
 package com.feko.generictabletoprpg.export
 
 import com.feko.generictabletoprpg.R
+import com.feko.generictabletoprpg.common.toast.ToastSubViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import timber.log.Timber
@@ -13,9 +12,8 @@ import java.io.OutputStream
 abstract class ExportSubViewModel<T> : IExportSubViewModel<T> {
     protected var exportState: ExportState<T> = ExportState.None
 
-    override val toastMessage: SharedFlow<Int>
-        get() = _exportToastMessage
-    private val _exportToastMessage: MutableSharedFlow<Int> = MutableSharedFlow(0)
+    private val _toast = ToastSubViewModel()
+    override val toast = _toast
 
     override fun notifyCancelled() {
         exportState = ExportState.None
@@ -29,7 +27,7 @@ abstract class ExportSubViewModel<T> : IExportSubViewModel<T> {
                 exportDataInternal(outputStream)
                 withContext(Dispatchers.Main) {
                     Timber.d("Export successful.")
-                    _exportToastMessage.emit(R.string.export_successful)
+                    _toast._message.emit(R.string.export_successful)
                 }
             } catch (e: Exception) {
                 notifyFailed(e)
@@ -43,7 +41,7 @@ abstract class ExportSubViewModel<T> : IExportSubViewModel<T> {
     override fun notifyFailed(e: Exception) {
         CoroutineScope(Dispatchers.Main).launch {
             Timber.e(e, "Export failed.")
-            _exportToastMessage.emit(R.string.export_failed)
+            _toast._message.emit(R.string.export_failed)
             exportState = ExportState.None
         }
     }
@@ -51,20 +49,14 @@ abstract class ExportSubViewModel<T> : IExportSubViewModel<T> {
     override fun exportAllRequested() {
         CoroutineScope(Dispatchers.Main).launch {
             exportState = ExportState.ExportingAll
-            _exportToastMessage.emit(R.string.export_location_hint)
+            _toast._message.emit(R.string.export_location_hint)
         }
     }
 
     override fun exportSingleRequested(item: T) {
         CoroutineScope(Dispatchers.Main).launch {
             exportState = ExportState.ExportingSingle(item)
-            _exportToastMessage.emit(R.string.export_location_hint)
-        }
-    }
-
-    override fun toastMessageConsumed() {
-        CoroutineScope(Dispatchers.Main).launch {
-            _exportToastMessage.emit(0)
+            _toast._message.emit(R.string.export_location_hint)
         }
     }
 }

@@ -1,17 +1,19 @@
 package com.feko.generictabletoprpg.common.alertdialog
 
 import androidx.annotation.StringRes
-import com.feko.generictabletoprpg.com.feko.generictabletoprpg.common.alertdialog.IAlertDialogSubViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
 class AlertDialogSubViewModel(
-    private val coroutineScope: CoroutineScope
+    private val coroutineScope: CoroutineScope,
+    private val onDismissed: () -> Unit = {}
 ) : IAlertDialogSubViewModel {
     @StringRes
-    override var titleResource: Int = 0
+    var _titleResource: Int = 0
+    override val titleResource
+        get() = _titleResource
 
     override val isVisible: Flow<Boolean>
         get() = _isVisible
@@ -26,6 +28,9 @@ class AlertDialogSubViewModel(
     }
 
     override fun dismiss() {
-        coroutineScope.launch { hide() }
+        coroutineScope.launch {
+            hide()
+            onDismissed()
+        }
     }
 }

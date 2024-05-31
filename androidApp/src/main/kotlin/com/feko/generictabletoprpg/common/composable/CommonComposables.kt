@@ -10,7 +10,17 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.*
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -99,12 +109,13 @@ fun TextWithLabel(
 fun Dropdown(
     textFieldValue: String,
     dropdownExpanded: Boolean,
+    enabled: Boolean,
     onDropdownExpandedStateChanged: (Boolean) -> Unit,
     dropdownMenuContent: @Composable () -> Unit
 ) {
     ExposedDropdownMenuBox(
         expanded = dropdownExpanded,
-        onExpandedChange = { onDropdownExpandedStateChanged(!dropdownExpanded) },
+        onExpandedChange = { onDropdownExpandedStateChanged(enabled && !dropdownExpanded) },
         modifier = Modifier.fillMaxWidth()
     ) {
         OutlinedTextField(

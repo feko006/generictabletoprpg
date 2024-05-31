@@ -72,7 +72,7 @@ fun TrackerGroupsScreen(
 ) {
     val viewModel: TrackerGroupViewModel = koinViewModel()
     val context = LocalContext.current
-    val exportToastMessageResource by viewModel.export.toastMessage.collectAsState(0)
+    val exportToastMessageResource by viewModel.export.toast.message.collectAsState(0)
     if (exportToastMessageResource != 0) {
         Toast
             .makeText(
@@ -81,7 +81,7 @@ fun TrackerGroupsScreen(
                 Toast.LENGTH_SHORT
             )
             .show()
-        viewModel.export.toastMessageConsumed()
+        viewModel.export.toast.messageConsumed()
     }
     val pickDirectoryLauncher =
         rememberLauncherForActivityResult(

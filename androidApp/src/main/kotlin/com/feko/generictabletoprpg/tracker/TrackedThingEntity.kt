@@ -45,7 +45,7 @@ data class TrackedThingEntity(
 
     override fun toCoreModel(): TrackedThing {
         val trackedThing =
-            when (TrackedThing.Type.values()[type]) {
+            when (TrackedThing.Type.entries[type]) {
                 TrackedThing.Type.Percentage ->
                     Percentage(id, name, value.toFloat(), idx, groupId)
 
@@ -60,6 +60,9 @@ data class TrackedThingEntity(
 
                 TrackedThing.Type.Number ->
                     Number(id, name, value.toInt(), idx, groupId)
+
+                TrackedThing.Type.SpellList ->
+                    SpellList(id, name, value, idx, groupId)
 
                 TrackedThing.Type.None -> throw Exception("Tracked thing not supported.")
             }

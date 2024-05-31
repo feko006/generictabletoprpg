@@ -1,4 +1,4 @@
-package com.feko.generictabletoprpg.com.feko.generictabletoprpg.common.fabdropdown
+package com.feko.generictabletoprpg.common.fabdropdown
 
 import kotlinx.coroutines.flow.Flow
 

@@ -1,8 +1,10 @@
 package com.feko.generictabletoprpg.tracker
 
+import android.widget.Toast
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,13 +14,17 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Delete
@@ -31,6 +37,8 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -48,6 +56,7 @@ import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -62,11 +71,17 @@ import com.feko.generictabletoprpg.R
 import com.feko.generictabletoprpg.common.composable.AddFABButtonWithDropdown
 import com.feko.generictabletoprpg.common.composable.DialogTitle
 import com.feko.generictabletoprpg.common.composable.OverviewScreen
+import com.feko.generictabletoprpg.destinations.SearchAllScreenDestination
+import com.feko.generictabletoprpg.destinations.SpellDetailsScreenDestination
+import com.feko.generictabletoprpg.filters.SpellFilter
+import com.feko.generictabletoprpg.filters.index
 import com.feko.generictabletoprpg.searchall.getNavRouteInternal
 import com.feko.generictabletoprpg.searchall.getUniqueListItemKey
 import com.feko.generictabletoprpg.theme.Typography
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import com.ramcosta.composedestinations.result.NavResult
+import com.ramcosta.composedestinations.result.ResultRecipient
 import org.burnoutcrew.reorderable.ReorderableLazyListState
 import org.burnoutcrew.reorderable.detectReorder
 import org.koin.androidx.compose.koinViewModel
@@ -78,7 +93,8 @@ fun TrackerScreen(
     groupId: Long,
     groupName: String,
     appViewModel: AppViewModel,
-    navigator: DestinationsNavigator
+    navigator: DestinationsNavigator,
+    resultRecipient: ResultRecipient<SearchAllScreenDestination, Long>
 ) {
     val viewModel: TrackerViewModel =
         koinViewModel(parameters = { parameterSetOf(groupId, groupName) })
@@ -90,6 +106,22 @@ fun TrackerScreen(
             )
         )
     val isAlertDialogVisible by viewModel.alertDialog.isVisible.collectAsState(false)
+    resultRecipient.onNavResult { result ->
+        if (result is NavResult.Value<Long>) {
+            viewModel.addSpellToList(result.value)
+        }
+    }
+    val toastMessageResource by viewModel.toast.message.collectAsState(0)
+    if (toastMessageResource != 0) {
+        Toast
+            .makeText(
+                LocalContext.current,
+                toastMessageResource,
+                Toast.LENGTH_SHORT
+            )
+            .show()
+        viewModel.toast.messageConsumed()
+    }
     OverviewScreen(
         viewModel = viewModel,
         listItem = { item, isDragged, state ->
@@ -111,7 +143,7 @@ fun TrackerScreen(
         },
         isAlertDialogVisible = isAlertDialogVisible,
         alertDialogComposable = {
-            AlertDialogComposable(viewModel, groupName)
+            AlertDialogComposable(viewModel, groupName, navigator)
         },
         isReorderable = true,
         onItemReordered = { from, to ->
@@ -129,11 +161,13 @@ fun OverviewListItem(
     navigator: DestinationsNavigator
 ) {
     if (item is TrackedThing) {
-        TrackedThing(item, isDragged, state)
+        TrackedThing(item, isDragged, state, navigator)
     } else {
-        com.feko.generictabletoprpg.common.composable.OverviewListItem(item = item) {
-            navigator.navigate(getNavRouteInternal(item))
-        }
+        com.feko.generictabletoprpg.common.composable.OverviewListItem(
+            item,
+            Modifier.clickable {
+                navigator.navigate(getNavRouteInternal(item))
+            })
     }
 }
 
@@ -141,7 +175,8 @@ fun OverviewListItem(
 private fun TrackedThing(
     item: TrackedThing,
     isDragged: Boolean,
-    state: ReorderableLazyListState
+    state: ReorderableLazyListState,
+    navigator: DestinationsNavigator
 ) {
     val targetElevation: Dp
     val targetScale: Float
@@ -234,7 +269,8 @@ private fun TrackedThing(
                     TrackedThing.Type.Health -> HealthActions(item)
                     TrackedThing.Type.Ability -> AbilityActions(item)
                     TrackedThing.Type.SpellSlot -> SpellSlotActions(item)
-                    TrackedThing.Type.None -> {}
+                    TrackedThing.Type.SpellList -> SpellListActions(item, navigator)
+                    TrackedThing.Type.None -> Unit
                 }
             }
         }
@@ -344,6 +380,27 @@ private fun SpellSlotActions(item: TrackedThing) {
 }
 
 @Composable
+private fun SpellListActions(item: TrackedThing, navigator: DestinationsNavigator) {
+    ItemActionsBase(item) { viewModel ->
+        IconButton(
+            onClick = { viewModel.showPreviewSpellListDialog(item as SpellList) },
+            enabled = true
+        ) {
+            Icon(Icons.AutoMirrored.Filled.List, "")
+        }
+        IconButton(
+            onClick = {
+                viewModel.addingSpellToList(item as SpellList)
+                navigator.navigate(SearchAllScreenDestination(SpellFilter().index(), true))
+            },
+            enabled = true
+        ) {
+            Icon(Icons.Default.Add, "")
+        }
+    }
+}
+
+@Composable
 private fun ItemActionsBase(
     item: TrackedThing,
     actions: @Composable (TrackerViewModel) -> Unit
@@ -385,7 +442,8 @@ fun DropdownMenuContent(viewModel: TrackerViewModel) {
 @Composable
 fun AlertDialogComposable(
     viewModel: TrackerViewModel,
-    defaultName: String
+    defaultName: String,
+    navigator: DestinationsNavigator
 ) {
     BasicAlertDialog(
         onDismissRequest = { viewModel.alertDialog.dismiss() },
@@ -398,7 +456,8 @@ fun AlertDialogComposable(
                     EditDialog(viewModel, defaultName)
 
                 TrackerViewModel.DialogType.ConfirmDeletion,
-                TrackerViewModel.DialogType.RefreshAll ->
+                TrackerViewModel.DialogType.RefreshAll,
+                TrackerViewModel.DialogType.ConfirmSpellRemovalFromList ->
                     ConfirmDialog(viewModel)
 
                 TrackerViewModel.DialogType.AddPercentage,
@@ -413,6 +472,14 @@ fun AlertDialogComposable(
                 TrackerViewModel.DialogType.DamageHealth,
                 TrackerViewModel.DialogType.AddTemporaryHp ->
                     ValueInputDialog(viewModel, TrackedThing.Type.Health)
+
+                TrackerViewModel.DialogType.ShowSpellList ->
+                    SpellListDialog(viewModel, navigator)
+
+                TrackerViewModel.DialogType.SelectSlotLevelToCastSpell ->
+                    SpellSlotSelectDialog(viewModel)
+
+                TrackerViewModel.DialogType.None -> Unit
             }
         }
     }
@@ -440,12 +507,7 @@ private fun ConfirmDialog(viewModel: TrackerViewModel) {
         DialogTitle(viewModel.alertDialog.titleResource)
         Row(horizontalArrangement = Arrangement.End) {
             Spacer(Modifier.weight(1f))
-            TextButton(
-                onClick = { viewModel.alertDialog.dismiss() },
-                modifier = Modifier.wrapContentWidth()
-            ) {
-                Text(stringResource(R.string.cancel))
-            }
+            CancelButton(viewModel)
             TextButton(
                 onClick = { viewModel.confirmDialogAction() },
                 modifier = Modifier.wrapContentWidth()
@@ -453,6 +515,16 @@ private fun ConfirmDialog(viewModel: TrackerViewModel) {
                 Text(stringResource(R.string.confirm))
             }
         }
+    }
+}
+
+@Composable
+private fun CancelButton(viewModel: TrackerViewModel) {
+    TextButton(
+        onClick = { viewModel.alertDialog.dismiss() },
+        modifier = Modifier.wrapContentWidth()
+    ) {
+        Text(stringResource(R.string.cancel))
     }
 }
 
@@ -490,6 +562,97 @@ private fun DialogBase(
                 .align(Alignment.End)
         ) {
             Text(stringResource(R.string.confirm))
+        }
+    }
+}
+
+@Composable
+fun SpellListDialog(
+    viewModel: TrackerViewModel,
+    navigator: DestinationsNavigator
+) {
+    val spellListBeingPreviewed = requireNotNull(viewModel.spellListBeingPreviewed)
+    Column(
+        Modifier.padding(16.dp),
+        Arrangement.spacedBy(16.dp)
+    ) {
+        DialogTitle(viewModel.alertDialog.titleResource)
+        LazyColumn(Modifier.heightIn(0.dp, 500.dp)) {
+            items(
+                spellListBeingPreviewed.spells,
+                key = { getUniqueListItemKey(it) }) { spell ->
+                Row(
+                    Modifier.fillMaxWidth(),
+                    Arrangement.SpaceBetween,
+                    Alignment.CenterVertically
+                ) {
+                    com.feko.generictabletoprpg.common.composable.OverviewListItem(
+                        spell,
+                        Modifier
+                            .weight(1f)
+                            .clickable {
+                                navigator.navigate(SpellDetailsScreenDestination(spell.id))
+                            },
+                        ListItemDefaults.colors(containerColor = Color.Transparent)
+                    )
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        IconButton(
+                            onClick = {
+                                viewModel.castSpellRequested(spell.level)
+                            },
+                            enabled = viewModel.canCastSpell(spell.level)
+                        ) {
+                            Icon(painterResource(R.drawable.celebration), "")
+                        }
+                        IconButton(
+                            onClick = {
+                                viewModel.removeSpellFromSpellListRequested(spell)
+                            }
+                        ) {
+                            Icon(Icons.Default.Delete, "")
+                        }
+                    }
+                }
+            }
+        }
+        TextButton(
+            onClick = { viewModel.alertDialog.dismiss() },
+            modifier = Modifier
+                .wrapContentWidth()
+                .align(Alignment.End)
+        ) {
+            Text(stringResource(R.string.dismiss))
+        }
+    }
+}
+
+@Composable
+fun SpellSlotSelectDialog(viewModel: TrackerViewModel) {
+    Column(
+        Modifier.padding(16.dp),
+        Arrangement.spacedBy(16.dp)
+    ) {
+        DialogTitle(viewModel.alertDialog.titleResource)
+        val spellSlotLevels = requireNotNull(viewModel.availableSpellSlotsForSpellBeingCast)
+        spellSlotLevels.forEach { spellSlotLevel ->
+            ListItem(
+                headlineContent = {
+                    Text("${stringResource(R.string.level)} $spellSlotLevel")
+                },
+                modifier = Modifier.clickable {
+                    viewModel.castSpell(spellSlotLevel)
+                },
+                colors = ListItemDefaults.colors(containerColor = Color.Transparent)
+            )
+        }
+        Row(
+            Modifier.fillMaxWidth(),
+            Arrangement.End
+        ) {
+            CancelButton(viewModel)
         }
     }
 }
@@ -581,6 +744,9 @@ private fun ValueTextField(
     autoFocus: Boolean = false,
     updateValue: (String) -> Unit
 ) {
+    if (type == TrackedThing.Type.SpellList) {
+        return
+    }
     val focusRequester = remember { FocusRequester() }
     val valueInputData by viewModel.editedTrackedThingValue.collectAsState()
     TextField(

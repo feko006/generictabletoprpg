@@ -33,6 +33,7 @@
     <string name="properties">Properties</string>
     <string name="add">Add</string>
     <string name="subtract">Subtract</string>
+    <string name="dismiss">Dismiss</string>
     <!--Action-->
     <string name="action">Action</string>
     <string name="action_details_title">Action Details</string>
@@ -72,6 +73,12 @@
     <string name="take_damage_dialog_title">Take damage</string>
     <string name="heal_dialog_title">Heal</string>
     <string name="add_temporary_hp_dialog_title">Add temporary HP</string>
+    <string name="spell_list">Spell List</string>
+    <string name="add_spell_to_list">Add spell</string>
+    <string name="spell_already_in_list">The spell is already in the list</string>
+    <string name="spell_successfully_added_to_list">Spell successfully added to list!</string>
+    <string name="confirm_spell_removal_from_list_dialog_title">Remove spell?</string>
+    <string name="select_slot_level_for_casting_spell">Cast at which level?</string>
     <!--Spell-->
     <string name="spell">Spell</string>
     <string name="spell_details_title">Spell Details</string>

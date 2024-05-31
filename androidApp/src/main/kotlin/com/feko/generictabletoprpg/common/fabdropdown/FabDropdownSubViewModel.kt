@@ -1,6 +1,5 @@
 package com.feko.generictabletoprpg.common.fabdropdown
 
-import com.feko.generictabletoprpg.com.feko.generictabletoprpg.common.fabdropdown.IFabDropdownSubViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
