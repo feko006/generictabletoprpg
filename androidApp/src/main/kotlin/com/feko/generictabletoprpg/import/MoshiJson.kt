@@ -33,15 +33,8 @@ class MoshiJson : IJson {
             .add(KotlinJsonAdapterFactory())
             .build()
 
-    @Suppress("UNCHECKED_CAST")
-    override fun <T> from(content: String, type: Class<T>): T =
-        moshiJson.adapter(type).fromJson(content) as T
-
     override fun <T> from(content: String, type: Type): T =
         moshiJson.adapter<T>(type).fromJson(content)!!
-
-    override fun <T> to(data: T, type: Class<T>): String =
-        moshiJson.adapter(type).toJson(data)
 
     override fun <T> to(data: T, type: Type): String =
         moshiJson.adapter<T>(type).toJson(data)

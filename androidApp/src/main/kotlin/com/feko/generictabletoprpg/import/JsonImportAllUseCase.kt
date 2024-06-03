@@ -20,7 +20,7 @@ class JsonImportAllUseCase(
 ) : IJsonImportAllUseCase {
     override fun import(content: String): Result<Boolean> {
         try {
-            val appModel = json.from(content, AppModel::class.java)
+            val appModel = json.from<AppModel>(content, AppModel::class.java)
             val results = mutableListOf<Result<Boolean>>()
 
             val actionsImported = importActions(appModel)
