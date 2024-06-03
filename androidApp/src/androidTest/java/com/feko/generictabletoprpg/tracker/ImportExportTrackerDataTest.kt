@@ -144,6 +144,22 @@ class ImportExportTrackerDataTest {
     }
 
     @Test
+    fun importSpellListFromResource() {
+        // Given
+        val data = getRawResourceData(R.raw.import_spell_list)
+        val expected = SpellList(0L, "spell_list", "value", 6)
+
+        // When
+        jsonImportAllUseCase.import(data)
+
+        // Then
+        val trackedThingGroup = trackedThingGroupDao.getById(1)
+        assertThat(trackedThingGroup.name, equalTo("import_spell_list_group"))
+        val importedTrackedThing = trackedThingDao.getById(1) as SpellList
+        assertSpellListEqual(importedTrackedThing, expected)
+    }
+
+    @Test
     fun exportingThenImportingDataEnsuresSameValues() = runTest {
         // Given
         val trackedThingGroup = TrackedThingGroup(name = "ttg")
@@ -163,7 +179,9 @@ class ImportExportTrackerDataTest {
         val spellSlot =
             SpellSlot(6, 0L, "spell_slot", 7, 4, originalTrackedThingGroupId)
                 .apply { defaultValue = "12" }
-        val trackedThings = listOf(ability, health, number, percentage, spellSlot)
+        val spellList =
+            SpellList(0L, "spell_list", "value", 5, originalTrackedThingGroupId)
+        val trackedThings = listOf(ability, health, number, percentage, spellSlot, spellList)
         trackedThingDao.insertAll(trackedThings)
         val outputStream = ByteArrayOutputStream()
 
@@ -189,6 +207,7 @@ class ImportExportTrackerDataTest {
         assertNumberEqual(importedTrackedThings[2], number)
         assertPercentageEqual(importedTrackedThings[3], percentage)
         assertSpellSlotEqual(importedTrackedThings[4], spellSlot)
+        assertSpellListEqual(importedTrackedThings[5], spellList)
     }
 
     private fun assertAbilityEqual(actual: TrackedThing, expected: Ability) {
@@ -216,9 +235,13 @@ class ImportExportTrackerDataTest {
     private fun assertSpellSlotEqual(actual: TrackedThing, expected: SpellSlot) {
         assertThat(actual, instanceOf(expected::class.java))
         assertTrackedThingEqual(actual, expected)
-        assertTrackedThingEqual(actual, expected)
         val spellSlot = actual as SpellSlot
         assertThat(spellSlot.level, equalTo(expected.level))
+    }
+
+    private fun assertSpellListEqual(actual: TrackedThing, expected: SpellList) {
+        assertThat(actual, instanceOf(expected::class.java))
+        assertTrackedThingEqual(actual, expected)
     }
 
     private fun assertTrackedThingEqual(actual: TrackedThing, expected: TrackedThing) {

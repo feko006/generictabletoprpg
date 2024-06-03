@@ -27,7 +27,7 @@ abstract class BaseDao<TEntity, TCore> :
             try {
                 insertOrUpdate(item)
             } catch (e: Exception) {
-                Timber.e(e, "Saving spell with name ${item.name} failed.")
+                Timber.e(e, "Saving entity with name ${item.name} failed.")
                 errors.add(e)
             }
         }
