@@ -12,7 +12,7 @@ import java.io.OutputStream
 abstract class ExportSubViewModel<T> : IExportSubViewModel<T> {
     protected var exportState: ExportState<T> = ExportState.None
 
-    private val _toast = ToastSubViewModel()
+    private val _toast = ToastSubViewModel(CoroutineScope(Dispatchers.Main))
     override val toast = _toast
 
     override fun notifyCancelled() {
@@ -27,7 +27,7 @@ abstract class ExportSubViewModel<T> : IExportSubViewModel<T> {
                 exportDataInternal(outputStream)
                 withContext(Dispatchers.Main) {
                     Timber.d("Export successful.")
-                    _toast._message.emit(R.string.export_successful)
+                    _toast.showMessage(R.string.export_successful)
                 }
             } catch (e: Exception) {
                 notifyFailed(e)
@@ -41,7 +41,7 @@ abstract class ExportSubViewModel<T> : IExportSubViewModel<T> {
     override fun notifyFailed(e: Exception) {
         CoroutineScope(Dispatchers.Main).launch {
             Timber.e(e, "Export failed.")
-            _toast._message.emit(R.string.export_failed)
+            _toast.showMessage(R.string.export_failed)
             exportState = ExportState.None
         }
     }
@@ -49,14 +49,14 @@ abstract class ExportSubViewModel<T> : IExportSubViewModel<T> {
     override fun exportAllRequested() {
         CoroutineScope(Dispatchers.Main).launch {
             exportState = ExportState.ExportingAll
-            _toast._message.emit(R.string.export_location_hint)
+            _toast.showMessage(R.string.export_location_hint)
         }
     }
 
     override fun exportSingleRequested(item: T) {
         CoroutineScope(Dispatchers.Main).launch {
             exportState = ExportState.ExportingSingle(item)
-            _toast._message.emit(R.string.export_location_hint)
+            _toast.showMessage(R.string.export_location_hint)
         }
     }
 }

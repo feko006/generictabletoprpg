@@ -1,5 +1,6 @@
 package com.feko.generictabletoprpg.common.composable
 
+import android.widget.Toast
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
@@ -22,9 +23,12 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
@@ -37,6 +41,7 @@ import com.feko.generictabletoprpg.R
 import com.feko.generictabletoprpg.action.Action
 import com.feko.generictabletoprpg.ammunition.Ammunition
 import com.feko.generictabletoprpg.armor.Armor
+import com.feko.generictabletoprpg.common.toast.IToastSubViewModel
 import com.feko.generictabletoprpg.condition.Condition
 import com.feko.generictabletoprpg.disease.Disease
 import com.feko.generictabletoprpg.feat.Feat
@@ -197,3 +202,18 @@ val appTypes = appNamesByType.keys
 
 @Composable
 fun <T> getTypeName(type: Class<T>): String = stringResource(appNamesByType[type]!!)
+
+@Composable
+fun ToastMessage(toast: IToastSubViewModel) {
+    val shouldShowToastMessage by toast.shouldShowMessage.collectAsState(false)
+    if (shouldShowToastMessage) {
+        Toast
+            .makeText(
+                LocalContext.current,
+                toast.getMessage(),
+                Toast.LENGTH_SHORT
+            )
+            .show()
+        toast.messageConsumed()
+    }
+}

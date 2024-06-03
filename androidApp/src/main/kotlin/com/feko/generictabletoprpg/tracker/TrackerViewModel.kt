@@ -21,6 +21,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.android.awaitFrame
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -41,7 +42,7 @@ class TrackerViewModel(
     private val _fabDropdown = FabDropdownSubViewModel(viewModelScope)
     val fabDropdown: IFabDropdownSubViewModel = _fabDropdown
 
-    private val _toast = ToastSubViewModel()
+    private val _toast = ToastSubViewModel(viewModelScope)
     val toast: IToastSubViewModel = _toast
 
     val editedTrackedThingName = MutableStateFlow(InputFieldData.EMPTY)
@@ -57,7 +58,9 @@ class TrackerViewModel(
     private var spellBeingRemoved: Spell? = null
 
     lateinit var dialogType: DialogType
-    var spellListBeingPreviewed: SpellList? = null
+    private val _spellListBeingPreviewed = MutableStateFlow<SpellList?>(null)
+    val spellListBeingPreviewed: StateFlow<SpellList?>
+        get() = _spellListBeingPreviewed
     var availableSpellSlotsForSpellBeingCast: List<Int>? = null
 
     override val combinedItemFlow: Flow<List<Any>> =
@@ -299,7 +302,7 @@ class TrackerViewModel(
         reduceByOne(item)
     }
 
-    suspend fun useSpellSuspending(item: TrackedThing) {
+    private suspend fun useSpellSuspending(item: TrackedThing) {
         reduceByOneSuspending(item)
     }
 
@@ -467,10 +470,13 @@ class TrackerViewModel(
     }
 
     fun showPreviewSpellListDialog(spellList: SpellList) {
+        if (spellList.spells.isEmpty()) {
+            return
+        }
         viewModelScope.launch {
             _alertDialog._titleResource = R.string.spell_list
             dialogType = DialogType.ShowSpellList
-            spellListBeingPreviewed = spellList
+            _spellListBeingPreviewed.emit(spellList)
             _alertDialog.show()
         }
     }
@@ -487,7 +493,7 @@ class TrackerViewModel(
                     it.id == spellId && it.name == spellToAdd.name
                 }
             if (spellAlreadyInList) {
-                _toast._message.emit(R.string.spell_already_in_list)
+                _toast.showMessage(R.string.spell_already_in_list)
             } else {
                 spellList.spells.add(spellToAdd)
                 val sortedSpells =
@@ -506,7 +512,7 @@ class TrackerViewModel(
                     trackedThingDao.insertOrUpdate(spellList)
                 }
                 replaceItem(spellList)
-                _toast._message.emit(R.string.spell_successfully_added_to_list)
+                _toast.showMessage(R.string.spell_successfully_added_to_list)
             }
             spellListBeingAddedTo = null
         }
@@ -529,7 +535,7 @@ class TrackerViewModel(
 
     private fun dialogToRemoveOrCastSpellFromSpellListResolved() {
         viewModelScope.launch {
-            spellListBeingPreviewed?.let {
+            spellListBeingPreviewed.value?.let {
                 _alertDialog.hide()
                 awaitFrame()
                 showPreviewSpellListDialog(it)
@@ -537,9 +543,9 @@ class TrackerViewModel(
         }
     }
 
-    fun removeSpellFromSpellList() {
+    private fun removeSpellFromSpellList() {
         viewModelScope.launch {
-            val spellList = requireNotNull(spellListBeingPreviewed)
+            val spellList = requireNotNull(spellListBeingPreviewed.value)
             val spellToRemove = requireNotNull(spellBeingRemoved)
             spellList.spells.remove(spellToRemove)
             spellList.setSpells(spellList.spells, json)
@@ -560,7 +566,7 @@ class TrackerViewModel(
                     .map { it.level }
             require(availableSpellSlots.isNotEmpty())
             if (availableSpellSlots.size == 1) {
-                castSpell(availableSpellSlots.first())
+                castSpellImmediate(availableSpellSlots.first())
                 return@launch
             }
             _alertDialog.hide()
@@ -572,17 +578,28 @@ class TrackerViewModel(
         }
     }
 
+    private fun castSpellImmediate(withSlotLevel: Int) {
+        viewModelScope.launch {
+            val spellSlot =
+                _items.value
+                    .filterIsInstance<SpellSlot>()
+                    .first { it.level == withSlotLevel && it.amount > 0 }
+            useSpellSuspending(spellSlot)
+            _toast.showMessage(R.string.spell_cast_with_slot_level, withSlotLevel.toString())
+            _spellListBeingPreviewed.emit(_spellListBeingPreviewed.value!!.copy() as SpellList)
+        }
+    }
+
     fun castSpell(withSlotLevel: Int) {
         viewModelScope.launch {
-            if (dialogType == DialogType.SelectSlotLevelToCastSpell) {
-                _alertDialog.hide()
-            }
+            _alertDialog.hide()
             val spellSlot =
                 _items.value
                     .filterIsInstance<SpellSlot>()
                     .first { it.level == withSlotLevel && it.amount > 0 }
             useSpellSuspending(spellSlot)
             availableSpellSlotsForSpellBeingCast = null
+            _toast.showMessage(R.string.spell_cast_with_slot_level, withSlotLevel.toString())
             dialogToRemoveOrCastSpellFromSpellListResolved()
         }
     }
@@ -592,10 +609,12 @@ class TrackerViewModel(
             .filterIsInstance<SpellSlot>()
             .any { it.level >= level && it.amount > 0 }
 
-    fun onAlertDialogDismissed() {
+    private fun onAlertDialogDismissed() {
         when (dialogType) {
             DialogType.ShowSpellList -> {
-                spellListBeingPreviewed = null
+                viewModelScope.launch {
+                    _spellListBeingPreviewed.emit(null)
+                }
             }
 
             DialogType.ConfirmSpellRemovalFromList -> {

@@ -2,7 +2,6 @@ package com.feko.generictabletoprpg.tracker
 
 import android.content.Context
 import android.net.Uri
-import android.widget.Toast
 import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -54,6 +53,7 @@ import com.feko.generictabletoprpg.common.INamed
 import com.feko.generictabletoprpg.common.composable.AddFABButton
 import com.feko.generictabletoprpg.common.composable.DialogTitle
 import com.feko.generictabletoprpg.common.composable.OverviewScreen
+import com.feko.generictabletoprpg.common.composable.ToastMessage
 import com.feko.generictabletoprpg.destinations.TrackerScreenDestination
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
@@ -72,17 +72,7 @@ fun TrackerGroupsScreen(
 ) {
     val viewModel: TrackerGroupViewModel = koinViewModel()
     val context = LocalContext.current
-    val exportToastMessageResource by viewModel.export.toast.message.collectAsState(0)
-    if (exportToastMessageResource != 0) {
-        Toast
-            .makeText(
-                context,
-                exportToastMessageResource,
-                Toast.LENGTH_SHORT
-            )
-            .show()
-        viewModel.export.toast.messageConsumed()
-    }
+    ToastMessage(viewModel.export.toast)
     val pickDirectoryLauncher =
         rememberLauncherForActivityResult(
             ActivityResultContracts.OpenDocumentTree()

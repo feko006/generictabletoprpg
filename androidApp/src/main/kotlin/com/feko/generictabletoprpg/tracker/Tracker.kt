@@ -1,6 +1,5 @@
 package com.feko.generictabletoprpg.tracker
 
-import android.widget.Toast
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
@@ -56,7 +55,6 @@ import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -71,6 +69,7 @@ import com.feko.generictabletoprpg.R
 import com.feko.generictabletoprpg.common.composable.AddFABButtonWithDropdown
 import com.feko.generictabletoprpg.common.composable.DialogTitle
 import com.feko.generictabletoprpg.common.composable.OverviewScreen
+import com.feko.generictabletoprpg.common.composable.ToastMessage
 import com.feko.generictabletoprpg.destinations.SearchAllScreenDestination
 import com.feko.generictabletoprpg.destinations.SpellDetailsScreenDestination
 import com.feko.generictabletoprpg.filters.SpellFilter
@@ -111,17 +110,7 @@ fun TrackerScreen(
             viewModel.addSpellToList(result.value)
         }
     }
-    val toastMessageResource by viewModel.toast.message.collectAsState(0)
-    if (toastMessageResource != 0) {
-        Toast
-            .makeText(
-                LocalContext.current,
-                toastMessageResource,
-                Toast.LENGTH_SHORT
-            )
-            .show()
-        viewModel.toast.messageConsumed()
-    }
+    ToastMessage(viewModel.toast)
     OverviewScreen(
         viewModel = viewModel,
         listItem = { item, isDragged, state ->
@@ -382,15 +371,16 @@ private fun SpellSlotActions(item: TrackedThing) {
 @Composable
 private fun SpellListActions(item: TrackedThing, navigator: DestinationsNavigator) {
     ItemActionsBase(item) { viewModel ->
+        val spellList = item as SpellList
         IconButton(
-            onClick = { viewModel.showPreviewSpellListDialog(item as SpellList) },
-            enabled = true
+            onClick = { viewModel.showPreviewSpellListDialog(spellList) },
+            enabled = spellList.spells.any()
         ) {
             Icon(Icons.AutoMirrored.Filled.List, "")
         }
         IconButton(
             onClick = {
-                viewModel.addingSpellToList(item as SpellList)
+                viewModel.addingSpellToList(spellList)
                 navigator.navigate(SearchAllScreenDestination(SpellFilter().index(), true))
             },
             enabled = true
@@ -571,7 +561,8 @@ fun SpellListDialog(
     viewModel: TrackerViewModel,
     navigator: DestinationsNavigator
 ) {
-    val spellListBeingPreviewed = requireNotNull(viewModel.spellListBeingPreviewed)
+    val spellListBeingPreviewed by viewModel.spellListBeingPreviewed.collectAsState()
+    val dereferencedSpellList = spellListBeingPreviewed ?: return
     Column(
         Modifier.padding(16.dp),
         Arrangement.spacedBy(16.dp)
@@ -579,7 +570,7 @@ fun SpellListDialog(
         DialogTitle(viewModel.alertDialog.titleResource)
         LazyColumn(Modifier.heightIn(0.dp, 500.dp)) {
             items(
-                spellListBeingPreviewed.spells,
+                dereferencedSpellList.spells,
                 key = { getUniqueListItemKey(it) }) { spell ->
                 Row(
                     Modifier.fillMaxWidth(),
@@ -599,13 +590,15 @@ fun SpellListDialog(
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        IconButton(
-                            onClick = {
-                                viewModel.castSpellRequested(spell.level)
-                            },
-                            enabled = viewModel.canCastSpell(spell.level)
-                        ) {
-                            Icon(painterResource(R.drawable.celebration), "")
+                        if (spell.level != 0) {
+                            IconButton(
+                                onClick = {
+                                    viewModel.castSpellRequested(spell.level)
+                                },
+                                enabled = viewModel.canCastSpell(spell.level)
+                            ) {
+                                Icon(painterResource(R.drawable.celebration), "")
+                            }
                         }
                         IconButton(
                             onClick = {

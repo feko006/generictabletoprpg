@@ -17,7 +17,7 @@ class SpellList(
 ) : TrackedThing(id, name, value, Type.SpellList, index, groupId) {
 
     companion object {
-        val spellListType = Types.newParameterizedType(List::class.java, Spell::class.java)
+        val spellListType = Types.newParameterizedType(List::class.java, Spell::class.java)!!
     }
 
     var spells: MutableList<Spell> = mutableListOf()
@@ -30,7 +30,9 @@ class SpellList(
 
     override fun subtract(delta: String) = throw IllegalStateException()
 
-    override fun copy(): TrackedThing = this
+    override fun copy(): TrackedThing =
+        SpellList(id, name, value, index, groupId)
+            .also { it.spells = spells }
 
     override fun canAdd(): Boolean = throw IllegalStateException()
 

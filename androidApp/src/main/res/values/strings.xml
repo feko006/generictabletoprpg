@@ -79,6 +79,7 @@
     <string name="spell_successfully_added_to_list">Spell successfully added to list!</string>
     <string name="confirm_spell_removal_from_list_dialog_title">Remove spell?</string>
     <string name="select_slot_level_for_casting_spell">Cast at which level?</string>
+    <string name="spell_cast_with_slot_level">Spell cast at level %s</string>
     <!--Spell-->
     <string name="spell">Spell</string>
     <string name="spell_details_title">Spell Details</string>
