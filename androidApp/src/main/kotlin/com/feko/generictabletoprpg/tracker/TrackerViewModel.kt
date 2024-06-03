@@ -511,7 +511,7 @@ class TrackerViewModel(
                 withContext(Dispatchers.Default) {
                     trackedThingDao.insertOrUpdate(spellList)
                 }
-                replaceItem(spellList)
+                replaceItem(spellList.copy())
                 _toast.showMessage(R.string.spell_successfully_added_to_list)
             }
             spellListBeingAddedTo = null
