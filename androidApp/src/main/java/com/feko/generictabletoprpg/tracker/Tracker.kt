@@ -25,7 +25,7 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Refresh
-import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -368,7 +368,7 @@ private fun ItemActionsBase(
 @Composable
 fun DropdownMenuContent(viewModel: TrackerViewModel) {
     TrackedThing.Type
-        .values()
+        .entries
         .drop(1) // None is dropped
         .forEach { type ->
             DropdownMenuItem(
@@ -385,7 +385,7 @@ fun AlertDialogComposable(
     viewModel: TrackerViewModel,
     defaultName: String
 ) {
-    AlertDialog(
+    BasicAlertDialog(
         onDismissRequest = { viewModel.hideDialog() },
         properties = DialogProperties()
     ) {
