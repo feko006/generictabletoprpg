@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">generictabletoprpg</string>
+    <string name="app_name">gttrpg</string>
     <!--Common-->
     <string name="name">Name</string>
     <string name="sell_quantity">Sell quantity</string>
