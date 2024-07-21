@@ -19,7 +19,10 @@ class OrcbrewImportAllUseCase(
                     content.substring(1)
                 }
                     .replace("##NaN", "nil")
-            val sources = parseEdnAsMapPort.parse(safeFileContents)
+            var sources = parseEdnAsMapPort.parse(safeFileContents)
+            if (sources.keys.any { it.toString().contains("orcpub") }) {
+                sources = mapOf("" to sources)
+            }
             val results = mutableListOf<Result<Boolean>>()
             val spellsImported = orcbrewImportSpellsUseCase.import(sources)
             results.add(spellsImported)

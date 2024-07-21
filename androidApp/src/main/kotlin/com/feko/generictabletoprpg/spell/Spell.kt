@@ -60,7 +60,7 @@ data class Spell(
             return Spell(
                 0,
                 processEdnMapPort.getValue(spellMap, ":name"),
-                processEdnMapPort.getValue(spellMap, ":description"),
+                processEdnMapPort.getValueOrDefault(spellMap, ":description", ""),
                 processEdnMapPort.getValue(spellMap, ":school"),
                 spellDuration,
                 spellDuration.contains("Concentration"),
