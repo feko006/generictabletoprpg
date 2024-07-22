@@ -26,7 +26,8 @@ sealed class TrackedThing(
         Ability(R.string.ability),
         SpellSlot(R.string.spell_slot),
         Number(R.string.number),
-        SpellList(R.string.spell_list)
+        SpellList(R.string.spell_list),
+        Text(R.string.text)
     }
 
     var defaultValue: String = ""
@@ -41,7 +42,9 @@ sealed class TrackedThing(
                 Type.SpellSlot -> SpellSlot(1, 0, "", 0, index, groupId)
                 Type.Number -> Number(0, "", 0, index, groupId)
                     .apply { defaultValue = Int.MAX_VALUE.toString() }
+
                 Type.SpellList -> SpellList(0, "", "[]", index, groupId)
+                Type.Text -> Text(0, "", "", index, groupId)
             }
     }
 

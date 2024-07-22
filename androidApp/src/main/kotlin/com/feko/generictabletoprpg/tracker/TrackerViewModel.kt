@@ -163,6 +163,8 @@ class TrackerViewModel(
             DialogType.ConfirmSpellRemovalFromList -> removeSpellFromSpellList()
             DialogType.SelectSlotLevelToCastSpell -> Unit
 
+            DialogType.EditText -> editText()
+
             DialogType.RefreshAll -> refreshAll()
 
             DialogType.None -> Unit
@@ -609,6 +611,19 @@ class TrackerViewModel(
             .filterIsInstance<SpellSlot>()
             .any { it.level >= level && it.amount > 0 }
 
+    private fun editText() {
+        viewModelScope.launch {
+            val editedTrackedThing = requireNotNull(editedTrackedThing)
+            require(editedTrackedThing is Text)
+            withContext(Dispatchers.Default) {
+                trackedThingDao.insertOrUpdate(editedTrackedThing)
+            }
+            _alertDialog.hide()
+            replaceItem(editedTrackedThing)
+        }
+
+    }
+
     private fun onAlertDialogDismissed() {
         when (dialogType) {
             DialogType.ShowSpellList -> {
@@ -647,6 +662,7 @@ class TrackerViewModel(
         AddNumber,
         ReduceNumber,
         ShowSpellList,
-        SelectSlotLevelToCastSpell
+        SelectSlotLevelToCastSpell,
+        EditText
     }
 }

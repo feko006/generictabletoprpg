@@ -64,6 +64,9 @@ data class TrackedThingEntity(
                 TrackedThing.Type.SpellList ->
                     SpellList(id, name, value, idx, groupId)
 
+                TrackedThing.Type.Text ->
+                    Text(id, name, value, idx, groupId)
+
                 TrackedThing.Type.None -> throw Exception("Tracked thing not supported.")
             }
         trackedThing.defaultValue = defaultValue

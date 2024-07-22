@@ -98,4 +98,5 @@
     <!--Filter-->
     <string name="filter_type_placeholder">Type</string>
     <string name="class_filter_disclaimer">* Not all imported spells have classes set, so results may not be accurate</string>
+    <string name="text">Text</string>
 </resources>

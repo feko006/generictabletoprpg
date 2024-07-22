@@ -43,6 +43,7 @@ with a generic tracker.
 - Spell slots
 - Arbitrary number, e.g. for gold, arrows...
 - Known spells + more
+- Text e.g. for notes, items...
 
 More types will be supported in the future.
 

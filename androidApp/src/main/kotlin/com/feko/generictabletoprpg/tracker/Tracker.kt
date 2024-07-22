@@ -28,6 +28,8 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.BasicAlertDialog
@@ -46,7 +48,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
@@ -60,6 +64,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
@@ -207,12 +212,15 @@ private fun TrackedThing(
                     modifier = Modifier.height(IntrinsicSize.Min),
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalAlignment = Alignment.CenterVertically
-                ) {
+                ) firstRow@{
                     Text(
                         item.name,
                         style = Typography.titleMedium,
                         modifier = Modifier.weight(1f)
                     )
+                    if (item.type == TrackedThing.Type.Text) {
+                        return@firstRow
+                    }
                     Box(
                         Modifier
                             .fillMaxHeight()
@@ -252,6 +260,18 @@ private fun TrackedThing(
                         }
                     }
                 }
+                var expanded by remember { mutableStateOf(false) }
+                if (item.type == TrackedThing.Type.Text) {
+                    Text(
+                        item.getPrintableValue(),
+                        Modifier.clickable {
+                            expanded = !expanded
+                        },
+                        maxLines = if (expanded) Int.MAX_VALUE else 3,
+                        style = Typography.bodyMedium,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
                 when (item.type) {
                     TrackedThing.Type.Percentage -> PercentageActions(item)
                     TrackedThing.Type.Number -> NumberActions(item)
@@ -259,6 +279,7 @@ private fun TrackedThing(
                     TrackedThing.Type.Ability -> AbilityActions(item)
                     TrackedThing.Type.SpellSlot -> SpellSlotActions(item)
                     TrackedThing.Type.SpellList -> SpellListActions(item, navigator)
+                    TrackedThing.Type.Text -> TextListActions(item, expanded) { expanded = it }
                     TrackedThing.Type.None -> Unit
                 }
             }
@@ -391,6 +412,28 @@ private fun SpellListActions(item: TrackedThing, navigator: DestinationsNavigato
 }
 
 @Composable
+private fun TextListActions(
+    item: TrackedThing,
+    expanded: Boolean,
+    onExpandStateChanged: (Boolean) -> Unit
+) {
+    ItemActionsBase(item) {
+        IconButton(
+            onClick = {
+                onExpandStateChanged(!expanded)
+            },
+            enabled = true
+        ) {
+            if (expanded) {
+                Icon(Icons.Default.KeyboardArrowUp, "")
+            } else {
+                Icon(Icons.Default.KeyboardArrowDown, "")
+            }
+        }
+    }
+}
+
+@Composable
 private fun ItemActionsBase(
     item: TrackedThing,
     actions: @Composable (TrackerViewModel) -> Unit
@@ -468,6 +511,9 @@ fun AlertDialogComposable(
 
                 TrackerViewModel.DialogType.SelectSlotLevelToCastSpell ->
                     SpellSlotSelectDialog(viewModel)
+
+                TrackerViewModel.DialogType.EditText ->
+                    ValueInputDialog(viewModel, TrackedThing.Type.Text)
 
                 TrackerViewModel.DialogType.None -> Unit
             }
@@ -745,6 +791,7 @@ private fun ValueTextField(
     TextField(
         value = valueInputData.value,
         onValueChange = { updateValue(it) },
+        maxLines = if (type == TrackedThing.Type.Text) 5 else 1,
         isError = !valueInputData.isValid,
         suffix = {
             if (type == TrackedThing.Type.Percentage) {
@@ -752,8 +799,13 @@ private fun ValueTextField(
             }
         },
         label = {
+            val label = if (type == TrackedThing.Type.Text) {
+                stringResource(id = R.string.text)
+            } else {
+                stringResource(R.string.amount)
+            }
             Text(
-                stringResource(R.string.amount),
+                label,
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
             )
         },

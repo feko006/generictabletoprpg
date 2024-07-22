@@ -1,0 +1,16 @@
+{
+  "sources": [],
+  "trackedGroups": [
+    {
+      "name": "import_text_group",
+      "trackedThings": [
+        {
+          "name": "text",
+          "type": "Text",
+          "value": "Text value",
+          "index": 4
+        }
+      ]
+    }
+  ]
+}

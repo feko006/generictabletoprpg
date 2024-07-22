@@ -160,6 +160,22 @@ class ImportExportTrackerDataTest {
     }
 
     @Test
+    fun importTextFromResource() {
+        // Given
+        val data = getRawResourceData(R.raw.import_text)
+        val expected = Text(0L, "text", "Text value", 4)
+
+        // When
+        jsonImportAllUseCase.import(data)
+
+        // Then
+        val trackedThingGroup = trackedThingGroupDao.getById(1)
+        assertThat(trackedThingGroup.name, equalTo("import_text_group"))
+        val importedTrackedThing = trackedThingDao.getById(1) as Text
+        assertTextEquals(importedTrackedThing, expected)
+    }
+
+    @Test
     fun exportingThenImportingDataEnsuresSameValues() = runTest {
         // Given
         val trackedThingGroup = TrackedThingGroup(name = "ttg")
@@ -240,6 +256,11 @@ class ImportExportTrackerDataTest {
     }
 
     private fun assertSpellListEqual(actual: TrackedThing, expected: SpellList) {
+        assertThat(actual, instanceOf(expected::class.java))
+        assertTrackedThingEqual(actual, expected)
+    }
+
+    private fun assertTextEquals(actual: TrackedThing, expected: Text) {
         assertThat(actual, instanceOf(expected::class.java))
         assertTrackedThingEqual(actual, expected)
     }
