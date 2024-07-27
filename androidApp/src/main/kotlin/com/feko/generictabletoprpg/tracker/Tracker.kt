@@ -280,6 +280,7 @@ private fun TrackedThing(
                     TrackedThing.Type.SpellSlot -> SpellSlotActions(item)
                     TrackedThing.Type.SpellList -> SpellListActions(item, navigator)
                     TrackedThing.Type.Text -> TextListActions(item, expanded) { expanded = it }
+                    TrackedThing.Type.HitDice -> HitDiceActions(item)
                     TrackedThing.Type.None -> Unit
                 }
             }
@@ -429,6 +430,25 @@ private fun TextListActions(
             } else {
                 Icon(Icons.Default.KeyboardArrowDown, "")
             }
+        }
+    }
+}
+
+@Composable
+private fun HitDiceActions(item: TrackedThing) {
+    if (item !is IntTrackedThing) return
+    ItemActionsBase(item) { viewModel ->
+        IconButton(
+            onClick = { viewModel.useHitDie(item) },
+            enabled = item.canSubtract()
+        ) {
+            Icon(painterResource(R.drawable.subtract), "")
+        }
+        IconButton(
+            onClick = { viewModel.restoreHitDie(item) },
+            enabled = item.canAdd()
+        ) {
+            Icon(Icons.Default.Add, "")
         }
     }
 }

@@ -27,7 +27,8 @@ sealed class TrackedThing(
         SpellSlot(R.string.spell_slot),
         Number(R.string.number),
         SpellList(R.string.spell_list),
-        Text(R.string.text)
+        Text(R.string.text),
+        HitDice(R.string.hit_dice)
     }
 
     var defaultValue: String = ""
@@ -45,6 +46,7 @@ sealed class TrackedThing(
 
                 Type.SpellList -> SpellList(0, "", "[]", index, groupId)
                 Type.Text -> Text(0, "", "", index, groupId)
+                Type.HitDice -> HitDice(0, "", 0, index, groupId)
             }
     }
 

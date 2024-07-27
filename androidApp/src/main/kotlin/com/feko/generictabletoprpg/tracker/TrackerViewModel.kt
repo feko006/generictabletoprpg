@@ -323,6 +323,17 @@ class TrackerViewModel(
         replaceItem(itemCopy)
     }
 
+    private fun addOne(item: TrackedThing) {
+        viewModelScope.launch {
+            val itemCopy = item.copy()
+            itemCopy.add("1")
+            withContext(Dispatchers.Default) {
+                trackedThingDao.insertOrUpdate(itemCopy)
+            }
+            replaceItem(itemCopy)
+        }
+    }
+
     fun setName(name: String) {
         viewModelScope.launch {
             val editedTrackedThing = requireNotNull(editedTrackedThing)
@@ -622,6 +633,14 @@ class TrackerViewModel(
             replaceItem(editedTrackedThing)
         }
 
+    }
+
+    fun useHitDie(item: TrackedThing) {
+        reduceByOne(item)
+    }
+
+    fun restoreHitDie(item: TrackedThing) {
+        addOne(item)
     }
 
     private fun onAlertDialogDismissed() {

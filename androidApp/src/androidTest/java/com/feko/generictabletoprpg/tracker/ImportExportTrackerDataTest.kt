@@ -176,6 +176,22 @@ class ImportExportTrackerDataTest {
     }
 
     @Test
+    fun importHitDiceFromResource() {
+        // Given
+        val data = getRawResourceData(R.raw.import_hit_dice)
+        val expected = HitDice(0L, "hit_dice", 3, 5).apply { defaultValue = "4" }
+
+        // When
+        jsonImportAllUseCase.import(data)
+
+        // Then
+        val trackedThingGroup = trackedThingGroupDao.getById(1)
+        assertThat(trackedThingGroup.name, equalTo("import_hit_dice_group"))
+        val importedTrackedThing = trackedThingDao.getById(1) as HitDice
+        assertHitDiceEquals(importedTrackedThing, expected)
+    }
+
+    @Test
     fun exportingThenImportingDataEnsuresSameValues() = runTest {
         // Given
         val trackedThingGroup = TrackedThingGroup(name = "ttg")
@@ -261,6 +277,11 @@ class ImportExportTrackerDataTest {
     }
 
     private fun assertTextEquals(actual: TrackedThing, expected: Text) {
+        assertThat(actual, instanceOf(expected::class.java))
+        assertTrackedThingEqual(actual, expected)
+    }
+
+    private fun assertHitDiceEquals(actual: TrackedThing, expected: HitDice) {
         assertThat(actual, instanceOf(expected::class.java))
         assertTrackedThingEqual(actual, expected)
     }

@@ -44,6 +44,7 @@ with a generic tracker.
 - Arbitrary number, e.g. for gold, arrows...
 - Known spells + more
 - Text e.g. for notes, items...
+- Hit dice
 
 More types will be supported in the future.
 
