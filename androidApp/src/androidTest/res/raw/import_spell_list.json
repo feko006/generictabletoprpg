@@ -1,0 +1,16 @@
+{
+  "sources": [],
+  "trackedGroups": [
+    {
+      "name": "import_spell_list_group",
+      "trackedThings": [
+        {
+          "name": "spell_list",
+          "value": "value",
+          "type": "SpellList",
+          "index": 6
+        }
+      ]
+    }
+  ]
+}

@@ -1,6 +1,6 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 buildscript {
-    project.extra.set("composeVersion", "1.5.3")
+    project.extra.set("composeVersion", "1.5.14")
 }
 
 plugins {

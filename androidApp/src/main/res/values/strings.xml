@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">generictabletoprpg</string>
+    <string name="app_name">gttrpg</string>
     <!--Common-->
     <string name="name">Name</string>
     <string name="sell_quantity">Sell quantity</string>
@@ -33,17 +33,24 @@
     <string name="properties">Properties</string>
     <string name="add">Add</string>
     <string name="subtract">Subtract</string>
+    <string name="dismiss">Dismiss</string>
     <!--Action-->
+    <string name="action">Action</string>
     <string name="action_details_title">Action Details</string>
     <!--Ammunition-->
+    <string name="ammunition">Ammunition</string>
     <string name="ammunition_details_title">Ammunition Details</string>
     <!--Armor-->
+    <string name="armor">Armor</string>
     <string name="armor_details_title">Armor Details</string>
     <!--Condition-->
+    <string name="condition">Condition</string>
     <string name="condition_details_title">Condition Details</string>
     <!--Disease-->
+    <string name="disease">Disease</string>
     <string name="disease_details_title">Disease Details</string>
     <!--Feat-->
+    <string name="feat">Feat</string>
     <string name="feat_details_title">Feat Details</string>
     <!--Import-->
     <string name="import_title">Import</string>
@@ -53,6 +60,7 @@
     <string name="partially_imported_data_toast">Data partially imported</string>
     <!--Search All-->
     <string name="search_all_title">Index</string>
+    <string name="search_everywhere">Search everywhere</string>
     <!--Tracker-->
     <string name="tracker_title">Tracker</string>
     <string name="create_new_tracked_group_dialog_title">Create new group</string>
@@ -65,14 +73,31 @@
     <string name="take_damage_dialog_title">Take damage</string>
     <string name="heal_dialog_title">Heal</string>
     <string name="add_temporary_hp_dialog_title">Add temporary HP</string>
+    <string name="spell_list">Spell List</string>
+    <string name="add_spell_to_list">Add spell</string>
+    <string name="spell_already_in_list">The spell is already in the list</string>
+    <string name="spell_successfully_added_to_list">Spell successfully added to list!</string>
+    <string name="confirm_spell_removal_from_list_dialog_title">Remove spell?</string>
+    <string name="select_slot_level_for_casting_spell">Cast at which level?</string>
+    <string name="spell_cast_with_slot_level">Spell cast at level %s</string>
     <!--Spell-->
+    <string name="spell">Spell</string>
     <string name="spell_details_title">Spell Details</string>
+    <string name="concentration">Concentration</string>
+    <string name="class_term">Class</string>
+    <string name="ritual">Ritual</string>
+    <string name="classes">Classes</string>
     <!--Weapon-->
+    <string name="weapon">Weapon</string>
     <string name="weapon_details_title">Weapon Details</string>
-    <string name="search_everywhere">Search everywhere</string>
     <!--Export-->
     <string name="export_failed">Export failed</string>
     <string name="export_successful">Export successful</string>
     <string name="file_import_hint">Select a .json or .orcbrew file</string>
     <string name="export_location_hint">Select a directory where the export will be generated</string>
+    <!--Filter-->
+    <string name="filter_type_placeholder">Type</string>
+    <string name="class_filter_disclaimer">* Not all imported spells have classes set, so results may not be accurate</string>
+    <string name="text">Text</string>
+    <string name="hit_dice">Hit dice</string>
 </resources>
