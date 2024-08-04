@@ -1,6 +1,13 @@
 name: develop
 on: push
 jobs:
+  validate-fastlane-metadata:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Validate fastlane metadata
+        uses: ashutoshgngwr/validate-fastlane-supply-metadata@v2
   verify-instrumentation-tests:
     runs-on: ubuntu-latest
     steps:
