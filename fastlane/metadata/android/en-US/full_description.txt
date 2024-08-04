@@ -1,0 +1,7 @@
+Import your DMV data and quickly search through it on your own device.
+
+Track your characters, monsters, NPCs, world stats and more.
+
+Keep or move your data to another device by exporting and importing it.
+
+Fore more detailed info, check out the following page: https://github.com/feko006/generictabletoprpg
