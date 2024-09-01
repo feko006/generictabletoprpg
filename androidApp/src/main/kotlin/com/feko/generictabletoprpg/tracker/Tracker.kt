@@ -186,6 +186,11 @@ private fun TrackedThing(
     val scale =
         animateFloatAsState(targetScale, label = "Tracked thing dragging scale")
     Card(
+        onClick = {
+            if (item is SpellList) {
+                viewModel.showPreviewSpellListDialog(item)
+            }
+        },
         Modifier
             .fillMaxWidth()
             .scale(scale.value)
