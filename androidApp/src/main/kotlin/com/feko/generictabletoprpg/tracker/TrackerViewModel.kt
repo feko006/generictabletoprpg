@@ -459,7 +459,8 @@ class TrackerViewModel(
     }
 
     fun itemReordered(from: Int, to: Int) {
-        if (to == _items.value.size) return
+        val itemCount = _items.value.size
+        if (from == itemCount || to == itemCount) return
 
         viewModelScope.launch {
             val newList =
