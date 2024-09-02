@@ -12,9 +12,11 @@ coroutines-test = "1.7.3"
 edn-java = "0.7.1"
 junit = "4.13.2"
 koin = "3.5.6"
-kotlin = "1.9.24"
+kotlin = "1.9.25"
 kotlin-extensions = "1.13.1"
-ksp = "1.9.24-1.0.20"
+# Higher versions require Kotlin 2.0.+
+kotlinx-serialization = "1.6.3"
+ksp = "1.9.25-1.0.20"
 lifecycle = "2.8.4"
 lifecycle-viewmodel-compose = "2.8.4"
 moshi = "1.15.1"
@@ -44,6 +46,7 @@ burnoutcrew-composereorderable = { group = "org.burnoutcrew.composereorderable",
 insert-koin = { group = "io.insert-koin", name = "koin-androidx-compose", version.ref = "koin" }
 jakewharton-timber = { group = "com.jakewharton.timber", name = "timber", version.ref = "timber" }
 jetbrains-kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "coroutines-test" }
+jetbrains-kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
 junit = { module = "junit:junit", version.ref = "junit" }
 raamcosta-compose-destinations-core = { group = "io.github.raamcosta.compose-destinations", name = "core", version.ref = "compose-destinations" }
 raamcosta-compose-destinations-ksp = { group = "io.github.raamcosta.compose-destinations", name = "ksp", version.ref = "compose-destinations" }
@@ -56,3 +59,4 @@ android-application = { id = "com.android.application", version.ref = "agp" }
 google-ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 jetbrains-kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+jetbrains-kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }

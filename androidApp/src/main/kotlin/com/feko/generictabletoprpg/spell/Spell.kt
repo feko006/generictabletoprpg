@@ -5,8 +5,10 @@ import com.feko.generictabletoprpg.common.IFromSource
 import com.feko.generictabletoprpg.common.IIdentifiable
 import com.feko.generictabletoprpg.common.INamed
 import com.feko.generictabletoprpg.import.IProcessEdnMap
+import kotlinx.serialization.Serializable
 
 @DoNotObfuscate
+@Serializable
 data class Spell(
     override val id: Long = 0,
     override val name: String,
@@ -82,6 +84,7 @@ data class Spell(
     }
 
     @DoNotObfuscate
+    @Serializable
     data class SpellComponents(
         val verbal: Boolean,
         val somatic: Boolean,

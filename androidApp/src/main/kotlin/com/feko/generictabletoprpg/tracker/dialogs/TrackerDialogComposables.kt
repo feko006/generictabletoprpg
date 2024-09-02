@@ -43,16 +43,26 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import com.feko.generictabletoprpg.R
+import com.feko.generictabletoprpg.common.alertdialog.EmptyAlertDialogSubViewModel
+import com.feko.generictabletoprpg.common.alertdialog.IAlertDialogSubViewModel
 import com.feko.generictabletoprpg.common.composable.DialogTitle
-import com.feko.generictabletoprpg.destinations.SpellDetailsScreenDestination
+import com.feko.generictabletoprpg.destinations.SimpleSpellDetailsScreenDestination
 import com.feko.generictabletoprpg.searchall.getUniqueListItemKey
+import com.feko.generictabletoprpg.spell.Spell
+import com.feko.generictabletoprpg.spell.SpellRange
 import com.feko.generictabletoprpg.tracker.CancelButton
+import com.feko.generictabletoprpg.tracker.SpellList
+import com.feko.generictabletoprpg.tracker.SpellListEntry
 import com.feko.generictabletoprpg.tracker.TrackedThing
 import com.feko.generictabletoprpg.tracker.dialogs.IAlertDialogTrackerViewModel.DialogType
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import com.ramcosta.composedestinations.navigation.EmptyDestinationsNavigator
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -190,18 +200,20 @@ fun SpellListDialog(
         LazyColumn(Modifier.heightIn(0.dp, 500.dp)) {
             items(
                 dereferencedSpellList.spells,
-                key = { getUniqueListItemKey(it) }) { spell ->
+                key = { getUniqueListItemKey(it) }) { spellListEntry ->
                 Row(
                     Modifier.fillMaxWidth(),
                     Arrangement.SpaceBetween,
                     Alignment.CenterVertically
                 ) {
                     com.feko.generictabletoprpg.common.composable.OverviewListItem(
-                        spell,
+                        spellListEntry,
                         Modifier
                             .weight(1f)
                             .clickable {
-                                navigator.navigate(SpellDetailsScreenDestination(spell.id))
+                                navigator.navigate(
+                                    SimpleSpellDetailsScreenDestination.invoke(spellListEntry.toSpell())
+                                )
                             },
                         ListItemDefaults.colors(containerColor = Color.Transparent)
                     )
@@ -209,19 +221,19 @@ fun SpellListDialog(
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        if (spell.level != 0) {
+                        if (spellListEntry.level != 0) {
                             IconButton(
                                 onClick = {
-                                    viewModel.castSpellRequested(spell.level)
+                                    viewModel.castSpellRequested(spellListEntry.level)
                                 },
-                                enabled = viewModel.canCastSpell(spell.level)
+                                enabled = viewModel.canCastSpell(spellListEntry.level)
                             ) {
                                 Icon(painterResource(R.drawable.celebration), "")
                             }
                         }
                         IconButton(
                             onClick = {
-                                viewModel.removeSpellFromSpellListRequested(spell)
+                                viewModel.removeSpellFromSpellListRequested(spellListEntry)
                             }
                         ) {
                             Icon(Icons.Default.Delete, "")
@@ -403,6 +415,94 @@ private fun ValueTextField(
     if (autoFocus) {
         LaunchedEffect(Unit) {
             focusRequester.requestFocus()
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview
+@Composable
+fun SpellListDialogPreview() {
+    BasicAlertDialog(
+        onDismissRequest = {},
+        properties = DialogProperties()
+    ) {
+        Card {
+            SpellListDialog(
+                object : ISpellListDialogTrackerViewModel {
+                    override val spellListBeingPreviewed: StateFlow<SpellList?>
+                        get() = MutableStateFlow(
+                            SpellList(0, "Spell List", "", 0, 0)
+                                .apply {
+                                    spells = mutableListOf(
+                                        SpellListEntry(
+                                            id = 1,
+                                            name = "Spell 1",
+                                            description = "",
+                                            school = "Abjuration",
+                                            duration = "",
+                                            concentration = true,
+                                            level = 0,
+                                            source = "",
+                                            components = Spell.SpellComponents(
+                                                verbal = true,
+                                                somatic = true,
+                                                material = true,
+                                                materialComponent = null
+                                            ),
+                                            castingTime = "1 action",
+                                            classesThatCanCast = listOf(),
+                                            range = SpellRange(
+                                                isSelf = true,
+                                                isTouch = true,
+                                                isSight = true,
+                                                distance = 0,
+                                                unit = null
+                                            ),
+                                            isRitual = true,
+                                            isPrepared = false
+                                        ), SpellListEntry(
+                                            id = 2,
+                                            name = "Spell 2",
+                                            description = "",
+                                            school = "Conjuration",
+                                            duration = "",
+                                            concentration = true,
+                                            level = 1,
+                                            source = "",
+                                            components = Spell.SpellComponents(
+                                                true,
+                                                somatic = true,
+                                                material = true,
+                                                materialComponent = null
+                                            ),
+                                            castingTime = "1 bonus action",
+                                            classesThatCanCast = listOf(),
+                                            range = SpellRange(
+                                                isSelf = true,
+                                                isTouch = true,
+                                                isSight = true,
+                                                distance = 0,
+                                                unit = null
+                                            ),
+                                            isRitual = true,
+                                            isPrepared = true
+                                        )
+                                    )
+                                }
+                        )
+
+                    override fun removeSpellFromSpellListRequested(spell: SpellListEntry) = Unit
+
+                    override fun castSpellRequested(level: Int) = Unit
+
+                    override fun canCastSpell(level: Int): Boolean = true
+
+                    override val alertDialog: IAlertDialogSubViewModel
+                        get() = EmptyAlertDialogSubViewModel
+                },
+                EmptyDestinationsNavigator
+            )
         }
     }
 }

@@ -15,7 +15,6 @@ import com.feko.generictabletoprpg.common.toast.IToastSubViewModel
 import com.feko.generictabletoprpg.common.toast.ToastSubViewModel
 import com.feko.generictabletoprpg.import.IJson
 import com.feko.generictabletoprpg.searchall.ISearchAllUseCase
-import com.feko.generictabletoprpg.spell.Spell
 import com.feko.generictabletoprpg.spell.SpellDao
 import com.feko.generictabletoprpg.tracker.dialogs.IAlertDialogTrackerViewModel.DialogType
 import kotlinx.coroutines.Dispatchers
@@ -26,7 +25,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import timber.log.Timber
 
 class TrackerViewModel(
     private val groupId: Long,
@@ -57,7 +55,7 @@ class TrackerViewModel(
 
     private var editedTrackedThing: TrackedThing? = null
     private var spellListBeingAddedTo: SpellList? = null
-    private var spellBeingRemoved: Spell? = null
+    private var spellBeingRemoved: SpellListEntry? = null
 
     override lateinit var dialogType: DialogType
     private val _spellListBeingPreviewed = MutableStateFlow<SpellList?>(null)
@@ -92,7 +90,7 @@ class TrackerViewModel(
             .onEach {
                 if (it is SpellList) {
                     it.spells =
-                        json.from<List<Spell>>(it.value, SpellList.spellListType)
+                        json.from<List<SpellListEntry>>(it.value, SpellList.spellListType)
                             .toMutableList()
                 }
             }
@@ -498,7 +496,6 @@ class TrackerViewModel(
     }
 
     override fun addSpellToList(spellId: Long) {
-        Timber.d("Spell ID: $spellId")
         viewModelScope.launch {
             val spellToAdd = withContext(Dispatchers.Default) {
                 spellDao.getById(spellId)
@@ -511,7 +508,7 @@ class TrackerViewModel(
             if (spellAlreadyInList) {
                 _toast.showMessage(R.string.spell_already_in_list)
             } else {
-                spellList.spells.add(spellToAdd)
+                spellList.spells.add(SpellListEntry.fromSpell(spellToAdd))
                 val sortedSpells =
                     spellList.spells
                         .sortedWith { spell1, spell2 ->
@@ -538,7 +535,7 @@ class TrackerViewModel(
         spellListBeingAddedTo = spellList
     }
 
-    override fun removeSpellFromSpellListRequested(spell: Spell) {
+    override fun removeSpellFromSpellListRequested(spell: SpellListEntry) {
         viewModelScope.launch {
             _alertDialog.hide()
             awaitFrame()

@@ -2,6 +2,7 @@ plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("com.google.devtools.ksp")
+    id("org.jetbrains.kotlin.plugin.serialization")
 }
 
 android {
@@ -85,6 +86,7 @@ dependencies {
     implementation(libs.burnoutcrew.composereorderable)
     implementation(libs.insert.koin)
     implementation(libs.jakewharton.timber)
+    implementation(libs.jetbrains.kotlinx.serialization.json)
     implementation(libs.raamcosta.compose.destinations.core)
     implementation(libs.squareup.moshi)
     implementation(libs.squareup.moshi.kotlin)
