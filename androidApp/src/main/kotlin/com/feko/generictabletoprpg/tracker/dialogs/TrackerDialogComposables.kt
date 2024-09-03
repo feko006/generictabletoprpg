@@ -70,7 +70,10 @@ import com.feko.generictabletoprpg.tracker.EmptyTrackerViewModel
 import com.feko.generictabletoprpg.tracker.SpellList
 import com.feko.generictabletoprpg.tracker.SpellListEntry
 import com.feko.generictabletoprpg.tracker.TrackedThing
+import com.feko.generictabletoprpg.tracker.containsPreparedSpells
 import com.feko.generictabletoprpg.tracker.dialogs.IAlertDialogTrackerViewModel.DialogType
+import com.feko.generictabletoprpg.tracker.filterPrepared
+import com.feko.generictabletoprpg.tracker.preparedSpellsCount
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.navigation.EmptyDestinationsNavigator
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -204,11 +207,12 @@ fun SpellListDialog(
 ) {
     val spellListBeingPreviewed by viewModel.spellListBeingPreviewed.collectAsState()
     val dereferencedSpellList = spellListBeingPreviewed ?: return
-    val numberOfPreparedSpells = dereferencedSpellList.spells.count { it.isPrepared }
+    val numberOfPreparedSpells = dereferencedSpellList.spells.preparedSpellsCount()
     Column(
         Modifier.padding(16.dp)
     ) {
         DialogTitle(viewModel.alertDialog.titleResource)
+        var isFilteringByPrepared by remember { mutableStateOf(false) }
         Row(
             Modifier.padding(bottom = 8.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -224,43 +228,48 @@ fun SpellListDialog(
                     append(": ")
                     append(numberOfPreparedSpells)
                 },
-                Modifier.weight(1f),
+                Modifier
+                    .weight(1f)
+                    .padding(vertical = 16.dp),
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
                 style = Typography.bodySmall
             )
-            var isFilteringByPrepared by remember { mutableStateOf(false) }
-            ElevatedFilterChip(
-                isFilteringByPrepared,
-                onClick = {
-                    isFilteringByPrepared = !isFilteringByPrepared
-                },
-                label = {
-                    Text(stringResource(R.string.prepared))
-                },
-                leadingIcon =
-                {
-                    if (isFilteringByPrepared) {
-                        Icon(
-                            imageVector = Icons.Filled.Done,
-                            contentDescription = "Done icon",
-                            modifier = Modifier.size(FilterChipDefaults.IconSize)
-                        )
-                    } else {
-                        Icon(
-                            painter = painterResource(R.drawable.check_box_outline_blank),
-                            contentDescription = "Done icon",
-                            modifier = Modifier.size(FilterChipDefaults.IconSize)
-                        )
+            if (dereferencedSpellList.spells.containsPreparedSpells()) {
+                ElevatedFilterChip(
+                    isFilteringByPrepared,
+                    onClick = {
+                        isFilteringByPrepared = !isFilteringByPrepared
+                    },
+                    label = {
+                        Text(stringResource(R.string.prepared))
+                    },
+                    leadingIcon =
+                    {
+                        if (isFilteringByPrepared) {
+                            Icon(
+                                imageVector = Icons.Filled.Done,
+                                contentDescription = "Done icon",
+                                modifier = Modifier.size(FilterChipDefaults.IconSize)
+                            )
+                        } else {
+                            Icon(
+                                painter = painterResource(R.drawable.check_box_outline_blank),
+                                contentDescription = "Done icon",
+                                modifier = Modifier.size(FilterChipDefaults.IconSize)
+                            )
+                        }
                     }
-                }
-            )
+                )
+            } else {
+                isFilteringByPrepared = false
+            }
         }
         LazyColumn(
             Modifier.heightIn(0.dp, 600.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             items(
-                dereferencedSpellList.spells,
+                dereferencedSpellList.spells.filterPrepared(isFilteringByPrepared),
                 key = { getUniqueListItemKey(it.toSpell()) }) { spellListEntry ->
                 SpellListEntryListItem(spellListEntry, navigator, viewModel)
             }
@@ -314,7 +323,7 @@ private fun SpellListEntryListItem(
                             Checkbox(
                                 spellListEntry.isPrepared,
                                 onCheckedChange = {
-
+                                    viewModel.changeSpellListEntryPreparedState(spellListEntry, it)
                                 }
                             )
                         }
@@ -561,6 +570,11 @@ fun SpellListDialogPreview() {
 
                     override fun canCastSpell(level: Int): Boolean = true
 
+                    override fun changeSpellListEntryPreparedState(
+                        spellListEntry: SpellListEntry,
+                        isPrepared: Boolean
+                    ) = Unit
+
                     override val alertDialog: IAlertDialogSubViewModel
                         get() = EmptyAlertDialogSubViewModel
 
@@ -576,7 +590,7 @@ fun SpellListDialogPreview() {
 @Preview
 fun SpellListEntryListItemPreview() {
     SpellListEntryListItem(
-        getSpellListEntry1(),
+        getSpellListEntry2(),
         EmptyDestinationsNavigator,
         EmptyTrackerViewModel
     )

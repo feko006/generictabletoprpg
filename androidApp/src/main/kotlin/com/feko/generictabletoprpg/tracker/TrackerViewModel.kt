@@ -622,6 +622,23 @@ class TrackerViewModel(
             .filterIsInstance<SpellSlot>()
             .any { it.level >= level && it.amount > 0 }
 
+    override fun changeSpellListEntryPreparedState(
+        spellListEntry: SpellListEntry,
+        isPrepared: Boolean
+    ) {
+        viewModelScope.launch {
+            val spellList = requireNotNull(spellListBeingPreviewed.value)
+            spellListEntry.isPrepared = isPrepared
+            spellList.setSpells(spellList.spells, json)
+            withContext(Dispatchers.Default) {
+                trackedThingDao.insertOrUpdate(spellList)
+            }
+            val spellListCopy = spellList.copy() as SpellList
+            replaceItem(spellListCopy)
+            _spellListBeingPreviewed.emit(spellListCopy)
+        }
+    }
+
     private fun editText() {
         viewModelScope.launch {
             val editedTrackedThing = requireNotNull(editedTrackedThing)

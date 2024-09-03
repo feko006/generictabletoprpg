@@ -91,6 +91,11 @@ object EmptyTrackerViewModel : ITrackerViewModel {
 
     override fun canCastSpell(level: Int): Boolean = false
 
+    override fun changeSpellListEntryPreparedState(
+        spellListEntry: SpellListEntry,
+        isPrepared: Boolean
+    ) = Unit
+
     override fun useHitDie(item: TrackedThing) = Unit
 
     override fun restoreHitDie(item: TrackedThing) = Unit

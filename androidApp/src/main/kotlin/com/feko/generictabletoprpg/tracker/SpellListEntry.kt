@@ -20,7 +20,7 @@ data class SpellListEntry(
     val classesThatCanCast: List<String>,
     val range: SpellRange,
     val isRitual: Boolean,
-    val isPrepared: Boolean = false
+    var isPrepared: Boolean = false
 ) : IIdentifiable,
     INamed,
     IFromSource {
@@ -42,3 +42,12 @@ data class SpellListEntry(
         )
 
 }
+
+fun List<SpellListEntry>.containsPreparedSpells() = any { it.isPrepared || it.level == 0 }
+
+fun List<SpellListEntry>.preparedSpellsCount() = count { it.isPrepared || it.level == 0 }
+
+fun List<SpellListEntry>.filterPrepared(preparedSpellsOnly: Boolean) =
+    if (preparedSpellsOnly) filter { it.isPrepared || it.level == 0 }
+    else this
+

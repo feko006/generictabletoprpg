@@ -9,4 +9,5 @@ interface ISpellListDialogTrackerViewModel : IDialogTrackerViewModel {
     fun removeSpellFromSpellListRequested(spell: SpellListEntry)
     fun castSpellRequested(level: Int)
     fun canCastSpell(level: Int): Boolean
+    fun changeSpellListEntryPreparedState(spellListEntry: SpellListEntry, isPrepared: Boolean)
 }
