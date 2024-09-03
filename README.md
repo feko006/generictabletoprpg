@@ -48,7 +48,7 @@ with a generic tracker.
 - Abilities
 - Spell slots
 - Arbitrary number, e.g. for gold, arrows...
-- Known spells + more
+- Known & prepared spells + more
 - Text e.g. for notes, items...
 - Hit dice
 
