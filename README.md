@@ -1,4 +1,4 @@
-![Build](https://github.com/feko006/generictabletoprpg/actions/workflows/develop.yml/badge.svg)
+![Build](https://github.com/feko006/generictabletoprpg/actions/workflows/build-and-test.yml/badge.svg)
 
 # generictabletoprpg
 

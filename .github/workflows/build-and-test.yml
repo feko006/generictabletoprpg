@@ -1,5 +1,11 @@
 name: develop
-on: push
+on:
+  push:
+    branches:
+      - develop
+  pull_request_target:
+    branches:
+      - develop
 jobs:
   validate-fastlane-metadata:
     runs-on: ubuntu-latest
