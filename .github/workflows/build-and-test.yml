@@ -1,11 +1,12 @@
-name: develop
+name: build-and-test
 on:
   push:
     branches:
       - develop
-  pull_request_target:
+  pull_request:
     branches:
-      - develop
+      - '!develop'
+      - '!master'
 jobs:
   validate-fastlane-metadata:
     runs-on: ubuntu-latest
