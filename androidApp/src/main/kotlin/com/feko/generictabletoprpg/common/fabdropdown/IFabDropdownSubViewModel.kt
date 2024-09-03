@@ -6,5 +6,4 @@ interface IFabDropdownSubViewModel {
     val isMenuExpanded: Flow<Boolean>
     fun toggleFabDropdownRequested()
     fun dismiss()
-
 }

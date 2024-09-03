@@ -2,7 +2,6 @@ package com.feko.generictabletoprpg.tracker
 
 import com.feko.generictabletoprpg.common.DoNotObfuscate
 import com.feko.generictabletoprpg.import.IJson
-import com.feko.generictabletoprpg.spell.Spell
 import com.squareup.moshi.Types
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -17,10 +16,11 @@ class SpellList(
 ) : TrackedThing(id, name, value, Type.SpellList, index, groupId) {
 
     companion object {
-        val spellListType = Types.newParameterizedType(List::class.java, Spell::class.java)!!
+        val spellListType =
+            Types.newParameterizedType(List::class.java, SpellListEntry::class.java)!!
     }
 
-    var spells: MutableList<Spell> = mutableListOf()
+    var spells: MutableList<SpellListEntry> = mutableListOf()
 
     override fun setNewValue(value: String) = Unit
 
@@ -37,7 +37,8 @@ class SpellList(
     override fun canAdd(): Boolean = throw IllegalStateException()
 
     override fun canSubtract(): Boolean = throw IllegalStateException()
-    suspend fun setSpells(spells: List<Spell>, json: IJson) {
+
+    suspend fun setSpells(spells: List<SpellListEntry>, json: IJson) {
         this.spells = spells.toMutableList()
         withContext(Dispatchers.Default) {
             value = json.to(spells, spellListType)

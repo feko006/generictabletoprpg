@@ -2,6 +2,7 @@ plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("com.google.devtools.ksp")
+    id("org.jetbrains.kotlin.plugin.serialization")
 }
 
 android {
@@ -16,8 +17,8 @@ android {
         applicationId = "com.feko.generictabletoprpg"
         minSdk = 21
         targetSdk = 34
-        versionCode = 2
-        versionName = "1.0.0"
+        versionCode = 3
+        versionName = "1.1.0"
 
         vectorDrawables {
             useSupportLibrary = true
@@ -75,6 +76,7 @@ dependencies {
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.compose.ui)
+    implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.document.file)
     implementation(libs.androidx.lifecycle.runtime.ktx)
@@ -85,6 +87,7 @@ dependencies {
     implementation(libs.burnoutcrew.composereorderable)
     implementation(libs.insert.koin)
     implementation(libs.jakewharton.timber)
+    implementation(libs.jetbrains.kotlinx.serialization.json)
     implementation(libs.raamcosta.compose.destinations.core)
     implementation(libs.squareup.moshi)
     implementation(libs.squareup.moshi.kotlin)
@@ -98,7 +101,6 @@ dependencies {
 
     debugImplementation(libs.androidx.compose.ui.test.manifest)
     debugImplementation(libs.androidx.compose.ui.tooling)
-    debugImplementation(libs.androidx.compose.ui.tooling.preview)
 
     ksp(libs.androidx.room.compiler)
     ksp(libs.raamcosta.compose.destinations.ksp)

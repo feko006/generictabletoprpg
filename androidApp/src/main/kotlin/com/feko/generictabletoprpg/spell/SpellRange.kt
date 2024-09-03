@@ -1,8 +1,10 @@
 package com.feko.generictabletoprpg.spell
 
 import com.feko.generictabletoprpg.common.DoNotObfuscate
+import kotlinx.serialization.Serializable
 
 @DoNotObfuscate
+@Serializable
 data class SpellRange(
     val isSelf: Boolean,
     val isTouch: Boolean,
