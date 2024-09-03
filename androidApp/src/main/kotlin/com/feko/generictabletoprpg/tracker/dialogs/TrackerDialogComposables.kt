@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -15,23 +16,32 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Done
 import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.Card
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.ElevatedFilterChip
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilterChipDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
+import androidx.compose.material3.LocalMinimumInteractiveComponentEnforcement
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
@@ -54,7 +64,9 @@ import com.feko.generictabletoprpg.destinations.SimpleSpellDetailsScreenDestinat
 import com.feko.generictabletoprpg.searchall.getUniqueListItemKey
 import com.feko.generictabletoprpg.spell.Spell
 import com.feko.generictabletoprpg.spell.SpellRange
+import com.feko.generictabletoprpg.theme.Typography
 import com.feko.generictabletoprpg.tracker.CancelButton
+import com.feko.generictabletoprpg.tracker.EmptyTrackerViewModel
 import com.feko.generictabletoprpg.tracker.SpellList
 import com.feko.generictabletoprpg.tracker.SpellListEntry
 import com.feko.generictabletoprpg.tracker.TrackedThing
@@ -192,54 +204,65 @@ fun SpellListDialog(
 ) {
     val spellListBeingPreviewed by viewModel.spellListBeingPreviewed.collectAsState()
     val dereferencedSpellList = spellListBeingPreviewed ?: return
+    val numberOfPreparedSpells = dereferencedSpellList.spells.count { it.isPrepared }
     Column(
-        Modifier.padding(16.dp),
-        Arrangement.spacedBy(16.dp)
+        Modifier.padding(16.dp)
     ) {
         DialogTitle(viewModel.alertDialog.titleResource)
-        LazyColumn(Modifier.heightIn(0.dp, 500.dp)) {
-            items(
-                dereferencedSpellList.spells,
-                key = { getUniqueListItemKey(it) }) { spellListEntry ->
-                Row(
-                    Modifier.fillMaxWidth(),
-                    Arrangement.SpaceBetween,
-                    Alignment.CenterVertically
-                ) {
-                    com.feko.generictabletoprpg.common.composable.OverviewListItem(
-                        spellListEntry,
-                        Modifier
-                            .weight(1f)
-                            .clickable {
-                                navigator.navigate(
-                                    SimpleSpellDetailsScreenDestination.invoke(spellListEntry.toSpell())
-                                )
-                            },
-                        ListItemDefaults.colors(containerColor = Color.Transparent)
-                    )
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        if (spellListEntry.level != 0) {
-                            IconButton(
-                                onClick = {
-                                    viewModel.castSpellRequested(spellListEntry.level)
-                                },
-                                enabled = viewModel.canCastSpell(spellListEntry.level)
-                            ) {
-                                Icon(painterResource(R.drawable.celebration), "")
-                            }
-                        }
-                        IconButton(
-                            onClick = {
-                                viewModel.removeSpellFromSpellListRequested(spellListEntry)
-                            }
-                        ) {
-                            Icon(Icons.Default.Delete, "")
-                        }
+        Row(
+            Modifier.padding(bottom = 8.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                buildString {
+                    append(stringResource(R.string.known))
+                    append(": ")
+                    append(dereferencedSpellList.spells.size)
+                    append(", ")
+                    append(stringResource(R.string.prepared))
+                    append(": ")
+                    append(numberOfPreparedSpells)
+                },
+                Modifier.weight(1f),
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                style = Typography.bodySmall
+            )
+            var isFilteringByPrepared by remember { mutableStateOf(false) }
+            ElevatedFilterChip(
+                isFilteringByPrepared,
+                onClick = {
+                    isFilteringByPrepared = !isFilteringByPrepared
+                },
+                label = {
+                    Text(stringResource(R.string.prepared))
+                },
+                leadingIcon =
+                {
+                    if (isFilteringByPrepared) {
+                        Icon(
+                            imageVector = Icons.Filled.Done,
+                            contentDescription = "Done icon",
+                            modifier = Modifier.size(FilterChipDefaults.IconSize)
+                        )
+                    } else {
+                        Icon(
+                            painter = painterResource(R.drawable.check_box_outline_blank),
+                            contentDescription = "Done icon",
+                            modifier = Modifier.size(FilterChipDefaults.IconSize)
+                        )
                     }
                 }
+            )
+        }
+        LazyColumn(
+            Modifier.heightIn(0.dp, 600.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            items(
+                dereferencedSpellList.spells,
+                key = { getUniqueListItemKey(it.toSpell()) }) { spellListEntry ->
+                SpellListEntryListItem(spellListEntry, navigator, viewModel)
             }
         }
         TextButton(
@@ -247,8 +270,99 @@ fun SpellListDialog(
             modifier = Modifier
                 .wrapContentWidth()
                 .align(Alignment.End)
+                .padding(top = 8.dp)
         ) {
             Text(stringResource(R.string.dismiss))
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun SpellListEntryListItem(
+    spellListEntry: SpellListEntry,
+    navigator: DestinationsNavigator,
+    viewModel: ISpellListDialogTrackerViewModel
+) {
+    ElevatedCard(onClick = {
+        navigator.navigate(
+            SimpleSpellDetailsScreenDestination.invoke(
+                spellListEntry.toSpell()
+            )
+        )
+    }) {
+        Column {
+            Row(
+                Modifier.padding(horizontal = 16.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    spellListEntry.name,
+                    Modifier
+                        .weight(1f)
+                        .padding(vertical = 16.dp),
+                    style = Typography.titleMedium
+                )
+                if (spellListEntry.level > 0) {
+                    Column(
+                        modifier = Modifier.padding(top = 16.dp, bottom = 8.dp),
+                        verticalArrangement = Arrangement.spacedBy(4.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        CompositionLocalProvider(LocalMinimumInteractiveComponentEnforcement provides false) {
+                            Checkbox(
+                                spellListEntry.isPrepared,
+                                onCheckedChange = {
+
+                                }
+                            )
+                        }
+                        Text(
+                            stringResource(R.string.prepared),
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                            style = Typography.labelSmall
+                        )
+                    }
+                }
+            }
+            HorizontalDivider(Modifier.padding(horizontal = 2.dp))
+            Text(
+                "${stringResource(R.string.level)} ${spellListEntry.level}, ${spellListEntry.school}",
+                Modifier.padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 8.dp),
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                style = Typography.bodySmall
+            )
+            Text(
+                "${stringResource(R.string.casting_time)}: ${spellListEntry.castingTime}",
+                Modifier.padding(start = 16.dp, end = 16.dp, bottom = 16.dp),
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                style = Typography.bodySmall
+            )
+            HorizontalDivider(Modifier.padding(horizontal = 2.dp))
+            Row(
+                Modifier.fillMaxWidth(),
+                Arrangement.SpaceAround,
+                Alignment.CenterVertically
+            ) {
+                if (spellListEntry.level != 0) {
+                    TextButton(
+                        onClick = {
+                            viewModel.castSpellRequested(spellListEntry.level)
+                        },
+                        enabled = viewModel.canCastSpell(spellListEntry.level)
+                    ) {
+                        Text(stringResource(R.string.cast))
+                    }
+                }
+                TextButton(
+                    onClick = {
+                        viewModel.removeSpellFromSpellListRequested(spellListEntry)
+                    }
+                ) {
+                    Text(stringResource(R.string.remove))
+                }
+            }
         }
     }
 }
@@ -298,7 +412,7 @@ private fun NameTextField(
         label = {
             Text(
                 "${stringResource(R.string.name)} ($defaultValue)",
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
             )
         },
         trailingIcon = {
@@ -339,7 +453,7 @@ private fun SpellSlotLevelTextField(
             label = {
                 Text(
                     stringResource(R.string.level),
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                 )
             },
             trailingIcon = {
@@ -391,7 +505,7 @@ private fun ValueTextField(
             }
             Text(
                 label,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
             )
         },
         trailingIcon = {
@@ -435,59 +549,8 @@ fun SpellListDialogPreview() {
                             SpellList(0, "Spell List", "", 0, 0)
                                 .apply {
                                     spells = mutableListOf(
-                                        SpellListEntry(
-                                            id = 1,
-                                            name = "Spell 1",
-                                            description = "",
-                                            school = "Abjuration",
-                                            duration = "",
-                                            concentration = true,
-                                            level = 0,
-                                            source = "",
-                                            components = Spell.SpellComponents(
-                                                verbal = true,
-                                                somatic = true,
-                                                material = true,
-                                                materialComponent = null
-                                            ),
-                                            castingTime = "1 action",
-                                            classesThatCanCast = listOf(),
-                                            range = SpellRange(
-                                                isSelf = true,
-                                                isTouch = true,
-                                                isSight = true,
-                                                distance = 0,
-                                                unit = null
-                                            ),
-                                            isRitual = true,
-                                            isPrepared = false
-                                        ), SpellListEntry(
-                                            id = 2,
-                                            name = "Spell 2",
-                                            description = "",
-                                            school = "Conjuration",
-                                            duration = "",
-                                            concentration = true,
-                                            level = 1,
-                                            source = "",
-                                            components = Spell.SpellComponents(
-                                                true,
-                                                somatic = true,
-                                                material = true,
-                                                materialComponent = null
-                                            ),
-                                            castingTime = "1 bonus action",
-                                            classesThatCanCast = listOf(),
-                                            range = SpellRange(
-                                                isSelf = true,
-                                                isTouch = true,
-                                                isSight = true,
-                                                distance = 0,
-                                                unit = null
-                                            ),
-                                            isRitual = true,
-                                            isPrepared = true
-                                        )
+                                        getSpellListEntry1(),
+                                        getSpellListEntry2()
                                     )
                                 }
                         )
@@ -500,9 +563,77 @@ fun SpellListDialogPreview() {
 
                     override val alertDialog: IAlertDialogSubViewModel
                         get() = EmptyAlertDialogSubViewModel
+
                 },
+
                 EmptyDestinationsNavigator
             )
         }
     }
 }
+
+@Composable
+@Preview
+fun SpellListEntryListItemPreview() {
+    SpellListEntryListItem(
+        getSpellListEntry1(),
+        EmptyDestinationsNavigator,
+        EmptyTrackerViewModel
+    )
+}
+
+private fun getSpellListEntry1() = SpellListEntry(
+    id = 1,
+    name = "Spell 1",
+    description = "",
+    school = "Abjuration",
+    duration = "",
+    concentration = true,
+    level = 0,
+    source = "",
+    components = Spell.SpellComponents(
+        verbal = true,
+        somatic = true,
+        material = true,
+        materialComponent = null
+    ),
+    castingTime = "1 action",
+    classesThatCanCast = listOf(),
+    range = SpellRange(
+        isSelf = true,
+        isTouch = true,
+        isSight = true,
+        distance = 0,
+        unit = null
+    ),
+    isRitual = true,
+    isPrepared = false
+)
+
+private fun getSpellListEntry2() = SpellListEntry(
+    id = 2,
+    name = "Spell 2",
+    description = "",
+    school = "Conjuration",
+    duration = "",
+    concentration = true,
+    level = 1,
+    source = "",
+    components = Spell.SpellComponents(
+        true,
+        somatic = true,
+        material = true,
+        materialComponent = null
+    ),
+    castingTime = "1 bonus action",
+    classesThatCanCast = listOf(),
+    range = SpellRange(
+        isSelf = true,
+        isTouch = true,
+        isSight = true,
+        distance = 0,
+        unit = null
+    ),
+    isRitual = true,
+    isPrepared = true
+)
