@@ -45,11 +45,13 @@ data class SpellListEntry(
 
 }
 
-fun List<SpellListEntry>.containsPreparedSpells() = any { it.isPrepared || it.level == 0 }
+fun List<SpellListEntry>.containsPreparedAndCantripSpells() = any { it.isPrepared || it.level == 0 }
 
-fun List<SpellListEntry>.preparedSpellsCount() = count { it.isPrepared || it.level == 0 }
+fun List<SpellListEntry>.preparedSpellsCount() = count { it.isPrepared }
 
-fun List<SpellListEntry>.filterPrepared(preparedSpellsOnly: Boolean) =
+fun List<SpellListEntry>.cantripSpellsCount() = count { it.level == 0 }
+
+fun List<SpellListEntry>.filterPreparedAndCantrips(preparedSpellsOnly: Boolean) =
     if (preparedSpellsOnly) filter { it.isPrepared || it.level == 0 }
     else this
 

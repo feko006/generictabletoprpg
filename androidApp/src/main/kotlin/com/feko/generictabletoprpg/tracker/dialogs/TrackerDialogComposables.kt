@@ -70,9 +70,10 @@ import com.feko.generictabletoprpg.tracker.EmptyTrackerViewModel
 import com.feko.generictabletoprpg.tracker.SpellList
 import com.feko.generictabletoprpg.tracker.SpellListEntry
 import com.feko.generictabletoprpg.tracker.TrackedThing
-import com.feko.generictabletoprpg.tracker.containsPreparedSpells
+import com.feko.generictabletoprpg.tracker.cantripSpellsCount
+import com.feko.generictabletoprpg.tracker.containsPreparedAndCantripSpells
 import com.feko.generictabletoprpg.tracker.dialogs.IAlertDialogTrackerViewModel.DialogType
-import com.feko.generictabletoprpg.tracker.filterPrepared
+import com.feko.generictabletoprpg.tracker.filterPreparedAndCantrips
 import com.feko.generictabletoprpg.tracker.preparedSpellsCount
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.navigation.EmptyDestinationsNavigator
@@ -208,6 +209,7 @@ fun SpellListDialog(
     val spellListBeingPreviewed by viewModel.spellListBeingPreviewed.collectAsState()
     val dereferencedSpellList = spellListBeingPreviewed ?: return
     val numberOfPreparedSpells = dereferencedSpellList.spells.preparedSpellsCount()
+    val numberOfCantripSpells = dereferencedSpellList.spells.cantripSpellsCount()
     Column(
         Modifier.padding(16.dp)
     ) {
@@ -223,10 +225,18 @@ fun SpellListDialog(
                     append(stringResource(R.string.known))
                     append(": ")
                     append(dereferencedSpellList.spells.size)
-                    append(", ")
-                    append(stringResource(R.string.prepared))
-                    append(": ")
-                    append(numberOfPreparedSpells)
+                    if (numberOfPreparedSpells > 0) {
+                        append(", ")
+                        append(stringResource(R.string.prepared))
+                        append(": ")
+                        append(numberOfPreparedSpells)
+                    }
+                    if (numberOfCantripSpells > 0) {
+                        append(", ")
+                        append(stringResource(R.string.cantrips))
+                        append(": ")
+                        append(numberOfCantripSpells)
+                    }
                 },
                 Modifier
                     .weight(1f)
@@ -234,7 +244,7 @@ fun SpellListDialog(
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
                 style = Typography.bodySmall
             )
-            if (dereferencedSpellList.spells.containsPreparedSpells()) {
+            if (dereferencedSpellList.spells.containsPreparedAndCantripSpells()) {
                 ElevatedFilterChip(
                     isFilteringByPrepared,
                     onClick = {
@@ -269,7 +279,7 @@ fun SpellListDialog(
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             items(
-                dereferencedSpellList.spells.filterPrepared(isFilteringByPrepared),
+                dereferencedSpellList.spells.filterPreparedAndCantrips(isFilteringByPrepared),
                 key = { getUniqueListItemKey(it.toSpell()) }) { spellListEntry ->
                 SpellListEntryListItem(spellListEntry, navigator, viewModel)
             }

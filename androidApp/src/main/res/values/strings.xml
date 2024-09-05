@@ -38,6 +38,7 @@
     <string name="remove">Remove</string>
     <string name="prepared">Prepared</string>
     <string name="known">Known</string>
+    <string name="cantrips">Cantrips</string>
     <!--Action-->
     <string name="action">Action</string>
     <string name="action_details_title">Action Details</string>

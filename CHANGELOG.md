@@ -21,6 +21,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Spell lists from version 1.0.0 not opening in version 1.1.x
 
+### Changed
+
+- Number of known spells now doesn't include cantrips in the spell list dialog
+
 ## [1.1.0] - 2024-09-03
 
 ### Added
