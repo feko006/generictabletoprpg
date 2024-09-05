@@ -4,9 +4,6 @@ on:
     branches:
       - develop
   pull_request:
-    branches:
-      - '!develop'
-      - '!master'
 jobs:
   validate-fastlane-metadata:
     runs-on: ubuntu-latest

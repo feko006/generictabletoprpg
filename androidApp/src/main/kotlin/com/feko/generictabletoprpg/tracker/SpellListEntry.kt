@@ -1,11 +1,13 @@
 package com.feko.generictabletoprpg.tracker
 
+import com.feko.generictabletoprpg.common.DoNotObfuscate
 import com.feko.generictabletoprpg.common.IFromSource
 import com.feko.generictabletoprpg.common.IIdentifiable
 import com.feko.generictabletoprpg.common.INamed
 import com.feko.generictabletoprpg.spell.Spell
 import com.feko.generictabletoprpg.spell.SpellRange
 
+@DoNotObfuscate
 data class SpellListEntry(
     override val id: Long = 0,
     override val name: String,
@@ -43,11 +45,13 @@ data class SpellListEntry(
 
 }
 
-fun List<SpellListEntry>.containsPreparedSpells() = any { it.isPrepared || it.level == 0 }
+fun List<SpellListEntry>.containsPreparedAndCantripSpells() = any { it.isPrepared || it.level == 0 }
 
-fun List<SpellListEntry>.preparedSpellsCount() = count { it.isPrepared || it.level == 0 }
+fun List<SpellListEntry>.preparedSpellsCount() = count { it.isPrepared }
 
-fun List<SpellListEntry>.filterPrepared(preparedSpellsOnly: Boolean) =
+fun List<SpellListEntry>.cantripSpellsCount() = count { it.level == 0 }
+
+fun List<SpellListEntry>.filterPreparedAndCantrips(preparedSpellsOnly: Boolean) =
     if (preparedSpellsOnly) filter { it.isPrepared || it.level == 0 }
     else this
 
