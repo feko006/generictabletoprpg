@@ -15,6 +15,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
+## [1.1.1] - 2024-09-06
+
+### Fixed
+
+- Spell lists from version 1.0.0 not opening in version 1.1.x
+
 ## [1.1.0] - 2024-09-03
 
 ### Added

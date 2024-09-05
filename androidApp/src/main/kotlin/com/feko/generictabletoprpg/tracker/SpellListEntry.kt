@@ -1,11 +1,13 @@
 package com.feko.generictabletoprpg.tracker
 
+import com.feko.generictabletoprpg.common.DoNotObfuscate
 import com.feko.generictabletoprpg.common.IFromSource
 import com.feko.generictabletoprpg.common.IIdentifiable
 import com.feko.generictabletoprpg.common.INamed
 import com.feko.generictabletoprpg.spell.Spell
 import com.feko.generictabletoprpg.spell.SpellRange
 
+@DoNotObfuscate
 data class SpellListEntry(
     override val id: Long = 0,
     override val name: String,
