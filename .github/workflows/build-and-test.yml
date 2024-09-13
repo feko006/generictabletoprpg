@@ -1,5 +1,9 @@
-name: develop
-on: push
+name: build-and-test
+on:
+  push:
+    branches:
+      - develop
+  pull_request:
 jobs:
   validate-fastlane-metadata:
     runs-on: ubuntu-latest

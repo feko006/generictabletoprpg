@@ -15,8 +15,8 @@ import com.feko.generictabletoprpg.common.toast.IToastSubViewModel
 import com.feko.generictabletoprpg.common.toast.ToastSubViewModel
 import com.feko.generictabletoprpg.import.IJson
 import com.feko.generictabletoprpg.searchall.ISearchAllUseCase
-import com.feko.generictabletoprpg.spell.Spell
 import com.feko.generictabletoprpg.spell.SpellDao
+import com.feko.generictabletoprpg.tracker.dialogs.IAlertDialogTrackerViewModel.DialogType
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.android.awaitFrame
 import kotlinx.coroutines.flow.Flow
@@ -25,7 +25,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import timber.log.Timber
 
 class TrackerViewModel(
     private val groupId: Long,
@@ -34,34 +33,35 @@ class TrackerViewModel(
     private val spellDao: SpellDao,
     private val json: IJson,
     searchAllUseCase: ISearchAllUseCase
-) : OverviewViewModel<Any>(trackedThingDao) {
+) : OverviewViewModel<Any>(trackedThingDao),
+    ITrackerViewModel {
 
     private val _alertDialog = AlertDialogSubViewModel(viewModelScope, ::onAlertDialogDismissed)
-    val alertDialog: IAlertDialogSubViewModel = _alertDialog
+    override val alertDialog: IAlertDialogSubViewModel = _alertDialog
 
     private val _fabDropdown = FabDropdownSubViewModel(viewModelScope)
-    val fabDropdown: IFabDropdownSubViewModel = _fabDropdown
+    override val fabDropdown: IFabDropdownSubViewModel = _fabDropdown
 
     private val _toast = ToastSubViewModel(viewModelScope)
-    val toast: IToastSubViewModel = _toast
+    override val toast: IToastSubViewModel = _toast
 
-    val editedTrackedThingName = MutableStateFlow(InputFieldData.EMPTY)
-    val editedTrackedThingSpellSlotLevel = MutableStateFlow(InputFieldData.EMPTY)
-    val editedTrackedThingValue = MutableStateFlow(InputFieldData.EMPTY)
-    val editedTrackedThingType = MutableStateFlow(TrackedThing.Type.None)
-    val confirmButtonEnabled = MutableStateFlow(false)
+    override val editedTrackedThingName = MutableStateFlow(InputFieldData.EMPTY)
+    override val editedTrackedThingSpellSlotLevel = MutableStateFlow(InputFieldData.EMPTY)
+    override val editedTrackedThingValue = MutableStateFlow(InputFieldData.EMPTY)
+    override val editedTrackedThingType = MutableStateFlow(TrackedThing.Type.None)
+    override val confirmButtonEnabled = MutableStateFlow(false)
 
     private lateinit var allItems: List<Any>
 
     private var editedTrackedThing: TrackedThing? = null
     private var spellListBeingAddedTo: SpellList? = null
-    private var spellBeingRemoved: Spell? = null
+    private var spellBeingRemoved: SpellListEntry? = null
 
-    lateinit var dialogType: DialogType
+    override lateinit var dialogType: DialogType
     private val _spellListBeingPreviewed = MutableStateFlow<SpellList?>(null)
-    val spellListBeingPreviewed: StateFlow<SpellList?>
+    override val spellListBeingPreviewed: StateFlow<SpellList?>
         get() = _spellListBeingPreviewed
-    var availableSpellSlotsForSpellBeingCast: List<Int>? = null
+    override var availableSpellSlotsForSpellBeingCast: List<Int>? = null
 
     override val combinedItemFlow: Flow<List<Any>> =
         _items.combine(_searchString) { items, searchString ->
@@ -90,13 +90,13 @@ class TrackerViewModel(
             .onEach {
                 if (it is SpellList) {
                     it.spells =
-                        json.from<List<Spell>>(it.value, SpellList.spellListType)
+                        json.from<List<SpellListEntry>>(it.value, SpellList.spellListType)
                             .toMutableList()
                 }
             }
     }
 
-    fun showCreateDialog(type: TrackedThing.Type) {
+    override fun showCreateDialog(type: TrackedThing.Type) {
         viewModelScope.launch {
             _alertDialog._titleResource = type.nameResource
             dialogType = DialogType.Create
@@ -111,7 +111,7 @@ class TrackerViewModel(
         }
     }
 
-    fun showEditDialog(item: TrackedThing) {
+    override fun showEditDialog(item: TrackedThing) {
         viewModelScope.launch {
             _alertDialog._titleResource = R.string.edit
             dialogType = DialogType.Edit
@@ -134,7 +134,7 @@ class TrackerViewModel(
         }
     }
 
-    fun confirmDialogAction() {
+    override fun confirmDialogAction() {
         if (dialogType != DialogType.RefreshAll
             && dialogType != DialogType.ConfirmSpellRemovalFromList
             && editedTrackedThing?.validate() == false
@@ -282,7 +282,7 @@ class TrackerViewModel(
         }
     }
 
-    fun resetValueToDefault(item: TrackedThing) {
+    override fun resetValueToDefault(item: TrackedThing) {
         viewModelScope.launch {
             val itemCopy = item.copy()
             itemCopy.resetValueToDefault()
@@ -296,11 +296,11 @@ class TrackerViewModel(
         }
     }
 
-    fun useAbility(item: TrackedThing) {
+    override fun useAbility(item: TrackedThing) {
         reduceByOne(item)
     }
 
-    fun useSpell(item: TrackedThing) {
+    override fun useSpell(item: TrackedThing) {
         reduceByOne(item)
     }
 
@@ -334,7 +334,7 @@ class TrackerViewModel(
         }
     }
 
-    fun setName(name: String) {
+    override fun setName(name: String) {
         viewModelScope.launch {
             val editedTrackedThing = requireNotNull(editedTrackedThing)
             editedTrackedThing.name = name
@@ -345,7 +345,7 @@ class TrackerViewModel(
         }
     }
 
-    fun setLevel(level: String) {
+    override fun setLevel(level: String) {
         viewModelScope.launch {
             val trackedThing = editedTrackedThing
             require(trackedThing is SpellSlot)
@@ -360,7 +360,7 @@ class TrackerViewModel(
         }
     }
 
-    fun setValue(value: String) {
+    override fun setValue(value: String) {
         viewModelScope.launch {
             val editedTrackedThing = requireNotNull(editedTrackedThing)
             editedTrackedThing.setNewValue(value)
@@ -381,33 +381,33 @@ class TrackerViewModel(
         }
     }
 
-    fun addToPercentageRequested(item: TrackedThing) =
+    override fun addToPercentageRequested(item: TrackedThing) =
         setupValueChangeDialog(
             item,
             DialogType.AddPercentage,
             R.string.increase_percentage_dialog_title
         )
 
-    fun subtractFromPercentageRequested(item: TrackedThing) =
+    override fun subtractFromPercentageRequested(item: TrackedThing) =
         setupValueChangeDialog(
             item,
             DialogType.ReducePercentage,
             R.string.reduce_percentage_dialog_title
         )
 
-    fun addToNumberRequested(item: TrackedThing) =
+    override fun addToNumberRequested(item: TrackedThing) =
         setupValueChangeDialog(item, DialogType.AddNumber, R.string.add)
 
-    fun subtractFromNumberRequested(item: TrackedThing) =
+    override fun subtractFromNumberRequested(item: TrackedThing) =
         setupValueChangeDialog(item, DialogType.ReduceNumber, R.string.subtract)
 
-    fun takeDamageRequested(item: TrackedThing) =
+    override fun takeDamageRequested(item: TrackedThing) =
         setupValueChangeDialog(item, DialogType.DamageHealth, R.string.take_damage_dialog_title)
 
-    fun healRequested(item: TrackedThing) =
+    override fun healRequested(item: TrackedThing) =
         setupValueChangeDialog(item, DialogType.HealHealth, R.string.heal_dialog_title)
 
-    fun addTemporaryHp(item: TrackedThing) =
+    override fun addTemporaryHp(item: TrackedThing) =
         setupValueChangeDialog(
             item,
             DialogType.AddTemporaryHp,
@@ -430,7 +430,7 @@ class TrackerViewModel(
         }
     }
 
-    fun updateValueInputField(delta: String) {
+    override fun updateValueInputField(delta: String) {
         viewModelScope.launch {
             editedTrackedThingValue.emit(
                 InputFieldData(
@@ -441,7 +441,7 @@ class TrackerViewModel(
         }
     }
 
-    fun deleteItemRequested(item: TrackedThing) {
+    override fun deleteItemRequested(item: TrackedThing) {
         viewModelScope.launch {
             dialogType = DialogType.ConfirmDeletion
             _alertDialog._titleResource = R.string.delete_tracked_thing_dialog_title
@@ -450,7 +450,7 @@ class TrackerViewModel(
         }
     }
 
-    fun refreshAllRequested() {
+    override fun refreshAllRequested() {
         viewModelScope.launch {
             dialogType = DialogType.RefreshAll
             _alertDialog._titleResource = R.string.refresh_all_tracked_things_dialog_title
@@ -458,8 +458,9 @@ class TrackerViewModel(
         }
     }
 
-    fun itemReordered(from: Int, to: Int) {
-        if (to == _items.value.size) return
+    override fun itemReordered(from: Int, to: Int) {
+        val itemCount = _items.value.size
+        if (from == itemCount || to == itemCount) return
 
         viewModelScope.launch {
             val newList =
@@ -482,7 +483,7 @@ class TrackerViewModel(
         }
     }
 
-    fun showPreviewSpellListDialog(spellList: SpellList) {
+    override fun showPreviewSpellListDialog(spellList: SpellList) {
         if (spellList.spells.isEmpty()) {
             return
         }
@@ -494,8 +495,7 @@ class TrackerViewModel(
         }
     }
 
-    fun addSpellToList(spellId: Long) {
-        Timber.d("Spell ID: $spellId")
+    override fun addSpellToList(spellId: Long) {
         viewModelScope.launch {
             val spellToAdd = withContext(Dispatchers.Default) {
                 spellDao.getById(spellId)
@@ -508,7 +508,7 @@ class TrackerViewModel(
             if (spellAlreadyInList) {
                 _toast.showMessage(R.string.spell_already_in_list)
             } else {
-                spellList.spells.add(spellToAdd)
+                spellList.spells.add(SpellListEntry.fromSpell(spellToAdd))
                 val sortedSpells =
                     spellList.spells
                         .sortedWith { spell1, spell2 ->
@@ -531,11 +531,11 @@ class TrackerViewModel(
         }
     }
 
-    fun addingSpellToList(spellList: SpellList) {
+    override fun addingSpellToList(spellList: SpellList) {
         spellListBeingAddedTo = spellList
     }
 
-    fun removeSpellFromSpellListRequested(spell: Spell) {
+    override fun removeSpellFromSpellListRequested(spell: SpellListEntry) {
         viewModelScope.launch {
             _alertDialog.hide()
             awaitFrame()
@@ -570,7 +570,7 @@ class TrackerViewModel(
         }
     }
 
-    fun castSpellRequested(level: Int) {
+    override fun castSpellRequested(level: Int) {
         viewModelScope.launch {
             val availableSpellSlots =
                 _items.value
@@ -603,7 +603,7 @@ class TrackerViewModel(
         }
     }
 
-    fun castSpell(withSlotLevel: Int) {
+    override fun castSpell(withSlotLevel: Int) {
         viewModelScope.launch {
             _alertDialog.hide()
             val spellSlot =
@@ -617,10 +617,27 @@ class TrackerViewModel(
         }
     }
 
-    fun canCastSpell(level: Int): Boolean =
+    override fun canCastSpell(level: Int): Boolean =
         _items.value
             .filterIsInstance<SpellSlot>()
             .any { it.level >= level && it.amount > 0 }
+
+    override fun changeSpellListEntryPreparedState(
+        spellListEntry: SpellListEntry,
+        isPrepared: Boolean
+    ) {
+        viewModelScope.launch {
+            val spellList = requireNotNull(spellListBeingPreviewed.value)
+            spellListEntry.isPrepared = isPrepared
+            spellList.setSpells(spellList.spells, json)
+            withContext(Dispatchers.Default) {
+                trackedThingDao.insertOrUpdate(spellList)
+            }
+            val spellListCopy = spellList.copy() as SpellList
+            replaceItem(spellListCopy)
+            _spellListBeingPreviewed.emit(spellListCopy)
+        }
+    }
 
     private fun editText() {
         viewModelScope.launch {
@@ -635,11 +652,11 @@ class TrackerViewModel(
 
     }
 
-    fun useHitDie(item: TrackedThing) {
+    override fun useHitDie(item: TrackedThing) {
         reduceByOne(item)
     }
 
-    fun restoreHitDie(item: TrackedThing) {
+    override fun restoreHitDie(item: TrackedThing) {
         addOne(item)
     }
 
@@ -666,22 +683,4 @@ class TrackerViewModel(
         dialogType = DialogType.None
     }
 
-    enum class DialogType {
-        None,
-        Create,
-        Edit,
-        ConfirmDeletion,
-        ConfirmSpellRemovalFromList,
-        AddPercentage,
-        ReducePercentage,
-        DamageHealth,
-        HealHealth,
-        AddTemporaryHp,
-        RefreshAll,
-        AddNumber,
-        ReduceNumber,
-        ShowSpellList,
-        SelectSlotLevelToCastSpell,
-        EditText
-    }
 }

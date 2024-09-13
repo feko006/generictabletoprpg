@@ -1,9 +1,15 @@
-![Build](https://github.com/feko006/generictabletoprpg/actions/workflows/develop.yml/badge.svg)
+![Build](https://github.com/feko006/generictabletoprpg/actions/workflows/build-and-test.yml/badge.svg)
 
 # generictabletoprpg
 
 This is an app that helps you quickly access your dungeonmastersvault data via your Android device.
 It can also help you track various things (see below).
+
+[<img src="https://fdroid.gitlab.io/artwork/badge/get-it-on.png"
+     alt="Get it on F-Droid"
+     height="80">](https://f-droid.org/packages/com.feko.generictabletoprpg/)
+
+Or download the latest APK from the [Releases Section](https://github.com/feko006/generictabletoprpg/releases/latest).
 
 ## Table of Contents
 
@@ -42,7 +48,7 @@ with a generic tracker.
 - Abilities
 - Spell slots
 - Arbitrary number, e.g. for gold, arrows...
-- Known spells + more
+- Known & prepared spells + more
 - Text e.g. for notes, items...
 - Hit dice
 

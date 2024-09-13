@@ -6,5 +6,4 @@ interface IAlertDialogSubViewModel {
     val titleResource: Int
     val isVisible: Flow<Boolean>
     fun dismiss()
-
 }

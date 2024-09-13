@@ -42,14 +42,22 @@ fun <TViewModel, T> DetailsScreen(
             @Suppress("UNCHECKED_CAST")
             val readiedItem =
                 screenState as DetailsViewModel.DetailsScreenState.ItemReady<T>
-            val padding = 8.dp
-            Column(
-                Modifier
-                    .padding(padding)
-                    .verticalScroll(rememberScrollState())
-            ) {
-                screenContent(readiedItem.item, padding)
-            }
+            DetailsScreen(readiedItem.item, screenContent)
         }
+    }
+}
+
+@Composable
+fun <T> DetailsScreen(
+    item: T,
+    screenContent: @Composable (T, Dp) -> Unit
+) {
+    val padding = 8.dp
+    Column(
+        Modifier
+            .padding(padding)
+            .verticalScroll(rememberScrollState())
+    ) {
+        screenContent(item, padding)
     }
 }
