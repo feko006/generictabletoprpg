@@ -3653,6 +3653,15 @@
    :level 0,
    :components {:somatic true, :verbal true},
    :casting-time "1 action",
+   :spell-lists
+   {:bard false,
+    :cleric false,
+    :druid false,
+    :paladin false,
+    :ranger false,
+    :sorcerer false,
+    :warlock false,
+    :wizard false},
    :range "Touch"},
   :sunburst
   {:description
