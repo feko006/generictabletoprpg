@@ -81,6 +81,12 @@ fastlane/readme.md
 # Version control
 vcs.xml
 
+# VSCode/VSCodium
+.clj-kondo/
+.lsp/
+.vscode/
+.vscodium/
+
 # lint
 lint/intermediates/
 lint/generated/
