@@ -1,3 +1,7 @@
+# Backup files
+*~
+*.bak
+
 # Built application files
 *.apk
 *.aar
@@ -76,6 +80,12 @@ fastlane/readme.md
 
 # Version control
 vcs.xml
+
+# VSCode/VSCodium
+.clj-kondo/
+.lsp/
+.vscode/
+.vscodium/
 
 # lint
 lint/intermediates/
