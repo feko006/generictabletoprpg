@@ -19,6 +19,7 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -132,7 +133,7 @@ fun Dropdown(
             colors = ExposedDropdownMenuDefaults.textFieldColors(),
             modifier = Modifier
                 .fillMaxWidth()
-                .menuAnchor(),
+                .menuAnchor(MenuAnchorType.PrimaryNotEditable, true),
             readOnly = true
         )
         DropdownMenu(
@@ -168,7 +169,9 @@ fun AddFABButtonWithDropdown(
                 dropdownMenuContent()
             }
         )
-        AddFABButton(Modifier.menuAnchor()) { onFabClicked() }
+        AddFABButton(
+            Modifier.menuAnchor(MenuAnchorType.PrimaryNotEditable, true)
+        ) { onFabClicked() }
     }
 }
 
