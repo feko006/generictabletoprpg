@@ -40,9 +40,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
@@ -216,7 +214,7 @@ fun SpellListDialog(
         Modifier.padding(16.dp)
     ) {
         DialogTitle(viewModel.alertDialog.titleResource)
-        var isFilteringByPrepared by remember { mutableStateOf(false) }
+        val isFilteringByPrepared by viewModel.isShowingPreparedSpells.collectAsState()
         Row(
             Modifier.padding(bottom = 8.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -250,7 +248,7 @@ fun SpellListDialog(
                 ElevatedFilterChip(
                     isFilteringByPrepared,
                     onClick = {
-                        isFilteringByPrepared = !isFilteringByPrepared
+                        viewModel.setShowingPreparedSpells(!isFilteringByPrepared)
                     },
                     label = {
                         Text(stringResource(R.string.prepared))
@@ -273,7 +271,7 @@ fun SpellListDialog(
                     }
                 )
             } else {
-                isFilteringByPrepared = false
+                viewModel.setShowingPreparedSpells(false)
             }
         }
         LazyColumn(
@@ -299,7 +297,6 @@ fun SpellListDialog(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun SpellListEntryListItem(
     spellListEntry: SpellListEntry,
@@ -568,6 +565,11 @@ fun SpellListDialogPreview() {
                 object : ISpellListDialogTrackerViewModel {
                     override val spellListState: LazyListState
                         get() = LazyListState()
+                    override val isShowingPreparedSpells: MutableStateFlow<Boolean>
+                        get() = MutableStateFlow(false)
+
+                    override fun setShowingPreparedSpells(value: Boolean) = Unit
+
                     override val spellListBeingPreviewed: StateFlow<SpellList?>
                         get() = MutableStateFlow(
                             SpellList(0, "Spell List", "", 0, 0)

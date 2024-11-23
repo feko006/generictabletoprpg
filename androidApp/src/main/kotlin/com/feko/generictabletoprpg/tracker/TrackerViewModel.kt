@@ -61,6 +61,7 @@ class TrackerViewModel(
     override lateinit var dialogType: DialogType
     private val _spellListBeingPreviewed = MutableStateFlow<SpellList?>(null)
     override lateinit var spellListState: LazyListState
+    override lateinit var isShowingPreparedSpells: MutableStateFlow<Boolean>
     override val spellListBeingPreviewed: StateFlow<SpellList?>
         get() = _spellListBeingPreviewed
     override var availableSpellSlotsForSpellBeingCast: List<Int>? = null
@@ -83,6 +84,7 @@ class TrackerViewModel(
         viewModelScope.launch {
             withContext(Dispatchers.Default) {
                 allItems = searchAllUseCase.getAllItems()
+                isShowingPreparedSpells = MutableStateFlow(false)
             }
         }
     }
@@ -641,6 +643,12 @@ class TrackerViewModel(
             val spellListCopy = spellList.copy() as SpellList
             replaceItem(spellListCopy)
             _spellListBeingPreviewed.emit(spellListCopy)
+        }
+    }
+
+    override fun setShowingPreparedSpells(value: Boolean) {
+        viewModelScope.launch {
+            isShowingPreparedSpells.value = value
         }
     }
 

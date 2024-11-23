@@ -33,6 +33,8 @@ object EmptyTrackerViewModel : ITrackerViewModel {
         get() = MutableStateFlow(false)
     override var dialogType: DialogType = DialogType.None
     override val spellListState = LazyListState()
+    override val isShowingPreparedSpells: StateFlow<Boolean>
+        get() = MutableStateFlow(false)
     override val spellListBeingPreviewed: StateFlow<SpellList?>
         get() = MutableStateFlow(null)
     override var availableSpellSlotsForSpellBeingCast: List<Int>? = null
@@ -79,7 +81,10 @@ object EmptyTrackerViewModel : ITrackerViewModel {
 
     override fun itemReordered(from: Int, to: Int) = Unit
 
-    override fun showPreviewSpellListDialog(spellList: SpellList, resetListState: Boolean) = Unit
+    override fun showPreviewSpellListDialog(
+        spellList: SpellList,
+        resetListState: Boolean
+    ) = Unit
 
     override fun addSpellToList(spellId: Long) = Unit
 
@@ -97,6 +102,8 @@ object EmptyTrackerViewModel : ITrackerViewModel {
         spellListEntry: SpellListEntry,
         isPrepared: Boolean
     ) = Unit
+
+    override fun setShowingPreparedSpells(value: Boolean) = Unit
 
     override fun useHitDie(item: TrackedThing) = Unit
 
