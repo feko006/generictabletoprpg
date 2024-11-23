@@ -93,9 +93,7 @@ class TrackerViewModel(
         return trackedThingDao.getAllSortedByIndex(groupId)
             .onEach {
                 if (it is SpellList) {
-                    it.spells =
-                        json.from<List<SpellListEntry>>(it.value, SpellList.spellListType)
-                            .toMutableList()
+                    it.setItemFromValue(json)
                 }
             }
     }
@@ -488,7 +486,7 @@ class TrackerViewModel(
     }
 
     override fun showPreviewSpellListDialog(spellList: SpellList, resetListState: Boolean) {
-        if (spellList.spells.isEmpty()) {
+        if (spellList.serializedItem.isEmpty()) {
             return
         }
         if (resetListState) {
@@ -509,15 +507,15 @@ class TrackerViewModel(
             }
             val spellList = requireNotNull(spellListBeingAddedTo)
             val spellAlreadyInList =
-                spellList.spells.any {
+                spellList.serializedItem.any {
                     it.id == spellId && it.name == spellToAdd.name
                 }
             if (spellAlreadyInList) {
                 _toast.showMessage(R.string.spell_already_in_list)
             } else {
-                spellList.spells.add(SpellListEntry.fromSpell(spellToAdd))
+                spellList.serializedItem.add(SpellListEntry.fromSpell(spellToAdd))
                 val sortedSpells =
-                    spellList.spells
+                    spellList.serializedItem
                         .sortedWith { spell1, spell2 ->
                             requireNotNull(spell1)
                             requireNotNull(spell2)
@@ -527,7 +525,7 @@ class TrackerViewModel(
                                 else -> spell1.name.compareTo(spell2.name)
                             }
                         }.toMutableList()
-                spellList.setSpells(sortedSpells, json)
+                spellList.setItem(sortedSpells, json)
                 withContext(Dispatchers.Default) {
                     trackedThingDao.insertOrUpdate(spellList)
                 }
@@ -567,8 +565,8 @@ class TrackerViewModel(
         viewModelScope.launch {
             val spellList = requireNotNull(spellListBeingPreviewed.value)
             val spellToRemove = requireNotNull(spellBeingRemoved)
-            spellList.spells.remove(spellToRemove)
-            spellList.setSpells(spellList.spells, json)
+            spellList.serializedItem.remove(spellToRemove)
+            spellList.setItem(spellList.serializedItem, json)
             withContext(Dispatchers.Default) {
                 trackedThingDao.insertOrUpdate(spellList)
             }
@@ -636,7 +634,7 @@ class TrackerViewModel(
         viewModelScope.launch {
             val spellList = requireNotNull(spellListBeingPreviewed.value)
             spellListEntry.isPrepared = isPrepared
-            spellList.setSpells(spellList.spells, json)
+            spellList.setItem(spellList.serializedItem, json)
             withContext(Dispatchers.Default) {
                 trackedThingDao.insertOrUpdate(spellList)
             }

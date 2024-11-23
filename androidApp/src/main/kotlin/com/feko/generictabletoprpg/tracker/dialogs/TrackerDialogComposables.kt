@@ -210,8 +210,8 @@ fun SpellListDialog(
 ) {
     val spellListBeingPreviewed by viewModel.spellListBeingPreviewed.collectAsState()
     val dereferencedSpellList = spellListBeingPreviewed ?: return
-    val numberOfPreparedSpells = dereferencedSpellList.spells.preparedSpellsCount()
-    val numberOfCantripSpells = dereferencedSpellList.spells.cantripSpellsCount()
+    val numberOfPreparedSpells = dereferencedSpellList.serializedItem.preparedSpellsCount()
+    val numberOfCantripSpells = dereferencedSpellList.serializedItem.cantripSpellsCount()
     Column(
         Modifier.padding(16.dp)
     ) {
@@ -226,7 +226,7 @@ fun SpellListDialog(
                 buildString {
                     append(stringResource(R.string.known))
                     append(": ")
-                    append(dereferencedSpellList.spells.size)
+                    append(dereferencedSpellList.serializedItem.size)
                     if (numberOfPreparedSpells > 0) {
                         append(", ")
                         append(stringResource(R.string.prepared))
@@ -246,7 +246,7 @@ fun SpellListDialog(
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
                 style = Typography.bodySmall
             )
-            if (dereferencedSpellList.spells.containsPreparedAndCantripSpells()) {
+            if (dereferencedSpellList.serializedItem.containsPreparedAndCantripSpells()) {
                 ElevatedFilterChip(
                     isFilteringByPrepared,
                     onClick = {
@@ -282,7 +282,7 @@ fun SpellListDialog(
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             items(
-                dereferencedSpellList.spells.filterPreparedAndCantrips(isFilteringByPrepared),
+                dereferencedSpellList.serializedItem.filterPreparedAndCantrips(isFilteringByPrepared),
                 key = { getUniqueListItemKey(it.toSpell()) }) { spellListEntry ->
                 SpellListEntryListItem(spellListEntry, navigator, viewModel)
             }
@@ -306,7 +306,7 @@ fun SpellListDialog(
                 IconButton(
                     onClick = {
                         coroutineScope.launch {
-                            viewModel.spellListState.animateScrollToItem(dereferencedSpellList.spells.size - 1)
+                            viewModel.spellListState.animateScrollToItem(dereferencedSpellList.serializedItem.size - 1)
                         }
                     },
                     enabled = viewModel.spellListState.canScrollForward
@@ -597,7 +597,7 @@ fun SpellListDialogPreview() {
                         get() = MutableStateFlow(
                             SpellList(0, "Spell List", "", 0, 0)
                                 .apply {
-                                    spells = mutableListOf(
+                                    serializedItem = mutableListOf(
                                         getSpellListEntry1(),
                                         getSpellListEntry2()
                                     )
