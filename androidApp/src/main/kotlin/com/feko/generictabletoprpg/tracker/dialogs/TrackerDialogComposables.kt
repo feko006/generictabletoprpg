@@ -41,6 +41,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
@@ -79,6 +80,7 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.navigation.EmptyDestinationsNavigator
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -285,14 +287,35 @@ fun SpellListDialog(
                 SpellListEntryListItem(spellListEntry, navigator, viewModel)
             }
         }
-        TextButton(
-            onClick = { viewModel.alertDialog.dismiss() },
-            modifier = Modifier
-                .wrapContentWidth()
-                .align(Alignment.End)
-                .padding(top = 8.dp)
+        Row(
+            Modifier
+                .fillMaxWidth()
+                .padding(top = 8.dp),
+            Arrangement.SpaceBetween
         ) {
-            Text(stringResource(R.string.dismiss))
+            Row {
+                val coroutineScope = rememberCoroutineScope()
+                IconButton(
+                    onClick = {
+                        coroutineScope.launch {
+                            viewModel.spellListState.animateScrollToItem(0)
+                        }
+                    },
+                    enabled = viewModel.spellListState.canScrollBackward
+                ) { Icon(painterResource(R.drawable.vertical_align_top), "") }
+                IconButton(
+                    onClick = {
+                        coroutineScope.launch {
+                            viewModel.spellListState.animateScrollToItem(dereferencedSpellList.spells.size - 1)
+                        }
+                    },
+                    enabled = viewModel.spellListState.canScrollForward
+                ) { Icon(painterResource(R.drawable.vertical_align_bottom), "") }
+            }
+            TextButton(
+                onClick = { viewModel.alertDialog.dismiss() },
+                modifier = Modifier.wrapContentWidth()
+            ) { Text(stringResource(R.string.dismiss)) }
         }
     }
 }
