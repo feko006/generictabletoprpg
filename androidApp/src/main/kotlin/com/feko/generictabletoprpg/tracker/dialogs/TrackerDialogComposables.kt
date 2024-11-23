@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -29,7 +30,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
-import androidx.compose.material3.LocalMinimumInteractiveComponentEnforcement
+import androidx.compose.material3.LocalMinimumInteractiveComponentSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -54,6 +55,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import com.feko.generictabletoprpg.R
@@ -276,6 +278,7 @@ fun SpellListDialog(
         }
         LazyColumn(
             Modifier.heightIn(0.dp, 600.dp),
+            viewModel.spellListState,
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             items(
@@ -329,7 +332,7 @@ private fun SpellListEntryListItem(
                         verticalArrangement = Arrangement.spacedBy(4.dp),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        CompositionLocalProvider(LocalMinimumInteractiveComponentEnforcement provides false) {
+                        CompositionLocalProvider(LocalMinimumInteractiveComponentSize provides Dp.Unspecified) {
                             Checkbox(
                                 spellListEntry.isPrepared,
                                 onCheckedChange = {
@@ -563,6 +566,8 @@ fun SpellListDialogPreview() {
         Card {
             SpellListDialog(
                 object : ISpellListDialogTrackerViewModel {
+                    override val spellListState: LazyListState
+                        get() = LazyListState()
                     override val spellListBeingPreviewed: StateFlow<SpellList?>
                         get() = MutableStateFlow(
                             SpellList(0, "Spell List", "", 0, 0)

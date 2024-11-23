@@ -1,6 +1,7 @@
 package com.feko.generictabletoprpg.tracker
 
 import androidx.annotation.StringRes
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.lifecycle.viewModelScope
 import com.feko.generictabletoprpg.R
 import com.feko.generictabletoprpg.common.INamed
@@ -59,6 +60,7 @@ class TrackerViewModel(
 
     override lateinit var dialogType: DialogType
     private val _spellListBeingPreviewed = MutableStateFlow<SpellList?>(null)
+    override lateinit var spellListState: LazyListState
     override val spellListBeingPreviewed: StateFlow<SpellList?>
         get() = _spellListBeingPreviewed
     override var availableSpellSlotsForSpellBeingCast: List<Int>? = null
@@ -483,9 +485,12 @@ class TrackerViewModel(
         }
     }
 
-    override fun showPreviewSpellListDialog(spellList: SpellList) {
+    override fun showPreviewSpellListDialog(spellList: SpellList, resetListState: Boolean) {
         if (spellList.spells.isEmpty()) {
             return
+        }
+        if (resetListState) {
+            spellListState = LazyListState()
         }
         viewModelScope.launch {
             _alertDialog._titleResource = R.string.spell_list
@@ -551,7 +556,7 @@ class TrackerViewModel(
             spellListBeingPreviewed.value?.let {
                 _alertDialog.hide()
                 awaitFrame()
-                showPreviewSpellListDialog(it)
+                showPreviewSpellListDialog(it, resetListState = false)
             }
         }
     }

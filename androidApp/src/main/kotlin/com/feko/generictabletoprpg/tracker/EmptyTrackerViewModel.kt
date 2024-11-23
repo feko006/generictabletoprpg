@@ -1,5 +1,6 @@
 package com.feko.generictabletoprpg.tracker
 
+import androidx.compose.foundation.lazy.LazyListState
 import com.feko.generictabletoprpg.common.alertdialog.EmptyAlertDialogSubViewModel
 import com.feko.generictabletoprpg.common.alertdialog.IAlertDialogSubViewModel
 import com.feko.generictabletoprpg.common.composable.InputFieldData
@@ -31,6 +32,7 @@ object EmptyTrackerViewModel : ITrackerViewModel {
     override val confirmButtonEnabled: MutableStateFlow<Boolean>
         get() = MutableStateFlow(false)
     override var dialogType: DialogType = DialogType.None
+    override val spellListState = LazyListState()
     override val spellListBeingPreviewed: StateFlow<SpellList?>
         get() = MutableStateFlow(null)
     override var availableSpellSlotsForSpellBeingCast: List<Int>? = null
@@ -77,7 +79,7 @@ object EmptyTrackerViewModel : ITrackerViewModel {
 
     override fun itemReordered(from: Int, to: Int) = Unit
 
-    override fun showPreviewSpellListDialog(spellList: SpellList) = Unit
+    override fun showPreviewSpellListDialog(spellList: SpellList, resetListState: Boolean) = Unit
 
     override fun addSpellToList(spellId: Long) = Unit
 

@@ -147,7 +147,7 @@ fun SpellListActions(
     ItemActionsBase(item, viewModel) {
         val spellList = item as SpellList
         IconButton(
-            onClick = { viewModel.showPreviewSpellListDialog(spellList) },
+            onClick = { viewModel.showPreviewSpellListDialog(spellList, resetListState = true) },
             enabled = spellList.spells.any()
         ) {
             Icon(Icons.AutoMirrored.Filled.List, "")

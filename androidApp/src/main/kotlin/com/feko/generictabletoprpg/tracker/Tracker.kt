@@ -171,7 +171,7 @@ private fun TrackedThing(
     Card(
         onClick = {
             if (item is SpellList) {
-                viewModel.showPreviewSpellListDialog(item)
+                viewModel.showPreviewSpellListDialog(item, resetListState = true)
             }
         },
         Modifier

@@ -1,10 +1,12 @@
 package com.feko.generictabletoprpg.tracker.dialogs
 
+import androidx.compose.foundation.lazy.LazyListState
 import com.feko.generictabletoprpg.tracker.SpellList
 import com.feko.generictabletoprpg.tracker.SpellListEntry
 import kotlinx.coroutines.flow.StateFlow
 
 interface ISpellListDialogTrackerViewModel : IDialogTrackerViewModel {
+    val spellListState: LazyListState
     val spellListBeingPreviewed: StateFlow<SpellList?>
     fun removeSpellFromSpellListRequested(spell: SpellListEntry)
     fun castSpellRequested(level: Int)
