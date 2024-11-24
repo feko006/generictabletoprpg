@@ -121,6 +121,8 @@ class TrackerViewModel(
             editedTrackedThing = copy
             editedTrackedThingName.emit(InputFieldData(copy.name, isValid = true))
             if (copy is SpellSlot) {
+                val dereferenceTrackedThing = requireNotNull(editedTrackedThing)
+                dereferenceTrackedThing.setNewValue(dereferenceTrackedThing.defaultValue)
                 editedTrackedThingSpellSlotLevel.emit(
                     InputFieldData(
                         copy.level.toString(),
