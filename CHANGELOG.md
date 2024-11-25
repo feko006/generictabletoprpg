@@ -26,6 +26,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Spell list scroll being reset when re-showing the dialog after casting, removing or inspecting a
   spell
 - Not being able to edit a spell slot trackable when all slots have been used
+- New trackables not being added to the end of the list
 
 ### Changed
 

@@ -95,7 +95,7 @@ class TrackerGroupViewModel(
             item.id = trackedThingId
         }
         if (groupId == 0L) {
-            addItem(item)
+            addItem(item) { it.name }
         } else {
             replaceItem(item)
         }

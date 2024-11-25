@@ -183,7 +183,11 @@ class TrackerViewModel(
                 val id = trackedThingDao.insertOrUpdate(editedTrackedThing)
                 editedTrackedThing.id = id
             }
-            addItem(editedTrackedThing)
+            addItem(editedTrackedThing) {
+                if (it is TrackedThing)
+                    it.index
+                else Int.MAX_VALUE
+            }
             _alertDialog.hide()
         }
     }
