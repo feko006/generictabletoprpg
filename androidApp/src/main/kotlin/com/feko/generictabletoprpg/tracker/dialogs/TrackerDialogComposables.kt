@@ -13,10 +13,8 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.Card
@@ -34,21 +32,15 @@ import androidx.compose.material3.LocalMinimumInteractiveComponentSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusDirection
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
@@ -61,6 +53,7 @@ import com.feko.generictabletoprpg.R
 import com.feko.generictabletoprpg.common.alertdialog.EmptyAlertDialogSubViewModel
 import com.feko.generictabletoprpg.common.alertdialog.IAlertDialogSubViewModel
 import com.feko.generictabletoprpg.common.composable.DialogTitle
+import com.feko.generictabletoprpg.common.composable.InputField
 import com.feko.generictabletoprpg.destinations.SimpleSpellDetailsScreenDestination
 import com.feko.generictabletoprpg.searchall.getUniqueListItemKey
 import com.feko.generictabletoprpg.spell.Spell
@@ -444,39 +437,14 @@ private fun NameTextField(
     autoFocus: Boolean = false,
     defaultValue: String
 ) {
-    val focusRequester = remember { FocusRequester() }
     val nameInputData by viewModel.editedTrackedThingName.collectAsState()
-    val focusManager = LocalFocusManager.current
-    TextField(
-        value = nameInputData.value,
+    InputField(
+        nameInputData.value,
+        "${stringResource(R.string.name)} ($defaultValue)",
         onValueChange = { viewModel.setName(it) },
-        isError = !nameInputData.isValid,
-        label = {
-            Text(
-                "${stringResource(R.string.name)} ($defaultValue)",
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-            )
-        },
-        trailingIcon = {
-            IconButton(
-                onClick = { viewModel.setName("") }
-            ) {
-                Icon(Icons.Default.Clear, "")
-            }
-        },
-        modifier = Modifier
-            .fillMaxWidth()
-            .focusRequester(focusRequester),
-        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
-        keyboardActions = KeyboardActions(
-            onNext = { focusManager.moveFocus(FocusDirection.Down) }
-        )
+        isInputFieldValid = { nameInputData.isValid },
+        autoFocus = autoFocus
     )
-    if (autoFocus) {
-        LaunchedEffect(Unit) {
-            focusRequester.requestFocus()
-        }
-    }
 }
 
 @Composable
@@ -484,37 +452,20 @@ private fun SpellSlotLevelTextField(
     type: TrackedThing.Type,
     viewModel: ISpellSlotLevelTextFieldTrackerViewModel
 ) {
-    val focusManager = LocalFocusManager.current
-    if (type == TrackedThing.Type.SpellSlot) {
-        val spellSlotLevelInputData
-                by viewModel.editedTrackedThingSpellSlotLevel.collectAsState()
-        TextField(
-            value = spellSlotLevelInputData.value,
-            onValueChange = { viewModel.setLevel(it) },
-            isError = !spellSlotLevelInputData.isValid,
-            label = {
-                Text(
-                    stringResource(R.string.level),
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-                )
-            },
-            trailingIcon = {
-                IconButton(
-                    onClick = { viewModel.setLevel("") }
-                ) {
-                    Icon(Icons.Default.Clear, "")
-                }
-            },
-            modifier = Modifier.fillMaxWidth(),
-            keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Number,
-                imeAction = ImeAction.Next
-            ),
-            keyboardActions = KeyboardActions(
-                onNext = { focusManager.moveFocus(FocusDirection.Down) }
-            )
+    if (type != TrackedThing.Type.SpellSlot) return
+
+    val spellSlotLevelInputData
+            by viewModel.editedTrackedThingSpellSlotLevel.collectAsState()
+    InputField(
+        value = spellSlotLevelInputData.value,
+        label = stringResource(R.string.level),
+        onValueChange = { viewModel.setLevel(it) },
+        isInputFieldValid = { spellSlotLevelInputData.isValid },
+        keyboardOptions = KeyboardOptions(
+            keyboardType = KeyboardType.Number,
+            imeAction = ImeAction.Next
         )
-    }
+    )
 }
 
 @Composable
@@ -527,52 +478,29 @@ private fun ValueTextField(
     if (type == TrackedThing.Type.SpellList) {
         return
     }
-    val focusRequester = remember { FocusRequester() }
     val valueInputData by viewModel.editedTrackedThingValue.collectAsState()
-    TextField(
+    InputField(
         value = valueInputData.value,
-        onValueChange = { updateValue(it) },
-        maxLines = if (type == TrackedThing.Type.Text) 5 else 1,
-        isError = !valueInputData.isValid,
-        suffix = {
-            if (type == TrackedThing.Type.Percentage) {
-                Text("%")
-            }
+        label = if (type == TrackedThing.Type.Text) {
+            stringResource(id = R.string.text)
+        } else {
+            stringResource(R.string.amount)
         },
-        label = {
-            val label = if (type == TrackedThing.Type.Text) {
-                stringResource(id = R.string.text)
-            } else {
-                stringResource(R.string.amount)
-            }
-            Text(
-                label,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-            )
-        },
-        trailingIcon = {
-            IconButton(
-                onClick = { updateValue("") }
-            ) {
-                Icon(Icons.Default.Clear, "")
-            }
-        },
-        modifier = Modifier
-            .fillMaxWidth()
-            .focusRequester(focusRequester),
+        onValueChange = updateValue,
+        onFormSubmit = { viewModel.confirmDialogAction() },
+        isInputFieldValid = { valueInputData.isValid },
         keyboardOptions = KeyboardOptions(
             keyboardType = KeyboardType.Number,
             imeAction = ImeAction.Done
         ),
-        keyboardActions = KeyboardActions(
-            onDone = { viewModel.confirmDialogAction() }
-        )
-    )
-    if (autoFocus) {
-        LaunchedEffect(Unit) {
-            focusRequester.requestFocus()
+        autoFocus = autoFocus,
+        maxLines = if (type == TrackedThing.Type.Text) 5 else 1,
+        suffix = {
+            if (type == TrackedThing.Type.Percentage) {
+                Text("%")
+            }
         }
-    }
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
