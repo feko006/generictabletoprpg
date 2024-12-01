@@ -1,5 +1,6 @@
 package com.feko.generictabletoprpg.tracker
 
+import android.content.Context
 import androidx.compose.foundation.lazy.LazyListState
 import com.feko.generictabletoprpg.common.alertdialog.EmptyAlertDialogSubViewModel
 import com.feko.generictabletoprpg.common.alertdialog.IAlertDialogSubViewModel
@@ -41,7 +42,7 @@ object EmptyTrackerViewModel : ITrackerViewModel {
     override val combinedItemFlow: Flow<List<Any>>
         get() = flowOf()
 
-    override fun showCreateDialog(type: TrackedThing.Type) = Unit
+    override fun showCreateDialog(type: TrackedThing.Type, context: Context) = Unit
 
     override fun showEditDialog(item: TrackedThing) = Unit
 
@@ -96,6 +97,8 @@ object EmptyTrackerViewModel : ITrackerViewModel {
 
     override fun castSpell(withSlotLevel: Int) = Unit
 
+    override fun showStatsDialog(stats: Stats) = Unit
+
     override fun canCastSpell(level: Int): Boolean = false
 
     override fun changeSpellListEntryPreparedState(
@@ -108,4 +111,14 @@ object EmptyTrackerViewModel : ITrackerViewModel {
     override fun useHitDie(item: TrackedThing) = Unit
 
     override fun restoreHitDie(item: TrackedThing) = Unit
+
+    override val editedStats: Flow<Stats?>
+        get() = MutableStateFlow(null)
+
+    override fun updateStatsName(name: String) = Unit
+    override fun updateStatsProficiencyBonus(proficiencyBonus: String) = Unit
+    override fun updateSpellSaveDcAdditionalBonus(spellSaveDcAdditionalBonus: String) = Unit
+    override fun updateSpellAttackAdditionalBonus(spellAttackAdditionalBonus: String) = Unit
+    override fun isBonusValid(bonus: Int?): Boolean = true
+
 }

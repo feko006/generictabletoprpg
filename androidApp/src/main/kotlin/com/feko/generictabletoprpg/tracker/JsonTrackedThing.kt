@@ -36,7 +36,9 @@ abstract class JsonTrackedThing<T>(
     final override fun canSubtract(): Boolean = throw IllegalStateException()
 
     override fun copy(): TrackedThing = createCopy().also { it.serializedItem = serializedItem }
-    abstract fun createCopy(): JsonTrackedThing<T>
+
+    protected abstract fun createCopy(): JsonTrackedThing<T>
+
     suspend fun setItem(newItem: T, json: IJson) {
         this.serializedItem = newItem
         withContext(Dispatchers.Default) {

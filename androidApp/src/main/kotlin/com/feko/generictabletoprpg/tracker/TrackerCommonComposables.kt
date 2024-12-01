@@ -15,6 +15,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.feko.generictabletoprpg.R
@@ -58,6 +59,7 @@ fun CancelButton(viewModel: IDialogTrackerViewModel) {
 
 @Composable
 fun DropdownMenuContent(viewModel: ICreateDialogTrackerViewModel) {
+    val context = LocalContext.current
     TrackedThing.Type
         .entries
         .drop(1) // None is dropped
@@ -66,7 +68,7 @@ fun DropdownMenuContent(viewModel: ICreateDialogTrackerViewModel) {
             DropdownMenuItem(
                 text = { Text(type.name) },
                 onClick = {
-                    viewModel.showCreateDialog(type)
+                    viewModel.showCreateDialog(type, context)
                 },
                 modifier = Modifier.widthIn(min = 200.dp)
             )

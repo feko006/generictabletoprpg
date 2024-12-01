@@ -1,5 +1,6 @@
 package com.feko.generictabletoprpg.tracker
 
+import android.content.Context
 import androidx.annotation.StringRes
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.lifecycle.viewModelScope
@@ -57,6 +58,7 @@ class TrackerViewModel(
     private var editedTrackedThing: TrackedThing? = null
     private var spellListBeingAddedTo: SpellList? = null
     private var spellBeingRemoved: SpellListEntry? = null
+    private var fiveEDefaultStats: List<StatEntry>? = null
 
     override lateinit var dialogType: DialogType
     private val _spellListBeingPreviewed = MutableStateFlow<SpellList?>(null)
@@ -98,16 +100,28 @@ class TrackerViewModel(
             }
     }
 
-    override fun showCreateDialog(type: TrackedThing.Type) {
+    override fun showCreateDialog(type: TrackedThing.Type, context: Context) {
         viewModelScope.launch {
             _alertDialog._titleResource = type.nameResource
-            dialogType = DialogType.Create
-            editedTrackedThing = TrackedThing.emptyOfType(type, _items.value.size, groupId)
-            editedTrackedThingName.emit(InputFieldData.EMPTY)
-            editedTrackedThingSpellSlotLevel.emit(InputFieldData.EMPTY)
-            editedTrackedThingValue.emit(InputFieldData.EMPTY)
+            if (type == TrackedThing.Type.FiveEStats) {
+                dialogType = DialogType.EditStats
+                fiveEDefaultStats = fiveEDefaultStats ?: createDefault5EStatEntries(context)
+                val defaultStats = requireNotNull(fiveEDefaultStats)
+                val newStats = TrackedThing.emptyOfType(type, _items.value.size, groupId) as Stats
+                val defaultStatsContainer =
+                    newStats.serializedItem.copy(stats = defaultStats)
+                newStats.setItem(defaultStatsContainer, json)
+                editedStats.emit(newStats)
+                validateEditedStatsModel()
+            } else {
+                dialogType = DialogType.Create
+                editedTrackedThing = TrackedThing.emptyOfType(type, _items.value.size, groupId)
+                editedTrackedThingName.emit(InputFieldData.EMPTY)
+                editedTrackedThingSpellSlotLevel.emit(InputFieldData.EMPTY)
+                editedTrackedThingValue.emit(InputFieldData.EMPTY)
+                validateModel()
+            }
             editedTrackedThingType.emit(type)
-            validateModel()
             _fabDropdown.collapse()
             _alertDialog.show()
         }
@@ -170,6 +184,8 @@ class TrackerViewModel(
             DialogType.EditText -> editText()
 
             DialogType.RefreshAll -> refreshAll()
+
+            DialogType.EditStats -> createOrEditStats()
 
             DialogType.None -> Unit
         }
@@ -288,6 +304,10 @@ class TrackerViewModel(
                 }
             _alertDialog.hide()
         }
+    }
+
+    private fun createOrEditStats() {
+        TODO("Not yet implemented")
     }
 
     override fun resetValueToDefault(item: TrackedThing) {
@@ -628,6 +648,10 @@ class TrackerViewModel(
         }
     }
 
+    override fun showStatsDialog(stats: Stats) {
+        TODO("Not yet implemented")
+    }
+
     override fun canCastSpell(level: Int): Boolean =
         _items.value
             .filterIsInstance<SpellSlot>()
@@ -699,5 +723,62 @@ class TrackerViewModel(
         }
         dialogType = DialogType.None
     }
+
+    // region Stats
+
+    override val editedStats: MutableStateFlow<Stats?> = MutableStateFlow(null)
+
+    override fun updateStatsName(name: String) {
+        viewModelScope.launch {
+            val copy = requireNotNull(editedStats.value).copy() as Stats
+            copy.name = name
+            editedStats.emit(copy)
+            validateEditedStatsModel()
+        }
+    }
+
+    private fun validateEditedStatsModel() {
+        viewModelScope.launch {
+            val statsContainer = requireNotNull(editedStats.value?.serializedItem)
+            confirmButtonEnabled.emit(
+                isBonusValid(statsContainer.proficiencyBonus)
+                        && isBonusValid(statsContainer.spellSaveDcAdditionalBonus)
+            )
+        }
+    }
+
+    override fun updateStatsProficiencyBonus(proficiencyBonus: String) =
+        updateBonus(proficiencyBonus) { stats, bonus ->
+            stats.copy(proficiencyBonus = bonus)
+        }
+
+    override fun updateSpellSaveDcAdditionalBonus(spellSaveDcAdditionalBonus: String) =
+        updateBonus(spellSaveDcAdditionalBonus) { stats, bonus ->
+            stats.copy(spellSaveDcAdditionalBonus = bonus)
+        }
+
+    override fun updateSpellAttackAdditionalBonus(spellAttackAdditionalBonus: String) =
+        updateBonus(spellAttackAdditionalBonus) { stats, bonus ->
+            stats.copy(spellAttackAdditionalBonus = bonus)
+        }
+
+    private fun updateBonus(
+        bonus: String,
+        copyWithNewBonusValue: (StatsContainer, Int) -> (StatsContainer)
+    ) {
+        viewModelScope.launch {
+            val copy = requireNotNull(editedStats.value).copy() as Stats
+            val bonusInt = bonus.toIntOrNull()
+            val newBonusValue = if (isBonusValid(bonusInt)) bonusInt!! else -1
+            val newItemValue = copyWithNewBonusValue(copy.serializedItem, newBonusValue)
+            copy.setItem(newItemValue, json)
+            editedStats.emit(copy)
+            validateEditedStatsModel()
+        }
+    }
+
+    override fun isBonusValid(bonus: Int?): Boolean = bonus.let { it != null && it >= 0 }
+
+    // endregion
 
 }

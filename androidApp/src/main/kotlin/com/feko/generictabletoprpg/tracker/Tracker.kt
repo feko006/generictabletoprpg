@@ -55,6 +55,7 @@ import com.feko.generictabletoprpg.tracker.actions.NumberActions
 import com.feko.generictabletoprpg.tracker.actions.PercentageActions
 import com.feko.generictabletoprpg.tracker.actions.SpellListActions
 import com.feko.generictabletoprpg.tracker.actions.SpellSlotActions
+import com.feko.generictabletoprpg.tracker.actions.StatsActions
 import com.feko.generictabletoprpg.tracker.actions.TextListActions
 import com.feko.generictabletoprpg.tracker.dialogs.AlertDialogComposable
 import com.ramcosta.composedestinations.annotation.Destination
@@ -206,7 +207,9 @@ private fun TrackedThing(
                         style = Typography.titleMedium,
                         modifier = Modifier.weight(1f)
                     )
-                    if (item.type == TrackedThing.Type.Text) {
+                    if (item.type == TrackedThing.Type.Text
+                        || item.type == TrackedThing.Type.FiveEStats
+                    ) {
                         return@firstRow
                     }
                     Box(
@@ -248,6 +251,9 @@ private fun TrackedThing(
                         }
                     }
                 }
+                if (item.type == TrackedThing.Type.FiveEStats) {
+                    // Draw stats
+                }
                 var expanded by remember { mutableStateOf(false) }
                 if (item.type == TrackedThing.Type.Text) {
                     Text(
@@ -271,6 +277,7 @@ private fun TrackedThing(
                         TextListActions(item, expanded, viewModel) { expanded = it }
 
                     TrackedThing.Type.HitDice -> HitDiceActions(item, viewModel)
+                    TrackedThing.Type.FiveEStats -> StatsActions(item, viewModel)
                     TrackedThing.Type.None -> Unit
                 }
             }

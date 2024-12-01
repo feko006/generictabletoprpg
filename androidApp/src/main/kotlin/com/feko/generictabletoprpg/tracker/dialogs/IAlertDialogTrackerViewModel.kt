@@ -5,7 +5,8 @@ interface IAlertDialogTrackerViewModel
     IValueInputDialogTrackerViewModel,
     ICreateDialogTrackerViewModel,
     ISpellListDialogTrackerViewModel,
-    ISpellSlotSelectDialogTrackerViewModel {
+    ISpellSlotSelectDialogTrackerViewModel,
+    IStatsEditDialogTrackerViewModel {
 
     var dialogType: DialogType
 
@@ -25,7 +26,8 @@ interface IAlertDialogTrackerViewModel
         ReduceNumber,
         ShowSpellList,
         SelectSlotLevelToCastSpell,
-        EditText
+        EditText,
+        EditStats
     }
 
 }

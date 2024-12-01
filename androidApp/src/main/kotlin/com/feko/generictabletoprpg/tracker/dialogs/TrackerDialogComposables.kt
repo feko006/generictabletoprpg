@@ -36,8 +36,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -119,9 +121,75 @@ fun AlertDialogComposable(
                 DialogType.EditText ->
                     ValueInputDialog(viewModel, TrackedThing.Type.Text)
 
+                DialogType.EditStats -> StatsEditDialog(viewModel, defaultName)
+
                 DialogType.None -> Unit
             }
         }
+    }
+}
+
+@Composable
+fun StatsEditDialog(
+    viewModel: IStatsEditDialogTrackerViewModel,
+    defaultName: String
+) {
+    val editedStats by viewModel.editedStats.collectAsState(null)
+    if (editedStats == null) return
+    val editedStatsValue = requireNotNull(editedStats)
+    val statsContainer = requireNotNull(editedStatsValue.serializedItem)
+    DialogBase(viewModel) {
+        InputField(
+            value = editedStatsValue.name,
+            label = "${stringResource(R.string.name)} ($defaultName)",
+            onValueChange = { viewModel.updateStatsName(it) },
+            isInputFieldValid = { true }
+        )
+        var proficiencyBonusValue
+                by remember { mutableStateOf(statsContainer.proficiencyBonus.toString()) }
+        InputField(
+            value = proficiencyBonusValue,
+            label = stringResource(R.string.proficiency_bonus),
+            onValueChange = {
+                viewModel.updateStatsProficiencyBonus(it)
+                proficiencyBonusValue = it
+            },
+            isInputFieldValid = { viewModel.isBonusValid(it.toIntOrNull()) },
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Number,
+                imeAction = ImeAction.Next
+            )
+        )
+        var spellSaveDcAdditionalBonusValue
+                by remember { mutableStateOf(statsContainer.spellSaveDcAdditionalBonus.toString()) }
+        InputField(
+            value = spellSaveDcAdditionalBonusValue,
+            label = stringResource(R.string.spell_save_dc_additional_bonus),
+            onValueChange = {
+                viewModel.updateSpellSaveDcAdditionalBonus(it)
+                spellSaveDcAdditionalBonusValue = it
+            },
+            isInputFieldValid = { viewModel.isBonusValid(it.toIntOrNull()) },
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Number,
+                imeAction = ImeAction.Next
+            )
+        )
+        var spellAttackAdditionalBonusValue
+                by remember { mutableStateOf(statsContainer.spellAttackAdditionalBonus.toString()) }
+        InputField(
+            value = spellAttackAdditionalBonusValue,
+            label = stringResource(R.string.spell_attack_additional_bonus),
+            onValueChange = {
+                viewModel.updateSpellAttackAdditionalBonus(it)
+                spellAttackAdditionalBonusValue = it
+            },
+            isInputFieldValid = { viewModel.isBonusValid(it.toIntOrNull()) },
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Number,
+                imeAction = ImeAction.Next
+            )
+        )
     }
 }
 
