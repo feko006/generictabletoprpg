@@ -140,4 +140,10 @@
     <string name="proficiency_bonus">Proficiency Bonus</string>
     <string name="spell_save_dc_additional_bonus">Spell Save DC Additional Bonus</string>
     <string name="spell_attack_additional_bonus">Spell Attack Additional Bonus</string>
+    <string name="score">Score</string>
+    <string name="saving_throw_proficiency">Saving Throw Proficiency</string>
+    <string name="spellcasting_modifier">Spellcasting Modifier</string>
+    <string name="skill_additional_bonus">Skill Additional Bonus</string>
+    <string name="proficiency">Proficiency</string>
+    <string name="additional_bonus_hint">* Skill bonuses are calculated automatically. Additional bonuses are given by things like items, expertise etc.</string>
 </resources>

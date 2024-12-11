@@ -23,6 +23,8 @@ import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldColors
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -164,7 +166,8 @@ fun InputField(
     focusDirection: FocusDirection = FocusDirection.Down,
     autoFocus: Boolean = false,
     maxLines: Int = 1,
-    suffix: @Composable (() -> Unit) = {}
+    suffix: @Composable (() -> Unit) = {},
+    colors: TextFieldColors = TextFieldDefaults.colors()
 ) {
     TextField(
         value = value,
@@ -176,8 +179,8 @@ fun InputField(
             Text(label, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
         },
         trailingIcon = {
-            IconButton(onClick = { onValueChange("") }
-            ) { Icon(Icons.Default.Clear, "") }
+            IconButton(onClick = { onValueChange("") })
+            { Icon(Icons.Default.Clear, "") }
         },
         modifier = Modifier
             .fillMaxWidth()
@@ -186,7 +189,8 @@ fun InputField(
         keyboardActions = KeyboardActions(
             onNext = { focusManager.moveFocus(focusDirection) },
             onDone = { onFormSubmit() }
-        )
+        ),
+        colors = colors
     )
     if (autoFocus) {
         LaunchedEffect(Unit) {

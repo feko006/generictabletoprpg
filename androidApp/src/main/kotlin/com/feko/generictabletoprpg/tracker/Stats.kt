@@ -44,7 +44,7 @@ fun createDefault5EStatEntries(context: Context): List<StatEntry> {
         StatEntry(
             resources.getString(R.string.strength),
             resources.getString(R.string.strength_short),
-            value = 0,
+            score = 0,
             bonus = 0,
             isProficientInSavingThrow = false,
             isSpellcastingModifier = false,
@@ -53,14 +53,15 @@ fun createDefault5EStatEntries(context: Context): List<StatEntry> {
                     resources.getString(R.string.athletics),
                     bonus = 0,
                     passiveScore = 0,
-                    additionalBonus = 0
+                    additionalBonus = 0,
+                    isProficient = false
                 )
             )
         ),
         StatEntry(
             resources.getString(R.string.dexterity),
             resources.getString(R.string.dexterity_short),
-            value = 0,
+            score = 0,
             bonus = 0,
             isProficientInSavingThrow = false,
             isSpellcastingModifier = false,
@@ -69,26 +70,29 @@ fun createDefault5EStatEntries(context: Context): List<StatEntry> {
                     resources.getString(R.string.acrobatics),
                     bonus = 0,
                     passiveScore = 0,
-                    additionalBonus = 0
+                    additionalBonus = 0,
+                    isProficient = false
                 ),
                 StatSkillEntry(
                     resources.getString(R.string.sleight_of_hand),
                     bonus = 0,
                     passiveScore = 0,
-                    additionalBonus = 0
+                    additionalBonus = 0,
+                    isProficient = false
                 ),
                 StatSkillEntry(
                     resources.getString(R.string.stealth),
                     bonus = 0,
                     passiveScore = 0,
-                    additionalBonus = 0
+                    additionalBonus = 0,
+                    isProficient = false
                 )
             )
         ),
         StatEntry(
             resources.getString(R.string.constitution),
             resources.getString(R.string.constitution_short),
-            value = 0,
+            score = 0,
             bonus = 0,
             isProficientInSavingThrow = false,
             isSpellcastingModifier = false,
@@ -97,7 +101,7 @@ fun createDefault5EStatEntries(context: Context): List<StatEntry> {
         StatEntry(
             resources.getString(R.string.intelligence),
             resources.getString(R.string.intelligence_short),
-            value = 0,
+            score = 0,
             bonus = 0,
             isProficientInSavingThrow = false,
             isSpellcastingModifier = false,
@@ -107,37 +111,42 @@ fun createDefault5EStatEntries(context: Context): List<StatEntry> {
                     bonus = 0,
                     passiveScore = 0,
                     additionalBonus = 0,
+                    isProficient = false
                 ),
                 StatSkillEntry(
                     resources.getString(R.string.history),
                     bonus = 0,
                     passiveScore = 0,
-                    additionalBonus = 0
+                    additionalBonus = 0,
+                    isProficient = false
                 ),
                 StatSkillEntry(
                     resources.getString(R.string.investigation),
                     bonus = 0,
                     passiveScore = 0,
-                    additionalBonus = 0
+                    additionalBonus = 0,
+                    isProficient = false
                 ),
                 StatSkillEntry(
                     resources.getString(R.string.nature),
                     bonus = 0,
                     passiveScore = 0,
-                    additionalBonus = 0
+                    additionalBonus = 0,
+                    isProficient = false
                 ),
                 StatSkillEntry(
                     resources.getString(R.string.religion),
                     bonus = 0,
                     passiveScore = 0,
-                    additionalBonus = 0
+                    additionalBonus = 0,
+                    isProficient = false
                 )
             )
         ),
         StatEntry(
             resources.getString(R.string.wisdom),
             resources.getString(R.string.wisdom_short),
-            value = 0,
+            score = 0,
             bonus = 0,
             isProficientInSavingThrow = false,
             isSpellcastingModifier = false,
@@ -146,39 +155,44 @@ fun createDefault5EStatEntries(context: Context): List<StatEntry> {
                     resources.getString(R.string.animal_handling),
                     bonus = 0,
                     passiveScore = 0,
-                    additionalBonus = 0
+                    additionalBonus = 0,
+                    isProficient = false
                 ),
                 StatSkillEntry(
                     resources.getString(R.string.insight),
                     bonus = 0,
                     passiveScore = 0,
-                    additionalBonus = 0
+                    additionalBonus = 0,
+                    isProficient = false
                 ),
                 StatSkillEntry(
                     resources.getString(R.string.medicine),
                     bonus = 0,
                     passiveScore = 0,
-                    additionalBonus = 0
+                    additionalBonus = 0,
+                    isProficient = false
                 ),
                 StatSkillEntry(
                     resources.getString(R.string.perception),
                     bonus = 0,
                     passiveScore = 0,
                     additionalBonus = 0,
+                    isProficient = false,
                     showPassive = true
                 ),
                 StatSkillEntry(
                     resources.getString(R.string.survival),
                     bonus = 0,
                     passiveScore = 0,
-                    additionalBonus = 0
+                    additionalBonus = 0,
+                    isProficient = false
                 )
             )
         ),
         StatEntry(
             resources.getString(R.string.charisma),
             resources.getString(R.string.charisma_short),
-            value = 0,
+            score = 0,
             bonus = 0,
             isProficientInSavingThrow = false,
             isSpellcastingModifier = false,
@@ -187,25 +201,29 @@ fun createDefault5EStatEntries(context: Context): List<StatEntry> {
                     resources.getString(R.string.deception),
                     bonus = 0,
                     passiveScore = 0,
-                    additionalBonus = 0
+                    additionalBonus = 0,
+                    isProficient = false
                 ),
                 StatSkillEntry(
                     resources.getString(R.string.intimidation),
                     bonus = 0,
                     passiveScore = 0,
-                    additionalBonus = 0
+                    additionalBonus = 0,
+                    isProficient = false
                 ),
                 StatSkillEntry(
                     resources.getString(R.string.performance),
                     bonus = 0,
                     passiveScore = 0,
-                    additionalBonus = 0
+                    additionalBonus = 0,
+                    isProficient = false
                 ),
                 StatSkillEntry(
                     resources.getString(R.string.persuasion),
                     bonus = 0,
                     passiveScore = 0,
-                    additionalBonus = 0
+                    additionalBonus = 0,
+                    isProficient = false
                 )
             )
         )

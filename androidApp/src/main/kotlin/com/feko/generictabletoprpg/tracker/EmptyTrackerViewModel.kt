@@ -119,6 +119,20 @@ object EmptyTrackerViewModel : ITrackerViewModel {
     override fun updateStatsProficiencyBonus(proficiencyBonus: String) = Unit
     override fun updateSpellSaveDcAdditionalBonus(spellSaveDcAdditionalBonus: String) = Unit
     override fun updateSpellAttackAdditionalBonus(spellAttackAdditionalBonus: String) = Unit
-    override fun isBonusValid(bonus: Int?): Boolean = true
+    override fun updateStatScore(statIndex: Int, statScore: String) = Unit
+    override fun updateStatSavingThrowProficiency(statIndex: Int, isProficient: Boolean) = Unit
+    override fun updateStatSpellcastingModifier(statIndex: Int, isSpellcastingModifier: Boolean) =
+        Unit
 
+    override fun updateStatSkillAdditionalBonus(
+        statIndex: Int,
+        skillIndex: Int,
+        skillAdditionalBonus: String
+    ) = Unit
+
+    override fun updateStatSkillProficiency(
+        statIndex: Int,
+        skillIndex: Int,
+        isProficient: Boolean
+    ) = Unit
 }

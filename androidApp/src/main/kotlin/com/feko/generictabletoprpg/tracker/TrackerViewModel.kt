@@ -112,7 +112,7 @@ class TrackerViewModel(
                     newStats.serializedItem.copy(stats = defaultStats)
                 newStats.setItem(defaultStatsContainer, json)
                 editedStats.emit(newStats)
-                validateEditedStatsModel()
+                confirmButtonEnabled.emit(true)
             } else {
                 dialogType = DialogType.Create
                 editedTrackedThing = TrackedThing.emptyOfType(type, _items.value.size, groupId)
@@ -733,52 +733,114 @@ class TrackerViewModel(
             val copy = requireNotNull(editedStats.value).copy() as Stats
             copy.name = name
             editedStats.emit(copy)
-            validateEditedStatsModel()
-        }
-    }
-
-    private fun validateEditedStatsModel() {
-        viewModelScope.launch {
-            val statsContainer = requireNotNull(editedStats.value?.serializedItem)
-            confirmButtonEnabled.emit(
-                isBonusValid(statsContainer.proficiencyBonus)
-                        && isBonusValid(statsContainer.spellSaveDcAdditionalBonus)
-            )
         }
     }
 
     override fun updateStatsProficiencyBonus(proficiencyBonus: String) =
-        updateBonus(proficiencyBonus) { stats, bonus ->
-            stats.copy(proficiencyBonus = bonus)
+        updateStatIntValue(proficiencyBonus) { statsContainer, bonus ->
+            statsContainer.copy(proficiencyBonus = bonus)
         }
 
     override fun updateSpellSaveDcAdditionalBonus(spellSaveDcAdditionalBonus: String) =
-        updateBonus(spellSaveDcAdditionalBonus) { stats, bonus ->
-            stats.copy(spellSaveDcAdditionalBonus = bonus)
+        updateStatIntValue(spellSaveDcAdditionalBonus) { statsContainer, bonus ->
+            statsContainer.copy(spellSaveDcAdditionalBonus = bonus)
         }
 
     override fun updateSpellAttackAdditionalBonus(spellAttackAdditionalBonus: String) =
-        updateBonus(spellAttackAdditionalBonus) { stats, bonus ->
-            stats.copy(spellAttackAdditionalBonus = bonus)
+        updateStatIntValue(spellAttackAdditionalBonus) { statsContainer, bonus ->
+            statsContainer.copy(spellAttackAdditionalBonus = bonus)
         }
 
-    private fun updateBonus(
-        bonus: String,
-        copyWithNewBonusValue: (StatsContainer, Int) -> (StatsContainer)
-    ) {
-        viewModelScope.launch {
-            val copy = requireNotNull(editedStats.value).copy() as Stats
-            val bonusInt = bonus.toIntOrNull()
-            val newBonusValue = if (isBonusValid(bonusInt)) bonusInt!! else -1
-            val newItemValue = copyWithNewBonusValue(copy.serializedItem, newBonusValue)
-            copy.setItem(newItemValue, json)
-            editedStats.emit(copy)
-            validateEditedStatsModel()
+    override fun updateStatScore(statIndex: Int, statScore: String) =
+        updateStatIntValue(statScore) { statsContainer, score ->
+            val newStatEntry =
+                statsContainer.stats[statIndex].copy(score = score)
+            statsContainer.copy(
+                stats = statsContainer.stats.mapIndexed { index, statEntry ->
+                    if (index == statIndex) newStatEntry else statEntry
+                })
+        }
+
+    override fun updateStatSavingThrowProficiency(statIndex: Int, isProficient: Boolean) =
+        updateStatValue { statsContainer ->
+            val newStatEntry =
+                statsContainer.stats[statIndex].copy(isProficientInSavingThrow = isProficient)
+            statsContainer.copy(
+                stats = statsContainer.stats.mapIndexed { index, statEntry ->
+                    if (index == statIndex) newStatEntry else statEntry
+                })
+        }
+
+    override fun updateStatSpellcastingModifier(statIndex: Int, isSpellcastingModifier: Boolean) {
+        updateStatValue { statsContainer ->
+            val newStatEntry =
+                statsContainer.stats[statIndex].copy(isSpellcastingModifier = isSpellcastingModifier)
+            statsContainer.copy(
+                stats = statsContainer.stats.mapIndexed { index, statEntry ->
+                    if (index == statIndex) newStatEntry else statEntry
+                })
         }
     }
 
-    override fun isBonusValid(bonus: Int?): Boolean = bonus.let { it != null && it >= 0 }
+    override fun updateStatSkillAdditionalBonus(
+        statIndex: Int,
+        skillIndex: Int,
+        skillAdditionalBonus: String
+    ) = updateStatIntValue(
+        skillAdditionalBonus,
+    ) { statsContainer, additionalBonus ->
+        val newStatEntry =
+            statsContainer.stats[statIndex].let {
+                val newSkill =
+                    it.skills[skillIndex].copy(additionalBonus = additionalBonus)
+                it.copy(
+                    skills = it.skills.mapIndexed { index, skill ->
+                        if (index == skillIndex) newSkill else skill
+                    }
+                )
+            }
+        statsContainer.copy(
+            stats = statsContainer.stats.mapIndexed { index, statEntry ->
+                if (index == statIndex) newStatEntry else statEntry
+            })
+    }
 
-    // endregion
+    override fun updateStatSkillProficiency(
+        statIndex: Int,
+        skillIndex: Int,
+        isProficient: Boolean
+    ) = updateStatValue { statsContainer ->
+        val newStatEntry =
+            statsContainer.stats[statIndex].let {
+                val newSkill =
+                    it.skills[skillIndex].copy(isProficient = isProficient)
+                it.copy(
+                    skills = it.skills.mapIndexed { index, skill ->
+                        if (index == skillIndex) newSkill else skill
+                    }
+                )
+            }
+        statsContainer.copy(
+            stats = statsContainer.stats.mapIndexed { index, statEntry ->
+                if (index == statIndex) newStatEntry else statEntry
+            })
+    }
+
+
+    private fun updateStatIntValue(
+        value: String,
+        copyWithNewValue: (StatsContainer, Int) -> (StatsContainer)
+    ) = updateStatValue { copyWithNewValue(it, value.toIntOrNull() ?: 0) }
+
+    private fun updateStatValue(copyWithNewValue: (StatsContainer) -> (StatsContainer)) {
+        viewModelScope.launch {
+            val copy = requireNotNull(editedStats.value).copy() as Stats
+            val newItemValue = copyWithNewValue(copy.serializedItem)
+            copy.setItem(newItemValue, json)
+            editedStats.emit(copy)
+        }
+    }
+
+    // endregion Stats
 
 }

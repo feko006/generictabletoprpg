@@ -1,11 +1,14 @@
 package com.feko.generictabletoprpg.tracker.dialogs
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -13,11 +16,15 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ElevatedFilterChip
@@ -32,10 +39,12 @@ import androidx.compose.material3.LocalMinimumInteractiveComponentSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -43,6 +52,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
@@ -65,6 +75,9 @@ import com.feko.generictabletoprpg.tracker.CancelButton
 import com.feko.generictabletoprpg.tracker.EmptyTrackerViewModel
 import com.feko.generictabletoprpg.tracker.SpellList
 import com.feko.generictabletoprpg.tracker.SpellListEntry
+import com.feko.generictabletoprpg.tracker.StatEntry
+import com.feko.generictabletoprpg.tracker.StatSkillEntry
+import com.feko.generictabletoprpg.tracker.StatsContainer
 import com.feko.generictabletoprpg.tracker.TrackedThing
 import com.feko.generictabletoprpg.tracker.cantripSpellsCount
 import com.feko.generictabletoprpg.tracker.containsPreparedAndCantripSpells
@@ -138,58 +151,242 @@ fun StatsEditDialog(
     if (editedStats == null) return
     val editedStatsValue = requireNotNull(editedStats)
     val statsContainer = requireNotNull(editedStatsValue.serializedItem)
-    DialogBase(viewModel) {
+    DialogBase(
+        viewModel,
+        Modifier.heightIn(0.dp, (LocalConfiguration.current.screenHeightDp * 0.7f).dp)
+    ) {
+        Column(
+            Modifier
+                .verticalScroll(rememberScrollState())
+                .weight(1f, false)
+        ) {
+            Text(
+                stringResource(R.string.additional_bonus_hint),
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 8.dp),
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                style = Typography.bodySmall
+            )
+            InputField(
+                value = editedStatsValue.name,
+                label = "${stringResource(R.string.name)} ($defaultName)",
+                onValueChange = { viewModel.updateStatsName(it) },
+                isInputFieldValid = { true }
+            )
+            var proficiencyBonusValue
+                    by remember { mutableStateOf(statsContainer.proficiencyBonus.toString()) }
+            InputField(
+                value = proficiencyBonusValue,
+                label = stringResource(R.string.proficiency_bonus),
+                onValueChange = {
+                    viewModel.updateStatsProficiencyBonus(it)
+                    proficiencyBonusValue = it
+                },
+                isInputFieldValid = { true },
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Number,
+                    imeAction = ImeAction.Next
+                )
+            )
+            var spellSaveDcAdditionalBonusValue
+                    by remember { mutableStateOf(statsContainer.spellSaveDcAdditionalBonus.toString()) }
+            InputField(
+                value = spellSaveDcAdditionalBonusValue,
+                label = stringResource(R.string.spell_save_dc_additional_bonus),
+                onValueChange = {
+                    viewModel.updateSpellSaveDcAdditionalBonus(it)
+                    spellSaveDcAdditionalBonusValue = it
+                },
+                isInputFieldValid = { true },
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Number,
+                    imeAction = ImeAction.Next
+                )
+            )
+            var spellAttackAdditionalBonusValue
+                    by remember { mutableStateOf(statsContainer.spellAttackAdditionalBonus.toString()) }
+            InputField(
+                value = spellAttackAdditionalBonusValue,
+                label = stringResource(R.string.spell_attack_additional_bonus),
+                onValueChange = {
+                    viewModel.updateSpellAttackAdditionalBonus(it)
+                    spellAttackAdditionalBonusValue = it
+                },
+                isInputFieldValid = { true },
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Number,
+                    imeAction = ImeAction.Next
+                )
+            )
+            for ((statIndex, statEntry) in statsContainer.stats.withIndex()) {
+                Spacer(Modifier.height(8.dp))
+                StatsStatEntry(statEntry, statIndex, viewModel, statsContainer)
+                if (statIndex < statsContainer.stats.size - 1) {
+                    Spacer(Modifier.height(8.dp))
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun StatsStatEntry(
+    statEntry: StatEntry,
+    statIndex: Int,
+    viewModel: IStatsEditDialogTrackerViewModel,
+    statsContainer: StatsContainer
+) {
+    Row(
+        Modifier.padding(vertical = 8.dp),
+        Arrangement.spacedBy(8.dp),
+        Alignment.CenterVertically
+    ) {
+        HorizontalDivider(Modifier.weight(1f))
+        Text("${statEntry.name} (${statEntry.shortName})")
+        HorizontalDivider(Modifier.weight(1f))
+    }
+    key("editStatEntry-$statIndex") {
+        var statValue by remember { mutableStateOf(statEntry.score.toString()) }
+        val bonusText = "(${if (statEntry.bonus >= 0) "+" else ""}${statEntry.bonus})"
         InputField(
-            value = editedStatsValue.name,
-            label = "${stringResource(R.string.name)} ($defaultName)",
-            onValueChange = { viewModel.updateStatsName(it) },
-            isInputFieldValid = { true }
-        )
-        var proficiencyBonusValue
-                by remember { mutableStateOf(statsContainer.proficiencyBonus.toString()) }
-        InputField(
-            value = proficiencyBonusValue,
-            label = stringResource(R.string.proficiency_bonus),
+            value = statValue,
+            label = "${stringResource(R.string.score)}$bonusText",
             onValueChange = {
-                viewModel.updateStatsProficiencyBonus(it)
-                proficiencyBonusValue = it
+                viewModel.updateStatScore(statIndex, it)
+                statValue = it
             },
-            isInputFieldValid = { viewModel.isBonusValid(it.toIntOrNull()) },
+            isInputFieldValid = { true },
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Number,
                 imeAction = ImeAction.Next
             )
         )
-        var spellSaveDcAdditionalBonusValue
-                by remember { mutableStateOf(statsContainer.spellSaveDcAdditionalBonus.toString()) }
+    }
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .padding(end = 8.dp),
+        Arrangement.Start,
+        Alignment.CenterVertically
+    ) {
+        Checkbox(
+            statEntry.isProficientInSavingThrow,
+            { checked ->
+                viewModel.updateStatSavingThrowProficiency(statIndex, checked)
+            }
+        )
+        Text(stringResource(R.string.saving_throw_proficiency))
+    }
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .padding(end = 8.dp),
+        Arrangement.Start,
+        Alignment.CenterVertically
+    ) {
+        Checkbox(
+            statEntry.isSpellcastingModifier,
+            { checked -> viewModel.updateStatSpellcastingModifier(statIndex, checked) }
+        )
+        Text(stringResource(R.string.spellcasting_modifier))
+    }
+    if (statEntry.skills.isNotEmpty()) {
+        Column(
+            Modifier
+                .background(
+                    CardDefaults.elevatedCardColors().containerColor,
+                    shape = RoundedCornerShape(8.dp)
+                )
+                .padding(8.dp)
+        ) {
+            for ((skillIndex, skill) in statEntry.skills.withIndex()) {
+                StatsStatEntrySkill(
+                    skill,
+                    statIndex,
+                    skillIndex,
+                    statsContainer,
+                    statEntry,
+                    viewModel
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun StatsStatEntrySkill(
+    skill: StatSkillEntry,
+    statIndex: Int,
+    skillIndex: Int,
+    statsContainer: StatsContainer,
+    statEntry: StatEntry,
+    viewModel: IStatsEditDialogTrackerViewModel
+) {
+    Row(
+        Modifier.padding(top = 8.dp, bottom = 16.dp),
+        Arrangement.spacedBy(8.dp),
+        Alignment.CenterVertically
+    ) {
+        HorizontalDivider(Modifier.weight(1f))
+        Text(skill.name)
+        HorizontalDivider(Modifier.weight(1f))
+    }
+    key("editStatEntry-$statIndex-$skillIndex") {
+        var skillAdditionalValue by remember {
+            mutableStateOf(skill.additionalBonus.toString())
+        }
+        val imeAction =
+            if (statIndex == statsContainer.stats.size - 1
+                && skillIndex == statEntry.skills.size - 1
+            ) {
+                ImeAction.Done
+            } else {
+                ImeAction.Next
+            }
         InputField(
-            value = spellSaveDcAdditionalBonusValue,
-            label = stringResource(R.string.spell_save_dc_additional_bonus),
+            value = skillAdditionalValue,
+            label = stringResource(R.string.skill_additional_bonus),
             onValueChange = {
-                viewModel.updateSpellSaveDcAdditionalBonus(it)
-                spellSaveDcAdditionalBonusValue = it
+                viewModel.updateStatSkillAdditionalBonus(
+                    statIndex,
+                    skillIndex,
+                    it
+                )
+                skillAdditionalValue = it
             },
-            isInputFieldValid = { viewModel.isBonusValid(it.toIntOrNull()) },
+            isInputFieldValid = { true },
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Number,
-                imeAction = ImeAction.Next
+                imeAction = imeAction
+            ),
+            onFormSubmit = { viewModel.confirmDialogAction() },
+            colors = TextFieldDefaults.colors(
+                focusedContainerColor = Color.Transparent,
+                unfocusedContainerColor = Color.Transparent,
+                disabledContainerColor = Color.Transparent,
+                errorContainerColor = Color.Transparent
             )
         )
-        var spellAttackAdditionalBonusValue
-                by remember { mutableStateOf(statsContainer.spellAttackAdditionalBonus.toString()) }
-        InputField(
-            value = spellAttackAdditionalBonusValue,
-            label = stringResource(R.string.spell_attack_additional_bonus),
-            onValueChange = {
-                viewModel.updateSpellAttackAdditionalBonus(it)
-                spellAttackAdditionalBonusValue = it
-            },
-            isInputFieldValid = { viewModel.isBonusValid(it.toIntOrNull()) },
-            keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Number,
-                imeAction = ImeAction.Next
-            )
+    }
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .padding(end = 8.dp, top = 8.dp),
+        Arrangement.Start,
+        Alignment.CenterVertically
+    ) {
+        Checkbox(
+            skill.isProficient,
+            { checked ->
+                viewModel.updateStatSkillProficiency(
+                    statIndex,
+                    skillIndex,
+                    checked
+                )
+            }
         )
+        Text(stringResource(R.string.proficiency))
     }
 }
 
@@ -243,10 +440,13 @@ private fun ValueInputDialog(
 @Composable
 private fun DialogBase(
     viewModel: IBaseDialogTrackerViewModel,
-    inputFields: @Composable () -> Unit
+    modifier: Modifier = Modifier,
+    inputFields: @Composable ColumnScope.() -> Unit
 ) {
     Column(
-        Modifier.padding(16.dp),
+        Modifier
+            .padding(16.dp)
+            .then(modifier),
         Arrangement.spacedBy(16.dp)
     ) {
         DialogTitle(viewModel.alertDialog.titleResource)
@@ -338,7 +538,7 @@ fun SpellListDialog(
             }
         }
         LazyColumn(
-            Modifier.heightIn(0.dp, 600.dp),
+            Modifier.heightIn(0.dp, (LocalConfiguration.current.screenHeightDp * 0.7f).dp),
             viewModel.spellListState,
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
