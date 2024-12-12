@@ -10,6 +10,7 @@ import com.feko.generictabletoprpg.common.fabdropdown.IFabDropdownSubViewModel
 import com.feko.generictabletoprpg.common.toast.EmptyToastSubViewModel
 import com.feko.generictabletoprpg.common.toast.IToastSubViewModel
 import com.feko.generictabletoprpg.tracker.dialogs.IAlertDialogTrackerViewModel.DialogType
+import com.feko.generictabletoprpg.tracker.dialogs.IStatsEditDialogSubViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -18,6 +19,8 @@ import kotlinx.coroutines.flow.flowOf
 object EmptyTrackerViewModel : ITrackerViewModel {
     override val alertDialog: IAlertDialogSubViewModel
         get() = EmptyAlertDialogSubViewModel
+    override val statsEditDialog: IStatsEditDialogSubViewModel
+        get() = EmptyStatsEditDialogTrackerViewModel
     override val fabDropdown: IFabDropdownSubViewModel
         get() = EmptyFabDropdownSubViewModel
     override val toast: IToastSubViewModel
@@ -112,34 +115,5 @@ object EmptyTrackerViewModel : ITrackerViewModel {
 
     override fun restoreHitDie(item: TrackedThing) = Unit
 
-    override val editedStats: Flow<Stats?>
-        get() = MutableStateFlow(null)
     override val statsBeingPreviewed: StatsContainer? = null
-
-    override fun updateStatsName(name: String) = Unit
-    override fun updateStatsProficiencyBonus(proficiencyBonus: String) = Unit
-    override fun updateStatsInitiativeAdditionalBonus(initiativeAdditionalBonus: String) = Unit
-    override fun updateSpellSaveDcAdditionalBonus(spellSaveDcAdditionalBonus: String) = Unit
-    override fun updateSpellAttackAdditionalBonus(spellAttackAdditionalBonus: String) = Unit
-    override fun updateStatScore(statIndex: Int, statScore: String) = Unit
-    override fun updateStatSavingThrowProficiency(statIndex: Int, isProficient: Boolean) = Unit
-    override fun updateStatSpellcastingModifier(statIndex: Int, isSpellcastingModifier: Boolean) =
-        Unit
-
-    override fun updateStatSkillAdditionalBonus(
-        statIndex: Int,
-        skillIndex: Int,
-        skillAdditionalBonus: String
-    ) = Unit
-
-    override fun updateStatSkillProficiency(
-        statIndex: Int,
-        skillIndex: Int,
-        isProficient: Boolean
-    ) = Unit
-
-    override fun updateStatSavingThrowAdditionalBonus(
-        statIndex: Int,
-        savingThrowAdditionalBonus: String
-    ) = Unit
 }

@@ -19,6 +19,7 @@ import com.feko.generictabletoprpg.import.IJson
 import com.feko.generictabletoprpg.searchall.ISearchAllUseCase
 import com.feko.generictabletoprpg.spell.SpellDao
 import com.feko.generictabletoprpg.tracker.dialogs.IAlertDialogTrackerViewModel.DialogType
+import com.feko.generictabletoprpg.tracker.dialogs.StatsEditDialogSubViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.android.awaitFrame
 import kotlinx.coroutines.flow.Flow
@@ -52,6 +53,14 @@ class TrackerViewModel(
     override val editedTrackedThingValue = MutableStateFlow(InputFieldData.EMPTY)
     override val editedTrackedThingType = MutableStateFlow(TrackedThing.Type.None)
     override val confirmButtonEnabled = MutableStateFlow(false)
+
+    override var statsEditDialog: StatsEditDialogSubViewModel =
+        StatsEditDialogSubViewModel(
+            viewModelScope,
+            json,
+            confirmButtonEnabled,
+            alertDialog
+        ) { confirmDialogAction() }
 
     private lateinit var allItems: List<Any>
 
@@ -112,7 +121,7 @@ class TrackerViewModel(
                 val defaultStatsContainer =
                     newStats.serializedItem.copy(stats = defaultStats)
                 newStats.setItem(defaultStatsContainer, json)
-                editedStats.emit(newStats)
+                statsEditDialog.editedStats.emit(newStats)
                 confirmButtonEnabled.emit(true)
             } else {
                 dialogType = DialogType.Create
@@ -134,7 +143,7 @@ class TrackerViewModel(
             val copy = item.copy()
             if (item.type == TrackedThing.Type.FiveEStats) {
                 dialogType = DialogType.EditStats
-                editedStats.emit(copy as Stats)
+                statsEditDialog.editedStats.emit(copy as Stats)
                 confirmButtonEnabled.emit(true)
             } else {
                 dialogType = DialogType.Edit
@@ -316,7 +325,7 @@ class TrackerViewModel(
     }
 
     private fun createOrEditStats() {
-        val editedStats = editedStats.value
+        val editedStats = statsEditDialog.editedStats.value
         viewModelScope.launch {
             val updatedStatsContainer =
                 requireNotNull(editedStats)
@@ -863,141 +872,5 @@ class TrackerViewModel(
         }
         dialogType = DialogType.None
     }
-
-    // region Stats
-
-    override val editedStats: MutableStateFlow<Stats?> = MutableStateFlow(null)
-
-    override fun updateStatsName(name: String) {
-        viewModelScope.launch {
-            val copy = requireNotNull(editedStats.value).copy() as Stats
-            copy.name = name
-            editedStats.emit(copy)
-        }
-    }
-
-    override fun updateStatsProficiencyBonus(proficiencyBonus: String) =
-        updateStatIntValue(proficiencyBonus) { statsContainer, bonus ->
-            statsContainer.copy(proficiencyBonus = bonus)
-        }
-
-    override fun updateStatsInitiativeAdditionalBonus(initiativeAdditionalBonus: String) =
-        updateStatIntValue(initiativeAdditionalBonus) { statsContainer, bonus ->
-            statsContainer.copy(initiativeAdditionalBonus = bonus)
-        }
-
-    override fun updateSpellSaveDcAdditionalBonus(spellSaveDcAdditionalBonus: String) =
-        updateStatIntValue(spellSaveDcAdditionalBonus) { statsContainer, bonus ->
-            statsContainer.copy(spellSaveDcAdditionalBonus = bonus)
-        }
-
-    override fun updateSpellAttackAdditionalBonus(spellAttackAdditionalBonus: String) =
-        updateStatIntValue(spellAttackAdditionalBonus) { statsContainer, bonus ->
-            statsContainer.copy(spellAttackAdditionalBonus = bonus)
-        }
-
-    override fun updateStatScore(statIndex: Int, statScore: String) =
-        updateStatIntValue(statScore) { statsContainer, score ->
-            val newStatEntry =
-                statsContainer.stats[statIndex].copy(score = score)
-            statsContainer.copy(
-                stats = statsContainer.stats.mapIndexed { index, statEntry ->
-                    if (index == statIndex) newStatEntry else statEntry
-                })
-        }
-
-    override fun updateStatSavingThrowProficiency(statIndex: Int, isProficient: Boolean) =
-        updateStatValue { statsContainer ->
-            val newStatEntry =
-                statsContainer.stats[statIndex].copy(isProficientInSavingThrow = isProficient)
-            statsContainer.copy(
-                stats = statsContainer.stats.mapIndexed { index, statEntry ->
-                    if (index == statIndex) newStatEntry else statEntry
-                })
-        }
-
-    override fun updateStatSpellcastingModifier(statIndex: Int, isSpellcastingModifier: Boolean) {
-        updateStatValue { statsContainer ->
-            val newStatEntry =
-                statsContainer.stats[statIndex].copy(isSpellcastingModifier = isSpellcastingModifier)
-            statsContainer.copy(
-                stats = statsContainer.stats.mapIndexed { index, statEntry ->
-                    if (index == statIndex) newStatEntry else statEntry
-                })
-        }
-    }
-
-    override fun updateStatSkillAdditionalBonus(
-        statIndex: Int,
-        skillIndex: Int,
-        skillAdditionalBonus: String
-    ) = updateStatIntValue(
-        skillAdditionalBonus,
-    ) { statsContainer, additionalBonus ->
-        val newStatEntry =
-            statsContainer.stats[statIndex].let {
-                val newSkill =
-                    it.skills[skillIndex].copy(additionalBonus = additionalBonus)
-                it.copy(
-                    skills = it.skills.mapIndexed { index, skill ->
-                        if (index == skillIndex) newSkill else skill
-                    }
-                )
-            }
-        statsContainer.copy(
-            stats = statsContainer.stats.mapIndexed { index, statEntry ->
-                if (index == statIndex) newStatEntry else statEntry
-            })
-    }
-
-    override fun updateStatSkillProficiency(
-        statIndex: Int,
-        skillIndex: Int,
-        isProficient: Boolean
-    ) = updateStatValue { statsContainer ->
-        val newStatEntry =
-            statsContainer.stats[statIndex].let {
-                val newSkill =
-                    it.skills[skillIndex].copy(isProficient = isProficient)
-                it.copy(
-                    skills = it.skills.mapIndexed { index, skill ->
-                        if (index == skillIndex) newSkill else skill
-                    }
-                )
-            }
-        statsContainer.copy(
-            stats = statsContainer.stats.mapIndexed { index, statEntry ->
-                if (index == statIndex) newStatEntry else statEntry
-            })
-    }
-
-    override fun updateStatSavingThrowAdditionalBonus(
-        statIndex: Int,
-        savingThrowAdditionalBonus: String
-    ) = updateStatIntValue(savingThrowAdditionalBonus) { statsContainer, bonus ->
-        val newStatEntry =
-            statsContainer.stats[statIndex].copy(savingThrowAdditionalBonus = bonus)
-        statsContainer.copy(
-            stats = statsContainer.stats.mapIndexed { index, statEntry ->
-                if (index == statIndex) newStatEntry else statEntry
-            })
-    }
-
-
-    private fun updateStatIntValue(
-        value: String,
-        copyWithNewValue: (StatsContainer, Int) -> (StatsContainer)
-    ) = updateStatValue { copyWithNewValue(it, value.toIntOrNull() ?: 0) }
-
-    private fun updateStatValue(copyWithNewValue: (StatsContainer) -> (StatsContainer)) {
-        viewModelScope.launch {
-            val copy = requireNotNull(editedStats.value).copy() as Stats
-            val newItemValue = copyWithNewValue(copy.serializedItem)
-            copy.setItem(newItemValue, json)
-            editedStats.emit(copy)
-        }
-    }
-
-    // endregion Stats
 
 }

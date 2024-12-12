@@ -1,6 +1,6 @@
 package com.feko.generictabletoprpg.tracker.dialogs
 
-import com.feko.generictabletoprpg.com.feko.generictabletoprpg.tracker.dialogs.IStatsPreviewDialogTrackerViewModel
+import com.feko.generictabletoprpg.tracker.actions.IStatsActionsTrackerViewModel
 
 interface IAlertDialogTrackerViewModel
     : IEditDialogTrackerViewModel,
@@ -8,10 +8,12 @@ interface IAlertDialogTrackerViewModel
     ICreateDialogTrackerViewModel,
     ISpellListDialogTrackerViewModel,
     ISpellSlotSelectDialogTrackerViewModel,
-    IStatsEditDialogTrackerViewModel,
-    IStatsPreviewDialogTrackerViewModel {
+    IStatsPreviewDialogTrackerViewModel,
+    IStatsActionsTrackerViewModel {
 
     var dialogType: DialogType
+
+    val statsEditDialog: IStatsEditDialogSubViewModel
 
     enum class DialogType {
         None,

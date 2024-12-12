@@ -63,7 +63,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import com.feko.generictabletoprpg.R
 import com.feko.generictabletoprpg.com.feko.generictabletoprpg.asSignedString
-import com.feko.generictabletoprpg.com.feko.generictabletoprpg.tracker.dialogs.IStatsPreviewDialogTrackerViewModel
 import com.feko.generictabletoprpg.common.alertdialog.EmptyAlertDialogSubViewModel
 import com.feko.generictabletoprpg.common.alertdialog.IAlertDialogSubViewModel
 import com.feko.generictabletoprpg.common.composable.CheckboxWithText
@@ -137,7 +136,7 @@ fun AlertDialogComposable(
                 DialogType.EditText ->
                     ValueInputDialog(viewModel, TrackedThing.Type.Text)
 
-                DialogType.EditStats -> StatsEditDialog(viewModel, defaultName)
+                DialogType.EditStats -> StatsEditDialog(viewModel.statsEditDialog, defaultName)
 
                 DialogType.PreviewStatSkills -> PreviewStatSkillsDialog(viewModel)
 
@@ -149,7 +148,7 @@ fun AlertDialogComposable(
 
 @Composable
 fun StatsEditDialog(
-    viewModel: IStatsEditDialogTrackerViewModel,
+    viewModel: IStatsEditDialogSubViewModel,
     defaultName: String
 ) {
     val editedStats by viewModel.editedStats.collectAsState(null)
@@ -306,7 +305,7 @@ fun SkillRow(
 private fun StatsStatEntry(
     statEntry: StatEntry,
     statIndex: Int,
-    viewModel: IStatsEditDialogTrackerViewModel,
+    viewModel: IStatsEditDialogSubViewModel,
     statsContainer: StatsContainer
 ) {
     HeaderWithDividers("${statEntry.name} (${statEntry.shortName})")
@@ -379,7 +378,7 @@ private fun StatsStatEntrySkill(
     skillIndex: Int,
     statsContainer: StatsContainer,
     statEntry: StatEntry,
-    viewModel: IStatsEditDialogTrackerViewModel
+    viewModel: IStatsEditDialogSubViewModel
 ) {
     HeaderWithDividers(skill.name, Modifier.padding(bottom = 8.dp))
     key("editStatEntry-$statIndex-$skillIndex") {

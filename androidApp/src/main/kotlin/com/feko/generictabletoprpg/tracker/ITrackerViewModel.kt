@@ -9,7 +9,6 @@ import com.feko.generictabletoprpg.tracker.actions.INumberActionsTrackerViewMode
 import com.feko.generictabletoprpg.tracker.actions.IPercentageActionsTrackerViewModel
 import com.feko.generictabletoprpg.tracker.actions.ISpellListActionsTrackerViewModel
 import com.feko.generictabletoprpg.tracker.actions.ISpellSlotActionsTrackerViewModel
-import com.feko.generictabletoprpg.tracker.actions.IStatsActionsTrackerViewModel
 import com.feko.generictabletoprpg.tracker.dialogs.IAlertDialogTrackerViewModel
 import kotlinx.coroutines.flow.Flow
 
@@ -21,8 +20,7 @@ interface ITrackerViewModel
     ISpellSlotActionsTrackerViewModel,
     ISpellListActionsTrackerViewModel,
     IHitDiceActionsTrackerViewModel,
-    IAlertDialogTrackerViewModel,
-    IStatsActionsTrackerViewModel {
+    IAlertDialogTrackerViewModel {
 
     val fabDropdown: IFabDropdownSubViewModel
     val toast: IToastSubViewModel

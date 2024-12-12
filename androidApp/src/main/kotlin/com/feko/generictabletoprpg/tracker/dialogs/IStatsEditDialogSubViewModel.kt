@@ -3,7 +3,7 @@ package com.feko.generictabletoprpg.tracker.dialogs
 import com.feko.generictabletoprpg.tracker.Stats
 import kotlinx.coroutines.flow.Flow
 
-interface IStatsEditDialogTrackerViewModel : IBaseDialogTrackerViewModel {
+interface IStatsEditDialogSubViewModel : IBaseDialogTrackerViewModel {
     val editedStats: Flow<Stats?>
     fun updateStatsName(name: String)
     fun updateStatsProficiencyBonus(proficiencyBonus: String)
