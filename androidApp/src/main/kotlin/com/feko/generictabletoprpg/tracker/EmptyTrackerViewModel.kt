@@ -117,6 +117,7 @@ object EmptyTrackerViewModel : ITrackerViewModel {
 
     override fun updateStatsName(name: String) = Unit
     override fun updateStatsProficiencyBonus(proficiencyBonus: String) = Unit
+    override fun updateStatsInitiativeAdditionalBonus(initiativeAdditionalBonus: String) = Unit
     override fun updateSpellSaveDcAdditionalBonus(spellSaveDcAdditionalBonus: String) = Unit
     override fun updateSpellAttackAdditionalBonus(spellAttackAdditionalBonus: String) = Unit
     override fun updateStatScore(statIndex: Int, statScore: String) = Unit

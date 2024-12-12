@@ -28,6 +28,8 @@ class Stats(
             spellSaveDcAdditionalBonus = 0,
             spellAttackBonus = 0,
             spellAttackAdditionalBonus = 0,
+            initiative = 0,
+            initiativeAdditionalBonus = 0,
             stats = listOf()
         )
 

@@ -62,6 +62,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import com.feko.generictabletoprpg.R
+import com.feko.generictabletoprpg.com.feko.generictabletoprpg.asSignedString
 import com.feko.generictabletoprpg.common.alertdialog.EmptyAlertDialogSubViewModel
 import com.feko.generictabletoprpg.common.alertdialog.IAlertDialogSubViewModel
 import com.feko.generictabletoprpg.common.composable.CheckboxWithText
@@ -188,6 +189,21 @@ fun StatsEditDialog(
                     imeAction = ImeAction.Next
                 )
             )
+            var initiativeAdditionalBonus by remember {
+                mutableStateOf(statsContainer.initiativeAdditionalBonus.toString())
+            }
+            InputField(
+                value = initiativeAdditionalBonus,
+                label = stringResource(R.string.initiative),
+                onValueChange = {
+                    viewModel.updateStatsInitiativeAdditionalBonus(it)
+                    initiativeAdditionalBonus = it
+                },
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Number,
+                    imeAction = ImeAction.Next
+                )
+            )
             var spellSaveDcAdditionalBonusValue
                     by remember { mutableStateOf(statsContainer.spellSaveDcAdditionalBonus.toString()) }
             InputField(
@@ -245,7 +261,7 @@ private fun StatsStatEntry(
     }
     key("editStatEntry-$statIndex") {
         var statValue by remember { mutableStateOf(statEntry.score.toString()) }
-        val bonusText = "(${if (statEntry.bonus >= 0) "+" else ""}${statEntry.bonus})"
+        val bonusText = "(${statEntry.bonus.asSignedString()})"
         InputField(
             value = statValue,
             label = "${stringResource(R.string.score)}$bonusText",

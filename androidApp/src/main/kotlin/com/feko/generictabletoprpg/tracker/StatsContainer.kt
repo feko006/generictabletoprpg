@@ -9,6 +9,8 @@ data class StatsContainer(
     val spellSaveDcAdditionalBonus: Int,
     val spellAttackBonus: Int,
     val spellAttackAdditionalBonus: Int,
+    val initiative: Int,
+    val initiativeAdditionalBonus: Int,
     val stats: List<StatEntry>,
     val use5eCalculations: Boolean = true
 )

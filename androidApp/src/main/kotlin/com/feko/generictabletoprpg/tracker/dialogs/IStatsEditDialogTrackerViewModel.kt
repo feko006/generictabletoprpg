@@ -7,6 +7,7 @@ interface IStatsEditDialogTrackerViewModel : IBaseDialogTrackerViewModel {
     val editedStats: Flow<Stats?>
     fun updateStatsName(name: String)
     fun updateStatsProficiencyBonus(proficiencyBonus: String)
+    fun updateStatsInitiativeAdditionalBonus(initiativeAdditionalBonus: String)
     fun updateSpellSaveDcAdditionalBonus(spellSaveDcAdditionalBonus: String)
     fun updateSpellAttackAdditionalBonus(spellAttackAdditionalBonus: String)
     fun updateStatScore(statIndex: Int, statScore: String)

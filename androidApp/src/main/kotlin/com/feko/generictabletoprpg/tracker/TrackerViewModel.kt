@@ -360,13 +360,25 @@ class TrackerViewModel(
                         skills = skills
                     )
                 }
+        val initiative = getInitiative(statsContainer, stats)
         val spellSaveDc = getSpellSaveDc(statsContainer, stats)
         val spellAttackBonus = getSpellAttackBonus(statsContainer, stats)
         return statsContainer.copy(
             spellSaveDc = spellSaveDc,
             spellAttackBonus = spellAttackBonus,
+            initiative = initiative,
             stats = stats
         )
+    }
+
+    private fun getInitiative(statsContainer: StatsContainer, stats: List<StatEntry>): Int {
+        var initiative = statsContainer.initiative
+        if (statsContainer.use5eCalculations) {
+            val dexterityStat = stats.first { it.shortName.lowercase() == "dex" }
+            initiative = dexterityStat.bonus +
+                    statsContainer.initiativeAdditionalBonus
+        }
+        return initiative
     }
 
     private fun getSavingThrowBonus(proficiencyBonus: Int, stat: StatEntry): Int {
@@ -859,6 +871,11 @@ class TrackerViewModel(
     override fun updateStatsProficiencyBonus(proficiencyBonus: String) =
         updateStatIntValue(proficiencyBonus) { statsContainer, bonus ->
             statsContainer.copy(proficiencyBonus = bonus)
+        }
+
+    override fun updateStatsInitiativeAdditionalBonus(initiativeAdditionalBonus: String) =
+        updateStatIntValue(initiativeAdditionalBonus) { statsContainer, bonus ->
+            statsContainer.copy(initiativeAdditionalBonus = bonus)
         }
 
     override fun updateSpellSaveDcAdditionalBonus(spellSaveDcAdditionalBonus: String) =

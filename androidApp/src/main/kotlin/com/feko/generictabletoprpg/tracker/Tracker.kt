@@ -20,6 +20,7 @@ import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -32,6 +33,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -41,6 +43,7 @@ import androidx.compose.ui.unit.dp
 import com.feko.generictabletoprpg.AppViewModel
 import com.feko.generictabletoprpg.ButtonState
 import com.feko.generictabletoprpg.R
+import com.feko.generictabletoprpg.com.feko.generictabletoprpg.asSignedString
 import com.feko.generictabletoprpg.common.composable.AddFABButtonWithDropdown
 import com.feko.generictabletoprpg.common.composable.OverviewScreen
 import com.feko.generictabletoprpg.common.composable.ToastMessage
@@ -181,27 +184,25 @@ private fun TrackedThing(
             .shadow(elevation.value)
     ) {
         Row(modifier = Modifier.height(IntrinsicSize.Min)) {
-            Box(
-                Modifier
-                    .fillMaxHeight()
-                    .padding(8.dp)
-                    .detectReorder(state)
-            ) {
-                Icon(
-                    Icons.Default.Menu,
-                    "",
-                    Modifier.align(Alignment.Center)
-                )
+            if (item !is Stats) {
+                ReorderHandle(state)
             }
             Column(
                 verticalArrangement = Arrangement.spacedBy(8.dp),
-                modifier = Modifier.padding(16.dp, 16.dp, 16.dp)
+                modifier = Modifier.padding(
+                    start = if (item !is Stats) 16.dp else 0.dp,
+                    top = 16.dp,
+                    end = 16.dp
+                )
             ) {
                 Row(
                     modifier = Modifier.height(IntrinsicSize.Min),
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) firstRow@{
+                    if (item is Stats) {
+                        ReorderHandle(state, Modifier.padding(end = 8.dp))
+                    }
                     Text(
                         item.name,
                         style = Typography.titleMedium,
@@ -252,7 +253,9 @@ private fun TrackedThing(
                     }
                 }
                 if (item.type == TrackedThing.Type.FiveEStats) {
-                    // Draw stats
+                    StatsOverview(item as Stats) {
+                        viewModel.showStatsDialog(item)
+                    }
                 }
                 var expanded by remember { mutableStateOf(false) }
                 if (item.type == TrackedThing.Type.Text) {
@@ -282,6 +285,163 @@ private fun TrackedThing(
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun ReorderHandle(
+    state: ReorderableLazyListState,
+    modifier: Modifier = Modifier
+) {
+    Box(
+        Modifier
+            .fillMaxHeight()
+            .padding(8.dp)
+            .detectReorder(state)
+            .then(modifier)
+    ) {
+        Icon(
+            Icons.Default.Menu,
+            "",
+            Modifier.align(Alignment.Center)
+        )
+    }
+}
+
+@Composable
+fun StatsOverview(stats: Stats, onClick: () -> Unit) {
+    val statValue = requireNotNull(stats.serializedItem)
+    Column(
+        Modifier
+            .padding(vertical = 8.dp)
+            .clickable { onClick() }
+    ) {
+        Row(Modifier.fillMaxWidth()) {
+            CompactStat(
+                statValue.proficiencyBonus.asSignedString(),
+                stringResource(R.string.proficiency_bonus),
+                modifier = Modifier.weight(1f)
+            )
+            CompactStat(
+                statValue.initiative.asSignedString(),
+                stringResource(R.string.initiative),
+                modifier = Modifier.weight(1f)
+            )
+        }
+        if (statValue.stats.any { it.isSpellcastingModifier }) {
+            Row(
+                Modifier.fillMaxWidth(),
+                Arrangement.SpaceBetween
+            ) {
+                CompactStat(
+                    statValue.spellSaveDc.toString(),
+                    stringResource(R.string.spell_save_dc),
+                    modifier = Modifier.weight(1f)
+                )
+                CompactStat(
+                    statValue.spellAttackBonus.asSignedString(),
+                    stringResource(R.string.spell_attack_bonus),
+                    modifier = Modifier.weight(1f)
+                )
+            }
+        }
+        val statsPerRow = 3
+        for (row in 0..<statValue.stats.count() step statsPerRow) {
+            Row {
+                for (itemInRow in 0..<statsPerRow) {
+                    val statIndex = row + itemInRow
+                    if (statIndex >= statValue.stats.size) {
+                        break
+                    }
+                    val stat = statValue.stats[statIndex]
+                    CompactStat(
+                        stat.score.toString(),
+                        stat.bonus.asSignedString(),
+                        stat.shortName,
+                        stat.isSpellcastingModifier,
+                        Modifier.weight(1f)
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Preview
+@Composable
+fun StatsOverviewPreview() {
+    Card {
+        StatsOverview(
+            Stats(name = "Stats", value = "[]").also {
+                it.serializedItem = StatsContainer(
+                    proficiencyBonus = 1,
+                    spellSaveDc = 3,
+                    spellSaveDcAdditionalBonus = 0,
+                    spellAttackBonus = 4,
+                    spellAttackAdditionalBonus = 0,
+                    initiative = 2,
+                    initiativeAdditionalBonus = 0,
+                    stats = createDefault5EStatEntries(LocalContext.current),
+                    use5eCalculations = true
+                )
+            }
+        ) {}
+    }
+}
+
+@Composable
+fun CompactStat(
+    statValue: String,
+    bottomText: String,
+    topText: String? = null,
+    isSpellcastingModifier: Boolean = false,
+    modifier: Modifier = Modifier
+) {
+    Box(
+        Modifier
+            .padding(8.dp)
+            .then(modifier),
+        Alignment.Center
+    ) {
+        Box {
+            Column(
+                Modifier.padding(horizontal = 16.dp),
+                Arrangement.spacedBy(4.dp),
+                Alignment.CenterHorizontally
+            ) {
+                if (topText != null) {
+                    Text(topText, style = Typography.titleSmall)
+                }
+                Text(statValue, style = Typography.titleLarge)
+                Text(
+                    bottomText,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                    style = Typography.bodySmall
+                )
+            }
+            if (isSpellcastingModifier) {
+                Icon(
+                    painterResource(R.drawable.book_4_spark),
+                    "",
+                    Modifier
+                        .padding(top = 4.dp)
+                        .size(12.dp)
+                        .align(Alignment.TopEnd)
+                )
+            }
+        }
+    }
+}
+
+@Preview
+@Composable
+fun CompactStatPreview() {
+    Card {
+        CompactStat(
+            "13",
+            "+1",
+            "STR",
+        )
     }
 }
 
