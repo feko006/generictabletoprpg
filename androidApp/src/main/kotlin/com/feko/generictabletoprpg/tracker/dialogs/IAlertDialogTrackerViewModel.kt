@@ -1,12 +1,15 @@
 package com.feko.generictabletoprpg.tracker.dialogs
 
+import com.feko.generictabletoprpg.com.feko.generictabletoprpg.tracker.dialogs.IStatsPreviewDialogTrackerViewModel
+
 interface IAlertDialogTrackerViewModel
     : IEditDialogTrackerViewModel,
     IValueInputDialogTrackerViewModel,
     ICreateDialogTrackerViewModel,
     ISpellListDialogTrackerViewModel,
     ISpellSlotSelectDialogTrackerViewModel,
-    IStatsEditDialogTrackerViewModel {
+    IStatsEditDialogTrackerViewModel,
+    IStatsPreviewDialogTrackerViewModel {
 
     var dialogType: DialogType
 
@@ -27,7 +30,8 @@ interface IAlertDialogTrackerViewModel
         ShowSpellList,
         SelectSlotLevelToCastSpell,
         EditText,
-        EditStats
+        EditStats,
+        PreviewStatSkills
     }
 
 }

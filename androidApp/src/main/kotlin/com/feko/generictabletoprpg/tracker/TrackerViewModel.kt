@@ -67,6 +67,7 @@ class TrackerViewModel(
     override val spellListBeingPreviewed: StateFlow<SpellList?>
         get() = _spellListBeingPreviewed
     override var availableSpellSlotsForSpellBeingCast: List<Int>? = null
+    override var statsBeingPreviewed: StatsContainer? = null
 
     override val combinedItemFlow: Flow<List<Any>> =
         _items.combine(_searchString) { items, searchString ->
@@ -183,9 +184,7 @@ class TrackerViewModel(
 
             DialogType.AddTemporaryHp -> addTemporaryHpToTrackedThing()
 
-            DialogType.ShowSpellList -> Unit
             DialogType.ConfirmSpellRemovalFromList -> removeSpellFromSpellList()
-            DialogType.SelectSlotLevelToCastSpell -> Unit
 
             DialogType.EditText -> editText()
 
@@ -193,6 +192,10 @@ class TrackerViewModel(
 
             DialogType.EditStats -> createOrEditStats()
 
+
+            DialogType.ShowSpellList,
+            DialogType.SelectSlotLevelToCastSpell,
+            DialogType.PreviewStatSkills,
             DialogType.None -> Unit
         }
     }
@@ -781,7 +784,12 @@ class TrackerViewModel(
     }
 
     override fun showStatsDialog(stats: Stats) {
-        TODO("Not yet implemented")
+        viewModelScope.launch {
+            _alertDialog._titleResource = R.string.skills
+            dialogType = DialogType.PreviewStatSkills
+            statsBeingPreviewed = stats.serializedItem
+            _alertDialog.show()
+        }
     }
 
     override fun canCastSpell(level: Int): Boolean =

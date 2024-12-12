@@ -150,4 +150,7 @@
     <string name="initiative">Initiative</string>
     <string name="spell_save_dc">Spell Save DC</string>
     <string name="spell_attack_bonus">Spell Attack Bonus</string>
+    <string name="passive_skills">Passive Skills</string>
+    <string name="skill_bonuses">Skill Bonuses</string>
+    <string name="skills">Skills</string>
 </resources>

@@ -114,6 +114,7 @@ object EmptyTrackerViewModel : ITrackerViewModel {
 
     override val editedStats: Flow<Stats?>
         get() = MutableStateFlow(null)
+    override val statsBeingPreviewed: StatsContainer? = null
 
     override fun updateStatsName(name: String) = Unit
     override fun updateStatsProficiencyBonus(proficiencyBonus: String) = Unit

@@ -176,6 +176,8 @@ private fun TrackedThing(
         onClick = {
             if (item is SpellList) {
                 viewModel.showPreviewSpellListDialog(item, resetListState = true)
+            } else if (item is Stats) {
+                viewModel.showStatsDialog(item)
             }
         },
         Modifier
@@ -253,9 +255,7 @@ private fun TrackedThing(
                     }
                 }
                 if (item.type == TrackedThing.Type.FiveEStats) {
-                    StatsOverview(item as Stats) {
-                        viewModel.showStatsDialog(item)
-                    }
+                    StatsOverview(item as Stats)
                 }
                 var expanded by remember { mutableStateOf(false) }
                 if (item.type == TrackedThing.Type.Text) {
@@ -309,13 +309,9 @@ private fun ReorderHandle(
 }
 
 @Composable
-fun StatsOverview(stats: Stats, onClick: () -> Unit) {
+fun StatsOverview(stats: Stats) {
     val statValue = requireNotNull(stats.serializedItem)
-    Column(
-        Modifier
-            .padding(vertical = 8.dp)
-            .clickable { onClick() }
-    ) {
+    Column(Modifier.padding(vertical = 8.dp)) {
         Row(Modifier.fillMaxWidth()) {
             CompactStat(
                 statValue.proficiencyBonus.asSignedString(),
@@ -346,7 +342,7 @@ fun StatsOverview(stats: Stats, onClick: () -> Unit) {
             }
         }
         val statsPerRow = 3
-        for (row in 0..<statValue.stats.count() step statsPerRow) {
+        for (row in 0..<statValue.stats.size step statsPerRow) {
             Row {
                 for (itemInRow in 0..<statsPerRow) {
                     val statIndex = row + itemInRow
@@ -385,7 +381,7 @@ fun StatsOverviewPreview() {
                     use5eCalculations = true
                 )
             }
-        ) {}
+        )
     }
 }
 

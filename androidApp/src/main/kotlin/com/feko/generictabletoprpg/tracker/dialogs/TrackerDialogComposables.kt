@@ -63,6 +63,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import com.feko.generictabletoprpg.R
 import com.feko.generictabletoprpg.com.feko.generictabletoprpg.asSignedString
+import com.feko.generictabletoprpg.com.feko.generictabletoprpg.tracker.dialogs.IStatsPreviewDialogTrackerViewModel
 import com.feko.generictabletoprpg.common.alertdialog.EmptyAlertDialogSubViewModel
 import com.feko.generictabletoprpg.common.alertdialog.IAlertDialogSubViewModel
 import com.feko.generictabletoprpg.common.composable.CheckboxWithText
@@ -137,6 +138,8 @@ fun AlertDialogComposable(
                     ValueInputDialog(viewModel, TrackedThing.Type.Text)
 
                 DialogType.EditStats -> StatsEditDialog(viewModel, defaultName)
+
+                DialogType.PreviewStatSkills -> PreviewStatSkillsDialog(viewModel)
 
                 DialogType.None -> Unit
             }
@@ -244,21 +247,69 @@ fun StatsEditDialog(
 }
 
 @Composable
+fun PreviewStatSkillsDialog(viewModel: IStatsPreviewDialogTrackerViewModel) {
+    Column(
+        Modifier
+            .padding(16.dp)
+            .heightIn(0.dp, (LocalConfiguration.current.screenHeightDp * 0.7f).dp),
+    ) {
+        DialogTitle(viewModel.alertDialog.titleResource)
+        val skills = requireNotNull(viewModel.statsBeingPreviewed)
+            .stats
+            .flatMap { it.skills }
+            .sortedBy { it.name }
+        val passiveSkills = skills.filter { it.showPassive }
+        Column(
+            Modifier
+                .verticalScroll(rememberScrollState())
+                .weight(1f, false)
+        ) {
+            HeaderWithDividers(stringResource(R.string.passive_skills))
+            passiveSkills.forEachIndexed { index, passiveSkill ->
+                SkillRow(passiveSkill.name, passiveSkill.passiveScore.toString())
+                if (index < passiveSkills.size - 1) {
+                    HorizontalDivider(Modifier.padding(horizontal = 80.dp, vertical = 4.dp))
+                }
+            }
+            HeaderWithDividers(stringResource(R.string.skill_bonuses))
+            skills.forEachIndexed { index, skill ->
+                SkillRow(skill.name, skill.bonus.asSignedString())
+                if (index < skills.size - 1) {
+                    HorizontalDivider(Modifier.padding(horizontal = 80.dp, vertical = 4.dp))
+                }
+            }
+        }
+        TextButton(
+            onClick = { viewModel.alertDialog.dismiss() },
+            modifier = Modifier
+                .align(Alignment.End)
+                .wrapContentWidth()
+        ) { Text(stringResource(R.string.dismiss)) }
+    }
+}
+
+@Composable
+fun SkillRow(
+    skillName: String,
+    skillValue: String
+) {
+    Row(
+        Modifier.fillMaxWidth(),
+        Arrangement.SpaceBetween
+    ) {
+        Text(skillName)
+        Text(skillValue)
+    }
+}
+
+@Composable
 private fun StatsStatEntry(
     statEntry: StatEntry,
     statIndex: Int,
     viewModel: IStatsEditDialogTrackerViewModel,
     statsContainer: StatsContainer
 ) {
-    Row(
-        Modifier.padding(vertical = 8.dp),
-        Arrangement.spacedBy(8.dp),
-        Alignment.CenterVertically
-    ) {
-        HorizontalDivider(Modifier.weight(1f))
-        Text("${statEntry.name} (${statEntry.shortName})")
-        HorizontalDivider(Modifier.weight(1f))
-    }
+    HeaderWithDividers("${statEntry.name} (${statEntry.shortName})")
     key("editStatEntry-$statIndex") {
         var statValue by remember { mutableStateOf(statEntry.score.toString()) }
         val bonusText = "(${statEntry.bonus.asSignedString()})"
@@ -330,15 +381,7 @@ private fun StatsStatEntrySkill(
     statEntry: StatEntry,
     viewModel: IStatsEditDialogTrackerViewModel
 ) {
-    Row(
-        Modifier.padding(top = 8.dp, bottom = 16.dp),
-        Arrangement.spacedBy(8.dp),
-        Alignment.CenterVertically
-    ) {
-        HorizontalDivider(Modifier.weight(1f))
-        Text(skill.name)
-        HorizontalDivider(Modifier.weight(1f))
-    }
+    HeaderWithDividers(skill.name, Modifier.padding(bottom = 8.dp))
     key("editStatEntry-$statIndex-$skillIndex") {
         var skillAdditionalValue by remember {
             mutableStateOf(skill.additionalBonus.toString())
@@ -375,6 +418,24 @@ private fun StatsStatEntrySkill(
         skill.isProficient,
         R.string.proficiency
     ) { checked -> viewModel.updateStatSkillProficiency(statIndex, skillIndex, checked) }
+}
+
+@Composable
+private fun HeaderWithDividers(
+    headerText: String,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        Modifier
+            .padding(vertical = 8.dp)
+            .then(modifier),
+        Arrangement.spacedBy(8.dp),
+        Alignment.CenterVertically
+    ) {
+        HorizontalDivider(Modifier.weight(1f))
+        Text(headerText)
+        HorizontalDivider(Modifier.weight(1f))
+    }
 }
 
 @Composable
