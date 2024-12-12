@@ -64,6 +64,7 @@ import androidx.compose.ui.window.DialogProperties
 import com.feko.generictabletoprpg.R
 import com.feko.generictabletoprpg.common.alertdialog.EmptyAlertDialogSubViewModel
 import com.feko.generictabletoprpg.common.alertdialog.IAlertDialogSubViewModel
+import com.feko.generictabletoprpg.common.composable.CheckboxWithText
 import com.feko.generictabletoprpg.common.composable.DialogTitle
 import com.feko.generictabletoprpg.common.composable.InputField
 import com.feko.generictabletoprpg.destinations.SimpleSpellDetailsScreenDestination
@@ -273,34 +274,14 @@ private fun StatsStatEntry(
             )
         )
     }
-    Row(
-        Modifier
-            .fillMaxWidth()
-            .padding(end = 8.dp),
-        Arrangement.Start,
-        Alignment.CenterVertically
-    ) {
-        Checkbox(
-            statEntry.isProficientInSavingThrow,
-            { checked ->
-                viewModel.updateStatSavingThrowProficiency(statIndex, checked)
-            }
-        )
-        Text(stringResource(R.string.saving_throw_proficiency))
-    }
-    Row(
-        Modifier
-            .fillMaxWidth()
-            .padding(end = 8.dp),
-        Arrangement.Start,
-        Alignment.CenterVertically
-    ) {
-        Checkbox(
-            statEntry.isSpellcastingModifier,
-            { checked -> viewModel.updateStatSpellcastingModifier(statIndex, checked) }
-        )
-        Text(stringResource(R.string.spellcasting_modifier))
-    }
+    CheckboxWithText(
+        statEntry.isProficientInSavingThrow,
+        R.string.saving_throw_proficiency
+    ) { checked -> viewModel.updateStatSavingThrowProficiency(statIndex, checked) }
+    CheckboxWithText(
+        statEntry.isSpellcastingModifier,
+        R.string.spellcasting_modifier
+    ) { checked -> viewModel.updateStatSpellcastingModifier(statIndex, checked) }
     if (statEntry.skills.isNotEmpty()) {
         Column(
             Modifier
@@ -358,11 +339,7 @@ private fun StatsStatEntrySkill(
             value = skillAdditionalValue,
             label = stringResource(R.string.skill_additional_bonus),
             onValueChange = {
-                viewModel.updateStatSkillAdditionalBonus(
-                    statIndex,
-                    skillIndex,
-                    it
-                )
+                viewModel.updateStatSkillAdditionalBonus(statIndex, skillIndex, it)
                 skillAdditionalValue = it
             },
             keyboardOptions = KeyboardOptions(
@@ -378,25 +355,10 @@ private fun StatsStatEntrySkill(
             )
         )
     }
-    Row(
-        Modifier
-            .fillMaxWidth()
-            .padding(end = 8.dp, top = 8.dp),
-        Arrangement.Start,
-        Alignment.CenterVertically
-    ) {
-        Checkbox(
-            skill.isProficient,
-            { checked ->
-                viewModel.updateStatSkillProficiency(
-                    statIndex,
-                    skillIndex,
-                    checked
-                )
-            }
-        )
-        Text(stringResource(R.string.proficiency))
-    }
+    CheckboxWithText(
+        skill.isProficient,
+        R.string.proficiency
+    ) { checked -> viewModel.updateStatSkillProficiency(statIndex, skillIndex, checked) }
 }
 
 @Composable

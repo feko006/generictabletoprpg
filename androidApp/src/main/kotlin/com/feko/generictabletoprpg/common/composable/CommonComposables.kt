@@ -2,7 +2,11 @@ package com.feko.generictabletoprpg.common.composable
 
 import android.widget.Toast
 import androidx.annotation.StringRes
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.text.KeyboardActions
@@ -11,6 +15,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
@@ -31,6 +36,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusManager
@@ -271,5 +277,27 @@ fun ToastMessage(toast: IToastSubViewModel) {
             )
             .show()
         toast.messageConsumed()
+    }
+}
+
+@Composable
+fun CheckboxWithText(
+    isChecked: Boolean,
+    textStringResource: Int,
+    onCheckChanged: (Boolean) -> Unit
+) {
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .clickable { onCheckChanged(!isChecked) }
+            .padding(end = 8.dp),
+        Arrangement.Start,
+        Alignment.CenterVertically
+    ) {
+        Checkbox(
+            isChecked,
+            { checked -> onCheckChanged(checked) }
+        )
+        Text(stringResource(textStringResource))
     }
 }
