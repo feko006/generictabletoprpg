@@ -94,7 +94,7 @@ class TrackerViewModel(
     override fun getAllItems(): List<TrackedThing> {
         return trackedThingDao.getAllSortedByIndex(groupId)
             .onEach {
-                if (it is SpellList) {
+                if (it is JsonTrackedThing<*>) {
                     it.setItemFromValue(json)
                 }
             }
@@ -130,23 +130,29 @@ class TrackerViewModel(
     override fun showEditDialog(item: TrackedThing) {
         viewModelScope.launch {
             _alertDialog._titleResource = R.string.edit
-            dialogType = DialogType.Edit
             val copy = item.copy()
-            editedTrackedThing = copy
-            editedTrackedThingName.emit(InputFieldData(copy.name, isValid = true))
-            if (copy is SpellSlot) {
-                val dereferenceTrackedThing = requireNotNull(editedTrackedThing)
-                dereferenceTrackedThing.setNewValue(dereferenceTrackedThing.defaultValue)
-                editedTrackedThingSpellSlotLevel.emit(
-                    InputFieldData(
-                        copy.level.toString(),
-                        isValid = true
+            if (item.type == TrackedThing.Type.FiveEStats) {
+                dialogType = DialogType.EditStats
+                editedStats.emit(copy as Stats)
+                confirmButtonEnabled.emit(true)
+            } else {
+                dialogType = DialogType.Edit
+                editedTrackedThing = copy
+                editedTrackedThingName.emit(InputFieldData(copy.name, isValid = true))
+                if (copy is SpellSlot) {
+                    val dereferenceTrackedThing = requireNotNull(editedTrackedThing)
+                    dereferenceTrackedThing.setNewValue(dereferenceTrackedThing.defaultValue)
+                    editedTrackedThingSpellSlotLevel.emit(
+                        InputFieldData(
+                            copy.level.toString(),
+                            isValid = true
+                        )
                     )
-                )
+                }
+                editedTrackedThingValue.emit(InputFieldData(copy.defaultValue, isValid = true))
+                editedTrackedThingType.emit(copy.type)
+                validateModel()
             }
-            editedTrackedThingValue.emit(InputFieldData(copy.defaultValue, isValid = true))
-            editedTrackedThingType.emit(copy.type)
-            validateModel()
             _fabDropdown.collapse()
             _alertDialog.show()
         }
@@ -307,7 +313,121 @@ class TrackerViewModel(
     }
 
     private fun createOrEditStats() {
-        TODO("Not yet implemented")
+        val editedStats = editedStats.value
+        viewModelScope.launch {
+            val updatedStatsContainer =
+                requireNotNull(editedStats)
+                    .serializedItem
+                    .let(::finalizeStats)
+            editedStats.setItem(updatedStatsContainer, json)
+            val isNewItem = editedStats.id <= 0
+            withContext(Dispatchers.Default) {
+                ensureNonEmptyName(editedStats)
+                val id = trackedThingDao.insertOrUpdate(editedStats)
+                editedStats.id = id
+            }
+            if (isNewItem) {
+                addItem(editedStats) {
+                    if (it is TrackedThing)
+                        it.index
+                    else Int.MAX_VALUE
+                }
+            } else {
+                replaceItem(editedStats)
+            }
+            _alertDialog.hide()
+        }
+    }
+
+    private fun finalizeStats(statsContainer: StatsContainer): StatsContainer {
+        val stats =
+            statsContainer.stats
+                .map { stat ->
+                    val skills = stat.skills.map { skill ->
+                        val bonus =
+                            getBonus(statsContainer.proficiencyBonus, stat, skill)
+                        val passiveScore =
+                            getPassiveScore(bonus, stat, skill)
+                        skill.copy(
+                            bonus = bonus,
+                            passiveScore = passiveScore
+                        )
+                    }
+                    val savingThrowBonus =
+                        getSavingThrowBonus(statsContainer.proficiencyBonus, stat)
+                    stat.copy(
+                        savingThrowBonus = savingThrowBonus,
+                        skills = skills
+                    )
+                }
+        val spellSaveDc = getSpellSaveDc(statsContainer, stats)
+        val spellAttackBonus = getSpellAttackBonus(statsContainer, stats)
+        return statsContainer.copy(
+            spellSaveDc = spellSaveDc,
+            spellAttackBonus = spellAttackBonus,
+            stats = stats
+        )
+    }
+
+    private fun getSavingThrowBonus(proficiencyBonus: Int, stat: StatEntry): Int {
+        var savingThrowBonus = stat.savingThrowBonus
+        if (stat.use5ESkillBonusCalculation) {
+            savingThrowBonus = stat.bonus +
+                    stat.savingThrowAdditionalBonus +
+                    if (stat.isProficientInSavingThrow) proficiencyBonus else 0
+        }
+        return savingThrowBonus
+    }
+
+    private fun getBonus(proficiencyBonus: Int, stat: StatEntry, skill: StatSkillEntry): Int {
+        var bonus = skill.bonus
+        if (stat.use5ESkillBonusCalculation) {
+            bonus = stat.bonus +
+                    skill.additionalBonus +
+                    if (skill.isProficient) proficiencyBonus else 0
+        }
+        return bonus
+    }
+
+    private fun getPassiveScore(
+        bonus: Int,
+        stat: StatEntry,
+        skill: StatSkillEntry
+    ): Int {
+        var passiveScore = skill.passiveScore
+        if (stat.use5ESkillBonusCalculation) {
+            passiveScore = 10 + bonus
+        }
+        return passiveScore
+    }
+
+    private fun getSpellSaveDc(
+        statsContainer: StatsContainer,
+        stats: List<StatEntry>
+    ): Int {
+        var spellSaveDc = statsContainer.spellSaveDc
+        if (statsContainer.use5eCalculations) {
+            val spellcastingModifierStat =
+                stats.firstOrNull { stat -> stat.isSpellcastingModifier }
+            spellSaveDc =
+                8 + (spellcastingModifierStat?.bonus ?: 0) +
+                        statsContainer.spellSaveDcAdditionalBonus +
+                        statsContainer.proficiencyBonus
+        }
+        return spellSaveDc
+    }
+
+    private fun getSpellAttackBonus(statsContainer: StatsContainer, stats: List<StatEntry>): Int {
+        var spellAttackBonus = statsContainer.spellAttackBonus
+        if (statsContainer.use5eCalculations) {
+            val spellcastingModifierStat =
+                stats.firstOrNull { stat -> stat.isSpellcastingModifier }
+            spellAttackBonus =
+                (spellcastingModifierStat?.bonus ?: 0) +
+                        statsContainer.spellAttackAdditionalBonus +
+                        statsContainer.proficiencyBonus
+        }
+        return spellAttackBonus
     }
 
     override fun resetValueToDefault(item: TrackedThing) {
@@ -820,6 +940,18 @@ class TrackerViewModel(
                     }
                 )
             }
+        statsContainer.copy(
+            stats = statsContainer.stats.mapIndexed { index, statEntry ->
+                if (index == statIndex) newStatEntry else statEntry
+            })
+    }
+
+    override fun updateStatSavingThrowAdditionalBonus(
+        statIndex: Int,
+        savingThrowAdditionalBonus: String
+    ) = updateStatIntValue(savingThrowAdditionalBonus) { statsContainer, bonus ->
+        val newStatEntry =
+            statsContainer.stats[statIndex].copy(savingThrowAdditionalBonus = bonus)
         statsContainer.copy(
             stats = statsContainer.stats.mapIndexed { index, statEntry ->
                 if (index == statIndex) newStatEntry else statEntry

@@ -135,4 +135,9 @@ object EmptyTrackerViewModel : ITrackerViewModel {
         skillIndex: Int,
         isProficient: Boolean
     ) = Unit
+
+    override fun updateStatSavingThrowAdditionalBonus(
+        statIndex: Int,
+        savingThrowAdditionalBonus: String
+    ) = Unit
 }

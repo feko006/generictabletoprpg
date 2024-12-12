@@ -172,7 +172,6 @@ fun StatsEditDialog(
                 value = editedStatsValue.name,
                 label = "${stringResource(R.string.name)} ($defaultName)",
                 onValueChange = { viewModel.updateStatsName(it) },
-                isInputFieldValid = { true }
             )
             var proficiencyBonusValue
                     by remember { mutableStateOf(statsContainer.proficiencyBonus.toString()) }
@@ -183,7 +182,6 @@ fun StatsEditDialog(
                     viewModel.updateStatsProficiencyBonus(it)
                     proficiencyBonusValue = it
                 },
-                isInputFieldValid = { true },
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Number,
                     imeAction = ImeAction.Next
@@ -198,7 +196,6 @@ fun StatsEditDialog(
                     viewModel.updateSpellSaveDcAdditionalBonus(it)
                     spellSaveDcAdditionalBonusValue = it
                 },
-                isInputFieldValid = { true },
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Number,
                     imeAction = ImeAction.Next
@@ -213,7 +210,6 @@ fun StatsEditDialog(
                     viewModel.updateSpellAttackAdditionalBonus(it)
                     spellAttackAdditionalBonusValue = it
                 },
-                isInputFieldValid = { true },
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Number,
                     imeAction = ImeAction.Next
@@ -256,7 +252,21 @@ private fun StatsStatEntry(
                 viewModel.updateStatScore(statIndex, it)
                 statValue = it
             },
-            isInputFieldValid = { true },
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Number,
+                imeAction = ImeAction.Next
+            )
+        )
+        var savingThrowAdditionalBonus by remember {
+            mutableStateOf(statEntry.savingThrowAdditionalBonus.toString())
+        }
+        InputField(
+            value = savingThrowAdditionalBonus,
+            label = stringResource(R.string.saving_throw_additional_bonus),
+            onValueChange = {
+                viewModel.updateStatSavingThrowAdditionalBonus(statIndex, it)
+                savingThrowAdditionalBonus = it
+            },
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Number,
                 imeAction = ImeAction.Next
@@ -355,7 +365,6 @@ private fun StatsStatEntrySkill(
                 )
                 skillAdditionalValue = it
             },
-            isInputFieldValid = { true },
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Number,
                 imeAction = imeAction

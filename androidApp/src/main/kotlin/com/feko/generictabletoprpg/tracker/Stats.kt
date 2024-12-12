@@ -48,6 +48,8 @@ fun createDefault5EStatEntries(context: Context): List<StatEntry> {
             bonus = 0,
             isProficientInSavingThrow = false,
             isSpellcastingModifier = false,
+            savingThrowBonus = 0,
+            savingThrowAdditionalBonus = 0,
             skills = listOf(
                 StatSkillEntry(
                     resources.getString(R.string.athletics),
@@ -56,7 +58,7 @@ fun createDefault5EStatEntries(context: Context): List<StatEntry> {
                     additionalBonus = 0,
                     isProficient = false
                 )
-            )
+            ),
         ),
         StatEntry(
             resources.getString(R.string.dexterity),
@@ -65,6 +67,8 @@ fun createDefault5EStatEntries(context: Context): List<StatEntry> {
             bonus = 0,
             isProficientInSavingThrow = false,
             isSpellcastingModifier = false,
+            savingThrowBonus = 0,
+            savingThrowAdditionalBonus = 0,
             skills = listOf(
                 StatSkillEntry(
                     resources.getString(R.string.acrobatics),
@@ -87,7 +91,7 @@ fun createDefault5EStatEntries(context: Context): List<StatEntry> {
                     additionalBonus = 0,
                     isProficient = false
                 )
-            )
+            ),
         ),
         StatEntry(
             resources.getString(R.string.constitution),
@@ -96,7 +100,9 @@ fun createDefault5EStatEntries(context: Context): List<StatEntry> {
             bonus = 0,
             isProficientInSavingThrow = false,
             isSpellcastingModifier = false,
-            skills = listOf()
+            savingThrowBonus = 0,
+            savingThrowAdditionalBonus = 0,
+            skills = listOf(),
         ),
         StatEntry(
             resources.getString(R.string.intelligence),
@@ -105,6 +111,8 @@ fun createDefault5EStatEntries(context: Context): List<StatEntry> {
             bonus = 0,
             isProficientInSavingThrow = false,
             isSpellcastingModifier = false,
+            savingThrowBonus = 0,
+            savingThrowAdditionalBonus = 0,
             skills = listOf(
                 StatSkillEntry(
                     resources.getString(R.string.arcana),
@@ -141,7 +149,7 @@ fun createDefault5EStatEntries(context: Context): List<StatEntry> {
                     additionalBonus = 0,
                     isProficient = false
                 )
-            )
+            ),
         ),
         StatEntry(
             resources.getString(R.string.wisdom),
@@ -150,6 +158,8 @@ fun createDefault5EStatEntries(context: Context): List<StatEntry> {
             bonus = 0,
             isProficientInSavingThrow = false,
             isSpellcastingModifier = false,
+            savingThrowBonus = 0,
+            savingThrowAdditionalBonus = 0,
             skills = listOf(
                 StatSkillEntry(
                     resources.getString(R.string.animal_handling),
@@ -187,7 +197,7 @@ fun createDefault5EStatEntries(context: Context): List<StatEntry> {
                     additionalBonus = 0,
                     isProficient = false
                 )
-            )
+            ),
         ),
         StatEntry(
             resources.getString(R.string.charisma),
@@ -196,6 +206,8 @@ fun createDefault5EStatEntries(context: Context): List<StatEntry> {
             bonus = 0,
             isProficientInSavingThrow = false,
             isSpellcastingModifier = false,
+            savingThrowBonus = 0,
+            savingThrowAdditionalBonus = 0,
             skills = listOf(
                 StatSkillEntry(
                     resources.getString(R.string.deception),
@@ -225,7 +237,7 @@ fun createDefault5EStatEntries(context: Context): List<StatEntry> {
                     additionalBonus = 0,
                     isProficient = false
                 )
-            )
+            ),
         )
     )
 }

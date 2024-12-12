@@ -8,6 +8,8 @@ data class StatEntry(
     val shortName: String,
     val score: Int,
     var bonus: Int,
+    val savingThrowBonus: Int,
+    val savingThrowAdditionalBonus: Int,
     val isProficientInSavingThrow: Boolean,
     val isSpellcastingModifier: Boolean,
     val skills: List<StatSkillEntry>,

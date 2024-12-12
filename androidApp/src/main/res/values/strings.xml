@@ -146,4 +146,5 @@
     <string name="skill_additional_bonus">Skill Additional Bonus</string>
     <string name="proficiency">Proficiency</string>
     <string name="additional_bonus_hint">* Skill bonuses are calculated automatically. Additional bonuses are given by things like items, expertise etc.</string>
+    <string name="saving_throw_additional_bonus">Saving Throw Additional Bonus</string>
 </resources>

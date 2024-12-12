@@ -17,6 +17,6 @@ interface IStatsEditDialogTrackerViewModel : IBaseDialogTrackerViewModel {
         skillIndex: Int,
         skillAdditionalBonus: String
     )
-
     fun updateStatSkillProficiency(statIndex: Int, skillIndex: Int, isProficient: Boolean)
+    fun updateStatSavingThrowAdditionalBonus(statIndex: Int, savingThrowAdditionalBonus: String)
 }
