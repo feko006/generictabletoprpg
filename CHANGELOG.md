@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Added buttons to scroll to top and bottom of a spell list
+- Added 5e stats trackable
 
 ### Fixed
 
