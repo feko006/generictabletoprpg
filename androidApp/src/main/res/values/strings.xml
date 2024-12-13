@@ -154,4 +154,5 @@
     <string name="skill_bonuses">Skill Bonuses</string>
     <string name="skills">Skills</string>
     <string name="initiative_additional_bonus">Initiative Additional Bonus</string>
+    <string name="saving_throws">Saving Throws</string>
 </resources>
