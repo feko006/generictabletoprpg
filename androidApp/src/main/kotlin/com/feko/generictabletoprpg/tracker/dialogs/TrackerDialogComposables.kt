@@ -253,8 +253,8 @@ fun PreviewStatSkillsDialog(viewModel: IStatsPreviewDialogTrackerViewModel) {
             .heightIn(0.dp, (LocalConfiguration.current.screenHeightDp * 0.7f).dp),
     ) {
         DialogTitle(viewModel.alertDialog.titleResource)
-        val skills = requireNotNull(viewModel.statsBeingPreviewed)
-            .stats
+        val stats = requireNotNull(viewModel.statsBeingPreviewed).stats
+        val skills = stats
             .flatMap { it.skills }
             .sortedBy { it.name }
         val passiveSkills = skills.filter { it.showPassive }
@@ -267,6 +267,13 @@ fun PreviewStatSkillsDialog(viewModel: IStatsPreviewDialogTrackerViewModel) {
             passiveSkills.forEachIndexed { index, passiveSkill ->
                 SkillRow(passiveSkill.name, passiveSkill.passiveScore.toString())
                 if (index < passiveSkills.size - 1) {
+                    HorizontalDivider(Modifier.padding(horizontal = 80.dp, vertical = 4.dp))
+                }
+            }
+            HeaderWithDividers(stringResource(R.string.saving_throws))
+            stats.forEachIndexed { index, stat ->
+                SkillRow(stat.name, stat.savingThrowBonus.asSignedString())
+                if (index < stats.size - 1) {
                     HorizontalDivider(Modifier.padding(horizontal = 80.dp, vertical = 4.dp))
                 }
             }
