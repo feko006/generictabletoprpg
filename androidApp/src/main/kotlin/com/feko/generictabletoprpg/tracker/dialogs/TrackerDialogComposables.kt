@@ -196,7 +196,7 @@ fun StatsEditDialog(
             }
             InputField(
                 value = initiativeAdditionalBonus,
-                label = stringResource(R.string.initiative),
+                label = stringResource(R.string.initiative_additional_bonus),
                 onValueChange = {
                     viewModel.updateStatsInitiativeAdditionalBonus(it)
                     initiativeAdditionalBonus = it

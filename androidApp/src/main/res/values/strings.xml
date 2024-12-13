@@ -153,4 +153,5 @@
     <string name="passive_skills">Passive Skills</string>
     <string name="skill_bonuses">Skill Bonuses</string>
     <string name="skills">Skills</string>
+    <string name="initiative_additional_bonus">Initiative Additional Bonus</string>
 </resources>
