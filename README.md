@@ -51,6 +51,7 @@ with a generic tracker.
 - Known & prepared spells + more
 - Text e.g. for notes, items...
 - Hit dice
+- Stats :new:
 
 More types will be supported in the future.
 

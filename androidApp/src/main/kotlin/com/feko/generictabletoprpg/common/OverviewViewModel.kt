@@ -77,14 +77,10 @@ open class OverviewViewModel<T : Any>(
         _items.emit(newList)
     }
 
-    protected suspend fun addItem(item: T) {
+    protected suspend fun <R : Comparable<R>> addItem(item: T, sortedBy: (T) -> R?) {
         val items = _items.value.toMutableList()
         items.add(item)
-        _items.emit(
-            items.sortedBy {
-                if (it !is INamed) ""
-                else it.name
-            })
+        _items.emit(items.sortedBy(sortedBy))
     }
 
     protected suspend fun removeItem(item: T) {

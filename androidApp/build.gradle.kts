@@ -10,15 +10,15 @@ android {
         create("release") { }
     }
     namespace = "com.feko.generictabletoprpg"
-    compileSdk = 34
+    compileSdk = 35
     buildToolsVersion = "34.0.0"
 
     defaultConfig {
         applicationId = "com.feko.generictabletoprpg"
         minSdk = 21
-        targetSdk = 34
-        versionCode = 4
-        versionName = "1.1.1"
+        targetSdk = 35
+        versionCode = 5
+        versionName = "1.2.0"
 
         vectorDrawables {
             useSupportLibrary = true

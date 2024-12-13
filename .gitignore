@@ -1,3 +1,7 @@
+# Backup files
+*~
+*.bak
+
 # Built application files
 *.apk
 *.aar
@@ -38,17 +42,7 @@ captures/
 
 # IntelliJ
 *.iml
-.idea/workspace.xml
-.idea/tasks.xml
-.idea/gradle.xml
-.idea/assetWizardSettings.xml
-.idea/dictionaries
-.idea/libraries
-# Android Studio 3 in .gitignore file.
-.idea/caches
-.idea/modules.xml
-# Comment next line if keeping position of elements in Navigation Editor is relevant for you
-.idea/navEditor.xml
+.idea/
 
 # Keystore files
 # Uncomment the following lines if you do not want to check your keystore files in.
@@ -76,6 +70,12 @@ fastlane/readme.md
 
 # Version control
 vcs.xml
+
+# VSCode/VSCodium
+.clj-kondo/
+.lsp/
+.vscode/
+.vscodium/
 
 # lint
 lint/intermediates/

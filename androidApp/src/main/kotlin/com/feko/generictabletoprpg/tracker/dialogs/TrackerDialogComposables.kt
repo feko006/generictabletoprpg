@@ -1,24 +1,30 @@
 package com.feko.generictabletoprpg.tracker.dialogs
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ElevatedFilterChip
@@ -29,37 +35,39 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
-import androidx.compose.material3.LocalMinimumInteractiveComponentEnforcement
+import androidx.compose.material3.LocalMinimumInteractiveComponentSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusDirection
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import com.feko.generictabletoprpg.R
+import com.feko.generictabletoprpg.com.feko.generictabletoprpg.asSignedString
 import com.feko.generictabletoprpg.common.alertdialog.EmptyAlertDialogSubViewModel
 import com.feko.generictabletoprpg.common.alertdialog.IAlertDialogSubViewModel
+import com.feko.generictabletoprpg.common.composable.CheckboxWithText
 import com.feko.generictabletoprpg.common.composable.DialogTitle
+import com.feko.generictabletoprpg.common.composable.InputField
 import com.feko.generictabletoprpg.destinations.SimpleSpellDetailsScreenDestination
 import com.feko.generictabletoprpg.searchall.getUniqueListItemKey
 import com.feko.generictabletoprpg.spell.Spell
@@ -69,6 +77,9 @@ import com.feko.generictabletoprpg.tracker.CancelButton
 import com.feko.generictabletoprpg.tracker.EmptyTrackerViewModel
 import com.feko.generictabletoprpg.tracker.SpellList
 import com.feko.generictabletoprpg.tracker.SpellListEntry
+import com.feko.generictabletoprpg.tracker.StatEntry
+import com.feko.generictabletoprpg.tracker.StatSkillEntry
+import com.feko.generictabletoprpg.tracker.StatsContainer
 import com.feko.generictabletoprpg.tracker.TrackedThing
 import com.feko.generictabletoprpg.tracker.cantripSpellsCount
 import com.feko.generictabletoprpg.tracker.containsPreparedAndCantripSpells
@@ -79,6 +90,7 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.navigation.EmptyDestinationsNavigator
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -124,9 +136,304 @@ fun AlertDialogComposable(
                 DialogType.EditText ->
                     ValueInputDialog(viewModel, TrackedThing.Type.Text)
 
+                DialogType.EditStats -> StatsEditDialog(viewModel.statsEditDialog, defaultName)
+
+                DialogType.PreviewStatSkills -> PreviewStatSkillsDialog(viewModel)
+
                 DialogType.None -> Unit
             }
         }
+    }
+}
+
+@Composable
+fun StatsEditDialog(
+    viewModel: IStatsEditDialogSubViewModel,
+    defaultName: String
+) {
+    val editedStats by viewModel.editedStats.collectAsState(null)
+    if (editedStats == null) return
+    val editedStatsValue = requireNotNull(editedStats)
+    val statsContainer = requireNotNull(editedStatsValue.serializedItem)
+    DialogBase(
+        viewModel,
+        Modifier.heightIn(0.dp, (LocalConfiguration.current.screenHeightDp * 0.7f).dp)
+    ) {
+        Column(
+            Modifier
+                .verticalScroll(rememberScrollState())
+                .weight(1f, false)
+        ) {
+            Text(
+                stringResource(R.string.additional_bonus_hint),
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 8.dp),
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                style = Typography.bodySmall
+            )
+            InputField(
+                value = editedStatsValue.name,
+                label = "${stringResource(R.string.name)} ($defaultName)",
+                onValueChange = { viewModel.updateStatsName(it) },
+            )
+            var proficiencyBonusValue
+                    by remember { mutableStateOf(statsContainer.proficiencyBonus.toString()) }
+            InputField(
+                value = proficiencyBonusValue,
+                label = stringResource(R.string.proficiency_bonus),
+                onValueChange = {
+                    viewModel.updateStatsProficiencyBonus(it)
+                    proficiencyBonusValue = it
+                },
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Number,
+                    imeAction = ImeAction.Next
+                )
+            )
+            var initiativeAdditionalBonus by remember {
+                mutableStateOf(statsContainer.initiativeAdditionalBonus.toString())
+            }
+            InputField(
+                value = initiativeAdditionalBonus,
+                label = stringResource(R.string.initiative_additional_bonus),
+                onValueChange = {
+                    viewModel.updateStatsInitiativeAdditionalBonus(it)
+                    initiativeAdditionalBonus = it
+                },
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Number,
+                    imeAction = ImeAction.Next
+                )
+            )
+            var spellSaveDcAdditionalBonusValue
+                    by remember { mutableStateOf(statsContainer.spellSaveDcAdditionalBonus.toString()) }
+            InputField(
+                value = spellSaveDcAdditionalBonusValue,
+                label = stringResource(R.string.spell_save_dc_additional_bonus),
+                onValueChange = {
+                    viewModel.updateSpellSaveDcAdditionalBonus(it)
+                    spellSaveDcAdditionalBonusValue = it
+                },
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Number,
+                    imeAction = ImeAction.Next
+                )
+            )
+            var spellAttackAdditionalBonusValue
+                    by remember { mutableStateOf(statsContainer.spellAttackAdditionalBonus.toString()) }
+            InputField(
+                value = spellAttackAdditionalBonusValue,
+                label = stringResource(R.string.spell_attack_additional_bonus),
+                onValueChange = {
+                    viewModel.updateSpellAttackAdditionalBonus(it)
+                    spellAttackAdditionalBonusValue = it
+                },
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Number,
+                    imeAction = ImeAction.Next
+                )
+            )
+            for ((statIndex, statEntry) in statsContainer.stats.withIndex()) {
+                Spacer(Modifier.height(8.dp))
+                StatsStatEntry(statEntry, statIndex, viewModel, statsContainer)
+                if (statIndex < statsContainer.stats.size - 1) {
+                    Spacer(Modifier.height(8.dp))
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun PreviewStatSkillsDialog(viewModel: IStatsPreviewDialogTrackerViewModel) {
+    Column(
+        Modifier
+            .padding(16.dp)
+            .heightIn(0.dp, (LocalConfiguration.current.screenHeightDp * 0.7f).dp),
+    ) {
+        DialogTitle(viewModel.alertDialog.titleResource)
+        val skills = requireNotNull(viewModel.statsBeingPreviewed)
+            .stats
+            .flatMap { it.skills }
+            .sortedBy { it.name }
+        val passiveSkills = skills.filter { it.showPassive }
+        Column(
+            Modifier
+                .verticalScroll(rememberScrollState())
+                .weight(1f, false)
+        ) {
+            HeaderWithDividers(stringResource(R.string.passive_skills))
+            passiveSkills.forEachIndexed { index, passiveSkill ->
+                SkillRow(passiveSkill.name, passiveSkill.passiveScore.toString())
+                if (index < passiveSkills.size - 1) {
+                    HorizontalDivider(Modifier.padding(horizontal = 80.dp, vertical = 4.dp))
+                }
+            }
+            HeaderWithDividers(stringResource(R.string.skill_bonuses))
+            skills.forEachIndexed { index, skill ->
+                SkillRow(skill.name, skill.bonus.asSignedString())
+                if (index < skills.size - 1) {
+                    HorizontalDivider(Modifier.padding(horizontal = 80.dp, vertical = 4.dp))
+                }
+            }
+        }
+        TextButton(
+            onClick = { viewModel.alertDialog.dismiss() },
+            modifier = Modifier
+                .align(Alignment.End)
+                .wrapContentWidth()
+        ) { Text(stringResource(R.string.dismiss)) }
+    }
+}
+
+@Composable
+fun SkillRow(
+    skillName: String,
+    skillValue: String
+) {
+    Row(
+        Modifier.fillMaxWidth(),
+        Arrangement.SpaceBetween
+    ) {
+        Text(skillName)
+        Text(skillValue)
+    }
+}
+
+@Composable
+private fun StatsStatEntry(
+    statEntry: StatEntry,
+    statIndex: Int,
+    viewModel: IStatsEditDialogSubViewModel,
+    statsContainer: StatsContainer
+) {
+    HeaderWithDividers("${statEntry.name} (${statEntry.shortName})")
+    key("editStatEntry-$statIndex") {
+        var statValue by remember { mutableStateOf(statEntry.score.toString()) }
+        val bonusText = "(${statEntry.bonus.asSignedString()})"
+        InputField(
+            value = statValue,
+            label = "${stringResource(R.string.score)}$bonusText",
+            onValueChange = {
+                viewModel.updateStatScore(statIndex, it)
+                statValue = it
+            },
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Number,
+                imeAction = ImeAction.Next
+            )
+        )
+        var savingThrowAdditionalBonus by remember {
+            mutableStateOf(statEntry.savingThrowAdditionalBonus.toString())
+        }
+        InputField(
+            value = savingThrowAdditionalBonus,
+            label = stringResource(R.string.saving_throw_additional_bonus),
+            onValueChange = {
+                viewModel.updateStatSavingThrowAdditionalBonus(statIndex, it)
+                savingThrowAdditionalBonus = it
+            },
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Number,
+                imeAction = ImeAction.Next
+            )
+        )
+    }
+    CheckboxWithText(
+        statEntry.isProficientInSavingThrow,
+        R.string.saving_throw_proficiency
+    ) { checked -> viewModel.updateStatSavingThrowProficiency(statIndex, checked) }
+    CheckboxWithText(
+        statEntry.isSpellcastingModifier,
+        R.string.spellcasting_modifier
+    ) { checked -> viewModel.updateStatSpellcastingModifier(statIndex, checked) }
+    if (statEntry.skills.isNotEmpty()) {
+        Column(
+            Modifier
+                .background(
+                    CardDefaults.elevatedCardColors().containerColor,
+                    shape = RoundedCornerShape(8.dp)
+                )
+                .padding(8.dp)
+        ) {
+            for ((skillIndex, skill) in statEntry.skills.withIndex()) {
+                StatsStatEntrySkill(
+                    skill,
+                    statIndex,
+                    skillIndex,
+                    statsContainer,
+                    statEntry,
+                    viewModel
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun StatsStatEntrySkill(
+    skill: StatSkillEntry,
+    statIndex: Int,
+    skillIndex: Int,
+    statsContainer: StatsContainer,
+    statEntry: StatEntry,
+    viewModel: IStatsEditDialogSubViewModel
+) {
+    HeaderWithDividers(skill.name, Modifier.padding(bottom = 8.dp))
+    key("editStatEntry-$statIndex-$skillIndex") {
+        var skillAdditionalValue by remember {
+            mutableStateOf(skill.additionalBonus.toString())
+        }
+        val imeAction =
+            if (statIndex == statsContainer.stats.size - 1
+                && skillIndex == statEntry.skills.size - 1
+            ) {
+                ImeAction.Done
+            } else {
+                ImeAction.Next
+            }
+        InputField(
+            value = skillAdditionalValue,
+            label = stringResource(R.string.skill_additional_bonus),
+            onValueChange = {
+                viewModel.updateStatSkillAdditionalBonus(statIndex, skillIndex, it)
+                skillAdditionalValue = it
+            },
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Number,
+                imeAction = imeAction
+            ),
+            onFormSubmit = { viewModel.confirmDialogAction() },
+            colors = TextFieldDefaults.colors(
+                focusedContainerColor = Color.Transparent,
+                unfocusedContainerColor = Color.Transparent,
+                disabledContainerColor = Color.Transparent,
+                errorContainerColor = Color.Transparent
+            )
+        )
+    }
+    CheckboxWithText(
+        skill.isProficient,
+        R.string.proficiency
+    ) { checked -> viewModel.updateStatSkillProficiency(statIndex, skillIndex, checked) }
+}
+
+@Composable
+private fun HeaderWithDividers(
+    headerText: String,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        Modifier
+            .padding(vertical = 8.dp)
+            .then(modifier),
+        Arrangement.spacedBy(8.dp),
+        Alignment.CenterVertically
+    ) {
+        HorizontalDivider(Modifier.weight(1f))
+        Text(headerText)
+        HorizontalDivider(Modifier.weight(1f))
     }
 }
 
@@ -180,10 +487,13 @@ private fun ValueInputDialog(
 @Composable
 private fun DialogBase(
     viewModel: IBaseDialogTrackerViewModel,
-    inputFields: @Composable () -> Unit
+    modifier: Modifier = Modifier,
+    inputFields: @Composable ColumnScope.() -> Unit
 ) {
     Column(
-        Modifier.padding(16.dp),
+        Modifier
+            .padding(16.dp)
+            .then(modifier),
         Arrangement.spacedBy(16.dp)
     ) {
         DialogTitle(viewModel.alertDialog.titleResource)
@@ -208,13 +518,13 @@ fun SpellListDialog(
 ) {
     val spellListBeingPreviewed by viewModel.spellListBeingPreviewed.collectAsState()
     val dereferencedSpellList = spellListBeingPreviewed ?: return
-    val numberOfPreparedSpells = dereferencedSpellList.spells.preparedSpellsCount()
-    val numberOfCantripSpells = dereferencedSpellList.spells.cantripSpellsCount()
+    val numberOfPreparedSpells = dereferencedSpellList.serializedItem.preparedSpellsCount()
+    val numberOfCantripSpells = dereferencedSpellList.serializedItem.cantripSpellsCount()
     Column(
         Modifier.padding(16.dp)
     ) {
         DialogTitle(viewModel.alertDialog.titleResource)
-        var isFilteringByPrepared by remember { mutableStateOf(false) }
+        val isFilteringByPrepared by viewModel.isShowingPreparedSpells.collectAsState()
         Row(
             Modifier.padding(bottom = 8.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -224,7 +534,7 @@ fun SpellListDialog(
                 buildString {
                     append(stringResource(R.string.known))
                     append(": ")
-                    append(dereferencedSpellList.spells.size)
+                    append(dereferencedSpellList.serializedItem.size)
                     if (numberOfPreparedSpells > 0) {
                         append(", ")
                         append(stringResource(R.string.prepared))
@@ -244,11 +554,11 @@ fun SpellListDialog(
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
                 style = Typography.bodySmall
             )
-            if (dereferencedSpellList.spells.containsPreparedAndCantripSpells()) {
+            if (dereferencedSpellList.serializedItem.containsPreparedAndCantripSpells()) {
                 ElevatedFilterChip(
                     isFilteringByPrepared,
                     onClick = {
-                        isFilteringByPrepared = !isFilteringByPrepared
+                        viewModel.setShowingPreparedSpells(!isFilteringByPrepared)
                     },
                     label = {
                         Text(stringResource(R.string.prepared))
@@ -271,32 +581,53 @@ fun SpellListDialog(
                     }
                 )
             } else {
-                isFilteringByPrepared = false
+                viewModel.setShowingPreparedSpells(false)
             }
         }
         LazyColumn(
-            Modifier.heightIn(0.dp, 600.dp),
+            Modifier.heightIn(0.dp, (LocalConfiguration.current.screenHeightDp * 0.7f).dp),
+            viewModel.spellListState,
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             items(
-                dereferencedSpellList.spells.filterPreparedAndCantrips(isFilteringByPrepared),
+                dereferencedSpellList.serializedItem.filterPreparedAndCantrips(isFilteringByPrepared),
                 key = { getUniqueListItemKey(it.toSpell()) }) { spellListEntry ->
                 SpellListEntryListItem(spellListEntry, navigator, viewModel)
             }
         }
-        TextButton(
-            onClick = { viewModel.alertDialog.dismiss() },
-            modifier = Modifier
-                .wrapContentWidth()
-                .align(Alignment.End)
-                .padding(top = 8.dp)
+        Row(
+            Modifier
+                .fillMaxWidth()
+                .padding(top = 8.dp),
+            Arrangement.SpaceBetween
         ) {
-            Text(stringResource(R.string.dismiss))
+            Row {
+                val coroutineScope = rememberCoroutineScope()
+                IconButton(
+                    onClick = {
+                        coroutineScope.launch {
+                            viewModel.spellListState.animateScrollToItem(0)
+                        }
+                    },
+                    enabled = viewModel.spellListState.canScrollBackward
+                ) { Icon(painterResource(R.drawable.vertical_align_top), "") }
+                IconButton(
+                    onClick = {
+                        coroutineScope.launch {
+                            viewModel.spellListState.animateScrollToItem(dereferencedSpellList.serializedItem.size - 1)
+                        }
+                    },
+                    enabled = viewModel.spellListState.canScrollForward
+                ) { Icon(painterResource(R.drawable.vertical_align_bottom), "") }
+            }
+            TextButton(
+                onClick = { viewModel.alertDialog.dismiss() },
+                modifier = Modifier.wrapContentWidth()
+            ) { Text(stringResource(R.string.dismiss)) }
         }
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun SpellListEntryListItem(
     spellListEntry: SpellListEntry,
@@ -329,7 +660,7 @@ private fun SpellListEntryListItem(
                         verticalArrangement = Arrangement.spacedBy(4.dp),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        CompositionLocalProvider(LocalMinimumInteractiveComponentEnforcement provides false) {
+                        CompositionLocalProvider(LocalMinimumInteractiveComponentSize provides Dp.Unspecified) {
                             Checkbox(
                                 spellListEntry.isPrepared,
                                 onCheckedChange = {
@@ -421,39 +752,14 @@ private fun NameTextField(
     autoFocus: Boolean = false,
     defaultValue: String
 ) {
-    val focusRequester = remember { FocusRequester() }
     val nameInputData by viewModel.editedTrackedThingName.collectAsState()
-    val focusManager = LocalFocusManager.current
-    TextField(
-        value = nameInputData.value,
+    InputField(
+        nameInputData.value,
+        "${stringResource(R.string.name)} ($defaultValue)",
         onValueChange = { viewModel.setName(it) },
-        isError = !nameInputData.isValid,
-        label = {
-            Text(
-                "${stringResource(R.string.name)} ($defaultValue)",
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-            )
-        },
-        trailingIcon = {
-            IconButton(
-                onClick = { viewModel.setName("") }
-            ) {
-                Icon(Icons.Default.Clear, "")
-            }
-        },
-        modifier = Modifier
-            .fillMaxWidth()
-            .focusRequester(focusRequester),
-        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
-        keyboardActions = KeyboardActions(
-            onNext = { focusManager.moveFocus(FocusDirection.Down) }
-        )
+        isInputFieldValid = { nameInputData.isValid },
+        autoFocus = autoFocus
     )
-    if (autoFocus) {
-        LaunchedEffect(Unit) {
-            focusRequester.requestFocus()
-        }
-    }
 }
 
 @Composable
@@ -461,37 +767,20 @@ private fun SpellSlotLevelTextField(
     type: TrackedThing.Type,
     viewModel: ISpellSlotLevelTextFieldTrackerViewModel
 ) {
-    val focusManager = LocalFocusManager.current
-    if (type == TrackedThing.Type.SpellSlot) {
-        val spellSlotLevelInputData
-                by viewModel.editedTrackedThingSpellSlotLevel.collectAsState()
-        TextField(
-            value = spellSlotLevelInputData.value,
-            onValueChange = { viewModel.setLevel(it) },
-            isError = !spellSlotLevelInputData.isValid,
-            label = {
-                Text(
-                    stringResource(R.string.level),
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-                )
-            },
-            trailingIcon = {
-                IconButton(
-                    onClick = { viewModel.setLevel("") }
-                ) {
-                    Icon(Icons.Default.Clear, "")
-                }
-            },
-            modifier = Modifier.fillMaxWidth(),
-            keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Number,
-                imeAction = ImeAction.Next
-            ),
-            keyboardActions = KeyboardActions(
-                onNext = { focusManager.moveFocus(FocusDirection.Down) }
-            )
+    if (type != TrackedThing.Type.SpellSlot) return
+
+    val spellSlotLevelInputData
+            by viewModel.editedTrackedThingSpellSlotLevel.collectAsState()
+    InputField(
+        value = spellSlotLevelInputData.value,
+        label = stringResource(R.string.level),
+        onValueChange = { viewModel.setLevel(it) },
+        isInputFieldValid = { spellSlotLevelInputData.isValid },
+        keyboardOptions = KeyboardOptions(
+            keyboardType = KeyboardType.Number,
+            imeAction = ImeAction.Next
         )
-    }
+    )
 }
 
 @Composable
@@ -504,52 +793,29 @@ private fun ValueTextField(
     if (type == TrackedThing.Type.SpellList) {
         return
     }
-    val focusRequester = remember { FocusRequester() }
     val valueInputData by viewModel.editedTrackedThingValue.collectAsState()
-    TextField(
+    InputField(
         value = valueInputData.value,
-        onValueChange = { updateValue(it) },
-        maxLines = if (type == TrackedThing.Type.Text) 5 else 1,
-        isError = !valueInputData.isValid,
-        suffix = {
-            if (type == TrackedThing.Type.Percentage) {
-                Text("%")
-            }
+        label = if (type == TrackedThing.Type.Text) {
+            stringResource(id = R.string.text)
+        } else {
+            stringResource(R.string.amount)
         },
-        label = {
-            val label = if (type == TrackedThing.Type.Text) {
-                stringResource(id = R.string.text)
-            } else {
-                stringResource(R.string.amount)
-            }
-            Text(
-                label,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-            )
-        },
-        trailingIcon = {
-            IconButton(
-                onClick = { updateValue("") }
-            ) {
-                Icon(Icons.Default.Clear, "")
-            }
-        },
-        modifier = Modifier
-            .fillMaxWidth()
-            .focusRequester(focusRequester),
+        onValueChange = updateValue,
+        onFormSubmit = { viewModel.confirmDialogAction() },
+        isInputFieldValid = { valueInputData.isValid },
         keyboardOptions = KeyboardOptions(
             keyboardType = KeyboardType.Number,
             imeAction = ImeAction.Done
         ),
-        keyboardActions = KeyboardActions(
-            onDone = { viewModel.confirmDialogAction() }
-        )
-    )
-    if (autoFocus) {
-        LaunchedEffect(Unit) {
-            focusRequester.requestFocus()
+        autoFocus = autoFocus,
+        maxLines = if (type == TrackedThing.Type.Text) 5 else 1,
+        suffix = {
+            if (type == TrackedThing.Type.Percentage) {
+                Text("%")
+            }
         }
-    }
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -563,11 +829,18 @@ fun SpellListDialogPreview() {
         Card {
             SpellListDialog(
                 object : ISpellListDialogTrackerViewModel {
+                    override val spellListState: LazyListState
+                        get() = LazyListState()
+                    override val isShowingPreparedSpells: MutableStateFlow<Boolean>
+                        get() = MutableStateFlow(false)
+
+                    override fun setShowingPreparedSpells(value: Boolean) = Unit
+
                     override val spellListBeingPreviewed: StateFlow<SpellList?>
                         get() = MutableStateFlow(
                             SpellList(0, "Spell List", "", 0, 0)
                                 .apply {
-                                    spells = mutableListOf(
+                                    serializedItem = mutableListOf(
                                         getSpellListEntry1(),
                                         getSpellListEntry2()
                                     )

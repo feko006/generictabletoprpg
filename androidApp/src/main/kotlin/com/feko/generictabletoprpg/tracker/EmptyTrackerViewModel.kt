@@ -1,5 +1,7 @@
 package com.feko.generictabletoprpg.tracker
 
+import android.content.Context
+import androidx.compose.foundation.lazy.LazyListState
 import com.feko.generictabletoprpg.common.alertdialog.EmptyAlertDialogSubViewModel
 import com.feko.generictabletoprpg.common.alertdialog.IAlertDialogSubViewModel
 import com.feko.generictabletoprpg.common.composable.InputFieldData
@@ -8,6 +10,7 @@ import com.feko.generictabletoprpg.common.fabdropdown.IFabDropdownSubViewModel
 import com.feko.generictabletoprpg.common.toast.EmptyToastSubViewModel
 import com.feko.generictabletoprpg.common.toast.IToastSubViewModel
 import com.feko.generictabletoprpg.tracker.dialogs.IAlertDialogTrackerViewModel.DialogType
+import com.feko.generictabletoprpg.tracker.dialogs.IStatsEditDialogSubViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -16,6 +19,8 @@ import kotlinx.coroutines.flow.flowOf
 object EmptyTrackerViewModel : ITrackerViewModel {
     override val alertDialog: IAlertDialogSubViewModel
         get() = EmptyAlertDialogSubViewModel
+    override val statsEditDialog: IStatsEditDialogSubViewModel
+        get() = EmptyStatsEditDialogTrackerViewModel
     override val fabDropdown: IFabDropdownSubViewModel
         get() = EmptyFabDropdownSubViewModel
     override val toast: IToastSubViewModel
@@ -31,13 +36,16 @@ object EmptyTrackerViewModel : ITrackerViewModel {
     override val confirmButtonEnabled: MutableStateFlow<Boolean>
         get() = MutableStateFlow(false)
     override var dialogType: DialogType = DialogType.None
+    override val spellListState = LazyListState()
+    override val isShowingPreparedSpells: StateFlow<Boolean>
+        get() = MutableStateFlow(false)
     override val spellListBeingPreviewed: StateFlow<SpellList?>
         get() = MutableStateFlow(null)
     override var availableSpellSlotsForSpellBeingCast: List<Int>? = null
     override val combinedItemFlow: Flow<List<Any>>
         get() = flowOf()
 
-    override fun showCreateDialog(type: TrackedThing.Type) = Unit
+    override fun showCreateDialog(type: TrackedThing.Type, context: Context) = Unit
 
     override fun showEditDialog(item: TrackedThing) = Unit
 
@@ -77,7 +85,10 @@ object EmptyTrackerViewModel : ITrackerViewModel {
 
     override fun itemReordered(from: Int, to: Int) = Unit
 
-    override fun showPreviewSpellListDialog(spellList: SpellList) = Unit
+    override fun showPreviewSpellListDialog(
+        spellList: SpellList,
+        resetListState: Boolean
+    ) = Unit
 
     override fun addSpellToList(spellId: Long) = Unit
 
@@ -89,6 +100,8 @@ object EmptyTrackerViewModel : ITrackerViewModel {
 
     override fun castSpell(withSlotLevel: Int) = Unit
 
+    override fun showStatsDialog(stats: Stats) = Unit
+
     override fun canCastSpell(level: Int): Boolean = false
 
     override fun changeSpellListEntryPreparedState(
@@ -96,7 +109,11 @@ object EmptyTrackerViewModel : ITrackerViewModel {
         isPrepared: Boolean
     ) = Unit
 
+    override fun setShowingPreparedSpells(value: Boolean) = Unit
+
     override fun useHitDie(item: TrackedThing) = Unit
 
     override fun restoreHitDie(item: TrackedThing) = Unit
+
+    override val statsBeingPreviewed: StatsContainer? = null
 }

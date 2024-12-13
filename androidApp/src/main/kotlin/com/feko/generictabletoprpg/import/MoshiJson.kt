@@ -7,6 +7,7 @@ import com.feko.generictabletoprpg.tracker.Number
 import com.feko.generictabletoprpg.tracker.Percentage
 import com.feko.generictabletoprpg.tracker.SpellList
 import com.feko.generictabletoprpg.tracker.SpellSlot
+import com.feko.generictabletoprpg.tracker.Stats
 import com.feko.generictabletoprpg.tracker.Text
 import com.feko.generictabletoprpg.tracker.TrackedThing
 import com.squareup.moshi.Moshi
@@ -33,6 +34,7 @@ class MoshiJson : IJson {
                     .withSubtype(SpellList::class.java, TrackedThing.Type.SpellList.name)
                     .withSubtype(Text::class.java, TrackedThing.Type.Text.name)
                     .withSubtype(HitDice::class.java, TrackedThing.Type.HitDice.name)
+                    .withSubtype(Stats::class.java, TrackedThing.Type.FiveEStats.name)
             )
             .add(KotlinJsonAdapterFactory())
             .build()
