@@ -18,6 +18,7 @@ import com.feko.generictabletoprpg.tracker.Health
 import com.feko.generictabletoprpg.tracker.IntTrackedThing
 import com.feko.generictabletoprpg.tracker.ItemActionsBase
 import com.feko.generictabletoprpg.tracker.SpellList
+import com.feko.generictabletoprpg.tracker.Stats
 import com.feko.generictabletoprpg.tracker.TrackedThing
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
@@ -147,8 +148,8 @@ fun SpellListActions(
     ItemActionsBase(item, viewModel) {
         val spellList = item as SpellList
         IconButton(
-            onClick = { viewModel.showPreviewSpellListDialog(spellList) },
-            enabled = spellList.spells.any()
+            onClick = { viewModel.showPreviewSpellListDialog(spellList, resetListState = true) },
+            enabled = spellList.serializedItem.any()
         ) {
             Icon(Icons.AutoMirrored.Filled.List, "")
         }
@@ -160,6 +161,19 @@ fun SpellListActions(
             enabled = true
         ) {
             Icon(Icons.Default.Add, "")
+        }
+    }
+}
+
+@Composable
+fun StatsActions(item: TrackedThing, viewModel: IStatsActionsTrackerViewModel) {
+    ItemActionsBase(item, viewModel) {
+        val stats = item as Stats
+        IconButton(
+            onClick = { viewModel.showStatsDialog(stats) },
+            enabled = stats.serializedItem.stats.any()
+        ) {
+            Icon(Icons.AutoMirrored.Filled.List, "")
         }
     }
 }

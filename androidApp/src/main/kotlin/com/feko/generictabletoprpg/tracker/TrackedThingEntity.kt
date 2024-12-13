@@ -70,6 +70,9 @@ data class TrackedThingEntity(
                 TrackedThing.Type.HitDice ->
                     HitDice(id, name, value.toInt(), idx, groupId)
 
+                TrackedThing.Type.FiveEStats ->
+                    Stats(id, name, value, idx, groupId)
+
                 TrackedThing.Type.None -> throw Exception("Tracked thing not supported.")
             }
         trackedThing.defaultValue = defaultValue

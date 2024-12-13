@@ -1,0 +1,16 @@
+{
+  "sources": [],
+  "trackedGroups": [
+    {
+      "name": "import_stats_group",
+      "trackedThings": [
+        {
+          "name": "stats",
+          "value": "value",
+          "type": "FiveEStats",
+          "index": 7
+        }
+      ]
+    }
+  ]
+}

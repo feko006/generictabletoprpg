@@ -15,6 +15,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
+## [1.2.0]
+
+### Added
+
+- Added buttons to scroll to top and bottom of a spell list
+- Added 5e stats trackable
+
+### Fixed
+
+- Spell list scroll being reset when re-showing the dialog after casting, removing or inspecting a
+  spell
+- Not being able to edit a spell slot trackable when all slots have been used
+- New trackables not being added to the end of the list
+
+### Changed
+
+- Updated base content with formatting improvements. Thanks to @cravl-dev !
+- Updated dependencies, gradle and AGP, target and compile SDK versions
+- The prepared spells checkbox now keeps its state when hiding and showing the dialog in a tracked
+  group
+- The dropdown for creating new trackables is sorted alphabetically and has a bit more horizontal
+  breathing room
+
+### Removed
+
 ## [1.1.1] - 2024-09-06
 
 ### Fixed
