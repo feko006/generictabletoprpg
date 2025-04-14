@@ -15,6 +15,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
+## [1.3.0]
+
+### Added
+
+### Fixed
+
+- Editing a text trackable displaying a numeric instead of a text keyboard
+
+### Changed
+
+- Updated dependencies, gradle and AGP and Kotlin versions
+- Migrated Compose Destinations to v2
+
+### Removed
+
+## [1.2.1]
+
+### Added
+
+- Added saving throw bonuses in the 5E stats dialog
+
 ## [1.2.0]
 
 ### Added
