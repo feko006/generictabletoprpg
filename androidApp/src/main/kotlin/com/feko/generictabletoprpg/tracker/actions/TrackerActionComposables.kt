@@ -179,7 +179,7 @@ fun StatsActions(item: TrackedThing, viewModel: IStatsActionsTrackerViewModel) {
 }
 
 @Composable
-fun TextListActions(
+fun TextActions(
     item: TrackedThing,
     canTextBeExpanded: Boolean,
     expanded: Boolean,
