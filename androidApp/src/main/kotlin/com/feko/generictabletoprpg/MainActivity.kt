@@ -42,7 +42,6 @@ import androidx.navigation.compose.rememberNavController
 import com.feko.generictabletoprpg.theme.GenerictabletoprpgTheme
 import com.ramcosta.composedestinations.DestinationsNavHost
 import com.ramcosta.composedestinations.navigation.dependency
-import com.ramcosta.composedestinations.navigation.navigate
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
