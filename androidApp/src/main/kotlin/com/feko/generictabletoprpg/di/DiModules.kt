@@ -57,79 +57,72 @@ import com.feko.generictabletoprpg.tracker.TrackerGroupViewModel
 import com.feko.generictabletoprpg.tracker.TrackerViewModel
 import com.feko.generictabletoprpg.weapon.WeaponDao
 import com.feko.generictabletoprpg.weapon.WeaponDetailsViewModel
-import org.koin.androidx.viewmodel.dsl.viewModel
+import org.koin.core.module.dsl.singleOf
+import org.koin.core.module.dsl.viewModel
+import org.koin.core.module.dsl.viewModelOf
+import org.koin.dsl.bind
 import org.koin.dsl.module
 
 val commonModule = module {
     // Services
     single {
-        Room
-            .databaseBuilder(
-                get(),
-                GenericTabletopRpgDatabase::class.java,
-                "generic-tabletop-rpg.db"
-            )
-            .build()
+        Room.databaseBuilder(
+            get(),
+            GenericTabletopRpgDatabase::class.java,
+            "generic-tabletop-rpg.db"
+        ).build()
     }
 
-    single<IParseEdnAsMap> { ParseEdnAsMapEdnJava() }
-    single<IProcessEdnMap> { ProcessEdnMapEdnJava() }
-    single<IUserPreferences> { UserPreferences(get()) }
-    single<ILoadBaseContent> { LoadBaseContentAdapter(get()) }
-    single<IJson> { MoshiJson() }
+    singleOf(::ParseEdnAsMapEdnJava) bind IParseEdnAsMap::class
+    singleOf(::ProcessEdnMapEdnJava) bind IProcessEdnMap::class
+    singleOf(::UserPreferences) bind IUserPreferences::class
+    singleOf(::LoadBaseContentAdapter) bind ILoadBaseContent::class
+    singleOf(::MoshiJson) bind IJson::class
 
     // Use-cases
-    single<ILoadBaseContentUseCase> { LoadBaseContentUseCase(get(), get(), get(), get()) }
+    singleOf(::LoadBaseContentUseCase) bind ILoadBaseContentUseCase::class
 
     // VMs
-    viewModel { AppViewModel(get()) }
+    viewModelOf(::AppViewModel)
 }
 
 val spellModule = module {
     single { get<GenericTabletopRpgDatabase>().spellDao() }
-
     viewModel { SpellDetailsViewModel(get<SpellDao>()) }
 }
 
 val featModule = module {
     single { get<GenericTabletopRpgDatabase>().featDao() }
-
     viewModel { FeatDetailsViewModel(get<FeatDao>()) }
 }
 
 val actionModule = module {
     single { get<GenericTabletopRpgDatabase>().actionDao() }
-
     viewModel { ActionDetailsViewModel(get<ActionDao>()) }
 }
 
 val conditionModule = module {
     single { get<GenericTabletopRpgDatabase>().conditionDao() }
-
     viewModel { ConditionDetailsViewModel(get<ConditionDao>()) }
 }
 
 val diseaseModule = module {
     single { get<GenericTabletopRpgDatabase>().diseaseDao() }
-
     viewModel { DiseaseDetailsViewModel(get<DiseaseDao>()) }
 }
 
 val weaponModule = module {
     single { get<GenericTabletopRpgDatabase>().weaponDao() }
-
     viewModel { WeaponDetailsViewModel(get<WeaponDao>()) }
 }
 
 val ammunitionModule = module {
     single { get<GenericTabletopRpgDatabase>().ammunitionDao() }
-
     viewModel { AmmunitionDetailsViewModel(get<AmmunitionDao>()) }
 }
 
 val armorModule = module {
     single { get<GenericTabletopRpgDatabase>().armorDao() }
-
     viewModel { ArmorDetailsViewModel(get<ArmorDao>()) }
 }
 
@@ -147,7 +140,6 @@ val trackedThingGroupModule = module {
 
 val trackedThingModule = module {
     single { get<GenericTabletopRpgDatabase>().trackedThingDao() }
-
     viewModel { params -> TrackerViewModel(params.get(), params.get(), get(), get(), get(), get()) }
 }
 
@@ -182,16 +174,7 @@ val importModule = module {
             get<ArmorDao>()
         )
     }
-    single<IOrcbrewImportAllUseCase> {
-        OrcbrewImportAllUseCase(
-            get(),
-            get(),
-            get(),
-            get(),
-            get(),
-            get()
-        )
-    }
+    singleOf(::OrcbrewImportAllUseCase) bind IOrcbrewImportAllUseCase::class
     single<IJsonImportAllUseCase> {
         JsonImportAllUseCase(
             get(),
@@ -202,9 +185,8 @@ val importModule = module {
             get<TrackedThingDao>()
         )
     }
-    single<IImportAllUseCase> { ImportAllUseCase(get(), get()) }
-
-    viewModel { ImportViewModel(get()) }
+    singleOf(::ImportAllUseCase) bind IImportAllUseCase::class
+    viewModelOf(::ImportViewModel)
 }
 
 val searchAllModule = module {
