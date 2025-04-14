@@ -11,7 +11,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.painterResource
 import com.feko.generictabletoprpg.R
-import com.feko.generictabletoprpg.destinations.SearchAllScreenDestination
 import com.feko.generictabletoprpg.filters.SpellFilter
 import com.feko.generictabletoprpg.filters.index
 import com.feko.generictabletoprpg.tracker.Health
@@ -20,6 +19,7 @@ import com.feko.generictabletoprpg.tracker.ItemActionsBase
 import com.feko.generictabletoprpg.tracker.SpellList
 import com.feko.generictabletoprpg.tracker.Stats
 import com.feko.generictabletoprpg.tracker.TrackedThing
+import com.ramcosta.composedestinations.generated.destinations.SearchAllScreenDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
 @Composable

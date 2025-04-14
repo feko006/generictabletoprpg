@@ -68,7 +68,6 @@ import com.feko.generictabletoprpg.common.alertdialog.IAlertDialogSubViewModel
 import com.feko.generictabletoprpg.common.composable.CheckboxWithText
 import com.feko.generictabletoprpg.common.composable.DialogTitle
 import com.feko.generictabletoprpg.common.composable.InputField
-import com.feko.generictabletoprpg.destinations.SimpleSpellDetailsScreenDestination
 import com.feko.generictabletoprpg.searchall.getUniqueListItemKey
 import com.feko.generictabletoprpg.spell.Spell
 import com.feko.generictabletoprpg.spell.SpellRange
@@ -86,6 +85,7 @@ import com.feko.generictabletoprpg.tracker.containsPreparedAndCantripSpells
 import com.feko.generictabletoprpg.tracker.dialogs.IAlertDialogTrackerViewModel.DialogType
 import com.feko.generictabletoprpg.tracker.filterPreparedAndCantrips
 import com.feko.generictabletoprpg.tracker.preparedSpellsCount
+import com.ramcosta.composedestinations.generated.destinations.SimpleSpellDetailsScreenDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.navigation.EmptyDestinationsNavigator
 import kotlinx.coroutines.flow.MutableStateFlow

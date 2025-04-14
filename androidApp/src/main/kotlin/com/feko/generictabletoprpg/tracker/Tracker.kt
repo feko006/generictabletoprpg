@@ -47,7 +47,6 @@ import com.feko.generictabletoprpg.com.feko.generictabletoprpg.asSignedString
 import com.feko.generictabletoprpg.common.composable.AddFABButtonWithDropdown
 import com.feko.generictabletoprpg.common.composable.OverviewScreen
 import com.feko.generictabletoprpg.common.composable.ToastMessage
-import com.feko.generictabletoprpg.destinations.SearchAllScreenDestination
 import com.feko.generictabletoprpg.searchall.getNavRouteInternal
 import com.feko.generictabletoprpg.searchall.getUniqueListItemKey
 import com.feko.generictabletoprpg.theme.Typography
@@ -62,6 +61,8 @@ import com.feko.generictabletoprpg.tracker.actions.StatsActions
 import com.feko.generictabletoprpg.tracker.actions.TextListActions
 import com.feko.generictabletoprpg.tracker.dialogs.AlertDialogComposable
 import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.annotation.RootGraph
+import com.ramcosta.composedestinations.generated.destinations.SearchAllScreenDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.navigation.EmptyDestinationsNavigator
 import com.ramcosta.composedestinations.result.NavResult
@@ -72,7 +73,7 @@ import org.burnoutcrew.reorderable.rememberReorderableLazyListState
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parameterSetOf
 
-@Destination
+@Destination<RootGraph>
 @Composable
 fun TrackerScreen(
     groupId: Long,
