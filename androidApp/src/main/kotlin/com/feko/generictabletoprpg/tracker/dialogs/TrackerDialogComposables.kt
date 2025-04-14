@@ -812,7 +812,11 @@ private fun ValueTextField(
         onFormSubmit = { viewModel.confirmDialogAction() },
         isInputFieldValid = { valueInputData.isValid },
         keyboardOptions = KeyboardOptions(
-            keyboardType = KeyboardType.Number,
+            keyboardType = if (type == TrackedThing.Type.Text) {
+                KeyboardType.Text
+            } else {
+                KeyboardType.Number
+            },
             imeAction = ImeAction.Done
         ),
         autoFocus = autoFocus,

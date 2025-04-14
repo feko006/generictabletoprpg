@@ -258,16 +258,29 @@ private fun TrackedThing(
                 if (item.type == TrackedThing.Type.FiveEStats) {
                     StatsOverview(item as Stats)
                 }
+                var canTextBeExpanded by remember { mutableStateOf(false) }
                 var expanded by remember { mutableStateOf(false) }
                 if (item.type == TrackedThing.Type.Text) {
+                    val linesShownByDefault = 3
                     Text(
                         item.getPrintableValue(),
-                        Modifier.clickable {
+                        Modifier.clickable(enabled = canTextBeExpanded) {
                             expanded = !expanded
                         },
-                        maxLines = if (expanded) Int.MAX_VALUE else 3,
+                        maxLines = if (expanded) Int.MAX_VALUE else linesShownByDefault,
                         style = Typography.bodyMedium,
-                        overflow = TextOverflow.Ellipsis
+                        overflow = TextOverflow.Ellipsis,
+                        onTextLayout = { textLayoutResult ->
+                            if (textLayoutResult.lineCount > linesShownByDefault
+                                || textLayoutResult.lineCount == linesShownByDefault
+                                && textLayoutResult.isLineEllipsized(2)
+                            ) {
+                                canTextBeExpanded = true
+                            } else {
+                                canTextBeExpanded = false
+                                expanded = false
+                            }
+                        }
                     )
                 }
                 when (item.type) {
@@ -278,7 +291,9 @@ private fun TrackedThing(
                     TrackedThing.Type.SpellSlot -> SpellSlotActions(item, viewModel)
                     TrackedThing.Type.SpellList -> SpellListActions(item, navigator, viewModel)
                     TrackedThing.Type.Text ->
-                        TextListActions(item, expanded, viewModel) { expanded = it }
+                        TextListActions(item, canTextBeExpanded, expanded, viewModel) {
+                            expanded = it
+                        }
 
                     TrackedThing.Type.HitDice -> HitDiceActions(item, viewModel)
                     TrackedThing.Type.FiveEStats -> StatsActions(item, viewModel)

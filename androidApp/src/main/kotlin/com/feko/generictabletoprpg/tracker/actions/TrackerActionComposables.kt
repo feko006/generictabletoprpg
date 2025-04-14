@@ -181,11 +181,13 @@ fun StatsActions(item: TrackedThing, viewModel: IStatsActionsTrackerViewModel) {
 @Composable
 fun TextListActions(
     item: TrackedThing,
+    canTextBeExpanded: Boolean,
     expanded: Boolean,
     viewModel: IBasicActionsTrackerViewModel,
     onExpandStateChanged: (Boolean) -> Unit
 ) {
     ItemActionsBase(item, viewModel) {
+        if (!canTextBeExpanded) return@ItemActionsBase
         IconButton(
             onClick = {
                 onExpandStateChanged(!expanded)
