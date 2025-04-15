@@ -13,7 +13,7 @@ enum class RootDestinations(
     val direction: Direction
 ) {
     Tracker(R.string.tracker_title, TrackerGroupsScreenDestination()),
-    InitiativeTracker(R.string.tracker_title, InitiativeScreenDestination()),
+    Initiative(R.string.initiative, InitiativeScreenDestination()),
     SearchAll(R.string.search_all_title, SearchAllScreenDestination()),
     Import(R.string.import_title, ImportScreenDestination());
 

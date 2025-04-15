@@ -155,4 +155,7 @@
     <string name="skills">Skills</string>
     <string name="initiative_additional_bonus">Initiative Additional Bonus</string>
     <string name="saving_throws">Saving Throws</string>
+    <string name="armor_class">Armor Class (AC)</string>
+    <string name="legendary_actions">Legendary Actions</string>
+    <string name="spell_attack_modifier">Spell Attack Modifier</string>
 </resources>

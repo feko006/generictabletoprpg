@@ -180,7 +180,7 @@ fun LazyListScope.fabButtonSpacer(isFabButtonVisible: Boolean) {
 }
 
 @Composable
-private fun EmptyList() {
+fun EmptyList() {
     Box(Modifier.fillMaxSize()) {
         Column(
             Modifier

@@ -44,6 +44,8 @@ import com.feko.generictabletoprpg.init.ILoadBaseContent
 import com.feko.generictabletoprpg.init.ILoadBaseContentUseCase
 import com.feko.generictabletoprpg.init.LoadBaseContentAdapter
 import com.feko.generictabletoprpg.init.LoadBaseContentUseCase
+import com.feko.generictabletoprpg.initiative.InitiativeEntryDao
+import com.feko.generictabletoprpg.initiative.InitiativeViewModel
 import com.feko.generictabletoprpg.room.GenericTabletopRpgDatabase
 import com.feko.generictabletoprpg.searchall.ISearchAllUseCase
 import com.feko.generictabletoprpg.searchall.SearchAllUseCase
@@ -211,6 +213,11 @@ val filterModule = module {
     viewModel { SpellFilterViewModel(get<SpellDao>()) }
 }
 
+val initiativeModule = module {
+    single<InitiativeEntryDao> { get<GenericTabletopRpgDatabase>().initiativeEntryDao() }
+    viewModelOf(::InitiativeViewModel)
+}
+
 val diModules = listOf(
     commonModule,
     spellModule,
@@ -225,5 +232,6 @@ val diModules = listOf(
     trackedThingGroupModule,
     trackedThingModule,
     searchAllModule,
-    filterModule
+    filterModule,
+    initiativeModule
 )

@@ -16,6 +16,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberBasicTooltipState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
@@ -24,7 +26,7 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Refresh
-import androidx.compose.material.icons.outlined.Star
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Card
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -36,30 +38,56 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TooltipDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.feko.generictabletoprpg.AppViewModel
 import com.feko.generictabletoprpg.R
+import com.feko.generictabletoprpg.com.feko.generictabletoprpg.initiative.InitiativeEntryEntity
+import com.feko.generictabletoprpg.common.composable.EmptyList
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
 import kotlinx.coroutines.launch
+import org.koin.androidx.compose.koinViewModel
 
 @Destination<RootGraph>
 @Composable
-fun InitiativeScreen() {
+fun InitiativeScreen(
+    appViewModel: AppViewModel
+) {
+    appViewModel.set(
+        appBarTitle = stringResource(R.string.initiative),
+        navBarActions = listOf()
+    )
+    val viewModel: InitiativeViewModel = koinViewModel()
+    val entries by viewModel.entries.collectAsState(listOf())
     Column {
-        LazyColumn(
-            Modifier
-                .weight(1f)
-                .padding(8.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            item { InitiativeListItem(false) }
-            item { InitiativeListItem(true) }
+        if (entries.isEmpty()) {
+            Box(Modifier.weight(1f)) {
+                EmptyList()
+            }
+        } else {
+            val listState = rememberLazyListState()
+            LazyColumn(
+                Modifier
+                    .weight(1f)
+                    .padding(8.dp),
+                listState,
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                items(entries, key = { it.id }) {
+                    InitiativeListItem(it)
+                }
+            }
         }
         Box(Modifier.fillMaxWidth()) {
             Row(
@@ -84,9 +112,8 @@ fun InitiativeScreen() {
 }
 
 @Composable
-fun InitiativeListItem(
-    isHighlighted: Boolean
-) {
+fun InitiativeListItem(initiativeEntry: InitiativeEntryEntity) {
+    val isHighlighted by remember { derivedStateOf { initiativeEntry.hasTurn } }
     Card(
         Modifier
             .fillMaxWidth()
@@ -108,8 +135,15 @@ fun InitiativeListItem(
                     Arrangement.spacedBy(8.dp),
                     Alignment.CenterVertically
                 ) {
-                    Text("10", style = MaterialTheme.typography.bodyLarge)
-                    Text("Larry", Modifier.weight(1f), style = MaterialTheme.typography.bodyLarge)
+                    Text(
+                        initiativeEntry.initiative.toString(),
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+                    Text(
+                        initiativeEntry.name,
+                        Modifier.weight(1f),
+                        style = MaterialTheme.typography.bodyLarge
+                    )
                 }
                 Row(
                     Modifier
@@ -117,18 +151,51 @@ fun InitiativeListItem(
                         .padding(top = 12.dp),
                     Arrangement.SpaceAround
                 ) {
-                    IconAndTextWithTooltip(R.drawable.heart, "18", "HP")
-                    IconAndTextWithTooltip(R.drawable.shield, "18", "AC")
-                    IconAndTextWithTooltip(R.drawable.bolt, "3", "Legendary Actions")
-                    IconAndTextWithTooltip(R.drawable.book_4_spark, "14", "Spell Save DC")
-                    IconAndTextWithTooltip(R.drawable.wand_stars, "+7", "Spell Attack Modifier")
+                    IconAndTextWithTooltip(
+                        R.drawable.heart,
+                        initiativeEntry.health.toString(),
+                        stringResource(R.string.health)
+                    )
+                    IconAndTextWithTooltip(
+                        R.drawable.shield,
+                        initiativeEntry.armorClass.toString(),
+                        stringResource(R.string.armor_class)
+                    )
+                    if (initiativeEntry.hasLegendaryActions) {
+                        IconAndTextWithTooltip(
+                            R.drawable.bolt,
+                            initiativeEntry.legendaryActions.toString(),
+                            stringResource(R.string.legendary_actions)
+                        )
+                    }
+                    if (initiativeEntry.hasSpellSaveDc) {
+                        IconAndTextWithTooltip(
+                            R.drawable.book_4_spark,
+                            initiativeEntry.spellSaveDc.toString(),
+                            stringResource(R.string.spell_save_dc)
+                        )
+                    }
+                    if (initiativeEntry.hasSpellAttackModifier) {
+                        IconAndTextWithTooltip(
+                            R.drawable.wand_stars,
+                            "+" + initiativeEntry.spellAttackModifier,
+                            stringResource(R.string.spell_attack_modifier)
+                        )
+                    }
                 }
                 Row(
                     Modifier.fillMaxWidth(),
                     Arrangement.Center
                 ) {
-                    IconToggleButton(true, {}) {
-                        Icon(Icons.Outlined.Star, "")
+                    val keepOnReset by remember { derivedStateOf { initiativeEntry.keepOnRefresh } }
+                    IconToggleButton(keepOnReset, {
+                        // TODO
+                    }) {
+                        if (keepOnReset) {
+                            Icon(Icons.Default.Star, "")
+                        } else {
+                            Icon(painterResource(R.drawable.star), "")
+                        }
                     }
                     IconButton(
                         onClick = {}
@@ -189,5 +256,7 @@ fun IconAndText(@DrawableRes iconResource: Int, value: String) {
 @Preview
 @Composable
 fun InitiativeListItemPreview() {
-    InitiativeListItem(true)
+    InitiativeListItem(
+        InitiativeEntryEntity(1, "Larry", 10, 18, 19, 3, 14, 7, false, false)
+    )
 }
