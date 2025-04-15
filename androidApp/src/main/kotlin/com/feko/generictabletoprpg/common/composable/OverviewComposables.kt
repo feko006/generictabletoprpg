@@ -124,6 +124,13 @@ fun <TViewModel, T> OverviewScreen(
                     fabButtonSpacer(fabButton != null)
                 }
             }
+            val scrollToEndOfList by viewModel.scrollToEndOfList.collectAsState(false)
+            if (scrollToEndOfList) {
+                LaunchedEffect(key1 = searchString) {
+                    listState.scrollToItem(listItems.size)
+                    viewModel.consumeScrollToEndOfListEvent()
+                }
+            }
             LaunchedEffect(key1 = searchString) {
                 listState.scrollToItem(0)
             }
@@ -136,8 +143,7 @@ fun <TViewModel, T> OverviewScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(16.dp)
-        )
-        {
+        ) {
             fabButton(Modifier.align(Alignment.BottomEnd))
         }
     }

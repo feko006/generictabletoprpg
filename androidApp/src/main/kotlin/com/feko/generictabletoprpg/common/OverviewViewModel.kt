@@ -15,10 +15,13 @@ import kotlinx.coroutines.withContext
 open class OverviewViewModel<T : Any>(
     private val getAll: IGetAll<T>?
 ) : ViewModel() {
+
     protected val _items = MutableStateFlow<List<T>>(listOf())
+
     val searchString: Flow<String>
         get() = _searchString
     protected var _searchString: MutableStateFlow<String> = MutableStateFlow("")
+
     val items: Flow<List<T>>
         get() = combinedItemFlow
     protected open val combinedItemFlow: Flow<List<T>> by lazy {
@@ -37,6 +40,16 @@ open class OverviewViewModel<T : Any>(
                             && item.name.lowercase().contains(searchString.lowercase())
                 }
                 .sortedWith(SmartNamedSearchComparator(searchString))
+        }
+    }
+
+    protected val _scrollToEndOfList = MutableStateFlow<Boolean>(false)
+    val scrollToEndOfList: Flow<Boolean>
+        get() = _scrollToEndOfList
+
+    fun consumeScrollToEndOfListEvent() {
+        viewModelScope.launch {
+            _scrollToEndOfList.emit(false)
         }
     }
 
@@ -81,6 +94,7 @@ open class OverviewViewModel<T : Any>(
         val items = _items.value.toMutableList()
         items.add(item)
         _items.emit(items.sortedBy(sortedBy))
+        _scrollToEndOfList.emit(true)
     }
 
     protected suspend fun removeItem(item: T) {
