@@ -197,6 +197,7 @@ fun AlertDialogComposable(viewModel: TrackerGroupViewModel) {
                 DialogTitle(viewModel.alertDialog.titleResource)
                 val focusRequester = remember { FocusRequester() }
                 val nameInputData by viewModel.groupName.collectAsState()
+                val isConfirmButtonEnabled by viewModel.confirmButtonEnabled.collectAsState()
                 if (viewModel.dialogType == TrackerGroupViewModel.DialogType.NewOrUpdate) {
                     TextField(
                         value = nameInputData.value,
@@ -220,7 +221,11 @@ fun AlertDialogComposable(viewModel: TrackerGroupViewModel) {
                             .focusRequester(focusRequester),
                         keyboardOptions = KeyboardOptions(imeAction = Done),
                         keyboardActions = KeyboardActions(
-                            onDone = { viewModel.confirmDialogAction() }
+                            onDone = {
+                                if (isConfirmButtonEnabled) {
+                                    viewModel.confirmDialogAction()
+                                }
+                            }
                         )
                     )
                     LaunchedEffect(Unit) {
@@ -238,10 +243,9 @@ fun AlertDialogComposable(viewModel: TrackerGroupViewModel) {
                             Text(stringResource(R.string.cancel))
                         }
                     }
-                    val buttonEnabled by viewModel.confirmButtonEnabled.collectAsState()
                     TextButton(
                         onClick = { viewModel.confirmDialogAction() },
-                        enabled = buttonEnabled,
+                        enabled = isConfirmButtonEnabled,
                         modifier = Modifier.wrapContentWidth()
                     ) {
                         Text(stringResource(R.string.confirm))

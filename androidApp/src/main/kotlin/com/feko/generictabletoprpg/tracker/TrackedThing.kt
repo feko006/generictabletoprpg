@@ -32,7 +32,7 @@ sealed class TrackedThing(
         FiveEStats(R.string.five_e_stats)
     }
 
-    var defaultValue: String = ""
+    open var defaultValue: String = ""
 
     companion object {
         fun emptyOfType(type: Type, index: Int, groupId: Long): TrackedThing =

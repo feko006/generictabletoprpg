@@ -417,8 +417,10 @@ fun EditInitiativeEntryAlertDialog(
                         )
                     },
                     onFormSubmit = {
-                        onEditFinished(initiativeEntry)
-                        onDialogDismissed()
+                        if (initiativeEntry.isEntryValid) {
+                            onEditFinished(initiativeEntry)
+                            onDialogDismissed()
+                        }
                     },
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Number,
