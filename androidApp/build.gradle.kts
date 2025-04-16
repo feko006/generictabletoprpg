@@ -12,7 +12,7 @@ android {
     }
     namespace = "com.feko.generictabletoprpg"
     compileSdk = 35
-    buildToolsVersion = "34.0.0"
+    buildToolsVersion = "35.0.0"
 
     defaultConfig {
         applicationId = "com.feko.generictabletoprpg"
