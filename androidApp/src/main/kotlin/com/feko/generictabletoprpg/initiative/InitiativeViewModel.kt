@@ -44,5 +44,11 @@ class InitiativeViewModel(private val dao: InitiativeEntryDao) : ViewModel() {
             dao.insert(InitiativeEntryEntity.createLairActionEntry())
         }
     }
+
+    fun updateKeepOnReset(initiativeEntry: InitiativeEntryEntity, keepOnReset: Boolean) {
+        viewModelScope.launch {
+            dao.update(initiativeEntry.copy(keepOnRefresh = keepOnReset))
+        }
+    }
 }
 

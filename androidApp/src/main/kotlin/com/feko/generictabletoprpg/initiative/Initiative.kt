@@ -92,7 +92,13 @@ fun InitiativeScreen(appViewModel: AppViewModel) {
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 items(entries, key = { it.id }) {
-                    InitiativeListItem(it, onEditButtonClicked = { viewModel.showEditDialog(it) })
+                    InitiativeListItem(
+                        it,
+                        onEditButtonClicked = { viewModel.showEditDialog(it) },
+                        onUpdateKeepOnReset = { initiativeEntry, keepOnReset ->
+                            viewModel.updateKeepOnReset(initiativeEntry, keepOnReset)
+                        }
+                    )
                 }
             }
         }
@@ -142,7 +148,8 @@ fun InitiativeScreen(appViewModel: AppViewModel) {
 @Composable
 fun InitiativeListItem(
     initiativeEntry: InitiativeEntryEntity,
-    onEditButtonClicked: (InitiativeEntryEntity) -> Unit
+    onEditButtonClicked: (InitiativeEntryEntity) -> Unit,
+    onUpdateKeepOnReset: (InitiativeEntryEntity, Boolean) -> Unit
 ) {
     val isHighlighted = initiativeEntry.hasTurn
     val isLairAction = initiativeEntry.isLairAction
@@ -222,9 +229,11 @@ fun InitiativeListItem(
                     Arrangement.Center
                 ) {
                     val keepOnReset = initiativeEntry.keepOnRefresh
-                    IconToggleButton(keepOnReset, {
-                        // TODO
-                    }) {
+                    IconToggleButton(
+                        checked = keepOnReset,
+                        onCheckedChange = {
+                            onUpdateKeepOnReset(initiativeEntry, it)
+                        }) {
                         if (keepOnReset) {
                             Icon(Icons.Default.Star, "")
                         } else {
@@ -297,7 +306,8 @@ fun IconAndText(@DrawableRes iconResource: Int, value: String) {
 fun InitiativeListItemPreview() {
     InitiativeListItem(
         InitiativeEntryEntity(1, "Larry", 10, 18, 19, 3, 14, 7, false, false),
-        onEditButtonClicked = {}
+        onEditButtonClicked = {},
+        onUpdateKeepOnReset = { _, _ -> }
     )
 }
 
