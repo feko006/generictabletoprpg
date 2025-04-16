@@ -3,7 +3,9 @@ package com.feko.generictabletoprpg.initiative
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.feko.generictabletoprpg.com.feko.generictabletoprpg.initiative.InitiativeEntryEntity
+import com.feko.generictabletoprpg.common.alertdialog.AlertDialogSubViewModel
 import com.feko.generictabletoprpg.common.alertdialog.EditAlertDialogSubViewModel
+import com.feko.generictabletoprpg.common.alertdialog.IAlertDialogSubViewModel
 import com.feko.generictabletoprpg.common.alertdialog.IEditAlertDialogSubViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
@@ -21,6 +23,9 @@ class InitiativeViewModel(private val dao: InitiativeEntryDao) : ViewModel() {
         EditAlertDialogSubViewModel(InitiativeEntryEntity.Empty, viewModelScope)
     val confirmDeletionDialog: IEditAlertDialogSubViewModel<InitiativeEntryEntity> =
         _confirmDeletionDialog
+
+    private val _confirmResetDialog = AlertDialogSubViewModel(viewModelScope)
+    val confirmResetDialog: IAlertDialogSubViewModel = _confirmResetDialog
 
     fun createOrUpdateInitiativeEntry(entity: InitiativeEntryEntity) {
         viewModelScope.launch {
@@ -50,6 +55,12 @@ class InitiativeViewModel(private val dao: InitiativeEntryDao) : ViewModel() {
         }
     }
 
+    fun showResetDialog() {
+        viewModelScope.launch {
+            _confirmResetDialog.show()
+        }
+    }
+
     fun addLairActions() {
         viewModelScope.launch {
             dao.insert(InitiativeEntryEntity.createLairActionEntry())
@@ -65,6 +76,13 @@ class InitiativeViewModel(private val dao: InitiativeEntryDao) : ViewModel() {
     fun deleteEntry(initiativeEntry: InitiativeEntryEntity) {
         viewModelScope.launch {
             dao.delete(initiativeEntry)
+        }
+    }
+
+    fun resetInitiative() {
+        viewModelScope.launch {
+            dao.resetInitiative()
+            dao.setCurrentTurn(0L)
         }
     }
 }

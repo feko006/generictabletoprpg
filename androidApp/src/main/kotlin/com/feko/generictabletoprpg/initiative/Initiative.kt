@@ -108,12 +108,10 @@ fun InitiativeScreen(appViewModel: AppViewModel) {
                 Modifier.align(Alignment.Center),
                 Arrangement.spacedBy(8.dp)
             ) {
-                FloatingActionButton(onClick = {
-                    viewModel.showCreateNewDialog()
-                }) {
+                FloatingActionButton(onClick = viewModel::showCreateNewDialog) {
                     Icon(Icons.Default.Add, "")
                 }
-                FloatingActionButton({}) {
+                FloatingActionButton(onClick = viewModel::showResetDialog) {
                     Icon(Icons.Default.Refresh, "")
                 }
                 FloatingActionButton({}) {
@@ -144,12 +142,22 @@ fun InitiativeScreen(appViewModel: AppViewModel) {
             onDialogDismissed = { viewModel.editAlertDialog.dismiss() }
         )
     }
+
     val isConfirmDeletionDialogVisible by
     viewModel.confirmDeletionDialog.isVisible.collectAsState(false)
     if (isConfirmDeletionDialogVisible) {
         ConfirmationDialog(
             onConfirm = { viewModel.deleteEntry(viewModel.confirmDeletionDialog.editedItem.value) },
             onDialogDismissed = { viewModel.confirmDeletionDialog.dismiss() }
+        )
+    }
+
+    val isConfirmResetDialogVisible by viewModel.confirmResetDialog.isVisible.collectAsState(false)
+    if (isConfirmResetDialogVisible) {
+        ConfirmationDialog(
+            onConfirm = { viewModel.resetInitiative() },
+            onDialogDismissed = { viewModel.confirmResetDialog.dismiss() },
+            dialogTitle = R.string.reset_dialog_title
         )
     }
 }

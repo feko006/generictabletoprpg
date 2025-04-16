@@ -22,4 +22,10 @@ interface InitiativeEntryDao {
 
     @Delete
     suspend fun delete(entity: InitiativeEntryEntity)
+
+    @Query("delete from initiative_entries where keepOnRefresh = 0")
+    suspend fun resetInitiative()
+
+    @Query("update initiative_entries set hasTurn = (id = :entityId)")
+    suspend fun setCurrentTurn(entityId: Long)
 }

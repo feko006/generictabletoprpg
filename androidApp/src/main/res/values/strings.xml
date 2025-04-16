@@ -40,6 +40,7 @@
     <string name="known">Known</string>
     <string name="cantrips">Cantrips</string>
     <string name="delete_dialog_title">Delete?</string>
+    <string name="reset_dialog_title">Reset?</string>
     <!--Action-->
     <string name="action">Action</string>
     <string name="action_details_title">Action Details</string>
