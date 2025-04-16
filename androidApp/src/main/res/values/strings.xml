@@ -39,6 +39,7 @@
     <string name="prepared">Prepared</string>
     <string name="known">Known</string>
     <string name="cantrips">Cantrips</string>
+    <string name="delete_dialog_title">Delete?</string>
     <!--Action-->
     <string name="action">Action</string>
     <string name="action_details_title">Action Details</string>
@@ -71,7 +72,6 @@
     <string name="create_new_tracked_group_dialog_title">Create new group</string>
     <string name="edit_tracked_group_dialog_title">Edit group</string>
     <string name="delete_tracked_group_dialog_title">Delete group</string>
-    <string name="delete_tracked_thing_dialog_title">Delete?</string>
     <string name="refresh_all_tracked_things_dialog_title">Refresh all?</string>
     <string name="increase_percentage_dialog_title">Increase percentage</string>
     <string name="reduce_percentage_dialog_title">Reduce percentage</string>

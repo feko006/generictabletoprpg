@@ -1,8 +1,8 @@
 package com.feko.generictabletoprpg.common.alertdialog
 
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class EditAlertDialogSubViewModel<T>(
@@ -13,7 +13,7 @@ class EditAlertDialogSubViewModel<T>(
     IEditAlertDialogSubViewModel<T> {
 
     val _editedItem = MutableStateFlow(defaultValue)
-    override val editedItem: Flow<T>
+    override val editedItem: StateFlow<T>
         get() = _editedItem
 
     override fun updateEditedItem(updatedItem: T) {

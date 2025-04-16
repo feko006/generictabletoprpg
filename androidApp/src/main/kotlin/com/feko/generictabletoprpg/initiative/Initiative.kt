@@ -56,10 +56,10 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.DialogProperties
 import com.feko.generictabletoprpg.AppViewModel
 import com.feko.generictabletoprpg.R
 import com.feko.generictabletoprpg.com.feko.generictabletoprpg.initiative.InitiativeEntryEntity
+import com.feko.generictabletoprpg.common.composable.ConfirmationDialog
 import com.feko.generictabletoprpg.common.composable.DialogTitle
 import com.feko.generictabletoprpg.common.composable.EmptyList
 import com.feko.generictabletoprpg.common.composable.InputField
@@ -94,10 +94,11 @@ fun InitiativeScreen(appViewModel: AppViewModel) {
                 items(entries, key = { it.id }) {
                     InitiativeListItem(
                         it,
-                        onEditButtonClicked = { viewModel.showEditDialog(it) },
                         onUpdateKeepOnReset = { initiativeEntry, keepOnReset ->
                             viewModel.updateKeepOnReset(initiativeEntry, keepOnReset)
-                        }
+                        },
+                        onEditButtonClicked = viewModel::showEditDialog,
+                        onDeleteButtonClicked = viewModel::showDeleteDialog
                     )
                 }
             }
@@ -143,13 +144,22 @@ fun InitiativeScreen(appViewModel: AppViewModel) {
             onDialogDismissed = { viewModel.editAlertDialog.dismiss() }
         )
     }
+    val isConfirmDeletionDialogVisible by
+    viewModel.confirmDeletionDialog.isVisible.collectAsState(false)
+    if (isConfirmDeletionDialogVisible) {
+        ConfirmationDialog(
+            onConfirm = { viewModel.deleteEntry(viewModel.confirmDeletionDialog.editedItem.value) },
+            onDialogDismissed = { viewModel.confirmDeletionDialog.dismiss() }
+        )
+    }
 }
 
 @Composable
 fun InitiativeListItem(
     initiativeEntry: InitiativeEntryEntity,
+    onUpdateKeepOnReset: (InitiativeEntryEntity, Boolean) -> Unit,
     onEditButtonClicked: (InitiativeEntryEntity) -> Unit,
-    onUpdateKeepOnReset: (InitiativeEntryEntity, Boolean) -> Unit
+    onDeleteButtonClicked: (InitiativeEntryEntity) -> Unit
 ) {
     val isHighlighted = initiativeEntry.hasTurn
     val isLairAction = initiativeEntry.isLairAction
@@ -249,7 +259,7 @@ fun InitiativeListItem(
                         ) { Icon(Icons.Filled.Edit, "") }
                     }
                     IconButton(
-                        onClick = {}
+                        onClick = { onDeleteButtonClicked(initiativeEntry) }
                     ) { Icon(Icons.Filled.Delete, "") }
                 }
             }
@@ -306,8 +316,9 @@ fun IconAndText(@DrawableRes iconResource: Int, value: String) {
 fun InitiativeListItemPreview() {
     InitiativeListItem(
         InitiativeEntryEntity(1, "Larry", 10, 18, 19, 3, 14, 7, false, false),
+        onUpdateKeepOnReset = { _, _ -> },
         onEditButtonClicked = {},
-        onUpdateKeepOnReset = { _, _ -> }
+        onDeleteButtonClicked = {}
     )
 }
 
@@ -321,10 +332,7 @@ fun EditInitiativeEntryAlertDialog(
     onAddLairActions: () -> Unit,
     onDialogDismissed: () -> Unit
 ) {
-    BasicAlertDialog(
-        onDismissRequest = onDialogDismissed,
-        properties = DialogProperties()
-    ) {
+    BasicAlertDialog(onDismissRequest = onDialogDismissed) {
         Card {
             Column(Modifier.padding(16.dp), Arrangement.spacedBy(16.dp)) {
                 val dialogTitle by remember(initiativeEntry) {

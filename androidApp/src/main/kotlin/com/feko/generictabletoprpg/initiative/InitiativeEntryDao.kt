@@ -1,6 +1,7 @@
 package com.feko.generictabletoprpg.initiative
 
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
@@ -18,4 +19,7 @@ interface InitiativeEntryDao {
 
     @Update
     suspend fun update(entity: InitiativeEntryEntity)
+
+    @Delete
+    suspend fun delete(entity: InitiativeEntryEntity)
 }

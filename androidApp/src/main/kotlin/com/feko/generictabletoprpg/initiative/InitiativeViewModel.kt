@@ -17,6 +17,11 @@ class InitiativeViewModel(private val dao: InitiativeEntryDao) : ViewModel() {
         EditAlertDialogSubViewModel(InitiativeEntryEntity.Empty, viewModelScope)
     val editAlertDialog: IEditAlertDialogSubViewModel<InitiativeEntryEntity> = _editAlertDialog
 
+    private val _confirmDeletionDialog =
+        EditAlertDialogSubViewModel(InitiativeEntryEntity.Empty, viewModelScope)
+    val confirmDeletionDialog: IEditAlertDialogSubViewModel<InitiativeEntryEntity> =
+        _confirmDeletionDialog
+
     fun createOrUpdateInitiativeEntry(entity: InitiativeEntryEntity) {
         viewModelScope.launch {
             if (entity.isSavedInDatabase) {
@@ -39,6 +44,12 @@ class InitiativeViewModel(private val dao: InitiativeEntryDao) : ViewModel() {
         }
     }
 
+    fun showDeleteDialog(initiativeEntry: InitiativeEntryEntity) {
+        viewModelScope.launch {
+            _confirmDeletionDialog.show(initiativeEntry)
+        }
+    }
+
     fun addLairActions() {
         viewModelScope.launch {
             dao.insert(InitiativeEntryEntity.createLairActionEntry())
@@ -50,5 +61,10 @@ class InitiativeViewModel(private val dao: InitiativeEntryDao) : ViewModel() {
             dao.update(initiativeEntry.copy(keepOnRefresh = keepOnReset))
         }
     }
-}
 
+    fun deleteEntry(initiativeEntry: InitiativeEntryEntity) {
+        viewModelScope.launch {
+            dao.delete(initiativeEntry)
+        }
+    }
+}

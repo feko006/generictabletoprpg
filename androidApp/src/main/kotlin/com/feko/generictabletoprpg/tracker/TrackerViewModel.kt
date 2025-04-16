@@ -616,7 +616,7 @@ class TrackerViewModel(
     override fun deleteItemRequested(item: TrackedThing) {
         viewModelScope.launch {
             dialogType = DialogType.ConfirmDeletion
-            _alertDialog._titleResource = R.string.delete_tracked_thing_dialog_title
+            _alertDialog._titleResource = R.string.delete_dialog_title
             editedTrackedThing = item
             _alertDialog.show()
         }
