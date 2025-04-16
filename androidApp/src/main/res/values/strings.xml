@@ -158,4 +158,6 @@
     <string name="armor_class">Armor Class (AC)</string>
     <string name="legendary_actions">Legendary Actions</string>
     <string name="spell_attack_modifier">Spell Attack Modifier</string>
+    <string name="add_lair_actions">Add Lair Actions</string>
+    <string name="lair_action">Lair Action</string>
 </resources>

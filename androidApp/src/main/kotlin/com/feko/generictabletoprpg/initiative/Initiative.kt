@@ -15,10 +15,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberBasicTooltipState
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.Add
@@ -27,6 +29,7 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -36,6 +39,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconToggleButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TooltipDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -48,12 +52,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.DialogProperties
 import com.feko.generictabletoprpg.AppViewModel
 import com.feko.generictabletoprpg.R
 import com.feko.generictabletoprpg.com.feko.generictabletoprpg.initiative.InitiativeEntryEntity
+import com.feko.generictabletoprpg.common.composable.DialogTitle
 import com.feko.generictabletoprpg.common.composable.EmptyList
+import com.feko.generictabletoprpg.common.composable.InputField
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
 import kotlinx.coroutines.launch
@@ -61,9 +70,7 @@ import org.koin.androidx.compose.koinViewModel
 
 @Destination<RootGraph>
 @Composable
-fun InitiativeScreen(
-    appViewModel: AppViewModel
-) {
+fun InitiativeScreen(appViewModel: AppViewModel) {
     appViewModel.set(
         appBarTitle = stringResource(R.string.initiative),
         navBarActions = listOf()
@@ -85,7 +92,7 @@ fun InitiativeScreen(
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 items(entries, key = { it.id }) {
-                    InitiativeListItem(it)
+                    InitiativeListItem(it, onEditButtonClicked = { viewModel.showEditDialog(it) })
                 }
             }
         }
@@ -94,7 +101,9 @@ fun InitiativeScreen(
                 Modifier.align(Alignment.Center),
                 Arrangement.spacedBy(8.dp)
             ) {
-                FloatingActionButton({}) {
+                FloatingActionButton(onClick = {
+                    viewModel.showCreateNewDialog()
+                }) {
                     Icon(Icons.Default.Add, "")
                 }
                 FloatingActionButton({}) {
@@ -109,11 +118,34 @@ fun InitiativeScreen(
             }
         }
     }
+    val isEditAlertDialogVisible by viewModel.editAlertDialog.isVisible.collectAsState(false)
+    if (isEditAlertDialogVisible) {
+        val initiativeEntry by viewModel.editAlertDialog.editedItem.collectAsState(
+            InitiativeEntryEntity.Empty
+        )
+        val isLairActionsButtonVisible by remember(entries) {
+            derivedStateOf {
+                entries.none { it.isLairAction }
+            }
+        }
+        EditInitiativeEntryAlertDialog(
+            initiativeEntry,
+            isLairActionsButtonVisible,
+            onItemUpdated = { viewModel.editAlertDialog.updateEditedItem(it) },
+            onEditFinished = { viewModel.createOrUpdateInitiativeEntry(it) },
+            onAddLairActions = { viewModel.addLairActions() },
+            onDialogDismissed = { viewModel.editAlertDialog.dismiss() }
+        )
+    }
 }
 
 @Composable
-fun InitiativeListItem(initiativeEntry: InitiativeEntryEntity) {
-    val isHighlighted by remember { derivedStateOf { initiativeEntry.hasTurn } }
+fun InitiativeListItem(
+    initiativeEntry: InitiativeEntryEntity,
+    onEditButtonClicked: (InitiativeEntryEntity) -> Unit
+) {
+    val isHighlighted = initiativeEntry.hasTurn
+    val isLairAction = initiativeEntry.isLairAction
     Card(
         Modifier
             .fillMaxWidth()
@@ -140,54 +172,56 @@ fun InitiativeListItem(initiativeEntry: InitiativeEntryEntity) {
                         style = MaterialTheme.typography.bodyLarge
                     )
                     Text(
-                        initiativeEntry.name,
+                        if (isLairAction) stringResource(R.string.lair_action) else initiativeEntry.name,
                         Modifier.weight(1f),
                         style = MaterialTheme.typography.bodyLarge
                     )
                 }
-                Row(
-                    Modifier
-                        .fillMaxWidth()
-                        .padding(top = 12.dp),
-                    Arrangement.SpaceAround
-                ) {
-                    IconAndTextWithTooltip(
-                        R.drawable.heart,
-                        initiativeEntry.health.toString(),
-                        stringResource(R.string.health)
-                    )
-                    IconAndTextWithTooltip(
-                        R.drawable.shield,
-                        initiativeEntry.armorClass.toString(),
-                        stringResource(R.string.armor_class)
-                    )
-                    if (initiativeEntry.hasLegendaryActions) {
+                if (!isLairAction) {
+                    Row(
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(top = 12.dp),
+                        Arrangement.SpaceAround
+                    ) {
                         IconAndTextWithTooltip(
-                            R.drawable.bolt,
-                            initiativeEntry.legendaryActions.toString(),
-                            stringResource(R.string.legendary_actions)
+                            R.drawable.heart,
+                            initiativeEntry.health.toString(),
+                            stringResource(R.string.health)
                         )
-                    }
-                    if (initiativeEntry.hasSpellSaveDc) {
                         IconAndTextWithTooltip(
-                            R.drawable.book_4_spark,
-                            initiativeEntry.spellSaveDc.toString(),
-                            stringResource(R.string.spell_save_dc)
+                            R.drawable.shield,
+                            initiativeEntry.armorClass.toString(),
+                            stringResource(R.string.armor_class)
                         )
-                    }
-                    if (initiativeEntry.hasSpellAttackModifier) {
-                        IconAndTextWithTooltip(
-                            R.drawable.wand_stars,
-                            "+" + initiativeEntry.spellAttackModifier,
-                            stringResource(R.string.spell_attack_modifier)
-                        )
+                        if (initiativeEntry.hasLegendaryActions) {
+                            IconAndTextWithTooltip(
+                                R.drawable.bolt,
+                                initiativeEntry.legendaryActions.toString(),
+                                stringResource(R.string.legendary_actions)
+                            )
+                        }
+                        if (initiativeEntry.hasSpellSaveDc) {
+                            IconAndTextWithTooltip(
+                                R.drawable.book_4_spark,
+                                initiativeEntry.spellSaveDc.toString(),
+                                stringResource(R.string.spell_save_dc)
+                            )
+                        }
+                        if (initiativeEntry.hasSpellAttackModifier) {
+                            IconAndTextWithTooltip(
+                                R.drawable.wand_stars,
+                                "+" + initiativeEntry.spellAttackModifier,
+                                stringResource(R.string.spell_attack_modifier)
+                            )
+                        }
                     }
                 }
                 Row(
                     Modifier.fillMaxWidth(),
                     Arrangement.Center
                 ) {
-                    val keepOnReset by remember { derivedStateOf { initiativeEntry.keepOnRefresh } }
+                    val keepOnReset = initiativeEntry.keepOnRefresh
                     IconToggleButton(keepOnReset, {
                         // TODO
                     }) {
@@ -197,12 +231,14 @@ fun InitiativeListItem(initiativeEntry: InitiativeEntryEntity) {
                             Icon(painterResource(R.drawable.star), "")
                         }
                     }
-                    IconButton(
-                        onClick = {}
-                    ) { Icon(Icons.Filled.Favorite, "") }
-                    IconButton(
-                        onClick = {}
-                    ) { Icon(Icons.Filled.Edit, "") }
+                    if (!isLairAction) {
+                        IconButton(
+                            onClick = {}
+                        ) { Icon(Icons.Filled.Favorite, "") }
+                        IconButton(
+                            onClick = { onEditButtonClicked(initiativeEntry) }
+                        ) { Icon(Icons.Filled.Edit, "") }
+                    }
                     IconButton(
                         onClick = {}
                     ) { Icon(Icons.Filled.Delete, "") }
@@ -247,7 +283,10 @@ fun IconAndTextWithTooltip(@DrawableRes iconResource: Int, value: String, toolti
 
 @Composable
 fun IconAndText(@DrawableRes iconResource: Int, value: String) {
-    Row(verticalAlignment = Alignment.CenterVertically) {
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
         Icon(painterResource(iconResource), "")
         Text(value)
     }
@@ -257,6 +296,158 @@ fun IconAndText(@DrawableRes iconResource: Int, value: String) {
 @Composable
 fun InitiativeListItemPreview() {
     InitiativeListItem(
-        InitiativeEntryEntity(1, "Larry", 10, 18, 19, 3, 14, 7, false, false)
+        InitiativeEntryEntity(1, "Larry", 10, 18, 19, 3, 14, 7, false, false),
+        onEditButtonClicked = {}
     )
+}
+
+@Composable
+@OptIn(ExperimentalMaterial3Api::class)
+fun EditInitiativeEntryAlertDialog(
+    initiativeEntry: InitiativeEntryEntity,
+    isLairActionsButtonVisible: Boolean,
+    onItemUpdated: (InitiativeEntryEntity) -> Unit,
+    onEditFinished: (InitiativeEntryEntity) -> Unit,
+    onAddLairActions: () -> Unit,
+    onDialogDismissed: () -> Unit
+) {
+    BasicAlertDialog(
+        onDismissRequest = onDialogDismissed,
+        properties = DialogProperties()
+    ) {
+        Card {
+            Column(Modifier.padding(16.dp), Arrangement.spacedBy(16.dp)) {
+                val dialogTitle by remember(initiativeEntry) {
+                    derivedStateOf {
+                        if (initiativeEntry.isSavedInDatabase) R.string.edit
+                        else R.string.add
+                    }
+                }
+                DialogTitle(dialogTitle)
+
+                val name = initiativeEntry.name
+                InputField(
+                    value = name,
+                    label = stringResource(R.string.name),
+                    onValueChange = {
+                        onItemUpdated(initiativeEntry.copy(name = it))
+                    },
+                    isInputFieldValid = { initiativeEntry.isNameValid },
+                    autoFocus = !initiativeEntry.isSavedInDatabase
+                )
+
+                val initiative = initiativeEntry.initiative
+                InputField(
+                    value = initiative.toString(),
+                    label = stringResource(R.string.initiative),
+                    onValueChange = {
+                        onItemUpdated(initiativeEntry.copy(initiative = it.toIntOrNull() ?: 0))
+                    },
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Number,
+                        imeAction = ImeAction.Next
+                    )
+                )
+
+                val health = initiativeEntry.health
+                InputField(
+                    value = health.toString(),
+                    label = stringResource(R.string.health),
+                    onValueChange = {
+                        onItemUpdated(initiativeEntry.copy(health = it.toIntOrNull() ?: 0))
+                    },
+                    isInputFieldValid = { initiativeEntry.isHealthValid },
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Number,
+                        imeAction = ImeAction.Next
+                    )
+                )
+
+                val armorClass = initiativeEntry.armorClass
+                InputField(
+                    value = armorClass.toString(),
+                    label = stringResource(R.string.armor_class),
+                    onValueChange = {
+                        onItemUpdated(initiativeEntry.copy(armorClass = it.toIntOrNull() ?: 0))
+                    },
+                    isInputFieldValid = { initiativeEntry.isArmorClassValid },
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Number,
+                        imeAction = ImeAction.Next
+                    )
+                )
+
+                val legendaryActions = initiativeEntry.legendaryActions
+                InputField(
+                    value = legendaryActions.toString(),
+                    label = stringResource(R.string.legendary_actions),
+                    onValueChange = {
+                        onItemUpdated(
+                            initiativeEntry.copy(
+                                legendaryActions = it.toIntOrNull() ?: 0
+                            )
+                        )
+                    },
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Number,
+                        imeAction = ImeAction.Next
+                    )
+                )
+
+                val spellSaveDc = initiativeEntry.spellSaveDc
+                InputField(
+                    value = spellSaveDc.toString(),
+                    label = stringResource(R.string.spell_save_dc),
+                    onValueChange = {
+                        onItemUpdated(initiativeEntry.copy(spellSaveDc = it.toIntOrNull() ?: 0))
+                    },
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Number,
+                        imeAction = ImeAction.Next
+                    )
+                )
+
+                val spellAttackModifier = initiativeEntry.spellAttackModifier
+                InputField(
+                    value = spellAttackModifier.toString(),
+                    label = stringResource(R.string.spell_attack_modifier),
+                    onValueChange = {
+                        onItemUpdated(
+                            initiativeEntry.copy(spellAttackModifier = it.toIntOrNull() ?: 0)
+                        )
+                    },
+                    onFormSubmit = {
+                        onEditFinished(initiativeEntry)
+                        onDialogDismissed()
+                    },
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Number,
+                        imeAction = ImeAction.Done
+                    )
+                )
+
+                if (isLairActionsButtonVisible) {
+                    TextButton(
+                        onClick = {
+                            onAddLairActions()
+                            onDialogDismissed()
+                        },
+                        modifier = Modifier
+                            .align(Alignment.End)
+                            .wrapContentWidth()
+                    ) { Text(stringResource(R.string.add_lair_actions)) }
+                }
+                TextButton(
+                    onClick = {
+                        onEditFinished(initiativeEntry)
+                        onDialogDismissed()
+                    },
+                    modifier = Modifier
+                        .align(Alignment.End)
+                        .wrapContentWidth(),
+                    enabled = initiativeEntry.isEntryValid
+                ) { Text(stringResource(R.string.confirm)) }
+            }
+        }
+    }
 }

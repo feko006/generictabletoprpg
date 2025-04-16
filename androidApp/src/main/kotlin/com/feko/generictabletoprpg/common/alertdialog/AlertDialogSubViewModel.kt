@@ -9,21 +9,21 @@ import kotlinx.coroutines.launch
 class AlertDialogSubViewModel(
     private val coroutineScope: CoroutineScope,
     private val onDismissed: () -> Unit = {}
-) : IAlertDialogSubViewModel {
+) : IMutableAlertDialogSubViewModel {
     @StringRes
-    var _titleResource: Int = 0
+    override var _titleResource: Int = 0
     override val titleResource
         get() = _titleResource
 
     override val isVisible: Flow<Boolean>
         get() = _isVisible
-    val _isVisible: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    override val _isVisible: MutableStateFlow<Boolean> = MutableStateFlow(false)
 
-    suspend fun hide() {
+    override suspend fun hide() {
         _isVisible.emit(false)
     }
 
-    suspend fun show() {
+    override suspend fun show() {
         _isVisible.emit(true)
     }
 
