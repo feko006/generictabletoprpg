@@ -98,6 +98,7 @@ class InitiativeViewModel(private val dao: InitiativeEntryDao) : ViewModel() {
 
     fun resetInitiative() {
         viewModelScope.launch {
+            _currentRound.emit(0)
             dao.resetInitiative()
             dao.resetAvailableLegendaryActions()
             dao.setCurrentTurn(0L)

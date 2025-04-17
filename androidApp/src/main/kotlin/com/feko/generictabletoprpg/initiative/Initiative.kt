@@ -108,6 +108,18 @@ fun InitiativeScreen(appViewModel: AppViewModel) {
                 }
             }
         }
+        val currentRound by viewModel.currentRound.collectAsState(0)
+        if (currentRound > 0) {
+            Card(
+                Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .padding(8.dp)
+            ) {
+                Box(Modifier.padding(8.dp)) {
+                    Text("%s: %d".format(stringResource(R.string.round), currentRound))
+                }
+            }
+        }
         Box(Modifier.fillMaxWidth()) {
             Row(
                 Modifier.align(Alignment.Center),
