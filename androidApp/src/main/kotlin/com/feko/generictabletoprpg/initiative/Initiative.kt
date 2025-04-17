@@ -242,7 +242,8 @@ private fun ConfirmResetDialog(viewModel: InitiativeViewModel) {
         ConfirmationDialog(
             onConfirm = { viewModel.resetInitiative() },
             onDialogDismissed = { viewModel.confirmResetDialog.dismiss() },
-            dialogTitle = R.string.reset_dialog_title
+            dialogTitle = R.string.reset_dialog_title,
+            dialogMessage = R.string.reset_encounter_message
         )
     }
 }

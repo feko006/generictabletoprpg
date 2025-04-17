@@ -29,12 +29,17 @@ fun ConfirmationDialog(
     onConfirm: () -> Unit,
     onDialogDismissed: () -> Unit,
     @StringRes
-    dialogTitle: Int = R.string.delete_dialog_title
+    dialogTitle: Int = R.string.delete_dialog_title,
+    @StringRes
+    dialogMessage: Int? = null
 ) {
     BasicAlertDialog(onDismissRequest = onDialogDismissed) {
         Card {
             Column(Modifier.padding(start = 16.dp, top = 16.dp, end = 8.dp)) {
                 DialogTitle(dialogTitle)
+                if (dialogMessage != null) {
+                    Text(stringResource(dialogMessage), Modifier.padding(top = 8.dp))
+                }
                 Row(
                     Modifier.fillMaxWidth(),
                     Arrangement.End
