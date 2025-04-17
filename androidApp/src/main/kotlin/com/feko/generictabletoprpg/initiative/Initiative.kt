@@ -17,7 +17,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberBasicTooltipState
 import androidx.compose.foundation.text.KeyboardOptions
@@ -44,11 +44,14 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TooltipDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -89,6 +92,7 @@ fun InitiativeScreen(appViewModel: AppViewModel) {
             }
         } else {
             val listState = rememberLazyListState()
+            val coroutineScope = rememberCoroutineScope()
             LazyColumn(
                 Modifier
                     .weight(1f)
@@ -96,9 +100,12 @@ fun InitiativeScreen(appViewModel: AppViewModel) {
                 listState,
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                items(entries, key = { it.id }) {
+                itemsIndexed(entries, key = { _, item -> item.id }) { index, item ->
                     InitiativeListItem(
-                        it,
+                        item,
+                        onScrollToItem = {
+                            coroutineScope.launch { listState.scrollToItem(index) }
+                        },
                         onUpdateKeepOnReset = { initiativeEntry, keepOnReset ->
                             viewModel.updateKeepOnReset(initiativeEntry, keepOnReset)
                         },
@@ -120,61 +127,81 @@ fun InitiativeScreen(appViewModel: AppViewModel) {
                 }
             }
         }
-        Box(Modifier.fillMaxWidth()) {
-            Row(
-                Modifier.align(Alignment.Center),
-                Arrangement.spacedBy(8.dp)
-            ) {
-                FloatingActionButton(onClick = viewModel::showCreateNewDialog) {
-                    Icon(Icons.Default.Add, "")
+        ActionButtons(viewModel, entries)
+    }
+    EditDialog(viewModel, entries)
+    ConfirmDeletionDialog(viewModel)
+    ConfirmResetDialog(viewModel)
+    PickLegendaryActionDialog(viewModel)
+    ToastMessage(viewModel.toastMessage)
+}
+
+@Composable
+private fun ActionButtons(
+    viewModel: InitiativeViewModel,
+    entries: List<InitiativeEntryEntity>
+) {
+    Box(Modifier.fillMaxWidth()) {
+        Row(
+            Modifier.align(Alignment.Center),
+            Arrangement.spacedBy(8.dp)
+        ) {
+            FloatingActionButton(onClick = viewModel::showCreateNewDialog) {
+                Icon(Icons.Default.Add, "")
+            }
+            val isEntriesListEmpty by remember(entries) {
+                derivedStateOf { entries.isEmpty() }
+            }
+            if (isEntriesListEmpty) return@Row
+            FloatingActionButton(onClick = viewModel::showResetDialog) {
+                Icon(Icons.Default.Refresh, "")
+            }
+            val isEncounterStarted by remember(entries) {
+                derivedStateOf { entries.any { it.hasTurn } }
+            }
+            val isCurrentEntryTurnCompleted by remember(entries) {
+                derivedStateOf { entries.firstOrNull { it.hasTurn }?.isTurnCompleted ?: false }
+            }
+            if (!isEncounterStarted) {
+                FloatingActionButton(onClick = viewModel::startInitiative) {
+                    Icon(Icons.Default.PlayArrow, "")
                 }
-                val isEntriesListEmpty by remember(entries) {
-                    derivedStateOf { entries.isEmpty() }
+            } else if (!isCurrentEntryTurnCompleted) {
+                FloatingActionButton(onClick = viewModel::concludeTurnOfCurrentEntry) {
+                    Icon(Icons.Default.Check, "")
                 }
-                if (isEntriesListEmpty) return@Row
-                FloatingActionButton(onClick = viewModel::showResetDialog) {
-                    Icon(Icons.Default.Refresh, "")
+            } else {
+                val anyEntryHasLegendaryActions by remember(entries) {
+                    derivedStateOf { entries.any { it.hasLegendaryActions } }
                 }
-                val isEncounterStarted by remember(entries) {
-                    derivedStateOf { entries.any { it.hasTurn } }
+                if (anyEntryHasLegendaryActions) {
+                    val isLegendaryActionsButtonEnabled by remember(entries) {
+                        derivedStateOf { entries.any { it.canUseLegendaryAction } }
+                    }
+                    FloatingActionButton(
+                        onClick = {
+                            if (isLegendaryActionsButtonEnabled) {
+                                viewModel.progressInitiativeWithLegendaryAction()
+                            }
+                        },
+                        Modifier.alpha(if (isLegendaryActionsButtonEnabled) 1f else 0.4f)
+                    ) {
+                        Icon(painterResource(R.drawable.bolt), "")
+                    }
                 }
-                val isCurrentEntryTurnCompleted by remember(entries) {
-                    derivedStateOf { entries.firstOrNull { it.hasTurn }?.isTurnCompleted ?: false }
-                }
-                if (!isEncounterStarted) {
-                    FloatingActionButton(onClick = viewModel::startInitiative) {
-                        Icon(Icons.Default.PlayArrow, "")
-                    }
-                } else if (!isCurrentEntryTurnCompleted) {
-                    FloatingActionButton(onClick = viewModel::concludeTurnOfCurrentEntry) {
-                        Icon(Icons.Default.Check, "")
-                    }
-                } else {
-                    val anyEntryHasLegendaryActions by remember(entries) {
-                        derivedStateOf { entries.any { it.hasLegendaryActions } }
-                    }
-                    if (anyEntryHasLegendaryActions) {
-                        val isLegendaryActionsButtonEnabled by remember(entries) {
-                            derivedStateOf { entries.any { it.canUseLegendaryAction } }
-                        }
-                        FloatingActionButton(
-                            onClick = {
-                                if (isLegendaryActionsButtonEnabled) {
-                                    viewModel.progressInitiativeWithLegendaryAction()
-                                }
-                            },
-                            Modifier.alpha(if (isLegendaryActionsButtonEnabled) 1f else 0.4f)
-                        ) {
-                            Icon(painterResource(R.drawable.bolt), "")
-                        }
-                    }
-                    FloatingActionButton(onClick = viewModel::progressInitiative) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowForward, "")
-                    }
+                FloatingActionButton(onClick = viewModel::progressInitiative) {
+                    Icon(Icons.AutoMirrored.Filled.ArrowForward, "")
                 }
             }
         }
     }
+}
+
+@Composable
+private fun EditDialog(
+    viewModel: InitiativeViewModel,
+    entries: List<InitiativeEntryEntity>
+) {
     val isEditAlertDialogVisible by viewModel.editAlertDialog.isVisible.collectAsState(false)
     if (isEditAlertDialogVisible) {
         val initiativeEntry by viewModel.editAlertDialog.editedItem.collectAsState(
@@ -194,7 +221,10 @@ fun InitiativeScreen(appViewModel: AppViewModel) {
             onDialogDismissed = { viewModel.editAlertDialog.dismiss() }
         )
     }
+}
 
+@Composable
+private fun ConfirmDeletionDialog(viewModel: InitiativeViewModel) {
     val isConfirmDeletionDialogVisible
             by viewModel.confirmDeletionDialog.isVisible.collectAsState(false)
     if (isConfirmDeletionDialogVisible) {
@@ -203,7 +233,10 @@ fun InitiativeScreen(appViewModel: AppViewModel) {
             onDialogDismissed = { viewModel.confirmDeletionDialog.dismiss() }
         )
     }
+}
 
+@Composable
+private fun ConfirmResetDialog(viewModel: InitiativeViewModel) {
     val isConfirmResetDialogVisible by viewModel.confirmResetDialog.isVisible.collectAsState(false)
     if (isConfirmResetDialogVisible) {
         ConfirmationDialog(
@@ -212,7 +245,10 @@ fun InitiativeScreen(appViewModel: AppViewModel) {
             dialogTitle = R.string.reset_dialog_title
         )
     }
+}
 
+@Composable
+private fun PickLegendaryActionDialog(viewModel: InitiativeViewModel) {
     val isPickLegendaryActionDialogVisible
             by viewModel.pickLegendaryActionDialog.isVisible.collectAsState(false)
     if (isPickLegendaryActionDialogVisible) {
@@ -231,22 +267,34 @@ fun InitiativeScreen(appViewModel: AppViewModel) {
             )
         }
     }
-
-    ToastMessage(viewModel.toastMessage)
 }
 
 @Composable
 fun InitiativeListItem(
     initiativeEntry: InitiativeEntryEntity,
+    onScrollToItem: () -> Unit,
     onUpdateKeepOnReset: (InitiativeEntryEntity, Boolean) -> Unit,
     onEditButtonClicked: (InitiativeEntryEntity) -> Unit,
     onDeleteButtonClicked: (InitiativeEntryEntity) -> Unit
 ) {
     val isHighlighted = initiativeEntry.hasTurn
     val isLairAction = initiativeEntry.isLairAction
+    val isTurnCompleted = initiativeEntry.isTurnCompleted
     val outlineColor =
-        if (initiativeEntry.isTurnCompleted) MaterialTheme.colorScheme.primary
+        if (isTurnCompleted) MaterialTheme.colorScheme.primary
         else MaterialTheme.colorScheme.onBackground
+    var previousHighlightedState by remember { mutableStateOf(isHighlighted) }
+    var previousTurnCompletedState by remember { mutableStateOf(isTurnCompleted) }
+    LaunchedEffect(isHighlighted, isTurnCompleted) {
+        if (
+            !previousHighlightedState && isHighlighted
+            || !previousTurnCompletedState && isTurnCompleted
+        ) {
+            onScrollToItem()
+        }
+        previousHighlightedState = isHighlighted
+        previousTurnCompletedState = isTurnCompleted
+    }
     Card(
         Modifier
             .fillMaxWidth()
@@ -397,6 +445,7 @@ fun IconAndText(@DrawableRes iconResource: Int, value: String) {
 fun InitiativeListItemPreview() {
     InitiativeListItem(
         InitiativeEntryEntity(1, "Larry", 10, 18, 19, 3, 1, 14, 7, false, false, false),
+        onScrollToItem = {},
         onUpdateKeepOnReset = { _, _ -> },
         onEditButtonClicked = {},
         onDeleteButtonClicked = {}
