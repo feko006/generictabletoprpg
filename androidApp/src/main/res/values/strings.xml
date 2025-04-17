@@ -161,4 +161,6 @@
     <string name="spell_attack_modifier">Spell Attack Modifier</string>
     <string name="add_lair_actions">Add Lair Actions</string>
     <string name="lair_action">Lair Action</string>
+    <string name="legendary_action_used">Used legendary action from %s</string>
+    <string name="select_legendary_action">Select Legendary Action</string>
 </resources>

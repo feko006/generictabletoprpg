@@ -26,6 +26,12 @@ interface InitiativeEntryDao {
     @Query("delete from initiative_entries where keepOnRefresh = 0")
     suspend fun resetInitiative()
 
+    @Query("update initiative_entries set availableLegendaryActions = legendaryActions")
+    suspend fun resetAvailableLegendaryActions()
+
     @Query("update initiative_entries set hasTurn = (id = :entityId)")
     suspend fun setCurrentTurn(entityId: Long)
+
+    @Query("update initiative_entries set isTurnCompleted = (id = :entityId)")
+    suspend fun setTurnCompleted(entityId: Long)
 }

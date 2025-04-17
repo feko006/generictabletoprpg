@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 15,
-    "identityHash": "d32bb252197b1d5c0a4b1253a9d5597b",
+    "identityHash": "431f57f6de1e79af8c5c3724eef591a7",
     "entities": [
       {
         "tableName": "spells",
@@ -671,7 +671,7 @@
       },
       {
         "tableName": "initiative_entries",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `initiative` INTEGER NOT NULL, `health` INTEGER NOT NULL, `armorClass` INTEGER NOT NULL, `legendaryActions` INTEGER NOT NULL, `spellSaveDc` INTEGER NOT NULL, `spellAttackModifier` INTEGER NOT NULL, `keepOnRefresh` INTEGER NOT NULL, `hasTurn` INTEGER NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `initiative` INTEGER NOT NULL, `health` INTEGER NOT NULL, `armorClass` INTEGER NOT NULL, `legendaryActions` INTEGER NOT NULL, `availableLegendaryActions` INTEGER NOT NULL, `spellSaveDc` INTEGER NOT NULL, `spellAttackModifier` INTEGER NOT NULL, `keepOnRefresh` INTEGER NOT NULL, `hasTurn` INTEGER NOT NULL, `isTurnCompleted` INTEGER NOT NULL)",
         "fields": [
           {
             "fieldPath": "id",
@@ -710,6 +710,12 @@
             "notNull": true
           },
           {
+            "fieldPath": "availableLegendaryActions",
+            "columnName": "availableLegendaryActions",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
             "fieldPath": "spellSaveDc",
             "columnName": "spellSaveDc",
             "affinity": "INTEGER",
@@ -732,6 +738,12 @@
             "columnName": "hasTurn",
             "affinity": "INTEGER",
             "notNull": true
+          },
+          {
+            "fieldPath": "isTurnCompleted",
+            "columnName": "isTurnCompleted",
+            "affinity": "INTEGER",
+            "notNull": true
           }
         ],
         "primaryKey": {
@@ -744,7 +756,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'd32bb252197b1d5c0a4b1253a9d5597b')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '431f57f6de1e79af8c5c3724eef591a7')"
     ]
   }
 }

@@ -18,13 +18,16 @@ data class InitiativeEntryEntity(
     val health: Int,
     val armorClass: Int,
     val legendaryActions: Int,
+    val availableLegendaryActions: Int,
     val spellSaveDc: Int,
     val spellAttackModifier: Int,
     val keepOnRefresh: Boolean,
-    val hasTurn: Boolean
+    val hasTurn: Boolean,
+    val isTurnCompleted: Boolean
 ) : IMutableIdentifiable, INamed {
 
     val hasLegendaryActions by lazy { legendaryActions > 0 }
+    val canUseLegendaryAction by lazy { availableLegendaryActions > 0 && !hasTurn && !isLairAction }
     val hasSpellSaveDc by lazy { spellSaveDc > 0 }
     val hasSpellAttackModifier by lazy { spellAttackModifier > 0 }
     val isSavedInDatabase by lazy { id > 0L }
@@ -37,9 +40,12 @@ data class InitiativeEntryEntity(
     val isArmorClassValid by lazy { armorClass > 0 }
     val isHealthValid by lazy { health > 0 }
     val isEntryValid by lazy { isNameValid && isArmorClassValid && isHealthValid }
+    val printableLegendaryActions by lazy {
+        "%d/%d".format(availableLegendaryActions, legendaryActions)
+    }
 
     companion object {
-        val Empty = InitiativeEntryEntity(0L, "", 0, 0, 0, 0, 0, 0, false, false)
+        val Empty = InitiativeEntryEntity(0L, "", 0, 0, 0, 0, 0, 0, 0, false, false, false)
         fun createLairActionEntry(): InitiativeEntryEntity = Empty.copy(initiative = 20)
     }
 }

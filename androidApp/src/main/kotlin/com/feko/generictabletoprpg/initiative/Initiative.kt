@@ -24,9 +24,10 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.BasicAlertDialog
@@ -37,6 +38,7 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconToggleButton
+import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -49,6 +51,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -63,6 +66,8 @@ import com.feko.generictabletoprpg.common.composable.ConfirmationDialog
 import com.feko.generictabletoprpg.common.composable.DialogTitle
 import com.feko.generictabletoprpg.common.composable.EmptyList
 import com.feko.generictabletoprpg.common.composable.InputField
+import com.feko.generictabletoprpg.common.composable.SelectFromListDialog
+import com.feko.generictabletoprpg.common.composable.ToastMessage
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
 import kotlinx.coroutines.launch
@@ -111,14 +116,49 @@ fun InitiativeScreen(appViewModel: AppViewModel) {
                 FloatingActionButton(onClick = viewModel::showCreateNewDialog) {
                     Icon(Icons.Default.Add, "")
                 }
+                val isEntriesListEmpty by remember(entries) {
+                    derivedStateOf { entries.isEmpty() }
+                }
+                if (isEntriesListEmpty) return@Row
                 FloatingActionButton(onClick = viewModel::showResetDialog) {
                     Icon(Icons.Default.Refresh, "")
                 }
-                FloatingActionButton({}) {
-                    Icon(painterResource(R.drawable.bolt), "")
+                val isEncounterStarted by remember(entries) {
+                    derivedStateOf { entries.any { it.hasTurn } }
                 }
-                FloatingActionButton({}) {
-                    Icon(Icons.AutoMirrored.Filled.ArrowForward, "")
+                val isCurrentEntryTurnCompleted by remember(entries) {
+                    derivedStateOf { entries.firstOrNull { it.hasTurn }?.isTurnCompleted ?: false }
+                }
+                if (!isEncounterStarted) {
+                    FloatingActionButton(onClick = viewModel::startInitiative) {
+                        Icon(Icons.Default.PlayArrow, "")
+                    }
+                } else if (!isCurrentEntryTurnCompleted) {
+                    FloatingActionButton(onClick = viewModel::concludeTurnOfCurrentEntry) {
+                        Icon(Icons.Default.Check, "")
+                    }
+                } else {
+                    val anyEntryHasLegendaryActions by remember(entries) {
+                        derivedStateOf { entries.any { it.hasLegendaryActions } }
+                    }
+                    if (anyEntryHasLegendaryActions) {
+                        val isLegendaryActionsButtonEnabled by remember(entries) {
+                            derivedStateOf { entries.any { it.canUseLegendaryAction } }
+                        }
+                        FloatingActionButton(
+                            onClick = {
+                                if (isLegendaryActionsButtonEnabled) {
+                                    viewModel.progressInitiativeWithLegendaryAction()
+                                }
+                            },
+                            Modifier.alpha(if (isLegendaryActionsButtonEnabled) 1f else 0.4f)
+                        ) {
+                            Icon(painterResource(R.drawable.bolt), "")
+                        }
+                    }
+                    FloatingActionButton(onClick = viewModel::progressInitiative) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowForward, "")
+                    }
                 }
             }
         }
@@ -143,8 +183,8 @@ fun InitiativeScreen(appViewModel: AppViewModel) {
         )
     }
 
-    val isConfirmDeletionDialogVisible by
-    viewModel.confirmDeletionDialog.isVisible.collectAsState(false)
+    val isConfirmDeletionDialogVisible
+            by viewModel.confirmDeletionDialog.isVisible.collectAsState(false)
     if (isConfirmDeletionDialogVisible) {
         ConfirmationDialog(
             onConfirm = { viewModel.deleteEntry(viewModel.confirmDeletionDialog.editedItem.value) },
@@ -160,6 +200,27 @@ fun InitiativeScreen(appViewModel: AppViewModel) {
             dialogTitle = R.string.reset_dialog_title
         )
     }
+
+    val isPickLegendaryActionDialogVisible
+            by viewModel.pickLegendaryActionDialog.isVisible.collectAsState(false)
+    if (isPickLegendaryActionDialogVisible) {
+        val entriesWithLegendaryActions
+                by viewModel.pickLegendaryActionDialog.editedItem.collectAsState()
+        SelectFromListDialog(
+            R.string.select_legendary_action,
+            entriesWithLegendaryActions,
+            getListItemKey = { it.id },
+            onItemSelected = { viewModel.useLegendaryActionAndProgressInitiative(it) },
+            onDialogDismissed = { viewModel.pickLegendaryActionDialog.dismiss() }
+        ) {
+            ListItem(
+                headlineContent = { Text(it.name) },
+                trailingContent = { Text(it.printableLegendaryActions) }
+            )
+        }
+    }
+
+    ToastMessage(viewModel.toastMessage)
 }
 
 @Composable
@@ -171,11 +232,14 @@ fun InitiativeListItem(
 ) {
     val isHighlighted = initiativeEntry.hasTurn
     val isLairAction = initiativeEntry.isLairAction
+    val outlineColor =
+        if (initiativeEntry.isTurnCompleted) MaterialTheme.colorScheme.primary
+        else MaterialTheme.colorScheme.onBackground
     Card(
         Modifier
             .fillMaxWidth()
             .height(IntrinsicSize.Min),
-        border = BorderStroke(2.dp, MaterialTheme.colorScheme.onBackground).takeIf { isHighlighted }
+        border = BorderStroke(2.dp, outlineColor).takeIf { isHighlighted }
     ) {
         Box(Modifier.fillMaxSize()) {
             Column(
@@ -222,7 +286,7 @@ fun InitiativeListItem(
                         if (initiativeEntry.hasLegendaryActions) {
                             IconAndTextWithTooltip(
                                 R.drawable.bolt,
-                                initiativeEntry.legendaryActions.toString(),
+                                initiativeEntry.printableLegendaryActions,
                                 stringResource(R.string.legendary_actions)
                             )
                         }
@@ -259,9 +323,6 @@ fun InitiativeListItem(
                         }
                     }
                     if (!isLairAction) {
-                        IconButton(
-                            onClick = {}
-                        ) { Icon(Icons.Filled.Favorite, "") }
                         IconButton(
                             onClick = { onEditButtonClicked(initiativeEntry) }
                         ) { Icon(Icons.Filled.Edit, "") }
@@ -323,7 +384,7 @@ fun IconAndText(@DrawableRes iconResource: Int, value: String) {
 @Composable
 fun InitiativeListItemPreview() {
     InitiativeListItem(
-        InitiativeEntryEntity(1, "Larry", 10, 18, 19, 3, 14, 7, false, false),
+        InitiativeEntryEntity(1, "Larry", 10, 18, 19, 3, 1, 14, 7, false, false, false),
         onUpdateKeepOnReset = { _, _ -> },
         onEditButtonClicked = {},
         onDeleteButtonClicked = {}
@@ -410,7 +471,8 @@ fun EditInitiativeEntryAlertDialog(
                     onValueChange = {
                         onItemUpdated(
                             initiativeEntry.copy(
-                                legendaryActions = it.toIntOrNull() ?: 0
+                                legendaryActions = it.toIntOrNull() ?: 0,
+                                availableLegendaryActions = it.toIntOrNull() ?: 0
                             )
                         )
                     },
