@@ -14,13 +14,17 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberBasicTooltipState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.Add
@@ -32,6 +36,7 @@ import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
@@ -56,6 +61,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
@@ -65,10 +71,13 @@ import androidx.compose.ui.unit.dp
 import com.feko.generictabletoprpg.AppViewModel
 import com.feko.generictabletoprpg.R
 import com.feko.generictabletoprpg.com.feko.generictabletoprpg.initiative.InitiativeEntryEntity
+import com.feko.generictabletoprpg.common.composable.BoxWithScrollIndicator
 import com.feko.generictabletoprpg.common.composable.ConfirmationDialog
 import com.feko.generictabletoprpg.common.composable.DialogTitle
 import com.feko.generictabletoprpg.common.composable.EmptyList
+import com.feko.generictabletoprpg.common.composable.IInputFieldValueConverter
 import com.feko.generictabletoprpg.common.composable.InputField
+import com.feko.generictabletoprpg.common.composable.NumberInputField
 import com.feko.generictabletoprpg.common.composable.SelectFromListDialog
 import com.feko.generictabletoprpg.common.composable.ToastMessage
 import com.ramcosta.composedestinations.annotation.Destination
@@ -469,7 +478,13 @@ fun EditInitiativeEntryAlertDialog(
 ) {
     BasicAlertDialog(onDismissRequest = onDialogDismissed) {
         Card {
-            Column(Modifier.padding(16.dp), Arrangement.spacedBy(16.dp)) {
+            Column(
+                Modifier
+                    .heightIn(max = LocalConfiguration.current.screenHeightDp.dp * 0.6f)
+                    .padding(start = 16.dp, top = 16.dp, end = 16.dp, bottom = 8.dp)
+                    .imePadding(),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
                 val dialogTitle by remember(initiativeEntry) {
                     derivedStateOf {
                         if (initiativeEntry.isSavedInDatabase) R.string.edit
@@ -477,109 +492,112 @@ fun EditInitiativeEntryAlertDialog(
                     }
                 }
                 DialogTitle(dialogTitle)
-
-                val name = initiativeEntry.name
-                InputField(
-                    value = name,
-                    label = stringResource(R.string.name),
-                    onValueChange = {
-                        onItemUpdated(initiativeEntry.copy(name = it))
-                    },
-                    isInputFieldValid = { initiativeEntry.isNameValid },
-                    autoFocus = !initiativeEntry.isSavedInDatabase
-                )
-
-                val initiative = initiativeEntry.initiative
-                InputField(
-                    value = initiative.toString(),
-                    label = stringResource(R.string.initiative),
-                    onValueChange = {
-                        onItemUpdated(initiativeEntry.copy(initiative = it.toIntOrNull() ?: 0))
-                    },
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Number,
-                        imeAction = ImeAction.Next
-                    )
-                )
-
-                val health = initiativeEntry.health
-                InputField(
-                    value = health.toString(),
-                    label = stringResource(R.string.health),
-                    onValueChange = {
-                        onItemUpdated(initiativeEntry.copy(health = it.toIntOrNull() ?: 0))
-                    },
-                    isInputFieldValid = { initiativeEntry.isHealthValid },
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Number,
-                        imeAction = ImeAction.Next
-                    )
-                )
-
-                val armorClass = initiativeEntry.armorClass
-                InputField(
-                    value = armorClass.toString(),
-                    label = stringResource(R.string.armor_class),
-                    onValueChange = {
-                        onItemUpdated(initiativeEntry.copy(armorClass = it.toIntOrNull() ?: 0))
-                    },
-                    isInputFieldValid = { initiativeEntry.isArmorClassValid },
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Number,
-                        imeAction = ImeAction.Next
-                    )
-                )
-
-                val legendaryActions = initiativeEntry.legendaryActions
-                InputField(
-                    value = legendaryActions.toString(),
-                    label = stringResource(R.string.legendary_actions),
-                    onValueChange = {
-                        onItemUpdated(
-                            initiativeEntry.copy(
-                                legendaryActions = it.toIntOrNull() ?: 0,
-                                availableLegendaryActions = it.toIntOrNull() ?: 0
+                val scrollState = rememberScrollState()
+                BoxWithScrollIndicator(
+                    scrollState,
+                    backgroundColor = CardDefaults.cardColors().containerColor,
+                    Modifier.weight(1f),
+                    content = {
+                        Column(
+                            Modifier.verticalScroll(scrollState),
+                            Arrangement.spacedBy(8.dp)
+                        ) {
+                            val name = initiativeEntry.name
+                            InputField(
+                                value = name,
+                                label = stringResource(R.string.name),
+                                onValueChange = {
+                                    onItemUpdated(initiativeEntry.copy(name = it))
+                                },
+                                isInputFieldValid = { initiativeEntry.isNameValid },
+                                autoFocus = !initiativeEntry.isSavedInDatabase
                             )
-                        )
-                    },
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Number,
-                        imeAction = ImeAction.Next
-                    )
-                )
 
-                val spellSaveDc = initiativeEntry.spellSaveDc
-                InputField(
-                    value = spellSaveDc.toString(),
-                    label = stringResource(R.string.spell_save_dc),
-                    onValueChange = {
-                        onItemUpdated(initiativeEntry.copy(spellSaveDc = it.toIntOrNull() ?: 0))
-                    },
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Number,
-                        imeAction = ImeAction.Next
-                    )
-                )
+                            NumberInputField(
+                                value = initiativeEntry.initiative,
+                                label = stringResource(R.string.initiative),
+                                convertInputValue = IInputFieldValueConverter.IntInputFieldValueConverter,
+                                onValueChange = { onItemUpdated(initiativeEntry.copy(initiative = it)) },
+                                keyboardOptions = KeyboardOptions(
+                                    keyboardType = KeyboardType.Number,
+                                    imeAction = ImeAction.Next
+                                )
+                            )
 
-                val spellAttackModifier = initiativeEntry.spellAttackModifier
-                InputField(
-                    value = spellAttackModifier.toString(),
-                    label = stringResource(R.string.spell_attack_modifier),
-                    onValueChange = {
-                        onItemUpdated(
-                            initiativeEntry.copy(spellAttackModifier = it.toIntOrNull() ?: 0)
-                        )
-                    },
-                    onFormSubmit = {
-                        if (initiativeEntry.isEntryValid) {
-                            onEditFinished(initiativeEntry)
-                            onDialogDismissed()
+                            NumberInputField(
+                                value = initiativeEntry.health,
+                                label = stringResource(R.string.health),
+                                convertInputValue = IInputFieldValueConverter.IntInputFieldValueConverter,
+                                onValueChange = { onItemUpdated(initiativeEntry.copy(health = it)) },
+                                keyboardOptions = KeyboardOptions(
+                                    keyboardType = KeyboardType.Number,
+                                    imeAction = ImeAction.Next
+                                )
+                            )
+
+                            NumberInputField(
+                                value = initiativeEntry.armorClass,
+                                label = stringResource(R.string.armor_class),
+                                convertInputValue = IInputFieldValueConverter.IntInputFieldValueConverter,
+                                onValueChange = { onItemUpdated(initiativeEntry.copy(armorClass = it)) },
+                                keyboardOptions = KeyboardOptions(
+                                    keyboardType = KeyboardType.Number,
+                                    imeAction = ImeAction.Next
+                                )
+                            )
+
+                            NumberInputField(
+                                value = initiativeEntry.legendaryActions,
+                                label = stringResource(R.string.legendary_actions),
+                                convertInputValue = IInputFieldValueConverter.IntInputFieldValueConverter,
+                                onValueChange = {
+                                    onItemUpdated(
+                                        initiativeEntry.copy(
+                                            legendaryActions = it,
+                                            availableLegendaryActions = it
+                                        )
+                                    )
+                                },
+                                keyboardOptions = KeyboardOptions(
+                                    keyboardType = KeyboardType.Number,
+                                    imeAction = ImeAction.Next
+                                )
+                            )
+
+                            NumberInputField(
+                                value = initiativeEntry.spellSaveDc,
+                                label = stringResource(R.string.spell_save_dc),
+                                convertInputValue = IInputFieldValueConverter.IntInputFieldValueConverter,
+                                onValueChange = { onItemUpdated(initiativeEntry.copy(spellSaveDc = it)) },
+                                keyboardOptions = KeyboardOptions(
+                                    keyboardType = KeyboardType.Number,
+                                    imeAction = ImeAction.Next
+                                )
+                            )
+
+                            NumberInputField(
+                                value = initiativeEntry.spellAttackModifier,
+                                label = stringResource(R.string.spell_attack_modifier),
+                                convertInputValue = IInputFieldValueConverter.IntInputFieldValueConverter,
+                                onValueChange = {
+                                    onItemUpdated(
+                                        initiativeEntry.copy(
+                                            spellAttackModifier = it
+                                        )
+                                    )
+                                },
+                                onFormSubmit = {
+                                    onEditFinished(initiativeEntry)
+                                    onDialogDismissed()
+                                },
+                                canSubmitForm = { initiativeEntry.isEntryValid },
+                                keyboardOptions = KeyboardOptions(
+                                    keyboardType = KeyboardType.Number,
+                                    imeAction = ImeAction.Done
+                                )
+                            )
                         }
-                    },
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Number,
-                        imeAction = ImeAction.Done
-                    )
+                    }
                 )
 
                 if (isLairActionsButtonVisible) {
