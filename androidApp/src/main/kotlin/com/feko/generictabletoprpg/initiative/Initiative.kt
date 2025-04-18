@@ -74,6 +74,7 @@ import com.feko.generictabletoprpg.common.composable.BoxWithScrollIndicator
 import com.feko.generictabletoprpg.common.composable.ConfirmationDialog
 import com.feko.generictabletoprpg.common.composable.DialogTitle
 import com.feko.generictabletoprpg.common.composable.EmptyList
+import com.feko.generictabletoprpg.common.composable.EnterValueDialog
 import com.feko.generictabletoprpg.common.composable.IInputFieldValueConverter
 import com.feko.generictabletoprpg.common.composable.InputField
 import com.feko.generictabletoprpg.common.composable.NumberInputField
@@ -111,14 +112,12 @@ fun InitiativeScreen(appViewModel: AppViewModel) {
                 itemsIndexed(entries, key = { _, item -> item.id }) { index, item ->
                     InitiativeListItem(
                         item,
-                        onScrollToItem = {
-                            coroutineScope.launch { listState.scrollToItem(index) }
-                        },
-                        onUpdateKeepOnReset = { initiativeEntry, keepOnReset ->
-                            viewModel.updateKeepOnReset(initiativeEntry, keepOnReset)
-                        },
-                        onEditButtonClicked = viewModel::showEditDialog,
-                        onDeleteButtonClicked = viewModel::showDeleteDialog
+                        onScrollToItem = { coroutineScope.launch { listState.scrollToItem(index) } },
+                        onUpdateKeepOnReset = { viewModel.updateKeepOnReset(item, it) },
+                        onHealButtonClicked = { viewModel.showHealDialog(item) },
+                        onDamageButtonClicked = { viewModel.showDamageDialog(item) },
+                        onEditButtonClicked = { viewModel.showEditDialog(item) },
+                        onDeleteButtonClicked = { viewModel.showDeleteDialog(item) }
                     )
                 }
             }
@@ -137,6 +136,9 @@ fun InitiativeScreen(appViewModel: AppViewModel) {
         }
         ActionButtons(viewModel)
     }
+    HealDialog(viewModel)
+    DamageDialog(viewModel)
+    RemoveAfterTakingDamageDialog(viewModel)
     EditDialog(viewModel, entries)
     ConfirmDeletionDialog(viewModel)
     ConfirmResetDialog(viewModel)
@@ -187,6 +189,68 @@ private fun ActionButtons(viewModel: InitiativeViewModel) {
 }
 
 @Composable
+private fun HealDialog(viewModel: InitiativeViewModel) {
+    val isHealthDialogVisible by viewModel.healDialog.isVisible.collectAsState(false)
+    if (!isHealthDialogVisible) return
+
+    EnterValueDialog(
+        onConfirm = {
+            viewModel.heal(
+                viewModel.healDialog.editedItem.value,
+                it.toIntOrNull() ?: 0
+            )
+        },
+        onDialogDismissed = { viewModel.healDialog.dismiss() },
+        dialogTitle = R.string.heal_dialog_title,
+        keyboardOptions = KeyboardOptions(
+            keyboardType = KeyboardType.Number,
+            imeAction = ImeAction.Done
+        )
+    )
+}
+
+@Composable
+private fun DamageDialog(viewModel: InitiativeViewModel) {
+    val isDamageDialogVisible by viewModel.damageDialog.isVisible.collectAsState(false)
+    if (!isDamageDialogVisible) return
+
+    EnterValueDialog(
+        onConfirm = {
+            viewModel.damage(
+                viewModel.damageDialog.editedItem.value,
+                it.toIntOrNull() ?: 0
+            )
+        },
+        onDialogDismissed = { viewModel.damageDialog.dismiss() },
+        dialogTitle = R.string.take_damage_dialog_title,
+        keyboardOptions = KeyboardOptions(
+            keyboardType = KeyboardType.Number,
+            imeAction = ImeAction.Done
+        )
+    )
+}
+
+@Composable
+private fun RemoveAfterTakingDamageDialog(viewModel: InitiativeViewModel) {
+    val isRemoveAfterTakingDamageDialogVisible
+            by viewModel.removeAfterTakingDamageDialog.isVisible.collectAsState(false)
+    if (!isRemoveAfterTakingDamageDialogVisible) return
+
+    val initiativeEntry
+            by viewModel.removeAfterTakingDamageDialog.editedItem
+                .collectAsState(InitiativeEntryEntity.Empty)
+    ConfirmationDialog(
+        onConfirm = { viewModel.deleteEntry(initiativeEntry) },
+        onDialogDismissed = { viewModel.removeAfterTakingDamageDialog.dismiss() },
+        dialogTitle = stringResource(R.string.delete_dialog_title),
+        dialogMessage = stringResource(
+            R.string.remove_from_encounter_after_taking_lethal_damage_dialog_message_template,
+            initiativeEntry.name
+        )
+    )
+}
+
+@Composable
 private fun EditDialog(
     viewModel: InitiativeViewModel,
     entries: List<InitiativeEntryEntity>
@@ -216,46 +280,46 @@ private fun EditDialog(
 private fun ConfirmDeletionDialog(viewModel: InitiativeViewModel) {
     val isConfirmDeletionDialogVisible
             by viewModel.confirmDeletionDialog.isVisible.collectAsState(false)
-    if (isConfirmDeletionDialogVisible) {
-        ConfirmationDialog(
-            onConfirm = { viewModel.deleteEntry(viewModel.confirmDeletionDialog.editedItem.value) },
-            onDialogDismissed = { viewModel.confirmDeletionDialog.dismiss() }
-        )
-    }
+    if (!isConfirmDeletionDialogVisible) return
+
+    ConfirmationDialog(
+        onConfirm = { viewModel.deleteEntry(viewModel.confirmDeletionDialog.editedItem.value) },
+        onDialogDismissed = { viewModel.confirmDeletionDialog.dismiss() }
+    )
 }
 
 @Composable
 private fun ConfirmResetDialog(viewModel: InitiativeViewModel) {
     val isConfirmResetDialogVisible by viewModel.confirmResetDialog.isVisible.collectAsState(false)
-    if (isConfirmResetDialogVisible) {
-        ConfirmationDialog(
-            onConfirm = { viewModel.resetInitiative() },
-            onDialogDismissed = { viewModel.confirmResetDialog.dismiss() },
-            dialogTitle = R.string.reset_dialog_title,
-            dialogMessage = R.string.reset_encounter_message
-        )
-    }
+    if (!isConfirmResetDialogVisible) return
+
+    ConfirmationDialog(
+        onConfirm = { viewModel.resetInitiative() },
+        onDialogDismissed = { viewModel.confirmResetDialog.dismiss() },
+        dialogTitle = stringResource(R.string.reset_dialog_title),
+        dialogMessage = stringResource(R.string.reset_encounter_message)
+    )
 }
 
 @Composable
 private fun PickLegendaryActionDialog(viewModel: InitiativeViewModel) {
     val isPickLegendaryActionDialogVisible
             by viewModel.pickLegendaryActionDialog.isVisible.collectAsState(false)
-    if (isPickLegendaryActionDialogVisible) {
-        val entriesWithLegendaryActions
-                by viewModel.pickLegendaryActionDialog.editedItem.collectAsState()
-        SelectFromListDialog(
-            R.string.select_legendary_action,
-            entriesWithLegendaryActions,
-            getListItemKey = { it.id },
-            onItemSelected = { viewModel.useLegendaryActionAndProgressInitiative(it) },
-            onDialogDismissed = { viewModel.pickLegendaryActionDialog.dismiss() }
-        ) {
-            ListItem(
-                headlineContent = { Text(it.name) },
-                trailingContent = { Text(it.printableLegendaryActions) }
-            )
-        }
+    if (!isPickLegendaryActionDialogVisible) return
+
+    val entriesWithLegendaryActions
+            by viewModel.pickLegendaryActionDialog.editedItem.collectAsState()
+    SelectFromListDialog(
+        R.string.select_legendary_action,
+        entriesWithLegendaryActions,
+        getListItemKey = { it.id },
+        onItemSelected = { viewModel.useLegendaryActionAndProgressInitiative(it) },
+        onDialogDismissed = { viewModel.pickLegendaryActionDialog.dismiss() }
+    ) {
+        ListItem(
+            headlineContent = { Text(it.name) },
+            trailingContent = { Text(it.printableLegendaryActions) }
+        )
     }
 }
 
@@ -263,9 +327,11 @@ private fun PickLegendaryActionDialog(viewModel: InitiativeViewModel) {
 fun InitiativeListItem(
     initiativeEntry: InitiativeEntryEntity,
     onScrollToItem: () -> Unit,
-    onUpdateKeepOnReset: (InitiativeEntryEntity, Boolean) -> Unit,
-    onEditButtonClicked: (InitiativeEntryEntity) -> Unit,
-    onDeleteButtonClicked: (InitiativeEntryEntity) -> Unit
+    onUpdateKeepOnReset: (Boolean) -> Unit,
+    onHealButtonClicked: () -> Unit,
+    onDamageButtonClicked: () -> Unit,
+    onEditButtonClicked: () -> Unit,
+    onDeleteButtonClicked: () -> Unit
 ) {
     val isHighlighted = initiativeEntry.hasTurn
     val isLairAction = initiativeEntry.isLairAction
@@ -367,22 +433,28 @@ fun InitiativeListItem(
                     val keepOnReset = initiativeEntry.keepOnRefresh
                     IconToggleButton(
                         checked = keepOnReset,
-                        onCheckedChange = {
-                            onUpdateKeepOnReset(initiativeEntry, it)
-                        }) {
+                        onCheckedChange = { onUpdateKeepOnReset(it) }) {
                         if (keepOnReset) {
                             Icon(Icons.Default.Star, "")
                         } else {
                             Icon(painterResource(R.drawable.star), "")
                         }
                     }
+                    if (initiativeEntry.hasHealth) {
+                        IconButton(onClick = onHealButtonClicked) {
+                            Icon(painterResource(R.drawable.heart_plus), "")
+                        }
+                        IconButton(onClick = onDamageButtonClicked) {
+                            Icon(painterResource(R.drawable.heart_minus), "")
+                        }
+                    }
                     if (!isLairAction) {
                         IconButton(
-                            onClick = { onEditButtonClicked(initiativeEntry) }
+                            onClick = onEditButtonClicked
                         ) { Icon(Icons.Filled.Edit, "") }
                     }
                     IconButton(
-                        onClick = { onDeleteButtonClicked(initiativeEntry) }
+                        onClick = onDeleteButtonClicked
                     ) { Icon(Icons.Filled.Delete, "") }
                 }
             }
@@ -440,7 +512,9 @@ fun InitiativeListItemPreview() {
     InitiativeListItem(
         InitiativeEntryEntity(1, "Larry", 10, 18, 19, 3, 1, 14, 7, false, false, false),
         onScrollToItem = {},
-        onUpdateKeepOnReset = { _, _ -> },
+        onUpdateKeepOnReset = {},
+        onHealButtonClicked = {},
+        onDamageButtonClicked = {},
         onEditButtonClicked = {},
         onDeleteButtonClicked = {}
     )

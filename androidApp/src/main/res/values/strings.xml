@@ -165,4 +165,5 @@
     <string name="select_legendary_action">Select Legendary Action</string>
     <string name="round">Round</string>
     <string name="reset_encounter_message">This will delete all non-favorite entries</string>
+    <string name="remove_from_encounter_after_taking_lethal_damage_dialog_message_template">%s has taken lethal damage bringing its HP to 0. Do you want to remove it?</string>
 </resources>

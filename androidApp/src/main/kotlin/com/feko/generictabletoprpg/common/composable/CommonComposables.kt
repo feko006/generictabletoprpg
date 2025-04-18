@@ -182,6 +182,7 @@ fun <T : Number> NumberInputField(
     label: String,
     convertInputValue: IInputFieldValueConverter<T>,
     onValueChange: (T) -> Unit,
+    modifier: Modifier = Modifier,
     onFormSubmit: () -> Unit = {},
     canSubmitForm: (T) -> Boolean = { true },
     isInputFieldValid: (Number) -> Boolean = { true },
@@ -206,6 +207,7 @@ fun <T : Number> NumberInputField(
             inputValue = it
             onValueChange(convertInputValue(it))
         },
+        modifier,
         onFormSubmit,
         canSubmitForm = { canSubmitForm(convertInputValue(it)) },
         isInputFieldValid = { isInputFieldValid(convertInputValue(it)) },
@@ -225,6 +227,7 @@ fun InputField(
     value: String,
     label: String,
     onValueChange: (String) -> Unit,
+    modifier: Modifier = Modifier,
     onFormSubmit: () -> Unit = {},
     canSubmitForm: (String) -> Boolean = { true },
     isInputFieldValid: (String) -> Boolean = { true },
@@ -252,7 +255,8 @@ fun InputField(
         },
         modifier = Modifier
             .fillMaxWidth()
-            .focusRequester(focusRequester),
+            .focusRequester(focusRequester)
+            .then(modifier),
         keyboardOptions = keyboardOptions,
         keyboardActions = KeyboardActions(
             onNext = { focusManager.moveFocus(focusDirection) },

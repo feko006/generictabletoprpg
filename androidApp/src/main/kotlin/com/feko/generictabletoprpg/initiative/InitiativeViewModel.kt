@@ -45,6 +45,21 @@ class InitiativeViewModel(private val dao: InitiativeEntryDao) : ViewModel() {
     val pickLegendaryActionDialog: IEditAlertDialogSubViewModel<List<InitiativeEntryEntity>>
         get() = _pickLegendaryActionDialog
 
+    private val _healDialog =
+        EditAlertDialogSubViewModel(InitiativeEntryEntity.Empty, viewModelScope)
+    val healDialog: IEditAlertDialogSubViewModel<InitiativeEntryEntity>
+        get() = _healDialog
+
+    private val _damageDialog =
+        EditAlertDialogSubViewModel(InitiativeEntryEntity.Empty, viewModelScope)
+    val damageDialog: IEditAlertDialogSubViewModel<InitiativeEntryEntity>
+        get() = _damageDialog
+
+    private val _removeAfterTakingDamageDialog =
+        EditAlertDialogSubViewModel(InitiativeEntryEntity.Empty, viewModelScope)
+    val removeAfterTakingDamageDialog: IEditAlertDialogSubViewModel<InitiativeEntryEntity>
+        get() = _removeAfterTakingDamageDialog
+
     val encounterState: Flow<EncounterState> =
         entries.map {
             if (it.isEmpty()) return@map EncounterState.Empty
@@ -66,9 +81,37 @@ class InitiativeViewModel(private val dao: InitiativeEntryDao) : ViewModel() {
         }
     }
 
+    fun heal(initiativeEntry: InitiativeEntryEntity, amount: Int) {
+        viewModelScope.launch {
+            dao.update(initiativeEntry.copy(health = initiativeEntry.health + amount))
+        }
+    }
+
+    fun damage(initiativeEntry: InitiativeEntryEntity, amount: Int) {
+        viewModelScope.launch {
+            val newHealthValue = (initiativeEntry.health - amount).coerceAtLeast(0)
+            dao.update(initiativeEntry.copy(health = newHealthValue))
+            if (newHealthValue == 0 && !initiativeEntry.keepOnRefresh) {
+                _removeAfterTakingDamageDialog.show(initiativeEntry)
+            }
+        }
+    }
+
     fun showCreateNewDialog() {
         viewModelScope.launch {
             _editAlertDialog.show(InitiativeEntryEntity.Empty)
+        }
+    }
+
+    fun showHealDialog(initiativeEntry: InitiativeEntryEntity) {
+        viewModelScope.launch {
+            _healDialog.show(initiativeEntry)
+        }
+    }
+
+    fun showDamageDialog(initiativeEntry: InitiativeEntryEntity) {
+        viewModelScope.launch {
+            _damageDialog.show(initiativeEntry)
         }
     }
 
