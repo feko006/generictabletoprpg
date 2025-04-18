@@ -59,7 +59,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
@@ -136,7 +135,7 @@ fun InitiativeScreen(appViewModel: AppViewModel) {
                 }
             }
         }
-        ActionButtons(viewModel, entries)
+        ActionButtons(viewModel)
     }
     EditDialog(viewModel, entries)
     ConfirmDeletionDialog(viewModel)
@@ -146,58 +145,39 @@ fun InitiativeScreen(appViewModel: AppViewModel) {
 }
 
 @Composable
-private fun ActionButtons(
-    viewModel: InitiativeViewModel,
-    entries: List<InitiativeEntryEntity>
-) {
+private fun ActionButtons(viewModel: InitiativeViewModel) {
+    val encounterState by viewModel.encounterState.collectAsState(EncounterState.Empty)
     Box(Modifier.fillMaxWidth()) {
         Row(
             Modifier.align(Alignment.Center),
             Arrangement.spacedBy(8.dp)
         ) {
-            FloatingActionButton(onClick = viewModel::showCreateNewDialog) {
-                Icon(Icons.Default.Add, "")
+            if (encounterState.isAddButtonVisible) {
+                FloatingActionButton(onClick = viewModel::showCreateNewDialog) {
+                    Icon(Icons.Default.Add, "")
+                }
             }
-            val isEntriesListEmpty by remember(entries) {
-                derivedStateOf { entries.isEmpty() }
+            if (encounterState.isResetButtonVisible) {
+                FloatingActionButton(onClick = viewModel::showResetDialog) {
+                    Icon(Icons.Default.Refresh, "")
+                }
             }
-            if (isEntriesListEmpty) return@Row
-            FloatingActionButton(onClick = viewModel::showResetDialog) {
-                Icon(Icons.Default.Refresh, "")
-            }
-            val isEncounterStarted by remember(entries) {
-                derivedStateOf { entries.any { it.hasTurn } }
-            }
-            val isCurrentEntryTurnCompleted by remember(entries) {
-                derivedStateOf { entries.firstOrNull { it.hasTurn }?.isTurnCompleted ?: false }
-            }
-            if (!isEncounterStarted) {
+            if (encounterState.isStartEncounterButtonVisible) {
                 FloatingActionButton(onClick = viewModel::startInitiative) {
                     Icon(Icons.Default.PlayArrow, "")
                 }
-            } else if (!isCurrentEntryTurnCompleted) {
+            }
+            if (encounterState.isCompleteTurnButtonVisible) {
                 FloatingActionButton(onClick = viewModel::concludeTurnOfCurrentEntry) {
                     Icon(Icons.Default.Check, "")
                 }
-            } else {
-                val anyEntryHasLegendaryActions by remember(entries) {
-                    derivedStateOf { entries.any { it.hasLegendaryActions } }
+            }
+            if (encounterState.isLegendaryActionButtonVisible) {
+                FloatingActionButton(onClick = viewModel::progressInitiativeWithLegendaryAction) {
+                    Icon(painterResource(R.drawable.bolt), "")
                 }
-                if (anyEntryHasLegendaryActions) {
-                    val isLegendaryActionsButtonEnabled by remember(entries) {
-                        derivedStateOf { entries.any { it.canUseLegendaryAction } }
-                    }
-                    FloatingActionButton(
-                        onClick = {
-                            if (isLegendaryActionsButtonEnabled) {
-                                viewModel.progressInitiativeWithLegendaryAction()
-                            }
-                        },
-                        Modifier.alpha(if (isLegendaryActionsButtonEnabled) 1f else 0.4f)
-                    ) {
-                        Icon(painterResource(R.drawable.bolt), "")
-                    }
-                }
+            }
+            if (encounterState.isNextTurnButtonVisible) {
                 FloatingActionButton(onClick = viewModel::progressInitiative) {
                     Icon(Icons.AutoMirrored.Filled.ArrowForward, "")
                 }

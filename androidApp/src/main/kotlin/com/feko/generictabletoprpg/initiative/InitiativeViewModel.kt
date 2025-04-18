@@ -13,6 +13,7 @@ import com.feko.generictabletoprpg.common.toast.ToastSubViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
 class InitiativeViewModel(private val dao: InitiativeEntryDao) : ViewModel() {
@@ -43,6 +44,17 @@ class InitiativeViewModel(private val dao: InitiativeEntryDao) : ViewModel() {
         EditAlertDialogSubViewModel(emptyList<InitiativeEntryEntity>(), viewModelScope)
     val pickLegendaryActionDialog: IEditAlertDialogSubViewModel<List<InitiativeEntryEntity>>
         get() = _pickLegendaryActionDialog
+
+    val encounterState: Flow<EncounterState> =
+        entries.map {
+            if (it.isEmpty()) return@map EncounterState.Empty
+            val indexOfEntryWithCurrentTurn = it.indexOfFirst { it.hasTurn }
+            if (indexOfEntryWithCurrentTurn == -1) return@map EncounterState.ReadyToStart
+            return@map if (it[indexOfEntryWithCurrentTurn].isTurnCompleted)
+                EncounterState.TurnCompletedChoiceRequired
+            else
+                EncounterState.TurnInProgress
+        }
 
     fun createOrUpdateInitiativeEntry(entity: InitiativeEntryEntity) {
         viewModelScope.launch {
@@ -117,8 +129,12 @@ class InitiativeViewModel(private val dao: InitiativeEntryDao) : ViewModel() {
     fun concludeTurnOfCurrentEntry() {
         viewModelScope.launch {
             val entries = entries.first()
-            val currentEntry = entries.first { it.hasTurn }
-            dao.setTurnCompleted(currentEntry.id)
+            if (entries.any { it.canUseLegendaryAction }) {
+                val currentEntry = entries.first { it.hasTurn }
+                dao.setTurnCompleted(currentEntry.id)
+            } else {
+                progressInitiativeInternal()
+            }
         }
     }
 
