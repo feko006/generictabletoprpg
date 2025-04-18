@@ -26,6 +26,8 @@ data class InitiativeEntryEntity(
     val isTurnCompleted: Boolean
 ) : IMutableIdentifiable, INamed {
 
+    val hasHealth by lazy { health > 0 }
+    val hasArmorClass by lazy { armorClass > 0 }
     val hasLegendaryActions by lazy { legendaryActions > 0 }
     val canUseLegendaryAction by lazy { availableLegendaryActions > 0 && !hasTurn && !isLairAction }
     val hasSpellSaveDc by lazy { spellSaveDc > 0 }
@@ -37,9 +39,7 @@ data class InitiativeEntryEntity(
                 && health == 0)
     }
     val isNameValid by lazy { name.isNotEmpty() }
-    val isArmorClassValid by lazy { armorClass > 0 }
-    val isHealthValid by lazy { health > 0 }
-    val isEntryValid by lazy { isNameValid && isArmorClassValid && isHealthValid }
+    val isEntryValid by lazy { isNameValid }
     val printableLegendaryActions by lazy {
         "%d/%d".format(availableLegendaryActions, legendaryActions)
     }

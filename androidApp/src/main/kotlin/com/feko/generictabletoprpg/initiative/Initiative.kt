@@ -334,16 +334,20 @@ fun InitiativeListItem(
                             .padding(top = 12.dp),
                         Arrangement.SpaceAround
                     ) {
-                        IconAndTextWithTooltip(
-                            R.drawable.heart,
-                            initiativeEntry.health.toString(),
-                            stringResource(R.string.health)
-                        )
-                        IconAndTextWithTooltip(
-                            R.drawable.shield,
-                            initiativeEntry.armorClass.toString(),
-                            stringResource(R.string.armor_class)
-                        )
+                        if (initiativeEntry.hasHealth) {
+                            IconAndTextWithTooltip(
+                                R.drawable.heart,
+                                initiativeEntry.health.toString(),
+                                stringResource(R.string.health)
+                            )
+                        }
+                        if (initiativeEntry.hasArmorClass) {
+                            IconAndTextWithTooltip(
+                                R.drawable.shield,
+                                initiativeEntry.armorClass.toString(),
+                                stringResource(R.string.armor_class)
+                            )
+                        }
                         if (initiativeEntry.hasLegendaryActions) {
                             IconAndTextWithTooltip(
                                 R.drawable.bolt,
