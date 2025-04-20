@@ -34,7 +34,8 @@ data class InitiativeEntryEntity(
     val hasSpellAttackModifier by lazy { spellAttackModifier > 0 }
     val isSavedInDatabase by lazy { id > 0L }
     val isLairAction by lazy {
-        (initiative == 20
+        (name.isEmpty()
+                && initiative == 20
                 && armorClass == 0
                 && health == 0)
     }

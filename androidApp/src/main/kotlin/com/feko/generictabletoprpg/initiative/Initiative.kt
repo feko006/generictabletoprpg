@@ -109,6 +109,7 @@ fun InitiativeScreen(appViewModel: AppViewModel) {
                 items(entries, key = { it.id }) { item ->
                     InitiativeListItem(
                         item,
+                        onUpdateInitiativeRequested = { viewModel.showInitiativeDialog(item) },
                         onUpdateKeepOnReset = { viewModel.updateKeepOnReset(item, it) },
                         onHealButtonClicked = { viewModel.showHealDialog(item) },
                         onDamageButtonClicked = { viewModel.showDamageDialog(item) },
@@ -138,6 +139,7 @@ fun InitiativeScreen(appViewModel: AppViewModel) {
         }
         ActionButtons(viewModel)
     }
+    InitiativeDialog(viewModel)
     HealDialog(viewModel)
     DamageDialog(viewModel)
     RemoveAfterTakingDamageDialog(viewModel)
@@ -188,6 +190,28 @@ private fun ActionButtons(viewModel: InitiativeViewModel) {
             }
         }
     }
+}
+
+@Composable
+private fun InitiativeDialog(viewModel: InitiativeViewModel) {
+    val isInitiativeDialogVisible
+            by viewModel.updateInitiativeDialog.isVisible.collectAsState(false)
+    if (!isInitiativeDialogVisible) return
+
+    EnterValueDialog(
+        onConfirm = {
+            viewModel.updateInitiative(
+                viewModel.updateInitiativeDialog.editedItem.value,
+                it.toIntOrNull() ?: 0
+            )
+        },
+        onDialogDismissed = { viewModel.updateInitiativeDialog.dismiss() },
+        dialogTitle = R.string.initiative,
+        keyboardOptions = KeyboardOptions(
+            keyboardType = KeyboardType.Number,
+            imeAction = ImeAction.Done
+        )
+    )
 }
 
 @Composable
@@ -328,6 +352,7 @@ private fun PickLegendaryActionDialog(viewModel: InitiativeViewModel) {
 @Composable
 fun InitiativeListItem(
     initiativeEntry: InitiativeEntryEntity,
+    onUpdateInitiativeRequested: () -> Unit,
     onUpdateKeepOnReset: (Boolean) -> Unit,
     onHealButtonClicked: () -> Unit,
     onDuplicateButtonClicked: () -> Unit,
@@ -362,8 +387,11 @@ fun InitiativeListItem(
                     Arrangement.spacedBy(8.dp),
                     Alignment.CenterVertically
                 ) {
+                    val canEditInitiative = !initiativeEntry.isLairAction
                     Text(
                         initiativeEntry.initiative.toString(),
+                        Modifier.clickable(canEditInitiative) { onUpdateInitiativeRequested() },
+                        color = if (canEditInitiative) MaterialTheme.colorScheme.primary else Color.Unspecified,
                         style = MaterialTheme.typography.bodyLarge
                     )
                     Text(
@@ -504,6 +532,7 @@ fun IconAndText(@DrawableRes iconResource: Int, value: String) {
 fun InitiativeListItemPreview() {
     InitiativeListItem(
         InitiativeEntryEntity(1, "Larry", 10, 18, 19, 3, 1, 14, 7, false, false, false),
+        onUpdateInitiativeRequested = {},
         onUpdateKeepOnReset = {},
         onHealButtonClicked = {},
         onDamageButtonClicked = {},

@@ -76,6 +76,11 @@ class InitiativeViewModel(private val dao: InitiativeEntryDao) : ViewModel() {
     val scrollToItemWithIndex: Flow<Int>
         get() = _scrollToItemWithIndex
 
+    private val _updateInitiativeDialog =
+        EditAlertDialogSubViewModel(InitiativeEntryEntity.Empty, viewModelScope)
+    val updateInitiativeDialog: IEditAlertDialogSubViewModel<InitiativeEntryEntity>
+        get() = _updateInitiativeDialog
+
     fun createOrUpdateInitiativeEntry(entity: InitiativeEntryEntity) {
         viewModelScope.launch {
             if (entity.isSavedInDatabase) {
@@ -105,6 +110,12 @@ class InitiativeViewModel(private val dao: InitiativeEntryDao) : ViewModel() {
     fun showCreateNewDialog() {
         viewModelScope.launch {
             _editAlertDialog.show(InitiativeEntryEntity.Empty)
+        }
+    }
+
+    fun showInitiativeDialog(initiativeEntry: InitiativeEntryEntity) {
+        viewModelScope.launch {
+            _updateInitiativeDialog.show(initiativeEntry)
         }
     }
 
@@ -149,6 +160,12 @@ class InitiativeViewModel(private val dao: InitiativeEntryDao) : ViewModel() {
     fun addLairActions() {
         viewModelScope.launch {
             dao.insert(InitiativeEntryEntity.createLairActionEntry())
+        }
+    }
+
+    fun updateInitiative(initiativeEntry: InitiativeEntryEntity, initiative: Int) {
+        viewModelScope.launch {
+            dao.update(initiativeEntry.copy(initiative = initiative))
         }
     }
 
