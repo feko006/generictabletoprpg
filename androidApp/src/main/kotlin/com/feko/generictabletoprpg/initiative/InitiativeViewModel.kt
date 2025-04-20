@@ -11,6 +11,7 @@ import com.feko.generictabletoprpg.common.alertdialog.IEditAlertDialogSubViewMod
 import com.feko.generictabletoprpg.common.toast.IToastSubViewModel
 import com.feko.generictabletoprpg.common.toast.ToastSubViewModel
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
@@ -70,6 +71,10 @@ class InitiativeViewModel(private val dao: InitiativeEntryDao) : ViewModel() {
             else
                 EncounterState.TurnInProgress
         }
+
+    private val _scrollToItemWithIndex = MutableSharedFlow<Int>()
+    val scrollToItemWithIndex: Flow<Int>
+        get() = _scrollToItemWithIndex
 
     fun createOrUpdateInitiativeEntry(entity: InitiativeEntryEntity) {
         viewModelScope.launch {
@@ -173,8 +178,9 @@ class InitiativeViewModel(private val dao: InitiativeEntryDao) : ViewModel() {
         viewModelScope.launch {
             val entries = entries.first()
             if (entries.any { it.canUseLegendaryAction }) {
-                val currentEntry = entries.first { it.hasTurn }
-                dao.setTurnCompleted(currentEntry.id)
+                val indexOfCurrentEntry = entries.indexOfFirst { it.hasTurn }
+                dao.setTurnCompleted(entries[indexOfCurrentEntry].id)
+                _scrollToItemWithIndex.emit(indexOfCurrentEntry)
             } else {
                 progressInitiativeInternal()
             }
@@ -226,5 +232,6 @@ class InitiativeViewModel(private val dao: InitiativeEntryDao) : ViewModel() {
         }
         dao.setCurrentTurn(entries[indexOfNextEntry].id)
         dao.setTurnCompleted(0L)
+        _scrollToItemWithIndex.emit(indexOfNextEntry)
     }
 }
