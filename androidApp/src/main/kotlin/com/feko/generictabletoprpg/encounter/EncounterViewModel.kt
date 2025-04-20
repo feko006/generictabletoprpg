@@ -4,9 +4,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.feko.generictabletoprpg.R
 import com.feko.generictabletoprpg.common.alertdialog.AlertDialogSubViewModel
-import com.feko.generictabletoprpg.common.alertdialog.EditAlertDialogSubViewModel
 import com.feko.generictabletoprpg.common.alertdialog.IAlertDialogSubViewModel
-import com.feko.generictabletoprpg.common.alertdialog.IEditAlertDialogSubViewModel
+import com.feko.generictabletoprpg.common.alertdialog.IStatefulAlertDialogSubViewModel
+import com.feko.generictabletoprpg.common.alertdialog.StatefulAlertDialogSubViewModel
 import com.feko.generictabletoprpg.common.toast.IToastSubViewModel
 import com.feko.generictabletoprpg.common.toast.ToastSubViewModel
 import kotlinx.coroutines.flow.Flow
@@ -21,12 +21,12 @@ class EncounterViewModel(private val dao: InitiativeEntryDao) : ViewModel() {
     val entries: Flow<List<InitiativeEntryEntity>> = dao.getAllSortedByInitiative()
 
     private val _editAlertDialog =
-        EditAlertDialogSubViewModel(InitiativeEntryEntity.Empty, viewModelScope)
-    val editAlertDialog: IEditAlertDialogSubViewModel<InitiativeEntryEntity> = _editAlertDialog
+        StatefulAlertDialogSubViewModel(InitiativeEntryEntity.Empty, viewModelScope)
+    val editAlertDialog: IStatefulAlertDialogSubViewModel<InitiativeEntryEntity> = _editAlertDialog
 
     private val _confirmDeletionDialog =
-        EditAlertDialogSubViewModel(InitiativeEntryEntity.Empty, viewModelScope)
-    val confirmDeletionDialog: IEditAlertDialogSubViewModel<InitiativeEntryEntity> =
+        StatefulAlertDialogSubViewModel(InitiativeEntryEntity.Empty, viewModelScope)
+    val confirmDeletionDialog: IStatefulAlertDialogSubViewModel<InitiativeEntryEntity> =
         _confirmDeletionDialog
 
     private val _confirmResetDialog = AlertDialogSubViewModel(viewModelScope)
@@ -41,23 +41,23 @@ class EncounterViewModel(private val dao: InitiativeEntryDao) : ViewModel() {
         get() = _toastMessage
 
     private val _pickLegendaryActionDialog =
-        EditAlertDialogSubViewModel(emptyList<InitiativeEntryEntity>(), viewModelScope)
-    val pickLegendaryActionDialog: IEditAlertDialogSubViewModel<List<InitiativeEntryEntity>>
+        StatefulAlertDialogSubViewModel(emptyList<InitiativeEntryEntity>(), viewModelScope)
+    val pickLegendaryActionDialog: IStatefulAlertDialogSubViewModel<List<InitiativeEntryEntity>>
         get() = _pickLegendaryActionDialog
 
     private val _healDialog =
-        EditAlertDialogSubViewModel(InitiativeEntryEntity.Empty, viewModelScope)
-    val healDialog: IEditAlertDialogSubViewModel<InitiativeEntryEntity>
+        StatefulAlertDialogSubViewModel(InitiativeEntryEntity.Empty, viewModelScope)
+    val healDialog: IStatefulAlertDialogSubViewModel<InitiativeEntryEntity>
         get() = _healDialog
 
     private val _damageDialog =
-        EditAlertDialogSubViewModel(InitiativeEntryEntity.Empty, viewModelScope)
-    val damageDialog: IEditAlertDialogSubViewModel<InitiativeEntryEntity>
+        StatefulAlertDialogSubViewModel(InitiativeEntryEntity.Empty, viewModelScope)
+    val damageDialog: IStatefulAlertDialogSubViewModel<InitiativeEntryEntity>
         get() = _damageDialog
 
     private val _removeAfterTakingDamageDialog =
-        EditAlertDialogSubViewModel(InitiativeEntryEntity.Empty, viewModelScope)
-    val removeAfterTakingDamageDialog: IEditAlertDialogSubViewModel<InitiativeEntryEntity>
+        StatefulAlertDialogSubViewModel(InitiativeEntryEntity.Empty, viewModelScope)
+    val removeAfterTakingDamageDialog: IStatefulAlertDialogSubViewModel<InitiativeEntryEntity>
         get() = _removeAfterTakingDamageDialog
 
     val encounterState: Flow<EncounterState> =
@@ -76,8 +76,8 @@ class EncounterViewModel(private val dao: InitiativeEntryDao) : ViewModel() {
         get() = _scrollToItemWithIndex
 
     private val _updateInitiativeDialog =
-        EditAlertDialogSubViewModel(InitiativeEntryEntity.Empty, viewModelScope)
-    val updateInitiativeDialog: IEditAlertDialogSubViewModel<InitiativeEntryEntity>
+        StatefulAlertDialogSubViewModel(InitiativeEntryEntity.Empty, viewModelScope)
+    val updateInitiativeDialog: IStatefulAlertDialogSubViewModel<InitiativeEntryEntity>
         get() = _updateInitiativeDialog
 
     fun createOrUpdateInitiativeEntry(entity: InitiativeEntryEntity) {

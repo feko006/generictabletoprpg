@@ -200,7 +200,7 @@ private fun InitiativeDialog(viewModel: EncounterViewModel) {
     EnterValueDialog(
         onConfirm = {
             viewModel.updateInitiative(
-                viewModel.updateInitiativeDialog.editedItem.value,
+                viewModel.updateInitiativeDialog.state.value,
                 it.toIntOrNull() ?: 0
             )
         },
@@ -221,7 +221,7 @@ private fun HealDialog(viewModel: EncounterViewModel) {
     EnterValueDialog(
         onConfirm = {
             viewModel.heal(
-                viewModel.healDialog.editedItem.value,
+                viewModel.healDialog.state.value,
                 it.toIntOrNull() ?: 0
             )
         },
@@ -242,7 +242,7 @@ private fun DamageDialog(viewModel: EncounterViewModel) {
     EnterValueDialog(
         onConfirm = {
             viewModel.damage(
-                viewModel.damageDialog.editedItem.value,
+                viewModel.damageDialog.state.value,
                 it.toIntOrNull() ?: 0
             )
         },
@@ -262,7 +262,7 @@ private fun RemoveAfterTakingDamageDialog(viewModel: EncounterViewModel) {
     if (!isRemoveAfterTakingDamageDialogVisible) return
 
     val initiativeEntry
-            by viewModel.removeAfterTakingDamageDialog.editedItem
+            by viewModel.removeAfterTakingDamageDialog.state
                 .collectAsState(InitiativeEntryEntity.Empty)
     ConfirmationDialog(
         onConfirm = { viewModel.deleteEntry(initiativeEntry) },
@@ -282,7 +282,7 @@ private fun EditDialog(
 ) {
     val isEditAlertDialogVisible by viewModel.editAlertDialog.isVisible.collectAsState(false)
     if (isEditAlertDialogVisible) {
-        val initiativeEntry by viewModel.editAlertDialog.editedItem.collectAsState(
+        val initiativeEntry by viewModel.editAlertDialog.state.collectAsState(
             InitiativeEntryEntity.Empty
         )
         val isLairActionsButtonVisible by remember(entries) {
@@ -293,7 +293,7 @@ private fun EditDialog(
         EditInitiativeEntryAlertDialog(
             initiativeEntry,
             isLairActionsButtonVisible,
-            onItemUpdated = { viewModel.editAlertDialog.updateEditedItem(it) },
+            onItemUpdated = { viewModel.editAlertDialog.updateState(it) },
             onEditFinished = { viewModel.createOrUpdateInitiativeEntry(it) },
             onAddLairActions = { viewModel.addLairActions() },
             onDialogDismissed = { viewModel.editAlertDialog.dismiss() }
@@ -308,7 +308,7 @@ private fun ConfirmDeletionDialog(viewModel: EncounterViewModel) {
     if (!isConfirmDeletionDialogVisible) return
 
     ConfirmationDialog(
-        onConfirm = { viewModel.deleteEntry(viewModel.confirmDeletionDialog.editedItem.value) },
+        onConfirm = { viewModel.deleteEntry(viewModel.confirmDeletionDialog.state.value) },
         onDialogDismissed = { viewModel.confirmDeletionDialog.dismiss() }
     )
 }
@@ -333,7 +333,7 @@ private fun PickLegendaryActionDialog(viewModel: EncounterViewModel) {
     if (!isPickLegendaryActionDialogVisible) return
 
     val entriesWithLegendaryActions
-            by viewModel.pickLegendaryActionDialog.editedItem.collectAsState()
+            by viewModel.pickLegendaryActionDialog.state.collectAsState()
     SelectFromListDialog(
         R.string.select_legendary_action,
         entriesWithLegendaryActions,

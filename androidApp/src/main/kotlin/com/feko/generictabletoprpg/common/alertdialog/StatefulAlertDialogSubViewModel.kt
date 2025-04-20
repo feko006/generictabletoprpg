@@ -5,25 +5,25 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-class EditAlertDialogSubViewModel<T>(
+class StatefulAlertDialogSubViewModel<T>(
     defaultValue: T,
     private val coroutineScope: CoroutineScope,
     onDismissed: () -> Unit = {}
 ) : IMutableAlertDialogSubViewModel by AlertDialogSubViewModel(coroutineScope, onDismissed),
-    IEditAlertDialogSubViewModel<T> {
+    IStatefulAlertDialogSubViewModel<T> {
 
-    val _editedItem = MutableStateFlow(defaultValue)
-    override val editedItem: StateFlow<T>
-        get() = _editedItem
+    val _state = MutableStateFlow(defaultValue)
+    override val state: StateFlow<T>
+        get() = _state
 
-    override fun updateEditedItem(updatedItem: T) {
+    override fun updateState(newState: T) {
         coroutineScope.launch {
-            _editedItem.emit(updatedItem)
+            _state.emit(newState)
         }
     }
 
-    suspend fun show(itemToEdit: T) {
-        _editedItem.emit(itemToEdit)
+    suspend fun show(newState: T) {
+        _state.emit(newState)
         show()
     }
 }
