@@ -19,6 +19,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- New DM utility - Encounter tracker
+
 ### Fixed
 
 - Editing a text trackable displaying a numeric instead of a text keyboard
