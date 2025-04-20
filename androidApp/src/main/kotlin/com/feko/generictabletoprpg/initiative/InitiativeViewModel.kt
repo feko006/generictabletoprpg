@@ -177,12 +177,13 @@ class InitiativeViewModel(private val dao: InitiativeEntryDao) : ViewModel() {
     fun concludeTurnOfCurrentEntry() {
         viewModelScope.launch {
             val entries = entries.first()
-            if (entries.any { it.canUseLegendaryAction }) {
-                val indexOfCurrentEntry = entries.indexOfFirst { it.hasTurn }
-                dao.setTurnCompleted(entries[indexOfCurrentEntry].id)
-                _scrollToItemWithIndex.emit(indexOfCurrentEntry)
-            } else {
+            val indexOfCurrentEntry = entries.indexOfFirst { it.hasTurn }
+            val currentEntry = entries[indexOfCurrentEntry]
+            if (currentEntry.isLairAction || !entries.any { it.canUseLegendaryAction }) {
                 progressInitiativeInternal()
+            } else {
+                dao.setTurnCompleted(currentEntry.id)
+                _scrollToItemWithIndex.emit(indexOfCurrentEntry)
             }
         }
     }
