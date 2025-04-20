@@ -120,6 +120,14 @@ class InitiativeViewModel(private val dao: InitiativeEntryDao) : ViewModel() {
         }
     }
 
+    fun duplicateEntry(initiativeEntry: InitiativeEntryEntity) {
+        viewModelScope.launch {
+            _editAlertDialog.show(
+                initiativeEntry.copy(id = 0L, hasTurn = false, isTurnCompleted = false)
+            )
+        }
+    }
+
     fun showEditDialog(initiativeEntry: InitiativeEntryEntity) {
         viewModelScope.launch {
             _editAlertDialog.show(initiativeEntry)

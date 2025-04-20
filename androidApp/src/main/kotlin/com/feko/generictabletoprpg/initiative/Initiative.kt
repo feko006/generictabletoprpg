@@ -112,6 +112,7 @@ fun InitiativeScreen(appViewModel: AppViewModel) {
                         onUpdateKeepOnReset = { viewModel.updateKeepOnReset(item, it) },
                         onHealButtonClicked = { viewModel.showHealDialog(item) },
                         onDamageButtonClicked = { viewModel.showDamageDialog(item) },
+                        onDuplicateButtonClicked = { viewModel.duplicateEntry(item) },
                         onEditButtonClicked = { viewModel.showEditDialog(item) },
                         onDeleteButtonClicked = { viewModel.showDeleteDialog(item) }
                     )
@@ -329,6 +330,7 @@ fun InitiativeListItem(
     initiativeEntry: InitiativeEntryEntity,
     onUpdateKeepOnReset: (Boolean) -> Unit,
     onHealButtonClicked: () -> Unit,
+    onDuplicateButtonClicked: () -> Unit,
     onDamageButtonClicked: () -> Unit,
     onEditButtonClicked: () -> Unit,
     onDeleteButtonClicked: () -> Unit
@@ -437,9 +439,12 @@ fun InitiativeListItem(
                         }
                     }
                     if (!isLairAction) {
-                        IconButton(
-                            onClick = onEditButtonClicked
-                        ) { Icon(Icons.Filled.Edit, "") }
+                        IconButton(onClick = onDuplicateButtonClicked) {
+                            Icon(painterResource(R.drawable.content_copy), "")
+                        }
+                        IconButton(onClick = onEditButtonClicked) {
+                            Icon(Icons.Filled.Edit, "")
+                        }
                     }
                     IconButton(
                         onClick = onDeleteButtonClicked
@@ -502,6 +507,7 @@ fun InitiativeListItemPreview() {
         onUpdateKeepOnReset = {},
         onHealButtonClicked = {},
         onDamageButtonClicked = {},
+        onDuplicateButtonClicked = {},
         onEditButtonClicked = {},
         onDeleteButtonClicked = {}
     )
