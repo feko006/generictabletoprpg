@@ -40,7 +40,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.feko.generictabletoprpg.R
-import com.feko.generictabletoprpg.com.feko.generictabletoprpg.asSignedString
+import com.feko.generictabletoprpg.asSignedString
 import com.feko.generictabletoprpg.theme.Typography
 import com.feko.generictabletoprpg.tracker.actions.AbilityActions
 import com.feko.generictabletoprpg.tracker.actions.HealthActions

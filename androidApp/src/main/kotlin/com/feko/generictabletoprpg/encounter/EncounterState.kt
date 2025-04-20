@@ -1,4 +1,4 @@
-package com.feko.generictabletoprpg.initiative
+package com.feko.generictabletoprpg.encounter
 
 import androidx.compose.runtime.Immutable
 

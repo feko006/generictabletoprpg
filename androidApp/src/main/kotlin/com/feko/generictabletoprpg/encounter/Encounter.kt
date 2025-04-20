@@ -1,4 +1,4 @@
-package com.feko.generictabletoprpg.initiative
+package com.feko.generictabletoprpg.encounter
 
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.BasicTooltipBox
@@ -67,7 +67,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.feko.generictabletoprpg.AppViewModel
 import com.feko.generictabletoprpg.R
-import com.feko.generictabletoprpg.com.feko.generictabletoprpg.initiative.InitiativeEntryEntity
 import com.feko.generictabletoprpg.common.composable.BoxWithScrollIndicator
 import com.feko.generictabletoprpg.common.composable.ConfirmationDialog
 import com.feko.generictabletoprpg.common.composable.DialogTitle
@@ -85,12 +84,12 @@ import org.koin.androidx.compose.koinViewModel
 
 @Destination<RootGraph>
 @Composable
-fun InitiativeScreen(appViewModel: AppViewModel) {
+fun EncounterScreen(appViewModel: AppViewModel) {
     appViewModel.set(
-        appBarTitle = stringResource(R.string.initiative),
+        appBarTitle = stringResource(R.string.encounters),
         navBarActions = listOf()
     )
-    val viewModel: InitiativeViewModel = koinViewModel()
+    val viewModel: EncounterViewModel = koinViewModel()
     val entries by viewModel.entries.collectAsState(listOf())
     Column {
         if (entries.isEmpty()) {
@@ -151,7 +150,7 @@ fun InitiativeScreen(appViewModel: AppViewModel) {
 }
 
 @Composable
-private fun ActionButtons(viewModel: InitiativeViewModel) {
+private fun ActionButtons(viewModel: EncounterViewModel) {
     val encounterState by viewModel.encounterState.collectAsState(EncounterState.Empty)
     Box(Modifier.fillMaxWidth()) {
         Row(
@@ -193,7 +192,7 @@ private fun ActionButtons(viewModel: InitiativeViewModel) {
 }
 
 @Composable
-private fun InitiativeDialog(viewModel: InitiativeViewModel) {
+private fun InitiativeDialog(viewModel: EncounterViewModel) {
     val isInitiativeDialogVisible
             by viewModel.updateInitiativeDialog.isVisible.collectAsState(false)
     if (!isInitiativeDialogVisible) return
@@ -215,7 +214,7 @@ private fun InitiativeDialog(viewModel: InitiativeViewModel) {
 }
 
 @Composable
-private fun HealDialog(viewModel: InitiativeViewModel) {
+private fun HealDialog(viewModel: EncounterViewModel) {
     val isHealthDialogVisible by viewModel.healDialog.isVisible.collectAsState(false)
     if (!isHealthDialogVisible) return
 
@@ -236,7 +235,7 @@ private fun HealDialog(viewModel: InitiativeViewModel) {
 }
 
 @Composable
-private fun DamageDialog(viewModel: InitiativeViewModel) {
+private fun DamageDialog(viewModel: EncounterViewModel) {
     val isDamageDialogVisible by viewModel.damageDialog.isVisible.collectAsState(false)
     if (!isDamageDialogVisible) return
 
@@ -257,7 +256,7 @@ private fun DamageDialog(viewModel: InitiativeViewModel) {
 }
 
 @Composable
-private fun RemoveAfterTakingDamageDialog(viewModel: InitiativeViewModel) {
+private fun RemoveAfterTakingDamageDialog(viewModel: EncounterViewModel) {
     val isRemoveAfterTakingDamageDialogVisible
             by viewModel.removeAfterTakingDamageDialog.isVisible.collectAsState(false)
     if (!isRemoveAfterTakingDamageDialogVisible) return
@@ -278,7 +277,7 @@ private fun RemoveAfterTakingDamageDialog(viewModel: InitiativeViewModel) {
 
 @Composable
 private fun EditDialog(
-    viewModel: InitiativeViewModel,
+    viewModel: EncounterViewModel,
     entries: List<InitiativeEntryEntity>
 ) {
     val isEditAlertDialogVisible by viewModel.editAlertDialog.isVisible.collectAsState(false)
@@ -303,7 +302,7 @@ private fun EditDialog(
 }
 
 @Composable
-private fun ConfirmDeletionDialog(viewModel: InitiativeViewModel) {
+private fun ConfirmDeletionDialog(viewModel: EncounterViewModel) {
     val isConfirmDeletionDialogVisible
             by viewModel.confirmDeletionDialog.isVisible.collectAsState(false)
     if (!isConfirmDeletionDialogVisible) return
@@ -315,7 +314,7 @@ private fun ConfirmDeletionDialog(viewModel: InitiativeViewModel) {
 }
 
 @Composable
-private fun ConfirmResetDialog(viewModel: InitiativeViewModel) {
+private fun ConfirmResetDialog(viewModel: EncounterViewModel) {
     val isConfirmResetDialogVisible by viewModel.confirmResetDialog.isVisible.collectAsState(false)
     if (!isConfirmResetDialogVisible) return
 
@@ -328,7 +327,7 @@ private fun ConfirmResetDialog(viewModel: InitiativeViewModel) {
 }
 
 @Composable
-private fun PickLegendaryActionDialog(viewModel: InitiativeViewModel) {
+private fun PickLegendaryActionDialog(viewModel: EncounterViewModel) {
     val isPickLegendaryActionDialogVisible
             by viewModel.pickLegendaryActionDialog.isVisible.collectAsState(false)
     if (!isPickLegendaryActionDialogVisible) return

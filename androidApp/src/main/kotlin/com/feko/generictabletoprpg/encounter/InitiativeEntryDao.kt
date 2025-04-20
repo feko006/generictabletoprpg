@@ -1,11 +1,10 @@
-package com.feko.generictabletoprpg.initiative
+package com.feko.generictabletoprpg.encounter
 
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
-import com.feko.generictabletoprpg.com.feko.generictabletoprpg.initiative.InitiativeEntryEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao

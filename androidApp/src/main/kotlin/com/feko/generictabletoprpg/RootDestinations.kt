@@ -1,8 +1,8 @@
 package com.feko.generictabletoprpg
 
 import androidx.annotation.StringRes
+import com.ramcosta.composedestinations.generated.destinations.EncounterScreenDestination
 import com.ramcosta.composedestinations.generated.destinations.ImportScreenDestination
-import com.ramcosta.composedestinations.generated.destinations.InitiativeScreenDestination
 import com.ramcosta.composedestinations.generated.destinations.SearchAllScreenDestination
 import com.ramcosta.composedestinations.generated.destinations.TrackerGroupsScreenDestination
 import com.ramcosta.composedestinations.spec.Direction
@@ -13,7 +13,7 @@ enum class RootDestinations(
     val direction: Direction
 ) {
     Tracker(R.string.tracker_title, TrackerGroupsScreenDestination()),
-    Initiative(R.string.initiative, InitiativeScreenDestination()),
+    Encounter(R.string.encounters, EncounterScreenDestination()),
     SearchAll(R.string.search_all_title, SearchAllScreenDestination()),
     Import(R.string.import_title, ImportScreenDestination());
 

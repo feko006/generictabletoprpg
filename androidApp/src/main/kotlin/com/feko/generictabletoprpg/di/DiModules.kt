@@ -14,6 +14,8 @@ import com.feko.generictabletoprpg.condition.ConditionDao
 import com.feko.generictabletoprpg.condition.ConditionDetailsViewModel
 import com.feko.generictabletoprpg.disease.DiseaseDao
 import com.feko.generictabletoprpg.disease.DiseaseDetailsViewModel
+import com.feko.generictabletoprpg.encounter.EncounterViewModel
+import com.feko.generictabletoprpg.encounter.InitiativeEntryDao
 import com.feko.generictabletoprpg.feat.FeatDao
 import com.feko.generictabletoprpg.feat.FeatDetailsViewModel
 import com.feko.generictabletoprpg.filters.SpellFilterViewModel
@@ -44,8 +46,6 @@ import com.feko.generictabletoprpg.init.ILoadBaseContent
 import com.feko.generictabletoprpg.init.ILoadBaseContentUseCase
 import com.feko.generictabletoprpg.init.LoadBaseContentAdapter
 import com.feko.generictabletoprpg.init.LoadBaseContentUseCase
-import com.feko.generictabletoprpg.initiative.InitiativeEntryDao
-import com.feko.generictabletoprpg.initiative.InitiativeViewModel
 import com.feko.generictabletoprpg.room.GenericTabletopRpgDatabase
 import com.feko.generictabletoprpg.searchall.ISearchAllUseCase
 import com.feko.generictabletoprpg.searchall.SearchAllUseCase
@@ -213,9 +213,9 @@ val filterModule = module {
     viewModel { SpellFilterViewModel(get<SpellDao>()) }
 }
 
-val initiativeModule = module {
+val encounterModule = module {
     single<InitiativeEntryDao> { get<GenericTabletopRpgDatabase>().initiativeEntryDao() }
-    viewModelOf(::InitiativeViewModel)
+    viewModelOf(::EncounterViewModel)
 }
 
 val diModules = listOf(
@@ -233,5 +233,5 @@ val diModules = listOf(
     trackedThingModule,
     searchAllModule,
     filterModule,
-    initiativeModule
+    encounterModule
 )

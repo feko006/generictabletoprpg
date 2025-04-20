@@ -1,9 +1,8 @@
-package com.feko.generictabletoprpg.initiative
+package com.feko.generictabletoprpg.encounter
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.feko.generictabletoprpg.R
-import com.feko.generictabletoprpg.com.feko.generictabletoprpg.initiative.InitiativeEntryEntity
 import com.feko.generictabletoprpg.common.alertdialog.AlertDialogSubViewModel
 import com.feko.generictabletoprpg.common.alertdialog.EditAlertDialogSubViewModel
 import com.feko.generictabletoprpg.common.alertdialog.IAlertDialogSubViewModel
@@ -17,7 +16,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
-class InitiativeViewModel(private val dao: InitiativeEntryDao) : ViewModel() {
+class EncounterViewModel(private val dao: InitiativeEntryDao) : ViewModel() {
 
     val entries: Flow<List<InitiativeEntryEntity>> = dao.getAllSortedByInitiative()
 
