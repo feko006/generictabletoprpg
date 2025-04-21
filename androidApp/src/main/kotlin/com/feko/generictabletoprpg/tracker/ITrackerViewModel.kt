@@ -5,15 +5,13 @@ import com.feko.generictabletoprpg.common.toast.IToastSubViewModel
 import com.feko.generictabletoprpg.tracker.actions.IAbilityActionsTrackerViewModel
 import com.feko.generictabletoprpg.tracker.actions.IHealthActionsTrackerViewModel
 import com.feko.generictabletoprpg.tracker.actions.IHitDiceActionsTrackerViewModel
-import com.feko.generictabletoprpg.tracker.actions.INumberActionsTrackerViewModel
 import com.feko.generictabletoprpg.tracker.actions.ISpellListActionsTrackerViewModel
 import com.feko.generictabletoprpg.tracker.actions.ISpellSlotActionsTrackerViewModel
 import com.feko.generictabletoprpg.tracker.dialogs.IAlertDialogTrackerViewModel
 import kotlinx.coroutines.flow.Flow
 
 interface ITrackerViewModel
-    : INumberActionsTrackerViewModel,
-    IHealthActionsTrackerViewModel,
+    : IHealthActionsTrackerViewModel,
     IAbilityActionsTrackerViewModel,
     ISpellSlotActionsTrackerViewModel,
     ISpellListActionsTrackerViewModel,

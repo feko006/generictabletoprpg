@@ -27,4 +27,8 @@ class Number(
     override fun subtract(delta: String) = subtractInternal(delta, coerceToZero = false)
 
     override fun resetValueToDefault() = Unit
+
+    companion object {
+        val Empty = Number(0L, "", 0, 0, 0L)
+    }
 }

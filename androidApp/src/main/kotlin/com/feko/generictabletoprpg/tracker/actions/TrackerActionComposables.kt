@@ -50,17 +50,20 @@ fun PercentageActions(
 @Composable
 fun NumberActions(
     item: TrackedThing,
-    viewModel: INumberActionsTrackerViewModel
+    onAddButtonClicked: () -> Unit,
+    onSubtractButtonClicked: () -> Unit,
+    onEditButtonClicked: () -> Unit,
+    onDeleteButtonClicked: () -> Unit,
 ) {
-    ItemActionsBase(item, viewModel) {
+    ItemActionsBase(item, onEditButtonClicked, onDeleteButtonClicked) {
         IconButton(
-            onClick = { viewModel.addToNumberRequested(item) },
+            onClick = onAddButtonClicked,
             enabled = item.canAdd()
         ) {
             Icon(Icons.Default.Add, "")
         }
         IconButton(
-            onClick = { viewModel.subtractFromNumberRequested(item) },
+            onClick = onSubtractButtonClicked,
             enabled = item.canSubtract()
         ) {
             Icon(painterResource(R.drawable.subtract), "")

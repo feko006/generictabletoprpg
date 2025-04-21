@@ -100,8 +100,10 @@ fun TrackerAlertDialogs(viewModel: TrackerViewModel) {
     ConfirmDeletionDialog(viewModel)
     RefreshAllDialog(viewModel)
     ConfirmSpellRemovalFromListDialog(viewModel)
-    AddPercentageDialog(viewModel)
-    ReducePercentageDialog(viewModel)
+    AddToPercentageDialog(viewModel)
+    SubtractFromPercentageDialog(viewModel)
+    AddToNumberDialog(viewModel)
+    SubtractFromNumberDialog(viewModel)
 }
 
 @Composable
@@ -145,7 +147,7 @@ fun ConfirmSpellRemovalFromListDialog(viewModel: TrackerViewModel) {
 }
 
 @Composable
-fun AddPercentageDialog(viewModel: TrackerViewModel) {
+fun AddToPercentageDialog(viewModel: TrackerViewModel) {
     val isDialogVisible by viewModel.addPercentageDialog.isVisible.collectAsState(false)
     if (!isDialogVisible) return
 
@@ -162,16 +164,13 @@ fun AddPercentageDialog(viewModel: TrackerViewModel) {
 }
 
 @Composable
-fun ReducePercentageDialog(viewModel: TrackerViewModel) {
+fun SubtractFromPercentageDialog(viewModel: TrackerViewModel) {
     val isDialogVisible by viewModel.reducePercentageDialog.isVisible.collectAsState(false)
     if (!isDialogVisible) return
 
     EnterValueDialog(
         onConfirm = {
-            viewModel.subtractFromPercentage(
-                viewModel.reducePercentageDialog.state.value,
-                it
-            )
+            viewModel.subtractFromPercentage(viewModel.reducePercentageDialog.state.value, it)
         },
         onDialogDismissed = { viewModel.reducePercentageDialog.dismiss() },
         dialogTitle = R.string.reduce_percentage_dialog_title,
@@ -180,6 +179,42 @@ fun ReducePercentageDialog(viewModel: TrackerViewModel) {
             imeAction = ImeAction.Done
         ),
         suffix = { Text("%") }
+    )
+}
+
+@Composable
+fun AddToNumberDialog(viewModel: TrackerViewModel) {
+    val isDialogVisible by viewModel.addNumberDialog.isVisible.collectAsState(false)
+    if (!isDialogVisible) return
+
+    EnterValueDialog(
+        onConfirm = {
+            viewModel.addToNumber(viewModel.addNumberDialog.state.value, it)
+        },
+        onDialogDismissed = { viewModel.addNumberDialog.dismiss() },
+        dialogTitle = R.string.add,
+        keyboardOptions = KeyboardOptions(
+            keyboardType = KeyboardType.Number,
+            imeAction = ImeAction.Done
+        )
+    )
+}
+
+@Composable
+fun SubtractFromNumberDialog(viewModel: TrackerViewModel) {
+    val isDialogVisible by viewModel.reduceNumberDialog.isVisible.collectAsState(false)
+    if (!isDialogVisible) return
+
+    EnterValueDialog(
+        onConfirm = {
+            viewModel.subtractFromNumber(viewModel.reduceNumberDialog.state.value, it)
+        },
+        onDialogDismissed = { viewModel.reduceNumberDialog.dismiss() },
+        dialogTitle = R.string.subtract,
+        keyboardOptions = KeyboardOptions(
+            keyboardType = KeyboardType.Number,
+            imeAction = ImeAction.Done
+        )
     )
 }
 
@@ -199,10 +234,6 @@ fun AlertDialogComposable(
                 DialogType.Create,
                 DialogType.Edit ->
                     EditDialog(viewModel, defaultName)
-
-                DialogType.AddNumber,
-                DialogType.ReduceNumber ->
-                    ValueInputDialog(viewModel, TrackedThing.Type.Number)
 
                 DialogType.HealHealth,
                 DialogType.DamageHealth,

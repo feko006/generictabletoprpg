@@ -49,7 +49,6 @@ import com.feko.generictabletoprpg.tracker.actions.IAbilityActionsTrackerViewMod
 import com.feko.generictabletoprpg.tracker.actions.IBasicActionsTrackerViewModel
 import com.feko.generictabletoprpg.tracker.actions.IHealthActionsTrackerViewModel
 import com.feko.generictabletoprpg.tracker.actions.IHitDiceActionsTrackerViewModel
-import com.feko.generictabletoprpg.tracker.actions.INumberActionsTrackerViewModel
 import com.feko.generictabletoprpg.tracker.actions.ISpellListActionsTrackerViewModel
 import com.feko.generictabletoprpg.tracker.actions.ISpellSlotActionsTrackerViewModel
 import com.feko.generictabletoprpg.tracker.actions.IStatsActionsTrackerViewModel
@@ -164,24 +163,6 @@ fun HitDiceListItemContent(
 }
 
 @Composable
-fun NumberListItemContent(
-    number: Number,
-    reorderableLazyListState: ReorderableLazyListState,
-    viewModel: INumberActionsTrackerViewModel
-) {
-    DefaultTrackableLayout(
-        number.name,
-        reorderableLazyListState,
-        valuePreview = {
-            Text(number.getPrintableValue())
-            Text(number.type.name, style = Typography.bodySmall)
-        }
-    ) {
-        NumberActions(number, viewModel)
-    }
-}
-
-@Composable
 fun PercentageListItemContent(
     percentage: Percentage,
     reorderableLazyListState: ReorderableLazyListState,
@@ -200,6 +181,30 @@ fun PercentageListItemContent(
             onSubtractButtonClicked = { viewModel.subtractFromPercentageRequested(percentage) },
             onEditButtonClicked = { viewModel.showEditDialog(percentage) },
             onDeleteButtonClicked = { viewModel.deleteItemRequested(percentage) },
+        )
+    }
+}
+
+@Composable
+fun NumberListItemContent(
+    number: Number,
+    reorderableLazyListState: ReorderableLazyListState,
+    viewModel: TrackerViewModel
+) {
+    DefaultTrackableLayout(
+        number.name,
+        reorderableLazyListState,
+        valuePreview = {
+            Text(number.getPrintableValue())
+            Text(number.type.name, style = Typography.bodySmall)
+        }
+    ) {
+        NumberActions(
+            number,
+            onAddButtonClicked = { viewModel.addToNumberRequested(number) },
+            onSubtractButtonClicked = { viewModel.subtractFromNumberRequested(number) },
+            onEditButtonClicked = { viewModel.showEditDialog(number) },
+            onDeleteButtonClicked = { viewModel.deleteItemRequested(number) },
         )
     }
 }

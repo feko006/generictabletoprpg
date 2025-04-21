@@ -107,6 +107,16 @@ class TrackerViewModel(
     val reducePercentageDialog: IStatefulAlertDialogSubViewModel<Percentage>
         get() = _reducePercentageDialog
 
+    private val _addNumberDialog =
+        StatefulAlertDialogSubViewModel(Number.Empty, viewModelScope)
+    val addNumberDialog: IStatefulAlertDialogSubViewModel<Number>
+        get() = _addNumberDialog
+
+    private val _reduceNumberDialog =
+        StatefulAlertDialogSubViewModel(Number.Empty, viewModelScope)
+    val reduceNumberDialog: IStatefulAlertDialogSubViewModel<Number>
+        get() = _reduceNumberDialog
+
     override val combinedItemFlow: Flow<List<Any>> =
         _items.combine(_searchString) { items, searchString ->
             if (searchString.isBlank()) {
@@ -206,10 +216,6 @@ class TrackerViewModel(
             DialogType.Create -> createNewTrackedThing()
             DialogType.Edit -> editExistingTrackedThing()
 
-            DialogType.AddNumber,
-            DialogType.ReduceNumber ->
-                changePercentageOrNumberOfTrackedThing()
-
             DialogType.HealHealth,
             DialogType.DamageHealth ->
                 changeHealthOfTrackedThing()
@@ -296,23 +302,23 @@ class TrackerViewModel(
         }
     }
 
-    private fun changePercentageOrNumberOfTrackedThing() {
+    fun addToNumber(number: Number, amount: String) {
         viewModelScope.launch {
-            val editedTrackedThing = requireNotNull(editedTrackedThing)
-            when (dialogType) {
-                DialogType.AddNumber ->
-                    editedTrackedThing.add(editedTrackedThingValue.value.value)
-
-                DialogType.ReduceNumber ->
-                    editedTrackedThing.subtract(editedTrackedThingValue.value.value)
-
-                else -> throw Exception("$dialogType operation attempted on $editedTrackedThingType")
+            number.add(amount)
+            withContext(Dispatchers.IO) {
+                trackedThingDao.insertOrUpdate(number)
             }
-            withContext(Dispatchers.Default) {
-                trackedThingDao.insertOrUpdate(editedTrackedThing)
+            replaceItem(number.copy())
+        }
+    }
+
+    fun subtractFromNumber(number: Number, amount: String) {
+        viewModelScope.launch {
+            number.subtract(amount)
+            withContext(Dispatchers.IO) {
+                trackedThingDao.insertOrUpdate(number)
             }
-            _alertDialog.hide()
-            replaceItem(editedTrackedThing)
+            replaceItem(number.copy())
         }
     }
 
@@ -595,11 +601,11 @@ class TrackerViewModel(
     fun subtractFromPercentageRequested(percentage: Percentage) =
         viewModelScope.launch { _reducePercentageDialog.show(percentage) }
 
-    override fun addToNumberRequested(item: TrackedThing) =
-        setupValueChangeDialog(item, DialogType.AddNumber, R.string.add)
+    fun addToNumberRequested(number: Number) =
+        viewModelScope.launch { _addNumberDialog.show(number) }
 
-    override fun subtractFromNumberRequested(item: TrackedThing) =
-        setupValueChangeDialog(item, DialogType.ReduceNumber, R.string.subtract)
+    fun subtractFromNumberRequested(number: Number) =
+        viewModelScope.launch { _reduceNumberDialog.show(number) }
 
     override fun takeDamageRequested(item: TrackedThing) =
         setupValueChangeDialog(item, DialogType.DamageHealth, R.string.take_damage_dialog_title)

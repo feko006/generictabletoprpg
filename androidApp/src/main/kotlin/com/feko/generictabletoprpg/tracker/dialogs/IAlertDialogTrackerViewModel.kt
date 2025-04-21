@@ -22,8 +22,6 @@ interface IAlertDialogTrackerViewModel
         DamageHealth,
         HealHealth,
         AddTemporaryHp,
-        AddNumber,
-        ReduceNumber,
         ShowSpellList,
         SelectSlotLevelToCastSpell,
         EditText,
