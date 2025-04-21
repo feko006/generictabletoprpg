@@ -19,8 +19,6 @@ interface IAlertDialogTrackerViewModel
         None,
         Create,
         Edit,
-        AddPercentage,
-        ReducePercentage,
         DamageHealth,
         HealHealth,
         AddTemporaryHp,

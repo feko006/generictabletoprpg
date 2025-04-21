@@ -18,6 +18,7 @@ class Percentage(
     companion object {
         private fun toValue(amount: Float) = String.format("%.2f", amount)
         private fun toAmount(value: String) = (value.toFloatOrNull() ?: 0f).coerceIn(0f, 100f)
+        val Empty = Percentage(0L, "", 0f, 0, 0L)
     }
 
     override fun setNewValue(value: String) {

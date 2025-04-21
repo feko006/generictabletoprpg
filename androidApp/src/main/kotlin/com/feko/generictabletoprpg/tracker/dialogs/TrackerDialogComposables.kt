@@ -68,6 +68,7 @@ import com.feko.generictabletoprpg.common.alertdialog.IAlertDialogSubViewModel
 import com.feko.generictabletoprpg.common.composable.CheckboxWithText
 import com.feko.generictabletoprpg.common.composable.ConfirmationDialog
 import com.feko.generictabletoprpg.common.composable.DialogTitle
+import com.feko.generictabletoprpg.common.composable.EnterValueDialog
 import com.feko.generictabletoprpg.common.composable.InputField
 import com.feko.generictabletoprpg.searchall.getUniqueListItemKey
 import com.feko.generictabletoprpg.spell.Spell
@@ -99,6 +100,8 @@ fun TrackerAlertDialogs(viewModel: TrackerViewModel) {
     ConfirmDeletionDialog(viewModel)
     RefreshAllDialog(viewModel)
     ConfirmSpellRemovalFromListDialog(viewModel)
+    AddPercentageDialog(viewModel)
+    ReducePercentageDialog(viewModel)
 }
 
 @Composable
@@ -141,6 +144,45 @@ fun ConfirmSpellRemovalFromListDialog(viewModel: TrackerViewModel) {
     )
 }
 
+@Composable
+fun AddPercentageDialog(viewModel: TrackerViewModel) {
+    val isDialogVisible by viewModel.addPercentageDialog.isVisible.collectAsState(false)
+    if (!isDialogVisible) return
+
+    EnterValueDialog(
+        onConfirm = { viewModel.addToPercentage(viewModel.addPercentageDialog.state.value, it) },
+        onDialogDismissed = { viewModel.addPercentageDialog.dismiss() },
+        dialogTitle = R.string.increase_percentage_dialog_title,
+        keyboardOptions = KeyboardOptions(
+            keyboardType = KeyboardType.Decimal,
+            imeAction = ImeAction.Done
+        ),
+        suffix = { Text("%") }
+    )
+}
+
+@Composable
+fun ReducePercentageDialog(viewModel: TrackerViewModel) {
+    val isDialogVisible by viewModel.reducePercentageDialog.isVisible.collectAsState(false)
+    if (!isDialogVisible) return
+
+    EnterValueDialog(
+        onConfirm = {
+            viewModel.subtractFromPercentage(
+                viewModel.reducePercentageDialog.state.value,
+                it
+            )
+        },
+        onDialogDismissed = { viewModel.reducePercentageDialog.dismiss() },
+        dialogTitle = R.string.reduce_percentage_dialog_title,
+        keyboardOptions = KeyboardOptions(
+            keyboardType = KeyboardType.Decimal,
+            imeAction = ImeAction.Done
+        ),
+        suffix = { Text("%") }
+    )
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AlertDialogComposable(
@@ -157,10 +199,6 @@ fun AlertDialogComposable(
                 DialogType.Create,
                 DialogType.Edit ->
                     EditDialog(viewModel, defaultName)
-
-                DialogType.AddPercentage,
-                DialogType.ReducePercentage ->
-                    ValueInputDialog(viewModel, TrackedThing.Type.Percentage)
 
                 DialogType.AddNumber,
                 DialogType.ReduceNumber ->
@@ -595,21 +633,21 @@ fun SpellListDialog(
                         Text(stringResource(R.string.prepared))
                     },
                     leadingIcon =
-                    {
-                        if (isFilteringByPrepared) {
-                            Icon(
-                                imageVector = Icons.Filled.Done,
-                                contentDescription = "Done icon",
-                                modifier = Modifier.size(FilterChipDefaults.IconSize)
-                            )
-                        } else {
-                            Icon(
-                                painter = painterResource(R.drawable.check_box_outline_blank),
-                                contentDescription = "Done icon",
-                                modifier = Modifier.size(FilterChipDefaults.IconSize)
-                            )
+                        {
+                            if (isFilteringByPrepared) {
+                                Icon(
+                                    imageVector = Icons.Filled.Done,
+                                    contentDescription = "Done icon",
+                                    modifier = Modifier.size(FilterChipDefaults.IconSize)
+                                )
+                            } else {
+                                Icon(
+                                    painter = painterResource(R.drawable.check_box_outline_blank),
+                                    contentDescription = "Done icon",
+                                    modifier = Modifier.size(FilterChipDefaults.IconSize)
+                                )
+                            }
                         }
-                    }
                 )
             } else {
                 viewModel.setShowingPreparedSpells(false)

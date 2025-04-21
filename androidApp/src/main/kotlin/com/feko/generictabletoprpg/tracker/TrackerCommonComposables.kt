@@ -2,6 +2,7 @@ package com.feko.generictabletoprpg.tracker
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.wrapContentWidth
@@ -22,6 +23,27 @@ import com.feko.generictabletoprpg.R
 import com.feko.generictabletoprpg.tracker.actions.IBasicActionsTrackerViewModel
 import com.feko.generictabletoprpg.tracker.dialogs.ICreateDialogTrackerViewModel
 import com.feko.generictabletoprpg.tracker.dialogs.IDialogTrackerViewModel
+
+@Composable
+fun ItemActionsBase(
+    item: TrackedThing,
+    onEditButtonClicked: () -> Unit,
+    onDeleteButtonClicked: () -> Unit,
+    actions: @Composable RowScope.() -> Unit
+) {
+    Row(
+        horizontalArrangement = Arrangement.Center,
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        actions()
+        IconButton(onClick = onEditButtonClicked) {
+            Icon(Icons.Default.Edit, "")
+        }
+        IconButton(onClick = onDeleteButtonClicked) {
+            Icon(Icons.Default.Delete, "")
+        }
+    }
+}
 
 @Composable
 fun ItemActionsBase(

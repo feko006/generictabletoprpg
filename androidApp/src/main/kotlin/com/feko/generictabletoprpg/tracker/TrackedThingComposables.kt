@@ -50,7 +50,6 @@ import com.feko.generictabletoprpg.tracker.actions.IBasicActionsTrackerViewModel
 import com.feko.generictabletoprpg.tracker.actions.IHealthActionsTrackerViewModel
 import com.feko.generictabletoprpg.tracker.actions.IHitDiceActionsTrackerViewModel
 import com.feko.generictabletoprpg.tracker.actions.INumberActionsTrackerViewModel
-import com.feko.generictabletoprpg.tracker.actions.IPercentageActionsTrackerViewModel
 import com.feko.generictabletoprpg.tracker.actions.ISpellListActionsTrackerViewModel
 import com.feko.generictabletoprpg.tracker.actions.ISpellSlotActionsTrackerViewModel
 import com.feko.generictabletoprpg.tracker.actions.IStatsActionsTrackerViewModel
@@ -61,61 +60,11 @@ import com.feko.generictabletoprpg.tracker.actions.SpellSlotActions
 import com.feko.generictabletoprpg.tracker.actions.StatsActions
 import com.feko.generictabletoprpg.tracker.actions.TextActions
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
-import com.ramcosta.composedestinations.navigation.EmptyDestinationsNavigator
 import org.burnoutcrew.reorderable.ReorderableLazyListState
 import org.burnoutcrew.reorderable.detectReorder
-import org.burnoutcrew.reorderable.rememberReorderableLazyListState
 
 @Composable
-fun TrackedThing(
-    item: TrackedThing,
-    isDragged: Boolean,
-    reorderableLazyListState: ReorderableLazyListState,
-    navigator: DestinationsNavigator,
-    viewModel: ITrackerViewModel
-) {
-    var onItemClicked: () -> Unit = {}
-    val content: @Composable () -> Unit
-    when (item) {
-        is Ability ->
-            content = { AbilityListItemContent(item, reorderableLazyListState, viewModel) }
-
-        is Health ->
-            content = { HealthListItemContent(item, reorderableLazyListState, viewModel) }
-
-        is HitDice ->
-            content = { HitDiceListItemContent(item, reorderableLazyListState, viewModel) }
-
-        is Number ->
-            content = { NumberListItemContent(item, reorderableLazyListState, viewModel) }
-
-        is Percentage ->
-            content = { PercentageListItemContent(item, reorderableLazyListState, viewModel) }
-
-        is SpellList -> {
-            onItemClicked =
-                { viewModel.showPreviewSpellListDialog(item, resetListState = true) }
-            content = { SpellListItemContent(item, reorderableLazyListState, navigator, viewModel) }
-        }
-
-        is SpellSlot ->
-            content = { SpellSlotListItemContent(item, reorderableLazyListState, viewModel) }
-
-        is Stats -> {
-            onItemClicked = { viewModel.showStatsDialog(item) }
-            content = { StatsListItemContent(item, reorderableLazyListState, viewModel) }
-        }
-
-        is Text ->
-            content = { TextListItemContent(item, reorderableLazyListState, viewModel) }
-
-        else -> content = {}
-    }
-    TrackedThingListItem(isDragged, onItemClicked = onItemClicked) { content() }
-}
-
-@Composable
-private fun TrackedThingListItem(
+fun TrackedThingListItem(
     isDragged: Boolean,
     onItemClicked: () -> Unit = {},
     content: @Composable () -> Unit
@@ -145,7 +94,7 @@ private fun TrackedThingListItem(
 }
 
 @Composable
-private fun AbilityListItemContent(
+fun AbilityListItemContent(
     ability: Ability,
     reorderableLazyListState: ReorderableLazyListState,
     viewModel: IAbilityActionsTrackerViewModel,
@@ -163,7 +112,7 @@ private fun AbilityListItemContent(
 }
 
 @Composable
-private fun HealthListItemContent(
+fun HealthListItemContent(
     health: Health,
     reorderableLazyListState: ReorderableLazyListState,
     viewModel: IHealthActionsTrackerViewModel,
@@ -236,7 +185,7 @@ fun NumberListItemContent(
 fun PercentageListItemContent(
     percentage: Percentage,
     reorderableLazyListState: ReorderableLazyListState,
-    viewModel: IPercentageActionsTrackerViewModel
+    viewModel: TrackerViewModel
 ) {
     DefaultTrackableLayout(
         percentage.name,
@@ -245,7 +194,13 @@ fun PercentageListItemContent(
             Text(percentage.getPrintableValue())
         }
     ) {
-        PercentageActions(percentage, viewModel)
+        PercentageActions(
+            percentage,
+            onAddButtonClicked = { viewModel.addToPercentageRequested(percentage) },
+            onSubtractButtonClicked = { viewModel.subtractFromPercentageRequested(percentage) },
+            onEditButtonClicked = { viewModel.showEditDialog(percentage) },
+            onDeleteButtonClicked = { viewModel.deleteItemRequested(percentage) },
+        )
     }
 }
 
@@ -290,7 +245,7 @@ fun SpellSlotListItemContent(
 }
 
 @Composable
-private fun StatsListItemContent(
+fun StatsListItemContent(
     stats: Stats,
     reorderableLazyListState: ReorderableLazyListState,
     viewModel: IStatsActionsTrackerViewModel
@@ -568,12 +523,13 @@ fun CompactStatPreview() {
 @Preview
 @Composable
 private fun SpellListTrackedThingPreview() {
-    TrackedThing(
-        SpellList(0, "Spell List", "", 0, 0),
-        false,
-        rememberReorderableLazyListState(onMove = { _, _ -> }),
-        EmptyDestinationsNavigator,
-        EmptyTrackerViewModel
-    )
+    // TODO
+//    TrackedThing(
+//        SpellList(0, "Spell List", "", 0, 0),
+//        false,
+//        rememberReorderableLazyListState(onMove = { _, _ -> }),
+//        EmptyDestinationsNavigator,
+//        EmptyTrackerViewModel
+//    )
 }
 

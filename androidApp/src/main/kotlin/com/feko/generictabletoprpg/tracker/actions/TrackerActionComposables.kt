@@ -16,6 +16,7 @@ import com.feko.generictabletoprpg.filters.index
 import com.feko.generictabletoprpg.tracker.Health
 import com.feko.generictabletoprpg.tracker.IntTrackedThing
 import com.feko.generictabletoprpg.tracker.ItemActionsBase
+import com.feko.generictabletoprpg.tracker.Percentage
 import com.feko.generictabletoprpg.tracker.SpellList
 import com.feko.generictabletoprpg.tracker.Stats
 import com.feko.generictabletoprpg.tracker.TrackedThing
@@ -24,18 +25,21 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
 @Composable
 fun PercentageActions(
-    item: TrackedThing,
-    viewModel: IPercentageActionsTrackerViewModel
+    item: Percentage,
+    onAddButtonClicked: () -> Unit,
+    onSubtractButtonClicked: () -> Unit,
+    onEditButtonClicked: () -> Unit,
+    onDeleteButtonClicked: () -> Unit,
 ) {
-    ItemActionsBase(item, viewModel) {
+    ItemActionsBase(item, onEditButtonClicked, onDeleteButtonClicked) {
         IconButton(
-            onClick = { viewModel.addToPercentageRequested(item) },
+            onClick = onAddButtonClicked,
             enabled = item.canAdd()
         ) {
             Icon(Icons.Default.Add, "")
         }
         IconButton(
-            onClick = { viewModel.subtractFromPercentageRequested(item) },
+            onClick = onSubtractButtonClicked,
             enabled = item.canSubtract()
         ) {
             Icon(painterResource(R.drawable.subtract), "")

@@ -97,6 +97,16 @@ class TrackerViewModel(
     val confirmSpellRemovalFromListDialog: IStatefulAlertDialogSubViewModel<SpellListEntry>
         get() = _confirmSpellRemovalFromListDialog
 
+    private val _addPercentageDialog =
+        StatefulAlertDialogSubViewModel(Percentage.Empty, viewModelScope)
+    val addPercentageDialog: IStatefulAlertDialogSubViewModel<Percentage>
+        get() = _addPercentageDialog
+
+    private val _reducePercentageDialog =
+        StatefulAlertDialogSubViewModel(Percentage.Empty, viewModelScope)
+    val reducePercentageDialog: IStatefulAlertDialogSubViewModel<Percentage>
+        get() = _reducePercentageDialog
+
     override val combinedItemFlow: Flow<List<Any>> =
         _items.combine(_searchString) { items, searchString ->
             if (searchString.isBlank()) {
@@ -197,9 +207,7 @@ class TrackerViewModel(
             DialogType.Edit -> editExistingTrackedThing()
 
             DialogType.AddNumber,
-            DialogType.ReduceNumber,
-            DialogType.AddPercentage,
-            DialogType.ReducePercentage ->
+            DialogType.ReduceNumber ->
                 changePercentageOrNumberOfTrackedThing()
 
             DialogType.HealHealth,
@@ -268,15 +276,33 @@ class TrackerViewModel(
         }
     }
 
+    fun addToPercentage(percentage: Percentage, amount: String) {
+        viewModelScope.launch {
+            percentage.add(amount)
+            withContext(Dispatchers.IO) {
+                trackedThingDao.insertOrUpdate(percentage)
+            }
+            replaceItem(percentage.copy())
+        }
+    }
+
+    fun subtractFromPercentage(percentage: Percentage, amount: String) {
+        viewModelScope.launch {
+            percentage.subtract(amount)
+            withContext(Dispatchers.IO) {
+                trackedThingDao.insertOrUpdate(percentage)
+            }
+            replaceItem(percentage.copy())
+        }
+    }
+
     private fun changePercentageOrNumberOfTrackedThing() {
         viewModelScope.launch {
             val editedTrackedThing = requireNotNull(editedTrackedThing)
             when (dialogType) {
-                DialogType.AddPercentage,
                 DialogType.AddNumber ->
                     editedTrackedThing.add(editedTrackedThingValue.value.value)
 
-                DialogType.ReducePercentage,
                 DialogType.ReduceNumber ->
                     editedTrackedThing.subtract(editedTrackedThingValue.value.value)
 
@@ -563,19 +589,11 @@ class TrackerViewModel(
         }
     }
 
-    override fun addToPercentageRequested(item: TrackedThing) =
-        setupValueChangeDialog(
-            item,
-            DialogType.AddPercentage,
-            R.string.increase_percentage_dialog_title
-        )
+    fun addToPercentageRequested(percentage: Percentage) =
+        viewModelScope.launch { _addPercentageDialog.show(percentage) }
 
-    override fun subtractFromPercentageRequested(item: TrackedThing) =
-        setupValueChangeDialog(
-            item,
-            DialogType.ReducePercentage,
-            R.string.reduce_percentage_dialog_title
-        )
+    fun subtractFromPercentageRequested(percentage: Percentage) =
+        viewModelScope.launch { _reducePercentageDialog.show(percentage) }
 
     override fun addToNumberRequested(item: TrackedThing) =
         setupValueChangeDialog(item, DialogType.AddNumber, R.string.add)

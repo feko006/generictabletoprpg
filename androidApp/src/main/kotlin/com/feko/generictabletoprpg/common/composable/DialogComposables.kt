@@ -77,7 +77,8 @@ fun EnterValueDialog(
     keyboardOptions: KeyboardOptions = KeyboardOptions(
         keyboardType = KeyboardType.Text,
         imeAction = ImeAction.Done
-    )
+    ),
+    suffix: @Composable () -> Unit = {}
 ) {
     BasicAlertDialog(onDismissRequest = onDialogDismissed) {
         Card {
@@ -89,11 +90,15 @@ fun EnterValueDialog(
                     inputFieldLabel,
                     onValueChange = { value = it },
                     modifier = Modifier.padding(vertical = 8.dp),
-                    onFormSubmit = { onConfirm(value) },
+                    onFormSubmit = {
+                        onConfirm(value)
+                        onDialogDismissed()
+                    },
                     canSubmitForm,
                     isInputFieldValid,
                     keyboardOptions = keyboardOptions,
-                    autoFocus = true
+                    autoFocus = true,
+                    suffix = suffix
                 )
                 Row(
                     Modifier.fillMaxWidth(),

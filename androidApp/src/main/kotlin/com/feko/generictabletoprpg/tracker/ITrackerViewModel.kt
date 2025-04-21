@@ -6,15 +6,13 @@ import com.feko.generictabletoprpg.tracker.actions.IAbilityActionsTrackerViewMod
 import com.feko.generictabletoprpg.tracker.actions.IHealthActionsTrackerViewModel
 import com.feko.generictabletoprpg.tracker.actions.IHitDiceActionsTrackerViewModel
 import com.feko.generictabletoprpg.tracker.actions.INumberActionsTrackerViewModel
-import com.feko.generictabletoprpg.tracker.actions.IPercentageActionsTrackerViewModel
 import com.feko.generictabletoprpg.tracker.actions.ISpellListActionsTrackerViewModel
 import com.feko.generictabletoprpg.tracker.actions.ISpellSlotActionsTrackerViewModel
 import com.feko.generictabletoprpg.tracker.dialogs.IAlertDialogTrackerViewModel
 import kotlinx.coroutines.flow.Flow
 
 interface ITrackerViewModel
-    : IPercentageActionsTrackerViewModel,
-    INumberActionsTrackerViewModel,
+    : INumberActionsTrackerViewModel,
     IHealthActionsTrackerViewModel,
     IAbilityActionsTrackerViewModel,
     ISpellSlotActionsTrackerViewModel,
