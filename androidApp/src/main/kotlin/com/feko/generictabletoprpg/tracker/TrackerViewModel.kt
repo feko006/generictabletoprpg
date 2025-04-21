@@ -75,7 +75,6 @@ class TrackerViewModel(
     override lateinit var isShowingPreparedSpells: MutableStateFlow<Boolean>
     override val spellListBeingPreviewed: StateFlow<SpellList?>
         get() = _spellListBeingPreviewed
-    override var availableSpellSlotsForSpellBeingCast: List<Int>? = null
     override var statsBeingPreviewed: StatsContainer? = null
 
     private val _confirmDeletionDialog =
@@ -133,6 +132,15 @@ class TrackerViewModel(
             .apply { _titleResource = R.string.add_temporary_hp_dialog_title }
     val addTemporaryHpDialog: IStatefulAlertDialogSubViewModel<Health>
         get() = _addTemporaryHpDialog
+
+    private val _selectSlotLevelToCastDialog =
+        StatefulAlertDialogSubViewModel(
+            emptyList<Int>(),
+            viewModelScope,
+            ::dialogToRemoveOrCastSpellFromSpellListResolved
+        ).apply { _titleResource = R.string.select_slot_level_for_casting_spell }
+    val selectSlotLevelToCastDialog: IStatefulAlertDialogSubViewModel<List<Int>>
+        get() = _selectSlotLevelToCastDialog
 
     override val combinedItemFlow: Flow<List<Any>> =
         _items.combine(_searchString) { items, searchString ->
@@ -237,7 +245,6 @@ class TrackerViewModel(
 
 
             DialogType.ShowSpellList,
-            DialogType.SelectSlotLevelToCastSpell,
             DialogType.PreviewStatSkills,
             DialogType.None -> Unit
         }
@@ -749,10 +756,7 @@ class TrackerViewModel(
             }
             _alertDialog.hide()
             awaitFrame()
-            availableSpellSlotsForSpellBeingCast = availableSpellSlots
-            dialogType = DialogType.SelectSlotLevelToCastSpell
-            _alertDialog._titleResource = R.string.select_slot_level_for_casting_spell
-            _alertDialog.show()
+            _selectSlotLevelToCastDialog.show(availableSpellSlots)
         }
     }
 
@@ -768,7 +772,7 @@ class TrackerViewModel(
         }
     }
 
-    override fun castSpell(withSlotLevel: Int) {
+    fun castSpell(withSlotLevel: Int) {
         viewModelScope.launch {
             _alertDialog.hide()
             val spellSlot =
@@ -776,7 +780,6 @@ class TrackerViewModel(
                     .filterIsInstance<SpellSlot>()
                     .first { it.level == withSlotLevel && it.amount > 0 }
             useSpellSuspending(spellSlot)
-            availableSpellSlotsForSpellBeingCast = null
             _toast.showMessage(R.string.spell_cast_with_slot_level, withSlotLevel.toString())
             dialogToRemoveOrCastSpellFromSpellListResolved()
         }
@@ -833,11 +836,6 @@ class TrackerViewModel(
                 viewModelScope.launch {
                     _spellListBeingPreviewed.emit(null)
                 }
-            }
-
-            DialogType.SelectSlotLevelToCastSpell -> {
-                availableSpellSlotsForSpellBeingCast = null
-                dialogToRemoveOrCastSpellFromSpellListResolved()
             }
 
             else -> Unit

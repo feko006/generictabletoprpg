@@ -7,7 +7,6 @@ interface IAlertDialogTrackerViewModel
     IValueInputDialogTrackerViewModel,
     ICreateDialogTrackerViewModel,
     ISpellListDialogTrackerViewModel,
-    ISpellSlotSelectDialogTrackerViewModel,
     IStatsPreviewDialogTrackerViewModel,
     IStatsActionsTrackerViewModel {
 
@@ -20,7 +19,6 @@ interface IAlertDialogTrackerViewModel
         Create,
         Edit,
         ShowSpellList,
-        SelectSlotLevelToCastSpell,
         EditStats,
         PreviewStatSkills
     }

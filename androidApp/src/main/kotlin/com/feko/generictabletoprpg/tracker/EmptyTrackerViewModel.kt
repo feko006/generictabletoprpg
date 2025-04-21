@@ -41,7 +41,6 @@ object EmptyTrackerViewModel : ITrackerViewModel {
         get() = MutableStateFlow(false)
     override val spellListBeingPreviewed: StateFlow<SpellList?>
         get() = MutableStateFlow(null)
-    override var availableSpellSlotsForSpellBeingCast: List<Int>? = null
     override val combinedItemFlow: Flow<List<Any>>
         get() = flowOf()
 
@@ -83,8 +82,6 @@ object EmptyTrackerViewModel : ITrackerViewModel {
     override fun removeSpellFromSpellListRequested(spell: SpellListEntry) = Unit
 
     override fun castSpellRequested(level: Int) = Unit
-
-    override fun castSpell(withSlotLevel: Int) = Unit
 
     override fun showStatsDialog(stats: Stats) = Unit
 

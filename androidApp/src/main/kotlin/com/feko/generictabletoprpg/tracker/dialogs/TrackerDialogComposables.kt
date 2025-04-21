@@ -1,7 +1,6 @@
 package com.feko.generictabletoprpg.tracker.dialogs
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
@@ -34,7 +33,6 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
-import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.LocalMinimumInteractiveComponentSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -70,11 +68,11 @@ import com.feko.generictabletoprpg.common.composable.ConfirmationDialog
 import com.feko.generictabletoprpg.common.composable.DialogTitle
 import com.feko.generictabletoprpg.common.composable.EnterValueDialog
 import com.feko.generictabletoprpg.common.composable.InputField
+import com.feko.generictabletoprpg.common.composable.SelectFromListDialog
 import com.feko.generictabletoprpg.searchall.getUniqueListItemKey
 import com.feko.generictabletoprpg.spell.Spell
 import com.feko.generictabletoprpg.spell.SpellRange
 import com.feko.generictabletoprpg.theme.Typography
-import com.feko.generictabletoprpg.tracker.CancelButton
 import com.feko.generictabletoprpg.tracker.EmptyTrackerViewModel
 import com.feko.generictabletoprpg.tracker.SpellList
 import com.feko.generictabletoprpg.tracker.SpellListEntry
@@ -107,6 +105,7 @@ fun TrackerAlertDialogs(viewModel: TrackerViewModel) {
     DamageHealthDialog(viewModel)
     HealHealthDialog(viewModel)
     AddTemporaryHpDialog(viewModel)
+    SelectSpellSlotLevelToCastDialog(viewModel)
 }
 
 @Composable
@@ -275,6 +274,23 @@ fun AddTemporaryHpDialog(viewModel: TrackerViewModel) {
     )
 }
 
+@Composable
+fun SelectSpellSlotLevelToCastDialog(viewModel: TrackerViewModel) {
+    val isDialogVisible by viewModel.selectSlotLevelToCastDialog.isVisible.collectAsState(false)
+    if (!isDialogVisible) return
+
+    val listItems by viewModel.selectSlotLevelToCastDialog.state.collectAsState(emptyList())
+    SelectFromListDialog(
+        viewModel.selectSlotLevelToCastDialog.titleResource,
+        listItems,
+        getListItemKey = { it },
+        onItemSelected = { viewModel.castSpell(it) },
+        onDialogDismissed = { viewModel.selectSlotLevelToCastDialog.dismiss() }
+    ) {
+        ListItem(headlineContent = { Text("${stringResource(R.string.level)} $it") })
+    }
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AlertDialogComposable(
@@ -294,9 +310,6 @@ fun AlertDialogComposable(
 
                 DialogType.ShowSpellList ->
                     SpellListDialog(viewModel, navigator)
-
-                DialogType.SelectSlotLevelToCastSpell ->
-                    SpellSlotSelectDialog(viewModel)
 
                 DialogType.EditStats -> StatsEditDialog(viewModel.statsEditDialog, defaultName)
 
@@ -848,34 +861,6 @@ private fun SpellListEntryListItem(
                     Text(stringResource(R.string.remove))
                 }
             }
-        }
-    }
-}
-
-@Composable
-fun SpellSlotSelectDialog(viewModel: ISpellSlotSelectDialogTrackerViewModel) {
-    Column(
-        Modifier.padding(16.dp),
-        Arrangement.spacedBy(16.dp)
-    ) {
-        DialogTitle(viewModel.alertDialog.titleResource)
-        val spellSlotLevels = requireNotNull(viewModel.availableSpellSlotsForSpellBeingCast)
-        spellSlotLevels.forEach { spellSlotLevel ->
-            ListItem(
-                headlineContent = {
-                    Text("${stringResource(R.string.level)} $spellSlotLevel")
-                },
-                modifier = Modifier.clickable {
-                    viewModel.castSpell(spellSlotLevel)
-                },
-                colors = ListItemDefaults.colors(containerColor = Color.Transparent)
-            )
-        }
-        Row(
-            Modifier.fillMaxWidth(),
-            Arrangement.End
-        ) {
-            CancelButton(viewModel)
         }
     }
 }
