@@ -73,31 +73,36 @@ fun NumberActions(
 
 @Composable
 fun HealthActions(
-    item: TrackedThing,
-    viewModel: IHealthActionsTrackerViewModel
+    health: Health,
+    onHealButtonClicked: () -> Unit,
+    onDamageButtonClicked: () -> Unit,
+    onAddTemporaryHpButtonClicked: () -> Unit,
+    onResetButtonClicked: () -> Unit,
+    onEditButtonClicked: () -> Unit,
+    onDeleteButtonClicked: () -> Unit,
 ) {
-    ItemActionsBase(item, viewModel) {
+    ItemActionsBase(health, onEditButtonClicked, onDeleteButtonClicked) {
         IconButton(
-            onClick = { viewModel.healRequested(item) },
-            enabled = item.canAdd()
+            onClick = onHealButtonClicked,
+            enabled = health.canAdd()
         ) {
             Icon(painterResource(R.drawable.heart_plus), "")
         }
         IconButton(
-            onClick = { viewModel.takeDamageRequested(item) },
-            enabled = item.canSubtract()
+            onClick = onDamageButtonClicked,
+            enabled = health.canSubtract()
         ) {
             Icon(painterResource(R.drawable.heart_minus), "")
         }
         IconButton(
-            onClick = { viewModel.addTemporaryHp(item) },
+            onClick = onAddTemporaryHpButtonClicked,
             enabled = true
         ) {
             Icon(painterResource(R.drawable.shield_with_heart), "")
         }
         IconButton(
-            onClick = { viewModel.resetValueToDefault(item) },
-            enabled = item.canAdd() || (item as Health).temporaryHp > 0
+            onClick = onResetButtonClicked,
+            enabled = health.canAdd() || health.temporaryHp > 0
         ) {
             Icon(Icons.Default.Refresh, "")
         }

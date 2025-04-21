@@ -47,7 +47,6 @@ import com.feko.generictabletoprpg.tracker.actions.HealthActions
 import com.feko.generictabletoprpg.tracker.actions.HitDiceActions
 import com.feko.generictabletoprpg.tracker.actions.IAbilityActionsTrackerViewModel
 import com.feko.generictabletoprpg.tracker.actions.IBasicActionsTrackerViewModel
-import com.feko.generictabletoprpg.tracker.actions.IHealthActionsTrackerViewModel
 import com.feko.generictabletoprpg.tracker.actions.IHitDiceActionsTrackerViewModel
 import com.feko.generictabletoprpg.tracker.actions.ISpellListActionsTrackerViewModel
 import com.feko.generictabletoprpg.tracker.actions.ISpellSlotActionsTrackerViewModel
@@ -107,40 +106,6 @@ fun AbilityListItemContent(
         }
     ) {
         AbilityActions(ability, viewModel)
-    }
-}
-
-@Composable
-fun HealthListItemContent(
-    health: Health,
-    reorderableLazyListState: ReorderableLazyListState,
-    viewModel: IHealthActionsTrackerViewModel,
-) {
-    DefaultTrackableLayout(
-        health.name,
-        reorderableLazyListState,
-        valuePreview = {
-            Text(health.getPrintableValue())
-            if (health.temporaryHp > 0) {
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(4.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(
-                        painterResource(R.drawable.shield_with_heart),
-                        "",
-                        modifier = Modifier.size(12.dp)
-                    )
-                    Text(
-                        health.temporaryHp.toString(),
-                        style = Typography.bodySmall
-                    )
-                }
-            }
-            Text(health.type.name, style = Typography.bodySmall)
-        }
-    ) {
-        HealthActions(health, viewModel)
     }
 }
 
@@ -205,6 +170,48 @@ fun NumberListItemContent(
             onSubtractButtonClicked = { viewModel.subtractFromNumberRequested(number) },
             onEditButtonClicked = { viewModel.showEditDialog(number) },
             onDeleteButtonClicked = { viewModel.deleteItemRequested(number) },
+        )
+    }
+}
+
+@Composable
+fun HealthListItemContent(
+    health: Health,
+    reorderableLazyListState: ReorderableLazyListState,
+    viewModel: TrackerViewModel
+) {
+    DefaultTrackableLayout(
+        health.name,
+        reorderableLazyListState,
+        valuePreview = {
+            Text(health.getPrintableValue())
+            if (health.temporaryHp > 0) {
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(4.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        painterResource(R.drawable.shield_with_heart),
+                        "",
+                        modifier = Modifier.size(12.dp)
+                    )
+                    Text(
+                        health.temporaryHp.toString(),
+                        style = Typography.bodySmall
+                    )
+                }
+            }
+            Text(health.type.name, style = Typography.bodySmall)
+        }
+    ) {
+        HealthActions(
+            health,
+            onHealButtonClicked = { viewModel.healRequested(health) },
+            onDamageButtonClicked = { viewModel.takeDamageRequested(health) },
+            onAddTemporaryHpButtonClicked = { viewModel.addTemporaryHpRequested(health) },
+            onResetButtonClicked = { viewModel.resetValueToDefault(health) },
+            onEditButtonClicked = { viewModel.showEditDialog(health) },
+            onDeleteButtonClicked = { viewModel.deleteItemRequested(health) },
         )
     }
 }

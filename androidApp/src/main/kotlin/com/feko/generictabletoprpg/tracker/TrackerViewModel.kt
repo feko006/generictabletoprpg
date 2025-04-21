@@ -117,6 +117,24 @@ class TrackerViewModel(
     val reduceNumberDialog: IStatefulAlertDialogSubViewModel<Number>
         get() = _reduceNumberDialog
 
+    private val _healHealthDialog =
+        StatefulAlertDialogSubViewModel(Health.Empty, viewModelScope)
+            .apply { _titleResource = R.string.heal_dialog_title }
+    val healHealthDialog: IStatefulAlertDialogSubViewModel<Health>
+        get() = _healHealthDialog
+
+    private val _damageHealthDialog =
+        StatefulAlertDialogSubViewModel(Health.Empty, viewModelScope)
+            .apply { _titleResource = R.string.take_damage_dialog_title }
+    val damageHealthDialog: IStatefulAlertDialogSubViewModel<Health>
+        get() = _damageHealthDialog
+
+    private val _addTemporaryHpDialog =
+        StatefulAlertDialogSubViewModel(Health.Empty, viewModelScope)
+            .apply { _titleResource = R.string.add_temporary_hp_dialog_title }
+    val addTemporaryHpDialog: IStatefulAlertDialogSubViewModel<Health>
+        get() = _addTemporaryHpDialog
+
     override val combinedItemFlow: Flow<List<Any>> =
         _items.combine(_searchString) { items, searchString ->
             if (searchString.isBlank()) {
@@ -216,12 +234,6 @@ class TrackerViewModel(
             DialogType.Create -> createNewTrackedThing()
             DialogType.Edit -> editExistingTrackedThing()
 
-            DialogType.HealHealth,
-            DialogType.DamageHealth ->
-                changeHealthOfTrackedThing()
-
-            DialogType.AddTemporaryHp -> addTemporaryHpToTrackedThing()
-
             DialogType.EditText -> editText()
 
             DialogType.EditStats -> createOrEditStats()
@@ -283,75 +295,56 @@ class TrackerViewModel(
     }
 
     fun addToPercentage(percentage: Percentage, amount: String) {
-        viewModelScope.launch {
-            percentage.add(amount)
-            withContext(Dispatchers.IO) {
-                trackedThingDao.insertOrUpdate(percentage)
-            }
-            replaceItem(percentage.copy())
-        }
+        addToTrackedThing(percentage, amount)
     }
 
     fun subtractFromPercentage(percentage: Percentage, amount: String) {
-        viewModelScope.launch {
-            percentage.subtract(amount)
-            withContext(Dispatchers.IO) {
-                trackedThingDao.insertOrUpdate(percentage)
-            }
-            replaceItem(percentage.copy())
-        }
+        subtractFromTrackedThing(percentage, amount)
     }
 
     fun addToNumber(number: Number, amount: String) {
-        viewModelScope.launch {
-            number.add(amount)
-            withContext(Dispatchers.IO) {
-                trackedThingDao.insertOrUpdate(number)
-            }
-            replaceItem(number.copy())
-        }
+        addToTrackedThing(number, amount)
     }
 
     fun subtractFromNumber(number: Number, amount: String) {
+        subtractFromTrackedThing(number, amount)
+    }
+
+    fun healHealth(health: Health, amount: String) {
+        addToTrackedThing(health, amount)
+    }
+
+    fun damageHealth(health: Health, amount: String) {
+        subtractFromTrackedThing(health, amount)
+    }
+
+    private fun addToTrackedThing(trackedThing: TrackedThing, amount: String) {
         viewModelScope.launch {
-            number.subtract(amount)
+            trackedThing.add(amount)
             withContext(Dispatchers.IO) {
-                trackedThingDao.insertOrUpdate(number)
+                trackedThingDao.insertOrUpdate(trackedThing)
             }
-            replaceItem(number.copy())
+            replaceItem(trackedThing.copy())
         }
     }
 
-    private fun changeHealthOfTrackedThing() {
+    private fun subtractFromTrackedThing(trackedThing: TrackedThing, amount: String) {
         viewModelScope.launch {
-            val editedTrackedThing = requireNotNull(editedTrackedThing)
-            when (dialogType) {
-                DialogType.HealHealth ->
-                    editedTrackedThing.add(editedTrackedThingValue.value.value)
-
-                DialogType.DamageHealth ->
-                    editedTrackedThing.subtract(editedTrackedThingValue.value.value)
-
-                else -> throw Exception("Changing health on non-health tracked thing.")
+            trackedThing.subtract(amount)
+            withContext(Dispatchers.IO) {
+                trackedThingDao.insertOrUpdate(trackedThing)
             }
-            withContext(Dispatchers.Default) {
-                trackedThingDao.insertOrUpdate(editedTrackedThing)
-            }
-            _alertDialog.hide()
-            replaceItem(editedTrackedThing)
+            replaceItem(trackedThing.copy())
         }
     }
 
-    private fun addTemporaryHpToTrackedThing() {
+    fun addTemporaryHpToTrackedThing(health: Health, amount: String) {
         viewModelScope.launch {
-            val editedTrackedThing = requireNotNull(editedTrackedThing)
-            require(editedTrackedThing is Health)
-            editedTrackedThing.addTemporaryHp(editedTrackedThingValue.value.value)
+            health.addTemporaryHp(amount)
             withContext(Dispatchers.Default) {
-                trackedThingDao.insertOrUpdate(editedTrackedThing)
+                trackedThingDao.insertOrUpdate(health)
             }
-            _alertDialog.hide()
-            replaceItem(editedTrackedThing)
+            replaceItem(health.copy())
         }
     }
 
@@ -607,18 +600,14 @@ class TrackerViewModel(
     fun subtractFromNumberRequested(number: Number) =
         viewModelScope.launch { _reduceNumberDialog.show(number) }
 
-    override fun takeDamageRequested(item: TrackedThing) =
-        setupValueChangeDialog(item, DialogType.DamageHealth, R.string.take_damage_dialog_title)
+    fun takeDamageRequested(health: Health) =
+        viewModelScope.launch { _damageHealthDialog.show(health) }
 
-    override fun healRequested(item: TrackedThing) =
-        setupValueChangeDialog(item, DialogType.HealHealth, R.string.heal_dialog_title)
+    fun healRequested(health: Health) =
+        viewModelScope.launch { _healHealthDialog.show(health) }
 
-    override fun addTemporaryHp(item: TrackedThing) =
-        setupValueChangeDialog(
-            item,
-            DialogType.AddTemporaryHp,
-            R.string.add_temporary_hp_dialog_title
-        )
+    fun addTemporaryHpRequested(health: Health) =
+        viewModelScope.launch { _addTemporaryHpDialog.show(health) }
 
     private fun setupValueChangeDialog(
         item: TrackedThing,

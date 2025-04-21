@@ -104,6 +104,9 @@ fun TrackerAlertDialogs(viewModel: TrackerViewModel) {
     SubtractFromPercentageDialog(viewModel)
     AddToNumberDialog(viewModel)
     SubtractFromNumberDialog(viewModel)
+    DamageHealthDialog(viewModel)
+    HealHealthDialog(viewModel)
+    AddTemporaryHpDialog(viewModel)
 }
 
 @Composable
@@ -218,6 +221,60 @@ fun SubtractFromNumberDialog(viewModel: TrackerViewModel) {
     )
 }
 
+@Composable
+fun HealHealthDialog(viewModel: TrackerViewModel) {
+    val isDialogVisible by viewModel.healHealthDialog.isVisible.collectAsState(false)
+    if (!isDialogVisible) return
+
+    EnterValueDialog(
+        onConfirm = {
+            viewModel.healHealth(viewModel.healHealthDialog.state.value, it)
+        },
+        onDialogDismissed = { viewModel.healHealthDialog.dismiss() },
+        dialogTitle = viewModel.healHealthDialog.titleResource,
+        keyboardOptions = KeyboardOptions(
+            keyboardType = KeyboardType.Number,
+            imeAction = ImeAction.Done
+        )
+    )
+}
+
+@Composable
+fun DamageHealthDialog(viewModel: TrackerViewModel) {
+    val isDialogVisible by viewModel.damageHealthDialog.isVisible.collectAsState(false)
+    if (!isDialogVisible) return
+
+    EnterValueDialog(
+        onConfirm = {
+            viewModel.damageHealth(viewModel.damageHealthDialog.state.value, it)
+        },
+        onDialogDismissed = { viewModel.damageHealthDialog.dismiss() },
+        dialogTitle = viewModel.damageHealthDialog.titleResource,
+        keyboardOptions = KeyboardOptions(
+            keyboardType = KeyboardType.Number,
+            imeAction = ImeAction.Done
+        )
+    )
+}
+
+@Composable
+fun AddTemporaryHpDialog(viewModel: TrackerViewModel) {
+    val isDialogVisible by viewModel.addTemporaryHpDialog.isVisible.collectAsState(false)
+    if (!isDialogVisible) return
+
+    EnterValueDialog(
+        onConfirm = {
+            viewModel.addTemporaryHpToTrackedThing(viewModel.addTemporaryHpDialog.state.value, it)
+        },
+        onDialogDismissed = { viewModel.addTemporaryHpDialog.dismiss() },
+        dialogTitle = viewModel.addTemporaryHpDialog.titleResource,
+        keyboardOptions = KeyboardOptions(
+            keyboardType = KeyboardType.Number,
+            imeAction = ImeAction.Done
+        )
+    )
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AlertDialogComposable(
@@ -234,11 +291,6 @@ fun AlertDialogComposable(
                 DialogType.Create,
                 DialogType.Edit ->
                     EditDialog(viewModel, defaultName)
-
-                DialogType.HealHealth,
-                DialogType.DamageHealth,
-                DialogType.AddTemporaryHp ->
-                    ValueInputDialog(viewModel, TrackedThing.Type.Health)
 
                 DialogType.ShowSpellList ->
                     SpellListDialog(viewModel, navigator)

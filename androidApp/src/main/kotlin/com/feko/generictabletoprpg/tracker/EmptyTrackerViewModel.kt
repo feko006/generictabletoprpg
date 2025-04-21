@@ -63,12 +63,6 @@ object EmptyTrackerViewModel : ITrackerViewModel {
 
     override fun setValue(value: String) = Unit
 
-    override fun takeDamageRequested(item: TrackedThing) = Unit
-
-    override fun healRequested(item: TrackedThing) = Unit
-
-    override fun addTemporaryHp(item: TrackedThing) = Unit
-
     override fun updateValueInputField(delta: String) = Unit
 
     override fun deleteItemRequested(item: TrackedThing) = Unit

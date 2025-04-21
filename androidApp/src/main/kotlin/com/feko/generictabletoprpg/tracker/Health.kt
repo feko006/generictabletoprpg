@@ -31,4 +31,8 @@ class Health(
             temporaryHp = newTemporaryHp
         }
     }
+
+    companion object {
+        val Empty = Health(0, 0L, "", 0, 0, 0L)
+    }
 }
