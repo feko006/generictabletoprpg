@@ -1,7 +1,6 @@
 package com.feko.generictabletoprpg.tracker
 
 import android.content.Context
-import androidx.annotation.StringRes
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.lifecycle.viewModelScope
 import com.feko.generictabletoprpg.R
@@ -233,8 +232,6 @@ class TrackerViewModel(
         when (dialogType) {
             DialogType.Create -> createNewTrackedThing()
             DialogType.Edit -> editExistingTrackedThing()
-
-            DialogType.EditText -> editText()
 
             DialogType.EditStats -> createOrEditStats()
 
@@ -609,22 +606,6 @@ class TrackerViewModel(
     fun addTemporaryHpRequested(health: Health) =
         viewModelScope.launch { _addTemporaryHpDialog.show(health) }
 
-    private fun setupValueChangeDialog(
-        item: TrackedThing,
-        type: DialogType,
-        @StringRes
-        titleResource: Int
-    ) {
-        viewModelScope.launch {
-            dialogType = type
-            _alertDialog._titleResource = titleResource
-            editedTrackedThing = item.copy()
-            editedTrackedThingValue.emit(InputFieldData.EMPTY)
-            validateModel()
-            _alertDialog.show()
-        }
-    }
-
     override fun updateValueInputField(delta: String) {
         viewModelScope.launch {
             editedTrackedThingValue.emit(
@@ -836,19 +817,6 @@ class TrackerViewModel(
         viewModelScope.launch {
             isShowingPreparedSpells.value = value
         }
-    }
-
-    private fun editText() {
-        viewModelScope.launch {
-            val editedTrackedThing = requireNotNull(editedTrackedThing)
-            require(editedTrackedThing is Text)
-            withContext(Dispatchers.Default) {
-                trackedThingDao.insertOrUpdate(editedTrackedThing)
-            }
-            _alertDialog.hide()
-            replaceItem(editedTrackedThing)
-        }
-
     }
 
     override fun useHitDie(item: TrackedThing) {

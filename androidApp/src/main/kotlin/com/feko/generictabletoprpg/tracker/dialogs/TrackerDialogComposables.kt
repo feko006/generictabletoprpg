@@ -298,9 +298,6 @@ fun AlertDialogComposable(
                 DialogType.SelectSlotLevelToCastSpell ->
                     SpellSlotSelectDialog(viewModel)
 
-                DialogType.EditText ->
-                    ValueInputDialog(viewModel, TrackedThing.Type.Text)
-
                 DialogType.EditStats -> StatsEditDialog(viewModel.statsEditDialog, defaultName)
 
                 DialogType.PreviewStatSkills -> PreviewStatSkillsDialog(viewModel)
@@ -619,20 +616,6 @@ private fun EditDialog(
         NameTextField(viewModel, autoFocus = true, defaultValue = defaultName)
         SpellSlotLevelTextField(type, viewModel)
         ValueTextField(viewModel, type) { viewModel.setValue(it) }
-    }
-}
-
-@Composable
-private fun ValueInputDialog(
-    viewModel: IValueInputDialogTrackerViewModel,
-    type: TrackedThing.Type
-) {
-    DialogBase(viewModel) {
-        ValueTextField(
-            viewModel,
-            type,
-            autoFocus = true
-        ) { viewModel.updateValueInputField(it) }
     }
 }
 

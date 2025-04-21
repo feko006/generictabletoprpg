@@ -21,7 +21,6 @@ interface IAlertDialogTrackerViewModel
         Edit,
         ShowSpellList,
         SelectSlotLevelToCastSpell,
-        EditText,
         EditStats,
         PreviewStatSkills
     }
