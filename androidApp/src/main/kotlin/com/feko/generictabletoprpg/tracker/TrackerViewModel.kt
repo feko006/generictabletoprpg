@@ -10,6 +10,8 @@ import com.feko.generictabletoprpg.common.OverviewViewModel
 import com.feko.generictabletoprpg.common.SmartNamedSearchComparator
 import com.feko.generictabletoprpg.common.alertdialog.AlertDialogSubViewModel
 import com.feko.generictabletoprpg.common.alertdialog.IAlertDialogSubViewModel
+import com.feko.generictabletoprpg.common.alertdialog.IStatefulAlertDialogSubViewModel
+import com.feko.generictabletoprpg.common.alertdialog.StatefulAlertDialogSubViewModel
 import com.feko.generictabletoprpg.common.composable.InputFieldData
 import com.feko.generictabletoprpg.common.fabdropdown.FabDropdownSubViewModel
 import com.feko.generictabletoprpg.common.fabdropdown.IFabDropdownSubViewModel
@@ -66,7 +68,6 @@ class TrackerViewModel(
 
     private var editedTrackedThing: TrackedThing? = null
     private var spellListBeingAddedTo: SpellList? = null
-    private var spellBeingRemoved: SpellListEntry? = null
     private var fiveEDefaultStats: List<StatEntry>? = null
 
     override lateinit var dialogType: DialogType
@@ -77,6 +78,24 @@ class TrackerViewModel(
         get() = _spellListBeingPreviewed
     override var availableSpellSlotsForSpellBeingCast: List<Int>? = null
     override var statsBeingPreviewed: StatsContainer? = null
+
+    private val _confirmDeletionDialog =
+        StatefulAlertDialogSubViewModel<TrackedThing>(TrackedThing.Companion.Empty, viewModelScope)
+    val confirmDeletionDialog: IStatefulAlertDialogSubViewModel<TrackedThing>
+        get() = _confirmDeletionDialog
+
+    private val _refreshAllDialog = AlertDialogSubViewModel(viewModelScope)
+    val refreshAllDialog: IAlertDialogSubViewModel
+        get() = _refreshAllDialog
+
+    private val _confirmSpellRemovalFromListDialog =
+        StatefulAlertDialogSubViewModel(
+            SpellListEntry.Empty,
+            viewModelScope,
+            ::dialogToRemoveOrCastSpellFromSpellListResolved
+        )
+    val confirmSpellRemovalFromListDialog: IStatefulAlertDialogSubViewModel<SpellListEntry>
+        get() = _confirmSpellRemovalFromListDialog
 
     override val combinedItemFlow: Flow<List<Any>> =
         _items.combine(_searchString) { items, searchString ->
@@ -169,17 +188,13 @@ class TrackerViewModel(
     }
 
     override fun confirmDialogAction() {
-        if (dialogType != DialogType.RefreshAll
-            && dialogType != DialogType.ConfirmSpellRemovalFromList
-            && editedTrackedThing?.validate() == false
-        ) {
+        if (editedTrackedThing?.validate() == false) {
             return
         }
 
         when (dialogType) {
             DialogType.Create -> createNewTrackedThing()
             DialogType.Edit -> editExistingTrackedThing()
-            DialogType.ConfirmDeletion -> deleteTrackedThing()
 
             DialogType.AddNumber,
             DialogType.ReduceNumber,
@@ -193,11 +208,7 @@ class TrackerViewModel(
 
             DialogType.AddTemporaryHp -> addTemporaryHpToTrackedThing()
 
-            DialogType.ConfirmSpellRemovalFromList -> removeSpellFromSpellList()
-
             DialogType.EditText -> editText()
-
-            DialogType.RefreshAll -> refreshAll()
 
             DialogType.EditStats -> createOrEditStats()
 
@@ -247,13 +258,12 @@ class TrackerViewModel(
         }
     }
 
-    private fun deleteTrackedThing() {
+    fun deleteTrackedThing(trackedThing: TrackedThing) {
         viewModelScope.launch {
-            val editedTrackedThing = requireNotNull(editedTrackedThing)
             withContext(Dispatchers.Default) {
-                trackedThingDao.delete(editedTrackedThing.id)
+                trackedThingDao.delete(trackedThing.id)
             }
-            removeItem(editedTrackedThing)
+            removeItem(trackedThing)
             _alertDialog.hide()
         }
     }
@@ -313,7 +323,7 @@ class TrackerViewModel(
         }
     }
 
-    private fun refreshAll() {
+    fun refreshAll() {
         viewModelScope.launch {
             _items.value
                 .filterIsInstance<TrackedThing>()
@@ -614,20 +624,11 @@ class TrackerViewModel(
     }
 
     override fun deleteItemRequested(item: TrackedThing) {
-        viewModelScope.launch {
-            dialogType = DialogType.ConfirmDeletion
-            _alertDialog._titleResource = R.string.delete_dialog_title
-            editedTrackedThing = item
-            _alertDialog.show()
-        }
+        viewModelScope.launch { _confirmDeletionDialog.show(item) }
     }
 
     override fun refreshAllRequested() {
-        viewModelScope.launch {
-            dialogType = DialogType.RefreshAll
-            _alertDialog._titleResource = R.string.refresh_all_tracked_things_dialog_title
-            _alertDialog.show()
-        }
+        viewModelScope.launch { _refreshAllDialog.show() }
     }
 
     override fun itemReordered(from: Int, to: Int) {
@@ -714,10 +715,7 @@ class TrackerViewModel(
         viewModelScope.launch {
             _alertDialog.hide()
             awaitFrame()
-            spellBeingRemoved = spell
-            dialogType = DialogType.ConfirmSpellRemovalFromList
-            _alertDialog._titleResource = R.string.confirm_spell_removal_from_list_dialog_title
-            _alertDialog.show()
+            _confirmSpellRemovalFromListDialog.show(spell)
         }
     }
 
@@ -731,17 +729,15 @@ class TrackerViewModel(
         }
     }
 
-    private fun removeSpellFromSpellList() {
+    fun removeSpellFromSpellList(spellListEntry: SpellListEntry) {
         viewModelScope.launch {
             val spellList = requireNotNull(spellListBeingPreviewed.value)
-            val spellToRemove = requireNotNull(spellBeingRemoved)
-            spellList.serializedItem.remove(spellToRemove)
+            spellList.serializedItem.remove(spellListEntry)
             spellList.setItem(spellList.serializedItem, json)
             withContext(Dispatchers.Default) {
                 trackedThingDao.insertOrUpdate(spellList)
             }
-            spellBeingRemoved = null
-            dialogToRemoveOrCastSpellFromSpellListResolved()
+            replaceItem(spellList.copy())
         }
     }
 
@@ -856,11 +852,6 @@ class TrackerViewModel(
                 viewModelScope.launch {
                     _spellListBeingPreviewed.emit(null)
                 }
-            }
-
-            DialogType.ConfirmSpellRemovalFromList -> {
-                spellBeingRemoved = null
-                dialogToRemoveOrCastSpellFromSpellListResolved()
             }
 
             DialogType.SelectSlotLevelToCastSpell -> {

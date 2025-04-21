@@ -17,6 +17,7 @@ import com.feko.generictabletoprpg.common.composable.ToastMessage
 import com.feko.generictabletoprpg.searchall.getNavRouteInternal
 import com.feko.generictabletoprpg.searchall.getUniqueListItemKey
 import com.feko.generictabletoprpg.tracker.dialogs.AlertDialogComposable
+import com.feko.generictabletoprpg.tracker.dialogs.TrackerAlertDialogs
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.generated.destinations.SearchAllScreenDestination
@@ -73,11 +74,7 @@ fun TrackerScreen(
         },
         isAlertDialogVisible = isAlertDialogVisible,
         alertDialogComposable = {
-            AlertDialogComposable(
-                viewModel,
-                groupName,
-                navigator
-            )
+            AlertDialogComposable(viewModel, groupName, navigator)
         },
         isReorderable = true,
         onItemReordered = { from, to ->
@@ -85,6 +82,7 @@ fun TrackerScreen(
         },
         searchFieldHintResource = R.string.search_everywhere
     )
+    TrackerAlertDialogs(viewModel)
 }
 
 @Composable

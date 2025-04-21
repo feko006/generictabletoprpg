@@ -66,6 +66,7 @@ import com.feko.generictabletoprpg.asSignedString
 import com.feko.generictabletoprpg.common.alertdialog.EmptyAlertDialogSubViewModel
 import com.feko.generictabletoprpg.common.alertdialog.IAlertDialogSubViewModel
 import com.feko.generictabletoprpg.common.composable.CheckboxWithText
+import com.feko.generictabletoprpg.common.composable.ConfirmationDialog
 import com.feko.generictabletoprpg.common.composable.DialogTitle
 import com.feko.generictabletoprpg.common.composable.InputField
 import com.feko.generictabletoprpg.searchall.getUniqueListItemKey
@@ -80,6 +81,7 @@ import com.feko.generictabletoprpg.tracker.StatEntry
 import com.feko.generictabletoprpg.tracker.StatSkillEntry
 import com.feko.generictabletoprpg.tracker.StatsContainer
 import com.feko.generictabletoprpg.tracker.TrackedThing
+import com.feko.generictabletoprpg.tracker.TrackerViewModel
 import com.feko.generictabletoprpg.tracker.cantripSpellsCount
 import com.feko.generictabletoprpg.tracker.containsPreparedAndCantripSpells
 import com.feko.generictabletoprpg.tracker.dialogs.IAlertDialogTrackerViewModel.DialogType
@@ -91,6 +93,53 @@ import com.ramcosta.composedestinations.navigation.EmptyDestinationsNavigator
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+
+@Composable
+fun TrackerAlertDialogs(viewModel: TrackerViewModel) {
+    ConfirmDeletionDialog(viewModel)
+    RefreshAllDialog(viewModel)
+    ConfirmSpellRemovalFromListDialog(viewModel)
+}
+
+@Composable
+fun ConfirmDeletionDialog(viewModel: TrackerViewModel) {
+    val isDialogVisible by viewModel.confirmDeletionDialog.isVisible.collectAsState(false)
+    if (!isDialogVisible) return
+
+    ConfirmationDialog(
+        onConfirm = { viewModel.deleteTrackedThing(viewModel.confirmDeletionDialog.state.value) },
+        onDialogDismissed = { viewModel.confirmDeletionDialog.dismiss() }
+    )
+}
+
+@Composable
+fun RefreshAllDialog(viewModel: TrackerViewModel) {
+    val isDialogVisible by viewModel.refreshAllDialog.isVisible.collectAsState(false)
+    if (!isDialogVisible) return
+
+    ConfirmationDialog(
+        onConfirm = { viewModel.refreshAll() },
+        onDialogDismissed = { viewModel.refreshAllDialog.dismiss() },
+        dialogTitle = stringResource(R.string.refresh_all_tracked_things_dialog_title)
+    )
+}
+
+@Composable
+fun ConfirmSpellRemovalFromListDialog(viewModel: TrackerViewModel) {
+    val isDialogVisible
+            by viewModel.confirmSpellRemovalFromListDialog.isVisible.collectAsState(false)
+    if (!isDialogVisible) return
+
+    ConfirmationDialog(
+        onConfirm = {
+            viewModel.removeSpellFromSpellList(
+                viewModel.confirmSpellRemovalFromListDialog.state.value
+            )
+        },
+        onDialogDismissed = { viewModel.confirmSpellRemovalFromListDialog.dismiss() },
+        dialogTitle = stringResource(R.string.confirm_spell_removal_from_list_dialog_title)
+    )
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -108,11 +157,6 @@ fun AlertDialogComposable(
                 DialogType.Create,
                 DialogType.Edit ->
                     EditDialog(viewModel, defaultName)
-
-                DialogType.ConfirmDeletion,
-                DialogType.RefreshAll,
-                DialogType.ConfirmSpellRemovalFromList ->
-                    ConfirmDialog(viewModel)
 
                 DialogType.AddPercentage,
                 DialogType.ReducePercentage ->
@@ -454,26 +498,6 @@ private fun EditDialog(
         NameTextField(viewModel, autoFocus = true, defaultValue = defaultName)
         SpellSlotLevelTextField(type, viewModel)
         ValueTextField(viewModel, type) { viewModel.setValue(it) }
-    }
-}
-
-@Composable
-private fun ConfirmDialog(viewModel: IConfirmDialogTrackerViewModel) {
-    Column(
-        Modifier.padding(16.dp),
-        Arrangement.spacedBy(16.dp)
-    ) {
-        DialogTitle(viewModel.alertDialog.titleResource)
-        Row(horizontalArrangement = Arrangement.End) {
-            Spacer(Modifier.weight(1f))
-            CancelButton(viewModel)
-            TextButton(
-                onClick = { viewModel.confirmDialogAction() },
-                modifier = Modifier.wrapContentWidth()
-            ) {
-                Text(stringResource(R.string.confirm))
-            }
-        }
     }
 }
 

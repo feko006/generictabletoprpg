@@ -23,6 +23,8 @@ data class SpellRange(
                 parts.getOrNull(1)
             )
         }
+
+        val Empty = SpellRange(false, false, false, 0L, null)
     }
 
     override fun toString(): String {
