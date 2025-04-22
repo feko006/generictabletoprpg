@@ -174,6 +174,9 @@ sealed interface IInputFieldValueConverter<T : Number> : (String) -> T {
     data object IntInputFieldValueConverter : IInputFieldValueConverter<Int> {
         override fun invoke(inputValue: String): Int = inputValue.toIntOrNull() ?: 0
     }
+    data object FloatInputFieldValueConverter : IInputFieldValueConverter<Float> {
+        override fun invoke(inputValue: String): Float = inputValue.toFloatOrNull() ?: 0f
+    }
 }
 
 @Composable

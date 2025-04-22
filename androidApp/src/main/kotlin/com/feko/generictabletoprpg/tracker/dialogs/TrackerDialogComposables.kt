@@ -69,18 +69,24 @@ import com.feko.generictabletoprpg.common.composable.CheckboxWithText
 import com.feko.generictabletoprpg.common.composable.ConfirmationDialog
 import com.feko.generictabletoprpg.common.composable.DialogTitle
 import com.feko.generictabletoprpg.common.composable.EnterValueDialog
+import com.feko.generictabletoprpg.common.composable.IInputFieldValueConverter
 import com.feko.generictabletoprpg.common.composable.InputField
+import com.feko.generictabletoprpg.common.composable.NumberInputField
 import com.feko.generictabletoprpg.common.composable.SelectFromListDialog
 import com.feko.generictabletoprpg.searchall.getUniqueListItemKey
 import com.feko.generictabletoprpg.spell.Spell
 import com.feko.generictabletoprpg.spell.SpellRange
 import com.feko.generictabletoprpg.theme.Typography
 import com.feko.generictabletoprpg.tracker.EmptyTrackerViewModel
+import com.feko.generictabletoprpg.tracker.IntTrackedThing
+import com.feko.generictabletoprpg.tracker.Percentage
 import com.feko.generictabletoprpg.tracker.SpellList
 import com.feko.generictabletoprpg.tracker.SpellListEntry
+import com.feko.generictabletoprpg.tracker.SpellSlot
 import com.feko.generictabletoprpg.tracker.StatEntry
 import com.feko.generictabletoprpg.tracker.StatSkillEntry
 import com.feko.generictabletoprpg.tracker.StatsContainer
+import com.feko.generictabletoprpg.tracker.Text
 import com.feko.generictabletoprpg.tracker.TrackedThing
 import com.feko.generictabletoprpg.tracker.TrackerViewModel
 import com.feko.generictabletoprpg.tracker.cantripSpellsCount
@@ -109,6 +115,7 @@ fun TrackerAlertDialogs(viewModel: TrackerViewModel) {
     AddTemporaryHpDialog(viewModel)
     SelectSpellSlotLevelToCastDialog(viewModel)
     PreviewStatSkillsDialog(viewModel)
+    EditDialog(viewModel)
 }
 
 @Composable
@@ -303,6 +310,7 @@ fun PreviewStatSkillsDialog(viewModel: TrackerViewModel) {
         onDialogDismissed = { viewModel.showStatsDialog.dismiss() },
         screenHeight = 0.7f,
         dialogTitle = { DialogTitle(stringResource(viewModel.showStatsDialog.titleResource)) },
+        Arrangement.Top,
         dialogButtons = {
             TextButton(
                 onClick = { viewModel.showStatsDialog.dismiss() },
@@ -349,6 +357,153 @@ fun PreviewStatSkillsDialog(viewModel: TrackerViewModel) {
     }
 }
 
+@Composable
+private fun EditDialog(
+    viewModel: TrackerViewModel,
+    defaultName: String = viewModel.groupName
+) {
+    val isDialogVisible by viewModel.editDialog.isVisible.collectAsState(false)
+    if (!isDialogVisible) return
+
+    val editedTrackedThing by viewModel.editDialog.state.collectAsState()
+    val canConfirmEditOperation = editedTrackedThing.validate()
+    AlertDialogBase(
+        onDialogDismissed = { viewModel.editDialog.dismiss() },
+        dialogTitle = { DialogTitle(stringResource(viewModel.editDialog.titleResource)) },
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+        dialogButtons = {
+            TextButton(onClick = { viewModel.editDialog.dismiss() }) {
+                Text(stringResource(R.string.cancel))
+            }
+            TextButton(
+                onClick = { confirmEditOperation(viewModel, editedTrackedThing) },
+                enabled = canConfirmEditOperation,
+                modifier = Modifier.wrapContentWidth()
+            ) {
+                Text(stringResource(R.string.confirm))
+            }
+        }
+    ) {
+        val isSpellList = editedTrackedThing is SpellList
+        val onFormSubmit = {
+            if (canConfirmEditOperation) {
+                confirmEditOperation(viewModel, editedTrackedThing)
+            }
+        }
+        InputField(
+            editedTrackedThing.name,
+            "${stringResource(R.string.name)} ($defaultName)",
+            onValueChange = {
+                viewModel.editDialog.updateState(editedTrackedThing.copy().apply { name = it })
+            },
+            onFormSubmit = onFormSubmit,
+            keyboardOptions = KeyboardOptions(
+                imeAction = if (isSpellList) ImeAction.Done else ImeAction.Next
+            ),
+            autoFocus = true
+        )
+        val spellSlot = editedTrackedThing as? SpellSlot
+        if (spellSlot != null) {
+            NumberInputField(
+                value = spellSlot.level,
+                label = stringResource(R.string.level),
+                convertInputValue = IInputFieldValueConverter.IntInputFieldValueConverter,
+                onValueChange = {
+                    viewModel.editDialog.updateState(spellSlot.apply { level = it }.copy())
+                },
+                isInputFieldValid = { spellSlot.isLevelValid() },
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Number,
+                    imeAction = ImeAction.Next
+                )
+            )
+        }
+        EditDialogValueInputField(
+            isSpellList,
+            editedTrackedThing,
+            {
+                viewModel.editDialog.updateState(
+                    editedTrackedThing
+                        .copy()
+                        .apply {
+                            setNewValue(it)
+                            defaultValue = it
+                        }
+                )
+            },
+            onFormSubmit
+        )
+    }
+}
+
+private fun confirmEditOperation(
+    viewModel: TrackerViewModel,
+    editedTrackedThing: TrackedThing
+) {
+    viewModel.createOrEditTrackedThing(editedTrackedThing)
+    viewModel.editDialog.dismiss()
+}
+
+@Composable
+private fun EditDialogValueInputField(
+    isSpellList: Boolean,
+    editedTrackedThing: TrackedThing,
+    onValueChange: (String) -> Unit,
+    onFormSubmit: () -> Unit
+) {
+    if (isSpellList) return
+
+    if (editedTrackedThing is Text) {
+        InputField(
+            value = editedTrackedThing.value,
+            label = stringResource(id = R.string.text),
+            onValueChange = onValueChange,
+            onFormSubmit = onFormSubmit,
+            isInputFieldValid = { editedTrackedThing.isValueValid() },
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Text,
+                imeAction = ImeAction.Done
+            ),
+            maxLines = 5
+        )
+    }
+
+    val percentage = editedTrackedThing as? Percentage
+    if (percentage != null) {
+        NumberInputField(
+            percentage.amount,
+            label = stringResource(R.string.amount),
+            convertInputValue = IInputFieldValueConverter.FloatInputFieldValueConverter,
+            onValueChange = { onValueChange(it.toString()) },
+            canSubmitForm = { percentage.isValueValid() },
+            onFormSubmit = onFormSubmit,
+            isInputFieldValid = { percentage.isValueValid() },
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Decimal,
+                imeAction = ImeAction.Done
+            ),
+            suffix = { Text("%") }
+        )
+    }
+
+    val intTrackedThing = editedTrackedThing as? IntTrackedThing
+    if (intTrackedThing != null) {
+        NumberInputField(
+            intTrackedThing.amount,
+            label = stringResource(R.string.amount),
+            convertInputValue = IInputFieldValueConverter.IntInputFieldValueConverter,
+            onValueChange = { onValueChange(it.toString()) },
+            canSubmitForm = { intTrackedThing.isValueValid() },
+            onFormSubmit = onFormSubmit,
+            isInputFieldValid = { intTrackedThing.isValueValid() },
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Number,
+                imeAction = ImeAction.Done
+            )
+        )
+    }
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 @Deprecated("")
@@ -363,10 +518,6 @@ fun AlertDialogComposable(
     ) {
         Card {
             when (viewModel.dialogType) {
-                DialogType.Create,
-                DialogType.Edit ->
-                    EditDialog(viewModel, defaultName)
-
                 DialogType.ShowSpellList ->
                     SpellListDialog(viewModel, navigator)
 
@@ -628,19 +779,6 @@ private fun HeaderWithDividers(
 }
 
 @Composable
-private fun EditDialog(
-    viewModel: IEditDialogTrackerViewModel,
-    defaultName: String
-) {
-    DialogBase(viewModel) {
-        val type by viewModel.editedTrackedThingType.collectAsState()
-        NameTextField(viewModel, autoFocus = true, defaultValue = defaultName)
-        SpellSlotLevelTextField(type, viewModel)
-        ValueTextField(viewModel, type) { viewModel.setValue(it) }
-    }
-}
-
-@Composable
 private fun DialogBase(
     viewModel: IBaseDialogTrackerViewModel,
     modifier: Modifier = Modifier,
@@ -871,83 +1009,6 @@ private fun SpellListEntryListItem(
             }
         }
     }
-}
-
-@Composable
-private fun NameTextField(
-    viewModel: INameTextFieldTrackerViewModel,
-    @Suppress("SameParameterValue")
-    autoFocus: Boolean = false,
-    defaultValue: String
-) {
-    val nameInputData by viewModel.editedTrackedThingName.collectAsState()
-    InputField(
-        nameInputData.value,
-        "${stringResource(R.string.name)} ($defaultValue)",
-        onValueChange = { viewModel.setName(it) },
-        isInputFieldValid = { nameInputData.isValid },
-        autoFocus = autoFocus
-    )
-}
-
-@Composable
-private fun SpellSlotLevelTextField(
-    type: TrackedThing.Type,
-    viewModel: ISpellSlotLevelTextFieldTrackerViewModel
-) {
-    if (type != TrackedThing.Type.SpellSlot) return
-
-    val spellSlotLevelInputData
-            by viewModel.editedTrackedThingSpellSlotLevel.collectAsState()
-    InputField(
-        value = spellSlotLevelInputData.value,
-        label = stringResource(R.string.level),
-        onValueChange = { viewModel.setLevel(it) },
-        isInputFieldValid = { spellSlotLevelInputData.isValid },
-        keyboardOptions = KeyboardOptions(
-            keyboardType = KeyboardType.Number,
-            imeAction = ImeAction.Next
-        )
-    )
-}
-
-@Composable
-private fun ValueTextField(
-    viewModel: IValueTextFieldTrackerViewModel,
-    type: TrackedThing.Type,
-    autoFocus: Boolean = false,
-    updateValue: (String) -> Unit
-) {
-    if (type == TrackedThing.Type.SpellList) {
-        return
-    }
-    val valueInputData by viewModel.editedTrackedThingValue.collectAsState()
-    InputField(
-        value = valueInputData.value,
-        label = if (type == TrackedThing.Type.Text) {
-            stringResource(id = R.string.text)
-        } else {
-            stringResource(R.string.amount)
-        },
-        onValueChange = updateValue,
-        onFormSubmit = { viewModel.confirmDialogAction() },
-        isInputFieldValid = { valueInputData.isValid },
-        keyboardOptions = KeyboardOptions(
-            keyboardType = if (type == TrackedThing.Type.Text) {
-                KeyboardType.Text
-            } else {
-                KeyboardType.Number
-            },
-            imeAction = ImeAction.Done
-        ),
-        autoFocus = autoFocus,
-        maxLines = if (type == TrackedThing.Type.Text) 5 else 1,
-        suffix = {
-            if (type == TrackedThing.Type.Percentage) {
-                Text("%")
-            }
-        }
-    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

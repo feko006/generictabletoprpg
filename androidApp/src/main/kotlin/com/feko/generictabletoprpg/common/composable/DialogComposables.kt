@@ -39,6 +39,7 @@ fun AlertDialogBase(
     onDialogDismissed: () -> Unit,
     screenHeight: Float = 1f,
     dialogTitle: @Composable ColumnScope.() -> Unit = {},
+    verticalArrangement: Arrangement.Vertical = Arrangement.Top,
     dialogButtons: @Composable (RowScope.() -> Unit)? = null,
     dialogContent: @Composable ColumnScope.() -> Unit = {}
 ) {
@@ -47,7 +48,8 @@ fun AlertDialogBase(
             Column(
                 Modifier
                     .heightIn(max = LocalConfiguration.current.screenHeightDp.dp * screenHeight)
-                    .padding(start = 16.dp, top = 16.dp, end = 16.dp)
+                    .padding(start = 16.dp, top = 16.dp, end = 16.dp),
+                verticalArrangement
             ) {
                 dialogTitle()
                 dialogContent()

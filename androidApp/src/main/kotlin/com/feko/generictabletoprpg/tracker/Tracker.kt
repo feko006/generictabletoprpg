@@ -68,9 +68,7 @@ fun TrackerScreen(
                 modifier = modifier,
                 onDismissRequest = { viewModel.fabDropdown.dismiss() },
                 onFabClicked = { viewModel.fabDropdown.toggleFabDropdownRequested() }
-            ) {
-                DropdownMenuContent(viewModel)
-            }
+            ) { DropdownMenuContent { type, context -> viewModel.showCreateDialog(type, context) } }
         },
         isAlertDialogVisible = isAlertDialogVisible,
         alertDialogComposable = {

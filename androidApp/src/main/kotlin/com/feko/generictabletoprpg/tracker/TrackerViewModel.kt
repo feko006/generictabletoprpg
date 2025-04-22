@@ -32,7 +32,7 @@ import kotlinx.coroutines.withContext
 
 class TrackerViewModel(
     private val groupId: Long,
-    private val groupName: String,
+    val groupName: String,
     private val trackedThingDao: TrackedThingDao,
     private val spellDao: SpellDao,
     private val json: IJson,
@@ -161,6 +161,11 @@ class TrackerViewModel(
     val showStatsDialog: IStatefulAlertDialogSubViewModel<StatsContainer>
         get() = _showStatsDialog
 
+    private val _editDialog =
+        StatefulAlertDialogSubViewModel<TrackedThing>(TrackedThing.Companion.Empty, viewModelScope)
+    val editDialog: IStatefulAlertDialogSubViewModel<TrackedThing>
+        get() = _editDialog
+
     override val combinedItemFlow: Flow<List<Any>> =
         _items.combine(_searchString) { items, searchString ->
             if (searchString.isBlank()) {
@@ -193,7 +198,7 @@ class TrackerViewModel(
             }
     }
 
-    override fun showCreateDialog(type: TrackedThing.Type, context: Context) {
+    fun showCreateDialog(type: TrackedThing.Type, context: Context) {
         viewModelScope.launch {
             _alertDialog._titleResource = type.nameResource
             if (type == TrackedThing.Type.FiveEStats) {
@@ -206,17 +211,16 @@ class TrackerViewModel(
                 newStats.setItem(defaultStatsContainer, json)
                 statsEditDialog.editedStats.emit(newStats)
                 confirmButtonEnabled.emit(true)
+                _alertDialog.show()
             } else {
-                dialogType = DialogType.Create
-                editedTrackedThing = TrackedThing.emptyOfType(type, _items.value.size, groupId)
-                editedTrackedThingName.emit(InputFieldData.EMPTY)
-                editedTrackedThingSpellSlotLevel.emit(InputFieldData.EMPTY)
-                editedTrackedThingValue.emit(InputFieldData.EMPTY)
-                validateModel()
+                val newTrackedThing = TrackedThing.emptyOfType(type, _items.value.size, groupId)
+                _editDialog.apply {
+                    _titleResource = type.nameResource
+                    show(newTrackedThing)
+                }
             }
             editedTrackedThingType.emit(type)
             _fabDropdown.collapse()
-            _alertDialog.show()
         }
     }
 
@@ -228,26 +232,14 @@ class TrackerViewModel(
                 dialogType = DialogType.EditStats
                 statsEditDialog.editedStats.emit(copy as Stats)
                 confirmButtonEnabled.emit(true)
+                _alertDialog.show()
             } else {
-                dialogType = DialogType.Edit
-                editedTrackedThing = copy
-                editedTrackedThingName.emit(InputFieldData(copy.name, isValid = true))
-                if (copy is SpellSlot) {
-                    val dereferenceTrackedThing = requireNotNull(editedTrackedThing)
-                    dereferenceTrackedThing.setNewValue(dereferenceTrackedThing.defaultValue)
-                    editedTrackedThingSpellSlotLevel.emit(
-                        InputFieldData(
-                            copy.level.toString(),
-                            isValid = true
-                        )
-                    )
+                _editDialog.apply {
+                    _titleResource = R.string.edit
+                    show(copy)
                 }
-                editedTrackedThingValue.emit(InputFieldData(copy.defaultValue, isValid = true))
-                editedTrackedThingType.emit(copy.type)
-                validateModel()
             }
             _fabDropdown.collapse()
-            _alertDialog.show()
         }
     }
 
@@ -257,46 +249,33 @@ class TrackerViewModel(
         }
 
         when (dialogType) {
-            DialogType.Create -> createNewTrackedThing()
-            DialogType.Edit -> editExistingTrackedThing()
-
             DialogType.EditStats -> createOrEditStats()
-
 
             DialogType.ShowSpellList,
             DialogType.None -> Unit
         }
     }
 
-    private fun createNewTrackedThing() {
+    fun createOrEditTrackedThing(trackedThing: TrackedThing) {
         viewModelScope.launch {
-            val editedTrackedThing = requireNotNull(editedTrackedThing)
-            withContext(Dispatchers.Default) {
-                ensureNonEmptyName(editedTrackedThing)
-                val id = trackedThingDao.insertOrUpdate(editedTrackedThing)
-                editedTrackedThing.id = id
+            ensureNonEmptyName(trackedThing)
+            if (trackedThing.id == 0L) {
+                val id = trackedThingDao.insertOrUpdate(trackedThing)
+                trackedThing.id = id
+                addItem(trackedThing) {
+                    if (it is TrackedThing)
+                        it.index
+                    else Int.MAX_VALUE
+                }
+            } else {
+                if (trackedThing is Health) {
+                    trackedThing.temporaryHp = 0
+                }
+                withContext(Dispatchers.Default) {
+                    trackedThingDao.insertOrUpdate(trackedThing)
+                }
+                replaceItem(trackedThing)
             }
-            addItem(editedTrackedThing) {
-                if (it is TrackedThing)
-                    it.index
-                else Int.MAX_VALUE
-            }
-            _alertDialog.hide()
-        }
-    }
-
-    private fun editExistingTrackedThing() {
-        viewModelScope.launch {
-            val trackedThingToUpdate = requireNotNull(editedTrackedThing)
-            ensureNonEmptyName(trackedThingToUpdate)
-            if (trackedThingToUpdate is Health) {
-                trackedThingToUpdate.temporaryHp = 0
-            }
-            withContext(Dispatchers.Default) {
-                trackedThingDao.insertOrUpdate(trackedThingToUpdate)
-            }
-            replaceItem(trackedThingToUpdate)
-            _alertDialog.hide()
         }
     }
 

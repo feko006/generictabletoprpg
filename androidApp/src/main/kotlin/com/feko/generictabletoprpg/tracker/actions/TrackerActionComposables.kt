@@ -31,7 +31,7 @@ fun PercentageActions(
     onEditButtonClicked: () -> Unit,
     onDeleteButtonClicked: () -> Unit,
 ) {
-    ItemActionsBase(item, onEditButtonClicked, onDeleteButtonClicked) {
+    ItemActionsBase(onEditButtonClicked, onDeleteButtonClicked) {
         IconButton(
             onClick = onAddButtonClicked,
             enabled = item.canAdd()
@@ -55,7 +55,7 @@ fun NumberActions(
     onEditButtonClicked: () -> Unit,
     onDeleteButtonClicked: () -> Unit,
 ) {
-    ItemActionsBase(item, onEditButtonClicked, onDeleteButtonClicked) {
+    ItemActionsBase(onEditButtonClicked, onDeleteButtonClicked) {
         IconButton(
             onClick = onAddButtonClicked,
             enabled = item.canAdd()
@@ -81,7 +81,7 @@ fun HealthActions(
     onEditButtonClicked: () -> Unit,
     onDeleteButtonClicked: () -> Unit,
 ) {
-    ItemActionsBase(health, onEditButtonClicked, onDeleteButtonClicked) {
+    ItemActionsBase(onEditButtonClicked, onDeleteButtonClicked) {
         IconButton(
             onClick = onHealButtonClicked,
             enabled = health.canAdd()
@@ -185,7 +185,6 @@ fun StatsActions(
     onDeleteButtonClicked: () -> Unit
 ) {
     ItemActionsBase(
-        stats,
         onEditButtonClicked = onEditButtonClicked,
         onDeleteButtonClicked = onDeleteButtonClicked
     ) {

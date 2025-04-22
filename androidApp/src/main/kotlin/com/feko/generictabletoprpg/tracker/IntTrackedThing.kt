@@ -39,7 +39,7 @@ abstract class IntTrackedThing(
     private fun normalize(value: String) = value.toIntOrNull()?.toString() ?: "0"
 
     override fun isValueValid(): Boolean =
-        super.isValueValid() && amount >= 0 && amount <= toAmount(defaultValue)
+        super.isValueValid() && amount > 0 && amount <= toAmount(defaultValue)
 
     override fun getPrintableValue(): String = "$value / $defaultValue"
 

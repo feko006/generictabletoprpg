@@ -1,6 +1,5 @@
 package com.feko.generictabletoprpg.tracker
 
-import android.content.Context
 import androidx.compose.foundation.lazy.LazyListState
 import com.feko.generictabletoprpg.common.alertdialog.EmptyAlertDialogSubViewModel
 import com.feko.generictabletoprpg.common.alertdialog.IAlertDialogSubViewModel
@@ -43,8 +42,6 @@ object EmptyTrackerViewModel : ITrackerViewModel {
         get() = MutableStateFlow(null)
     override val combinedItemFlow: Flow<List<Any>>
         get() = flowOf()
-
-    override fun showCreateDialog(type: TrackedThing.Type, context: Context) = Unit
 
     override fun showEditDialog(item: TrackedThing) = Unit
 
