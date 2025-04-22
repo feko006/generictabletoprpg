@@ -83,8 +83,6 @@ object EmptyTrackerViewModel : ITrackerViewModel {
 
     override fun castSpellRequested(level: Int) = Unit
 
-    override fun showStatsDialog(stats: Stats) = Unit
-
     override fun canCastSpell(level: Int): Boolean = false
 
     override fun changeSpellListEntryPreparedState(
@@ -97,6 +95,4 @@ object EmptyTrackerViewModel : ITrackerViewModel {
     override fun useHitDie(item: TrackedThing) = Unit
 
     override fun restoreHitDie(item: TrackedThing) = Unit
-
-    override val statsBeingPreviewed: StatsContainer? = null
 }

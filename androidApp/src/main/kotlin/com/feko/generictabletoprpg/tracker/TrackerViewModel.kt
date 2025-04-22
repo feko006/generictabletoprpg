@@ -40,7 +40,10 @@ class TrackerViewModel(
 ) : OverviewViewModel<Any>(trackedThingDao),
     ITrackerViewModel {
 
+    @Deprecated(message = "")
     private val _alertDialog = AlertDialogSubViewModel(viewModelScope, ::onAlertDialogDismissed)
+
+    @Deprecated(message = "")
     override val alertDialog: IAlertDialogSubViewModel = _alertDialog
 
     private val _fabDropdown = FabDropdownSubViewModel(viewModelScope)
@@ -49,10 +52,19 @@ class TrackerViewModel(
     private val _toast = ToastSubViewModel(viewModelScope)
     override val toast: IToastSubViewModel = _toast
 
+    @Deprecated(message = "")
     override val editedTrackedThingName = MutableStateFlow(InputFieldData.EMPTY)
+
+    @Deprecated(message = "")
     override val editedTrackedThingSpellSlotLevel = MutableStateFlow(InputFieldData.EMPTY)
+
+    @Deprecated(message = "")
     override val editedTrackedThingValue = MutableStateFlow(InputFieldData.EMPTY)
+
+    @Deprecated(message = "")
     override val editedTrackedThingType = MutableStateFlow(TrackedThing.Type.None)
+
+    @Deprecated(message = "")
     override val confirmButtonEnabled = MutableStateFlow(false)
 
     override var statsEditDialog: StatsEditDialogSubViewModel =
@@ -65,17 +77,18 @@ class TrackerViewModel(
 
     private lateinit var allItems: List<Any>
 
+    @Deprecated(message = "")
     private var editedTrackedThing: TrackedThing? = null
     private var spellListBeingAddedTo: SpellList? = null
     private var fiveEDefaultStats: List<StatEntry>? = null
 
+    @Deprecated(message = "")
     override lateinit var dialogType: DialogType
     private val _spellListBeingPreviewed = MutableStateFlow<SpellList?>(null)
     override lateinit var spellListState: LazyListState
     override lateinit var isShowingPreparedSpells: MutableStateFlow<Boolean>
     override val spellListBeingPreviewed: StateFlow<SpellList?>
         get() = _spellListBeingPreviewed
-    override var statsBeingPreviewed: StatsContainer? = null
 
     private val _confirmDeletionDialog =
         StatefulAlertDialogSubViewModel<TrackedThing>(TrackedThing.Companion.Empty, viewModelScope)
@@ -141,6 +154,12 @@ class TrackerViewModel(
         ).apply { _titleResource = R.string.select_slot_level_for_casting_spell }
     val selectSlotLevelToCastDialog: IStatefulAlertDialogSubViewModel<List<Int>>
         get() = _selectSlotLevelToCastDialog
+
+    private val _showStatsDialog =
+        StatefulAlertDialogSubViewModel(StatsContainer.Empty, viewModelScope)
+            .apply { _titleResource = R.string.skills }
+    val showStatsDialog: IStatefulAlertDialogSubViewModel<StatsContainer>
+        get() = _showStatsDialog
 
     override val combinedItemFlow: Flow<List<Any>> =
         _items.combine(_searchString) { items, searchString ->
@@ -245,7 +264,6 @@ class TrackerViewModel(
 
 
             DialogType.ShowSpellList,
-            DialogType.PreviewStatSkills,
             DialogType.None -> Unit
         }
     }
@@ -785,13 +803,8 @@ class TrackerViewModel(
         }
     }
 
-    override fun showStatsDialog(stats: Stats) {
-        viewModelScope.launch {
-            _alertDialog._titleResource = R.string.skills
-            dialogType = DialogType.PreviewStatSkills
-            statsBeingPreviewed = stats.serializedItem
-            _alertDialog.show()
-        }
+    fun showStatsDialog(stats: Stats) {
+        viewModelScope.launch { _showStatsDialog.show(stats.serializedItem) }
     }
 
     override fun canCastSpell(level: Int): Boolean =

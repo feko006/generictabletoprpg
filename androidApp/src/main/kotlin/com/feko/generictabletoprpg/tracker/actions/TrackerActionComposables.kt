@@ -178,11 +178,19 @@ fun SpellListActions(
 }
 
 @Composable
-fun StatsActions(item: TrackedThing, viewModel: IStatsActionsTrackerViewModel) {
-    ItemActionsBase(item, viewModel) {
-        val stats = item as Stats
+fun StatsActions(
+    stats: Stats,
+    onPreviewButtonClicked: () -> Unit,
+    onEditButtonClicked: () -> Unit,
+    onDeleteButtonClicked: () -> Unit
+) {
+    ItemActionsBase(
+        stats,
+        onEditButtonClicked = onEditButtonClicked,
+        onDeleteButtonClicked = onDeleteButtonClicked
+    ) {
         IconButton(
-            onClick = { viewModel.showStatsDialog(stats) },
+            onClick = onPreviewButtonClicked,
             enabled = stats.serializedItem.stats.any()
         ) {
             Icon(Icons.AutoMirrored.Filled.List, "")

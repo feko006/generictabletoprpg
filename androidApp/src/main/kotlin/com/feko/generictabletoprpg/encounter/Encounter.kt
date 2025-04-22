@@ -571,109 +571,109 @@ fun EditInitiativeEntryAlertDialog(
                 BoxWithScrollIndicator(
                     scrollState,
                     backgroundColor = CardDefaults.cardColors().containerColor,
-                    Modifier.weight(1f),
-                    content = {
-                        Column(
-                            Modifier.verticalScroll(scrollState),
-                            Arrangement.spacedBy(8.dp)
-                        ) {
-                            val name = initiativeEntry.name
-                            InputField(
-                                value = name,
-                                label = stringResource(R.string.name),
-                                onValueChange = {
-                                    onItemUpdated(initiativeEntry.copy(name = it))
-                                },
-                                isInputFieldValid = { initiativeEntry.isNameValid },
-                                autoFocus = !initiativeEntry.isSavedInDatabase
-                            )
-
-                            NumberInputField(
-                                value = initiativeEntry.initiative,
-                                label = stringResource(R.string.initiative),
-                                convertInputValue = IInputFieldValueConverter.IntInputFieldValueConverter,
-                                onValueChange = { onItemUpdated(initiativeEntry.copy(initiative = it)) },
-                                keyboardOptions = KeyboardOptions(
-                                    keyboardType = KeyboardType.Number,
-                                    imeAction = ImeAction.Next
-                                )
-                            )
-
-                            NumberInputField(
-                                value = initiativeEntry.health,
-                                label = stringResource(R.string.health),
-                                convertInputValue = IInputFieldValueConverter.IntInputFieldValueConverter,
-                                onValueChange = { onItemUpdated(initiativeEntry.copy(health = it)) },
-                                keyboardOptions = KeyboardOptions(
-                                    keyboardType = KeyboardType.Number,
-                                    imeAction = ImeAction.Next
-                                )
-                            )
-
-                            NumberInputField(
-                                value = initiativeEntry.armorClass,
-                                label = stringResource(R.string.armor_class),
-                                convertInputValue = IInputFieldValueConverter.IntInputFieldValueConverter,
-                                onValueChange = { onItemUpdated(initiativeEntry.copy(armorClass = it)) },
-                                keyboardOptions = KeyboardOptions(
-                                    keyboardType = KeyboardType.Number,
-                                    imeAction = ImeAction.Next
-                                )
-                            )
-
-                            NumberInputField(
-                                value = initiativeEntry.legendaryActions,
-                                label = stringResource(R.string.legendary_actions),
-                                convertInputValue = IInputFieldValueConverter.IntInputFieldValueConverter,
-                                onValueChange = {
-                                    onItemUpdated(
-                                        initiativeEntry.copy(
-                                            legendaryActions = it,
-                                            availableLegendaryActions = it
-                                        )
-                                    )
-                                },
-                                keyboardOptions = KeyboardOptions(
-                                    keyboardType = KeyboardType.Number,
-                                    imeAction = ImeAction.Next
-                                )
-                            )
-
-                            NumberInputField(
-                                value = initiativeEntry.spellSaveDc,
-                                label = stringResource(R.string.spell_save_dc),
-                                convertInputValue = IInputFieldValueConverter.IntInputFieldValueConverter,
-                                onValueChange = { onItemUpdated(initiativeEntry.copy(spellSaveDc = it)) },
-                                keyboardOptions = KeyboardOptions(
-                                    keyboardType = KeyboardType.Number,
-                                    imeAction = ImeAction.Next
-                                )
-                            )
-
-                            NumberInputField(
-                                value = initiativeEntry.spellAttackModifier,
-                                label = stringResource(R.string.spell_attack_modifier),
-                                convertInputValue = IInputFieldValueConverter.IntInputFieldValueConverter,
-                                onValueChange = {
-                                    onItemUpdated(
-                                        initiativeEntry.copy(
-                                            spellAttackModifier = it
-                                        )
-                                    )
-                                },
-                                onFormSubmit = {
-                                    onEditFinished(initiativeEntry)
-                                    onDialogDismissed()
-                                },
-                                canSubmitForm = { initiativeEntry.isEntryValid },
-                                keyboardOptions = KeyboardOptions(
-                                    keyboardType = KeyboardType.Number,
-                                    imeAction = ImeAction.Done
-                                )
-                            )
-                        }
-                    }
+                    Modifier.weight(1f)
                 )
+                {
+                    Column(
+                        Modifier.verticalScroll(scrollState),
+                        Arrangement.spacedBy(8.dp)
+                    ) {
+                        val name = initiativeEntry.name
+                        InputField(
+                            value = name,
+                            label = stringResource(R.string.name),
+                            onValueChange = {
+                                onItemUpdated(initiativeEntry.copy(name = it))
+                            },
+                            isInputFieldValid = { initiativeEntry.isNameValid },
+                            autoFocus = !initiativeEntry.isSavedInDatabase
+                        )
+
+                        NumberInputField(
+                            value = initiativeEntry.initiative,
+                            label = stringResource(R.string.initiative),
+                            convertInputValue = IInputFieldValueConverter.IntInputFieldValueConverter,
+                            onValueChange = { onItemUpdated(initiativeEntry.copy(initiative = it)) },
+                            keyboardOptions = KeyboardOptions(
+                                keyboardType = KeyboardType.Number,
+                                imeAction = ImeAction.Next
+                            )
+                        )
+
+                        NumberInputField(
+                            value = initiativeEntry.health,
+                            label = stringResource(R.string.health),
+                            convertInputValue = IInputFieldValueConverter.IntInputFieldValueConverter,
+                            onValueChange = { onItemUpdated(initiativeEntry.copy(health = it)) },
+                            keyboardOptions = KeyboardOptions(
+                                keyboardType = KeyboardType.Number,
+                                imeAction = ImeAction.Next
+                            )
+                        )
+
+                        NumberInputField(
+                            value = initiativeEntry.armorClass,
+                            label = stringResource(R.string.armor_class),
+                            convertInputValue = IInputFieldValueConverter.IntInputFieldValueConverter,
+                            onValueChange = { onItemUpdated(initiativeEntry.copy(armorClass = it)) },
+                            keyboardOptions = KeyboardOptions(
+                                keyboardType = KeyboardType.Number,
+                                imeAction = ImeAction.Next
+                            )
+                        )
+
+                        NumberInputField(
+                            value = initiativeEntry.legendaryActions,
+                            label = stringResource(R.string.legendary_actions),
+                            convertInputValue = IInputFieldValueConverter.IntInputFieldValueConverter,
+                            onValueChange = {
+                                onItemUpdated(
+                                    initiativeEntry.copy(
+                                        legendaryActions = it,
+                                        availableLegendaryActions = it
+                                    )
+                                )
+                            },
+                            keyboardOptions = KeyboardOptions(
+                                keyboardType = KeyboardType.Number,
+                                imeAction = ImeAction.Next
+                            )
+                        )
+
+                        NumberInputField(
+                            value = initiativeEntry.spellSaveDc,
+                            label = stringResource(R.string.spell_save_dc),
+                            convertInputValue = IInputFieldValueConverter.IntInputFieldValueConverter,
+                            onValueChange = { onItemUpdated(initiativeEntry.copy(spellSaveDc = it)) },
+                            keyboardOptions = KeyboardOptions(
+                                keyboardType = KeyboardType.Number,
+                                imeAction = ImeAction.Next
+                            )
+                        )
+
+                        NumberInputField(
+                            value = initiativeEntry.spellAttackModifier,
+                            label = stringResource(R.string.spell_attack_modifier),
+                            convertInputValue = IInputFieldValueConverter.IntInputFieldValueConverter,
+                            onValueChange = {
+                                onItemUpdated(
+                                    initiativeEntry.copy(
+                                        spellAttackModifier = it
+                                    )
+                                )
+                            },
+                            onFormSubmit = {
+                                onEditFinished(initiativeEntry)
+                                onDialogDismissed()
+                            },
+                            canSubmitForm = { initiativeEntry.isEntryValid },
+                            keyboardOptions = KeyboardOptions(
+                                keyboardType = KeyboardType.Number,
+                                imeAction = ImeAction.Done
+                            )
+                        )
+                    }
+                }
 
                 if (isLairActionsButtonVisible) {
                     TextButton(

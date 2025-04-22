@@ -5,8 +5,11 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -21,8 +24,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -32,31 +35,28 @@ import com.feko.generictabletoprpg.theme.Typography
 
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
-fun ConfirmationDialog(
-    onConfirm: () -> Unit,
+fun AlertDialogBase(
     onDialogDismissed: () -> Unit,
-    dialogTitle: String = stringResource(R.string.delete_dialog_title),
-    dialogMessage: String? = null
+    screenHeight: Float = 1f,
+    dialogTitle: @Composable ColumnScope.() -> Unit = {},
+    dialogButtons: @Composable (RowScope.() -> Unit)? = null,
+    dialogContent: @Composable ColumnScope.() -> Unit = {}
 ) {
     BasicAlertDialog(onDismissRequest = onDialogDismissed) {
         Card {
-            Column(Modifier.padding(start = 16.dp, top = 16.dp, end = 8.dp)) {
-                DialogTitle(dialogTitle)
-                if (dialogMessage != null) {
-                    Text(dialogMessage, Modifier.padding(top = 8.dp))
-                }
-                Row(
-                    Modifier.fillMaxWidth(),
-                    Arrangement.End
-                ) {
-                    TextButton(onClick = onDialogDismissed) {
-                        Text(stringResource(R.string.cancel))
-                    }
-                    TextButton(onClick = {
-                        onConfirm()
-                        onDialogDismissed()
-                    }) {
-                        Text(stringResource(R.string.confirm))
+            Column(
+                Modifier
+                    .heightIn(max = LocalConfiguration.current.screenHeightDp.dp * screenHeight)
+                    .padding(start = 16.dp, top = 16.dp, end = 16.dp)
+            ) {
+                dialogTitle()
+                dialogContent()
+                if (dialogButtons != null) {
+                    Row(
+                        Modifier.fillMaxWidth(),
+                        Arrangement.End
+                    ) {
+                        dialogButtons()
                     }
                 }
             }
@@ -65,7 +65,33 @@ fun ConfirmationDialog(
 }
 
 @Composable
-@OptIn(ExperimentalMaterial3Api::class)
+fun ConfirmationDialog(
+    onConfirm: () -> Unit,
+    onDialogDismissed: () -> Unit,
+    dialogTitle: String = stringResource(R.string.delete_dialog_title),
+    dialogMessage: String? = null
+) {
+    AlertDialogBase(
+        onDialogDismissed,
+        dialogTitle = { DialogTitle(dialogTitle) },
+        dialogButtons = {
+            TextButton(onClick = onDialogDismissed) {
+                Text(stringResource(R.string.cancel))
+            }
+            TextButton(onClick = {
+                onConfirm()
+                onDialogDismissed()
+            }) {
+                Text(stringResource(R.string.confirm))
+            }
+        }) {
+        if (dialogMessage != null) {
+            Text(dialogMessage, Modifier.padding(top = 8.dp))
+        }
+    }
+}
+
+@Composable
 fun EnterValueDialog(
     onConfirm: (String) -> Unit,
     onDialogDismissed: () -> Unit,
@@ -80,50 +106,43 @@ fun EnterValueDialog(
     ),
     suffix: @Composable () -> Unit = {}
 ) {
-    BasicAlertDialog(onDismissRequest = onDialogDismissed) {
-        Card {
-            Column(Modifier.padding(start = 16.dp, top = 16.dp, end = 16.dp)) {
-                DialogTitle(dialogTitle)
-                var value by remember { mutableStateOf("") }
-                InputField(
-                    value,
-                    inputFieldLabel,
-                    onValueChange = { value = it },
-                    modifier = Modifier.padding(vertical = 8.dp),
-                    onFormSubmit = {
-                        onConfirm(value)
-                        onDialogDismissed()
-                    },
-                    canSubmitForm,
-                    isInputFieldValid,
-                    keyboardOptions = keyboardOptions,
-                    autoFocus = true,
-                    suffix = suffix
-                )
-                Row(
-                    Modifier.fillMaxWidth(),
-                    Arrangement.End
-                ) {
-                    TextButton(onClick = onDialogDismissed) {
-                        Text(stringResource(R.string.cancel))
-                    }
-                    TextButton(
-                        onClick = {
-                            onConfirm(value)
-                            onDialogDismissed()
-                        },
-                        enabled = isInputFieldValid(value)
-                    ) {
-                        Text(stringResource(R.string.confirm))
-                    }
-                }
+    var value by remember { mutableStateOf("") }
+    AlertDialogBase(
+        onDialogDismissed,
+        dialogTitle = { DialogTitle(dialogTitle) },
+        dialogButtons = {
+            TextButton(onClick = onDialogDismissed) {
+                Text(stringResource(R.string.cancel))
             }
-        }
+            TextButton(
+                onClick = {
+                    onConfirm(value)
+                    onDialogDismissed()
+                },
+                enabled = isInputFieldValid(value)
+            ) {
+                Text(stringResource(R.string.confirm))
+            }
+        }) {
+        InputField(
+            value,
+            inputFieldLabel,
+            onValueChange = { value = it },
+            modifier = Modifier.padding(vertical = 8.dp),
+            onFormSubmit = {
+                onConfirm(value)
+                onDialogDismissed()
+            },
+            canSubmitForm,
+            isInputFieldValid,
+            keyboardOptions = keyboardOptions,
+            autoFocus = true,
+            suffix = suffix
+        )
     }
 }
 
 @Composable
-@OptIn(ExperimentalMaterial3Api::class)
 fun <T> SelectFromListDialog(
     @StringRes
     dialogTitle: Int,
@@ -133,28 +152,24 @@ fun <T> SelectFromListDialog(
     onDialogDismissed: () -> Unit,
     listItem: @Composable (T) -> Unit
 ) {
-    BasicAlertDialog(onDialogDismissed) {
-        Card {
-            Column(Modifier.padding(start = 16.dp, top = 16.dp, end = 16.dp, bottom = 8.dp)) {
-                DialogTitle(dialogTitle)
-                LazyColumn(
-                    Modifier.padding(top = 16.dp, bottom = 8.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    items(listItems, getListItemKey) {
-                        Box(Modifier.clickable {
-                            onItemSelected(it)
-                            onDialogDismissed()
-                        }) {
-                            listItem(it)
-                        }
-                    }
-                }
-                TextButton(
-                    onClick = onDialogDismissed,
-                    Modifier.align(Alignment.End)
-                ) {
-                    Text(stringResource(R.string.cancel))
+    AlertDialogBase(
+        onDialogDismissed,
+        dialogTitle = { DialogTitle(dialogTitle) },
+        dialogButtons = {
+            TextButton(onClick = onDialogDismissed) {
+                Text(stringResource(R.string.cancel))
+            }
+        }) {
+        LazyColumn(
+            Modifier.padding(top = 16.dp, bottom = 8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            items(listItems, getListItemKey) {
+                Box(Modifier.clickable {
+                    onItemSelected(it)
+                    onDialogDismissed()
+                }) {
+                    listItem(it)
                 }
             }
         }

@@ -63,6 +63,8 @@ import com.feko.generictabletoprpg.R
 import com.feko.generictabletoprpg.asSignedString
 import com.feko.generictabletoprpg.common.alertdialog.EmptyAlertDialogSubViewModel
 import com.feko.generictabletoprpg.common.alertdialog.IAlertDialogSubViewModel
+import com.feko.generictabletoprpg.common.composable.AlertDialogBase
+import com.feko.generictabletoprpg.common.composable.BoxWithScrollIndicator
 import com.feko.generictabletoprpg.common.composable.CheckboxWithText
 import com.feko.generictabletoprpg.common.composable.ConfirmationDialog
 import com.feko.generictabletoprpg.common.composable.DialogTitle
@@ -106,6 +108,7 @@ fun TrackerAlertDialogs(viewModel: TrackerViewModel) {
     HealHealthDialog(viewModel)
     AddTemporaryHpDialog(viewModel)
     SelectSpellSlotLevelToCastDialog(viewModel)
+    PreviewStatSkillsDialog(viewModel)
 }
 
 @Composable
@@ -291,8 +294,64 @@ fun SelectSpellSlotLevelToCastDialog(viewModel: TrackerViewModel) {
     }
 }
 
+@Composable
+fun PreviewStatSkillsDialog(viewModel: TrackerViewModel) {
+    val isDialogVisible by viewModel.showStatsDialog.isVisible.collectAsState(false)
+    if (!isDialogVisible) return
+
+    AlertDialogBase(
+        onDialogDismissed = { viewModel.showStatsDialog.dismiss() },
+        screenHeight = 0.7f,
+        dialogTitle = { DialogTitle(stringResource(viewModel.showStatsDialog.titleResource)) },
+        dialogButtons = {
+            TextButton(
+                onClick = { viewModel.showStatsDialog.dismiss() },
+                modifier = Modifier.wrapContentWidth()
+            ) { Text(stringResource(R.string.dismiss)) }
+        }
+    ) {
+        val statsContainer by viewModel.showStatsDialog.state.collectAsState()
+        val stats = statsContainer.stats
+        val skills = stats
+            .flatMap { it.skills }
+            .sortedBy { it.name }
+        val passiveSkills = skills.filter { it.showPassive }
+        val scrollState = rememberScrollState()
+        BoxWithScrollIndicator(
+            scrollState,
+            CardDefaults.cardColors().containerColor,
+            Modifier.weight(1f),
+        ) {
+            Column(Modifier.verticalScroll(scrollState)) {
+                HeaderWithDividers(stringResource(R.string.passive_skills))
+                passiveSkills.forEachIndexed { index, passiveSkill ->
+                    SkillRow(passiveSkill.name, passiveSkill.passiveScore.toString())
+                    if (index < passiveSkills.size - 1) {
+                        HorizontalDivider(Modifier.padding(horizontal = 80.dp, vertical = 4.dp))
+                    }
+                }
+                HeaderWithDividers(stringResource(R.string.saving_throws))
+                stats.forEachIndexed { index, stat ->
+                    SkillRow(stat.name, stat.savingThrowBonus.asSignedString())
+                    if (index < stats.size - 1) {
+                        HorizontalDivider(Modifier.padding(horizontal = 80.dp, vertical = 4.dp))
+                    }
+                }
+                HeaderWithDividers(stringResource(R.string.skill_bonuses))
+                skills.forEachIndexed { index, skill ->
+                    SkillRow(skill.name, skill.bonus.asSignedString())
+                    if (index < skills.size - 1) {
+                        HorizontalDivider(Modifier.padding(horizontal = 80.dp, vertical = 4.dp))
+                    }
+                }
+            }
+        }
+    }
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
+@Deprecated("")
 fun AlertDialogComposable(
     viewModel: IAlertDialogTrackerViewModel,
     defaultName: String,
@@ -312,8 +371,6 @@ fun AlertDialogComposable(
                     SpellListDialog(viewModel, navigator)
 
                 DialogType.EditStats -> StatsEditDialog(viewModel.statsEditDialog, defaultName)
-
-                DialogType.PreviewStatSkills -> PreviewStatSkillsDialog(viewModel)
 
                 DialogType.None -> Unit
             }
@@ -417,55 +474,6 @@ fun StatsEditDialog(
                 }
             }
         }
-    }
-}
-
-@Composable
-fun PreviewStatSkillsDialog(viewModel: IStatsPreviewDialogTrackerViewModel) {
-    Column(
-        Modifier
-            .padding(16.dp)
-            .heightIn(0.dp, (LocalConfiguration.current.screenHeightDp * 0.7f).dp),
-    ) {
-        DialogTitle(viewModel.alertDialog.titleResource)
-        val stats = requireNotNull(viewModel.statsBeingPreviewed).stats
-        val skills = stats
-            .flatMap { it.skills }
-            .sortedBy { it.name }
-        val passiveSkills = skills.filter { it.showPassive }
-        Column(
-            Modifier
-                .verticalScroll(rememberScrollState())
-                .weight(1f, false)
-        ) {
-            HeaderWithDividers(stringResource(R.string.passive_skills))
-            passiveSkills.forEachIndexed { index, passiveSkill ->
-                SkillRow(passiveSkill.name, passiveSkill.passiveScore.toString())
-                if (index < passiveSkills.size - 1) {
-                    HorizontalDivider(Modifier.padding(horizontal = 80.dp, vertical = 4.dp))
-                }
-            }
-            HeaderWithDividers(stringResource(R.string.saving_throws))
-            stats.forEachIndexed { index, stat ->
-                SkillRow(stat.name, stat.savingThrowBonus.asSignedString())
-                if (index < stats.size - 1) {
-                    HorizontalDivider(Modifier.padding(horizontal = 80.dp, vertical = 4.dp))
-                }
-            }
-            HeaderWithDividers(stringResource(R.string.skill_bonuses))
-            skills.forEachIndexed { index, skill ->
-                SkillRow(skill.name, skill.bonus.asSignedString())
-                if (index < skills.size - 1) {
-                    HorizontalDivider(Modifier.padding(horizontal = 80.dp, vertical = 4.dp))
-                }
-            }
-        }
-        TextButton(
-            onClick = { viewModel.alertDialog.dismiss() },
-            modifier = Modifier
-                .align(Alignment.End)
-                .wrapContentWidth()
-        ) { Text(stringResource(R.string.dismiss)) }
     }
 }
 

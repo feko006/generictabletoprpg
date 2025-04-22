@@ -1,26 +1,24 @@
 package com.feko.generictabletoprpg.tracker.dialogs
 
-import com.feko.generictabletoprpg.tracker.actions.IStatsActionsTrackerViewModel
-
 interface IAlertDialogTrackerViewModel
     : IEditDialogTrackerViewModel,
     IValueInputDialogTrackerViewModel,
     ICreateDialogTrackerViewModel,
-    ISpellListDialogTrackerViewModel,
-    IStatsPreviewDialogTrackerViewModel,
-    IStatsActionsTrackerViewModel {
+    ISpellListDialogTrackerViewModel {
 
+    @Deprecated("")
     var dialogType: DialogType
 
+    @Deprecated("")
     val statsEditDialog: IStatsEditDialogSubViewModel
 
+    @Deprecated("")
     enum class DialogType {
         None,
         Create,
         Edit,
         ShowSpellList,
-        EditStats,
-        PreviewStatSkills
+        EditStats
     }
 
 }

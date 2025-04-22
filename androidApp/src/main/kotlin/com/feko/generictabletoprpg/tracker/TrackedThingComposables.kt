@@ -50,7 +50,6 @@ import com.feko.generictabletoprpg.tracker.actions.IBasicActionsTrackerViewModel
 import com.feko.generictabletoprpg.tracker.actions.IHitDiceActionsTrackerViewModel
 import com.feko.generictabletoprpg.tracker.actions.ISpellListActionsTrackerViewModel
 import com.feko.generictabletoprpg.tracker.actions.ISpellSlotActionsTrackerViewModel
-import com.feko.generictabletoprpg.tracker.actions.IStatsActionsTrackerViewModel
 import com.feko.generictabletoprpg.tracker.actions.NumberActions
 import com.feko.generictabletoprpg.tracker.actions.PercentageActions
 import com.feko.generictabletoprpg.tracker.actions.SpellListActions
@@ -260,7 +259,7 @@ fun SpellSlotListItemContent(
 fun StatsListItemContent(
     stats: Stats,
     reorderableLazyListState: ReorderableLazyListState,
-    viewModel: IStatsActionsTrackerViewModel
+    viewModel: TrackerViewModel
 ) {
     Row(modifier = Modifier.height(IntrinsicSize.Min)) {
         Column(
@@ -288,7 +287,12 @@ fun StatsListItemContent(
                 )
             }
             StatsOverview(stats)
-            StatsActions(stats, viewModel)
+            StatsActions(
+                stats,
+                onPreviewButtonClicked = { viewModel.showEditDialog(stats) },
+                onEditButtonClicked = { viewModel.showEditDialog(stats) },
+                onDeleteButtonClicked = { viewModel.deleteItemRequested(stats) }
+            )
         }
     }
 }
