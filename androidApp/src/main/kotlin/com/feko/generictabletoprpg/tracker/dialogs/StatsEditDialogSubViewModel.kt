@@ -1,57 +1,47 @@
 package com.feko.generictabletoprpg.tracker.dialogs
 
-import com.feko.generictabletoprpg.common.alertdialog.IAlertDialogSubViewModel
+import com.feko.generictabletoprpg.common.alertdialog.IStatefulAlertDialogSubViewModel
+import com.feko.generictabletoprpg.common.alertdialog.StatefulAlertDialogSubViewModel
 import com.feko.generictabletoprpg.import.IJson
 import com.feko.generictabletoprpg.tracker.Stats
 import com.feko.generictabletoprpg.tracker.StatsContainer
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
 class StatsEditDialogSubViewModel(
     private val viewModelScope: CoroutineScope,
-    private val json: IJson,
-    override val confirmButtonEnabled: MutableStateFlow<Boolean>,
-    override val alertDialog: IAlertDialogSubViewModel,
-    private val onDialogConfirmed: () -> Unit
+    private val json: IJson
 ) : IStatsEditDialogSubViewModel {
 
-    override val editedStats: MutableStateFlow<Stats?> = MutableStateFlow(null)
+    val _alertDialog = StatefulAlertDialogSubViewModel(Stats.Empty, viewModelScope)
+    override val alertDialog: IStatefulAlertDialogSubViewModel<Stats>
+        get() = _alertDialog
 
     override fun updateStatsName(name: String) {
         viewModelScope.launch {
-            val copy = requireNotNull(editedStats.value).copy() as Stats
+            val copy = alertDialog.state.value.copy() as Stats
             copy.name = name
-            editedStats.emit(copy)
+            _alertDialog.updateState(copy)
         }
     }
 
-    override fun updateStatsProficiencyBonus(proficiencyBonus: String) =
-        updateStatIntValue(proficiencyBonus) { statsContainer, bonus ->
-            statsContainer.copy(proficiencyBonus = bonus)
-        }
+    override fun updateStatsProficiencyBonus(proficiencyBonus: Int) =
+        updateStatValue { it.copy(proficiencyBonus = proficiencyBonus) }
 
-    override fun updateStatsInitiativeAdditionalBonus(initiativeAdditionalBonus: String) =
-        updateStatIntValue(initiativeAdditionalBonus) { statsContainer, bonus ->
-            statsContainer.copy(initiativeAdditionalBonus = bonus)
-        }
+    override fun updateStatsInitiativeAdditionalBonus(initiativeAdditionalBonus: Int) =
+        updateStatValue { it.copy(initiativeAdditionalBonus = initiativeAdditionalBonus) }
 
-    override fun updateSpellSaveDcAdditionalBonus(spellSaveDcAdditionalBonus: String) =
-        updateStatIntValue(spellSaveDcAdditionalBonus) { statsContainer, bonus ->
-            statsContainer.copy(spellSaveDcAdditionalBonus = bonus)
-        }
+    override fun updateSpellSaveDcAdditionalBonus(spellSaveDcAdditionalBonus: Int) =
+        updateStatValue { it.copy(spellSaveDcAdditionalBonus = spellSaveDcAdditionalBonus) }
 
-    override fun updateSpellAttackAdditionalBonus(spellAttackAdditionalBonus: String) =
-        updateStatIntValue(spellAttackAdditionalBonus) { statsContainer, bonus ->
-            statsContainer.copy(spellAttackAdditionalBonus = bonus)
-        }
+    override fun updateSpellAttackAdditionalBonus(spellAttackAdditionalBonus: Int) =
+        updateStatValue { it.copy(spellAttackAdditionalBonus = spellAttackAdditionalBonus) }
 
-    override fun updateStatScore(statIndex: Int, statScore: String) =
-        updateStatIntValue(statScore) { statsContainer, score ->
-            val newStatEntry =
-                statsContainer.stats[statIndex].copy(score = score)
-            statsContainer.copy(
-                stats = statsContainer.stats.mapIndexed { index, statEntry ->
+    override fun updateStatScore(statIndex: Int, statScore: Int) =
+        updateStatValue {
+            val newStatEntry = it.stats[statIndex].copy(score = statScore)
+            it.copy(
+                stats = it.stats.mapIndexed { index, statEntry ->
                     if (index == statIndex) newStatEntry else statEntry
                 })
         }
@@ -80,14 +70,12 @@ class StatsEditDialogSubViewModel(
     override fun updateStatSkillAdditionalBonus(
         statIndex: Int,
         skillIndex: Int,
-        skillAdditionalBonus: String
-    ) = updateStatIntValue(
-        skillAdditionalBonus,
-    ) { statsContainer, additionalBonus ->
+        skillAdditionalBonus: Int
+    ) = updateStatValue { statsContainer ->
         val newStatEntry =
             statsContainer.stats[statIndex].let {
                 val newSkill =
-                    it.skills[skillIndex].copy(additionalBonus = additionalBonus)
+                    it.skills[skillIndex].copy(additionalBonus = skillAdditionalBonus)
                 it.copy(
                     skills = it.skills.mapIndexed { index, skill ->
                         if (index == skillIndex) newSkill else skill
@@ -123,17 +111,15 @@ class StatsEditDialogSubViewModel(
 
     override fun updateStatSavingThrowAdditionalBonus(
         statIndex: Int,
-        savingThrowAdditionalBonus: String
-    ) = updateStatIntValue(savingThrowAdditionalBonus) { statsContainer, bonus ->
+        savingThrowAdditionalBonus: Int
+    ) = updateStatValue {
         val newStatEntry =
-            statsContainer.stats[statIndex].copy(savingThrowAdditionalBonus = bonus)
-        statsContainer.copy(
-            stats = statsContainer.stats.mapIndexed { index, statEntry ->
+            it.stats[statIndex].copy(savingThrowAdditionalBonus = savingThrowAdditionalBonus)
+        it.copy(
+            stats = it.stats.mapIndexed { index, statEntry ->
                 if (index == statIndex) newStatEntry else statEntry
             })
     }
-
-    override fun confirmDialogAction() = onDialogConfirmed()
 
     private fun updateStatIntValue(
         value: String,
@@ -142,11 +128,10 @@ class StatsEditDialogSubViewModel(
 
     private fun updateStatValue(copyWithNewValue: (StatsContainer) -> (StatsContainer)) {
         viewModelScope.launch {
-            val copy = requireNotNull(editedStats.value).copy() as Stats
+            val copy = _alertDialog.state.value.copy() as Stats
             val newItemValue = copyWithNewValue(copy.serializedItem)
             copy.setItem(newItemValue, json)
-            editedStats.emit(copy)
+            _alertDialog.updateState(copy)
         }
     }
-
 }

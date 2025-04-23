@@ -12,7 +12,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.painterResource
 import com.feko.generictabletoprpg.R
 import com.feko.generictabletoprpg.tracker.Health
-import com.feko.generictabletoprpg.tracker.IntTrackedThing
 import com.feko.generictabletoprpg.tracker.ItemActionsBase
 import com.feko.generictabletoprpg.tracker.Percentage
 import com.feko.generictabletoprpg.tracker.Stats
@@ -106,19 +105,23 @@ fun HealthActions(
 
 @Composable
 fun AbilityActions(
-    item: TrackedThing,
-    viewModel: IAbilityActionsTrackerViewModel
+    canSubtract: Boolean,
+    onSubtractClicked: () -> Unit,
+    canRefresh: Boolean,
+    onRefreshClicked: () -> Unit,
+    onEditButtonClicked: () -> Unit,
+    onDeleteButtonClicked: () -> Unit,
 ) {
-    ItemActionsBase(item, viewModel) {
+    ItemActionsBase(onEditButtonClicked, onDeleteButtonClicked) {
         IconButton(
-            onClick = { viewModel.useAbility(item) },
-            enabled = item.canSubtract()
+            onClick = onSubtractClicked,
+            enabled = canSubtract
         ) {
             Icon(painterResource(R.drawable.subtract), "")
         }
         IconButton(
-            onClick = { viewModel.resetValueToDefault(item) },
-            enabled = item.canAdd()
+            onClick = onRefreshClicked,
+            enabled = canRefresh
         ) {
             Icon(Icons.Default.Refresh, "")
         }
@@ -127,19 +130,23 @@ fun AbilityActions(
 
 @Composable
 fun SpellSlotActions(
-    item: TrackedThing,
-    viewModel: ISpellSlotActionsTrackerViewModel
+    canSubtract: Boolean,
+    onSubtractClicked: () -> Unit,
+    canRefresh: Boolean,
+    onRefreshClicked: () -> Unit,
+    onEditButtonClicked: () -> Unit,
+    onDeleteButtonClicked: () -> Unit
 ) {
-    ItemActionsBase(item, viewModel) {
+    ItemActionsBase(onEditButtonClicked, onDeleteButtonClicked) {
         IconButton(
-            onClick = { viewModel.useSpell(item) },
-            enabled = item.canSubtract()
+            onClick = onSubtractClicked,
+            enabled = canSubtract
         ) {
             Icon(painterResource(R.drawable.subtract), "")
         }
         IconButton(
-            onClick = { viewModel.resetValueToDefault(item) },
-            enabled = item.canAdd()
+            onClick = onRefreshClicked,
+            enabled = canRefresh
         ) {
             Icon(Icons.Default.Refresh, "")
         }
@@ -189,13 +196,13 @@ fun StatsActions(
 
 @Composable
 fun TextActions(
-    item: TrackedThing,
     canTextBeExpanded: Boolean,
     expanded: Boolean,
-    viewModel: IBasicActionsTrackerViewModel,
-    onExpandStateChanged: (Boolean) -> Unit
+    onExpandStateChanged: (Boolean) -> Unit,
+    onEditButtonClicked: () -> Unit,
+    onDeleteButtonClicked: () -> Unit
 ) {
-    ItemActionsBase(item, viewModel) {
+    ItemActionsBase(onEditButtonClicked, onDeleteButtonClicked) {
         if (!canTextBeExpanded) return@ItemActionsBase
         IconButton(
             onClick = {
@@ -214,20 +221,23 @@ fun TextActions(
 
 @Composable
 fun HitDiceActions(
-    item: TrackedThing,
-    viewModel: IHitDiceActionsTrackerViewModel
+    canSubtract: Boolean,
+    onSubtractClicked: () -> Unit,
+    canAdd: Boolean,
+    onAddClicked: () -> Unit,
+    onEditButtonClicked: () -> Unit,
+    onDeleteButtonClicked: () -> Unit
 ) {
-    if (item !is IntTrackedThing) return
-    ItemActionsBase(item, viewModel) {
+    ItemActionsBase(onEditButtonClicked, onDeleteButtonClicked) {
         IconButton(
-            onClick = { viewModel.useHitDie(item) },
-            enabled = item.canSubtract()
+            onClick = onSubtractClicked,
+            enabled = canSubtract,
         ) {
             Icon(painterResource(R.drawable.subtract), "")
         }
         IconButton(
-            onClick = { viewModel.restoreHitDie(item) },
-            enabled = item.canAdd()
+            onClick = onAddClicked,
+            enabled = canAdd
         ) {
             Icon(Icons.Default.Add, "")
         }

@@ -11,7 +11,6 @@ import com.feko.generictabletoprpg.common.alertdialog.AlertDialogSubViewModel
 import com.feko.generictabletoprpg.common.alertdialog.IAlertDialogSubViewModel
 import com.feko.generictabletoprpg.common.alertdialog.IStatefulAlertDialogSubViewModel
 import com.feko.generictabletoprpg.common.alertdialog.StatefulAlertDialogSubViewModel
-import com.feko.generictabletoprpg.common.composable.InputFieldData
 import com.feko.generictabletoprpg.common.fabdropdown.FabDropdownSubViewModel
 import com.feko.generictabletoprpg.common.fabdropdown.IFabDropdownSubViewModel
 import com.feko.generictabletoprpg.common.toast.IToastSubViewModel
@@ -19,10 +18,8 @@ import com.feko.generictabletoprpg.common.toast.ToastSubViewModel
 import com.feko.generictabletoprpg.import.IJson
 import com.feko.generictabletoprpg.searchall.ISearchAllUseCase
 import com.feko.generictabletoprpg.spell.SpellDao
-import com.feko.generictabletoprpg.tracker.dialogs.IAlertDialogTrackerViewModel.DialogType
 import com.feko.generictabletoprpg.tracker.dialogs.StatsEditDialogSubViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.android.awaitFrame
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
@@ -36,43 +33,16 @@ class TrackerViewModel(
     private val spellDao: SpellDao,
     private val json: IJson,
     searchAllUseCase: ISearchAllUseCase
-) : OverviewViewModel<Any>(trackedThingDao),
-    ITrackerViewModel {
-
-    @Deprecated(message = "")
-    private val _alertDialog = AlertDialogSubViewModel(viewModelScope, ::onAlertDialogDismissed)
-
-    @Deprecated(message = "")
-    override val alertDialog: IAlertDialogSubViewModel = _alertDialog
+) : OverviewViewModel<Any>(trackedThingDao) {
 
     private val _fabDropdown = FabDropdownSubViewModel(viewModelScope)
-    override val fabDropdown: IFabDropdownSubViewModel = _fabDropdown
+    val fabDropdown: IFabDropdownSubViewModel = _fabDropdown
 
     private val _toast = ToastSubViewModel(viewModelScope)
-    override val toast: IToastSubViewModel = _toast
+    val toast: IToastSubViewModel = _toast
 
-    @Deprecated(message = "")
-    override val editedTrackedThingName = MutableStateFlow(InputFieldData.EMPTY)
-
-    @Deprecated(message = "")
-    override val editedTrackedThingSpellSlotLevel = MutableStateFlow(InputFieldData.EMPTY)
-
-    @Deprecated(message = "")
-    override val editedTrackedThingValue = MutableStateFlow(InputFieldData.EMPTY)
-
-    @Deprecated(message = "")
-    override val editedTrackedThingType = MutableStateFlow(TrackedThing.Type.None)
-
-    @Deprecated(message = "")
-    override val confirmButtonEnabled = MutableStateFlow(false)
-
-    override var statsEditDialog: StatsEditDialogSubViewModel =
-        StatsEditDialogSubViewModel(
-            viewModelScope,
-            json,
-            confirmButtonEnabled,
-            alertDialog
-        ) { confirmDialogAction() }
+    var statsEditDialog: StatsEditDialogSubViewModel =
+        StatsEditDialogSubViewModel(viewModelScope, json)
 
     private lateinit var allItems: List<Any>
 
@@ -81,8 +51,6 @@ class TrackerViewModel(
     private var spellListBeingAddedTo: SpellList? = null
     private var fiveEDefaultStats: List<StatEntry>? = null
 
-    @Deprecated(message = "")
-    override lateinit var dialogType: DialogType
     private val _spellListBeingPreviewed: SpellList? = null
     lateinit var spellListState: LazyListState
     lateinit var isShowingPreparedSpells: MutableStateFlow<Boolean>
@@ -97,11 +65,7 @@ class TrackerViewModel(
         get() = _refreshAllDialog
 
     private val _confirmSpellRemovalFromListDialog =
-        StatefulAlertDialogSubViewModel(
-            SpellListEntry.Empty,
-            viewModelScope,
-            ::dialogToRemoveOrCastSpellFromSpellListResolved
-        )
+        StatefulAlertDialogSubViewModel(SpellListEntry.Empty, viewModelScope)
     val confirmSpellRemovalFromListDialog: IStatefulAlertDialogSubViewModel<SpellListEntry>
         get() = _confirmSpellRemovalFromListDialog
 
@@ -145,9 +109,7 @@ class TrackerViewModel(
 
     private val _selectSlotLevelToCastDialog =
         StatefulAlertDialogSubViewModel(
-            emptyList<Int>(),
-            viewModelScope,
-            ::dialogToRemoveOrCastSpellFromSpellListResolved
+            emptyList<Int>(), viewModelScope
         ).apply { _titleResource = R.string.select_slot_level_for_casting_spell }
     val selectSlotLevelToCastDialog: IStatefulAlertDialogSubViewModel<List<Int>>
         get() = _selectSlotLevelToCastDialog
@@ -203,18 +165,14 @@ class TrackerViewModel(
 
     fun showCreateDialog(type: TrackedThing.Type, context: Context) {
         viewModelScope.launch {
-            _alertDialog._titleResource = type.nameResource
             if (type == TrackedThing.Type.FiveEStats) {
-                dialogType = DialogType.EditStats
                 fiveEDefaultStats = fiveEDefaultStats ?: createDefault5EStatEntries(context)
                 val defaultStats = requireNotNull(fiveEDefaultStats)
                 val newStats = TrackedThing.emptyOfType(type, _items.value.size, groupId) as Stats
                 val defaultStatsContainer =
                     newStats.serializedItem.copy(stats = defaultStats)
                 newStats.setItem(defaultStatsContainer, json)
-                statsEditDialog.editedStats.emit(newStats)
-                confirmButtonEnabled.emit(true)
-                _alertDialog.show()
+                statsEditDialog._alertDialog.show(newStats)
             } else {
                 val newTrackedThing = TrackedThing.emptyOfType(type, _items.value.size, groupId)
                 _editDialog.apply {
@@ -222,20 +180,18 @@ class TrackerViewModel(
                     show(newTrackedThing)
                 }
             }
-            editedTrackedThingType.emit(type)
             _fabDropdown.collapse()
         }
     }
 
-    override fun showEditDialog(item: TrackedThing) {
+    fun showEditDialog(item: TrackedThing) {
         viewModelScope.launch {
-            _alertDialog._titleResource = R.string.edit
             val copy = item.copy()
             if (item.type == TrackedThing.Type.FiveEStats) {
-                dialogType = DialogType.EditStats
-                statsEditDialog.editedStats.emit(copy as Stats)
-                confirmButtonEnabled.emit(true)
-                _alertDialog.show()
+                statsEditDialog._alertDialog.apply {
+                    _titleResource = R.string.edit
+                    show(copy as Stats)
+                }
             } else {
                 _editDialog.apply {
                     _titleResource = R.string.edit
@@ -243,19 +199,6 @@ class TrackerViewModel(
                 }
             }
             _fabDropdown.collapse()
-        }
-    }
-
-    @Deprecated("")
-    override fun confirmDialogAction() {
-        if (editedTrackedThing?.validate() == false) {
-            return
-        }
-
-        when (dialogType) {
-            DialogType.EditStats -> createOrEditStats()
-
-            DialogType.None -> Unit
         }
     }
 
@@ -294,7 +237,6 @@ class TrackerViewModel(
                 trackedThingDao.delete(trackedThing.id)
             }
             removeItem(trackedThing)
-            _alertDialog.hide()
         }
     }
 
@@ -359,34 +301,28 @@ class TrackerViewModel(
                 .forEach {
                     resetValueToDefault(it)
                 }
-            _alertDialog.hide()
         }
     }
 
-    private fun createOrEditStats() {
-        val editedStats = statsEditDialog.editedStats.value
+    fun insertOrUpdateStats(stats: Stats) {
         viewModelScope.launch {
-            val updatedStatsContainer =
-                requireNotNull(editedStats)
-                    .serializedItem
-                    .let(::finalizeStats)
-            editedStats.setItem(updatedStatsContainer, json)
-            val isNewItem = editedStats.id <= 0
+            val updatedStatsContainer = stats.serializedItem.let(::finalizeStats)
+            stats.setItem(updatedStatsContainer, json)
+            val isNewItem = stats.id <= 0
             withContext(Dispatchers.IO) {
-                ensureNonEmptyName(editedStats)
-                val id = trackedThingDao.insertOrUpdate(editedStats)
-                editedStats.id = id
+                ensureNonEmptyName(stats)
+                val id = trackedThingDao.insertOrUpdate(stats)
+                stats.id = id
             }
             if (isNewItem) {
-                addItem(editedStats) {
+                addItem(stats) {
                     if (it is TrackedThing)
                         it.index
                     else Int.MAX_VALUE
                 }
             } else {
-                replaceItem(editedStats)
+                replaceItem(stats)
             }
-            _alertDialog.hide()
         }
     }
 
@@ -493,7 +429,7 @@ class TrackerViewModel(
         return spellAttackBonus
     }
 
-    override fun resetValueToDefault(item: TrackedThing) {
+    fun resetValueToDefault(item: TrackedThing) {
         viewModelScope.launch {
             val itemCopy = item.copy()
             itemCopy.resetValueToDefault()
@@ -507,11 +443,11 @@ class TrackerViewModel(
         }
     }
 
-    override fun useAbility(item: TrackedThing) {
+    fun useAbility(item: Ability) {
         reduceByOne(item)
     }
 
-    override fun useSpell(item: TrackedThing) {
+    fun useSpell(item: SpellSlot) {
         reduceByOne(item)
     }
 
@@ -545,53 +481,6 @@ class TrackerViewModel(
         }
     }
 
-    override fun setName(name: String) {
-        viewModelScope.launch {
-            val editedTrackedThing = requireNotNull(editedTrackedThing)
-            editedTrackedThing.name = name
-            editedTrackedThingName.emit(
-                InputFieldData(name, true)
-            )
-            validateModel()
-        }
-    }
-
-    override fun setLevel(level: String) {
-        viewModelScope.launch {
-            val trackedThing = editedTrackedThing
-            require(trackedThing is SpellSlot)
-            trackedThing.level = level.toIntOrNull() ?: 0
-            editedTrackedThingSpellSlotLevel.emit(
-                InputFieldData(
-                    level,
-                    trackedThing.isLevelValid()
-                )
-            )
-            validateModel()
-        }
-    }
-
-    override fun setValue(value: String) {
-        viewModelScope.launch {
-            val editedTrackedThing = requireNotNull(editedTrackedThing)
-            editedTrackedThing.setNewValue(value)
-            editedTrackedThing.defaultValue = value
-            editedTrackedThingValue.emit(
-                InputFieldData(
-                    value,
-                    editedTrackedThing.isValueValid()
-                )
-            )
-            validateModel()
-        }
-    }
-
-    private fun validateModel() {
-        viewModelScope.launch {
-            confirmButtonEnabled.emit(editedTrackedThing?.validate() == true)
-        }
-    }
-
     fun addToPercentageRequested(percentage: Percentage) =
         viewModelScope.launch { _addPercentageDialog.show(percentage) }
 
@@ -613,26 +502,15 @@ class TrackerViewModel(
     fun addTemporaryHpRequested(health: Health) =
         viewModelScope.launch { _addTemporaryHpDialog.show(health) }
 
-    override fun updateValueInputField(delta: String) {
-        viewModelScope.launch {
-            editedTrackedThingValue.emit(
-                InputFieldData(
-                    delta,
-                    editedTrackedThing?.isValueValid() == true
-                )
-            )
-        }
-    }
-
-    override fun deleteItemRequested(item: TrackedThing) {
+    fun deleteItemRequested(item: TrackedThing) {
         viewModelScope.launch { _confirmDeletionDialog.show(item) }
     }
 
-    override fun refreshAllRequested() {
+    fun refreshAllRequested() {
         viewModelScope.launch { _refreshAllDialog.show() }
     }
 
-    override fun itemReordered(from: Int, to: Int) {
+    fun itemReordered(from: Int, to: Int) {
         val itemCount = _items.value.size
         if (from == itemCount || to == itemCount) return
 
@@ -667,7 +545,7 @@ class TrackerViewModel(
         viewModelScope.launch { _spellListDialog.show(spellList) }
     }
 
-    override fun addSpellToList(spellId: Long) {
+    fun addSpellToList(spellId: Long) {
         viewModelScope.launch {
             val spellToAdd = withContext(Dispatchers.IO) {
                 spellDao.getById(spellId)
@@ -709,19 +587,7 @@ class TrackerViewModel(
 
     fun removeSpellFromSpellListRequested(spell: SpellListEntry) {
         viewModelScope.launch {
-//            _alertDialog.hide()
-//            awaitFrame()
             _confirmSpellRemovalFromListDialog.show(spell)
-        }
-    }
-
-    private fun dialogToRemoveOrCastSpellFromSpellListResolved() {
-        viewModelScope.launch {
-            _spellListBeingPreviewed?.let {
-                _alertDialog.hide()
-                awaitFrame()
-                showPreviewSpellListDialog(it, resetListState = false)
-            }
         }
     }
 
@@ -749,8 +615,6 @@ class TrackerViewModel(
                 castSpellImmediate(availableSpellSlots.first())
                 return@launch
             }
-//            _alertDialog.hide()
-//            awaitFrame()
             _selectSlotLevelToCastDialog.show(availableSpellSlots)
         }
     }
@@ -763,21 +627,18 @@ class TrackerViewModel(
                     .first { it.level == withSlotLevel && it.amount > 0 }
             useSpellSuspending(spellSlot)
             _toast.showMessage(R.string.spell_cast_with_slot_level, withSlotLevel.toString())
-//            _spellListBeingPreviewed.emit(_spellListBeingPreviewed.value!!.copy() as SpellList)
             _spellListDialog.updateState(_spellListDialog.state.value.copy() as SpellList)
         }
     }
 
     fun castSpell(withSlotLevel: Int) {
         viewModelScope.launch {
-            _alertDialog.hide()
             val spellSlot =
                 _items.value
                     .filterIsInstance<SpellSlot>()
                     .first { it.level == withSlotLevel && it.amount > 0 }
             useSpellSuspending(spellSlot)
             _toast.showMessage(R.string.spell_cast_with_slot_level, withSlotLevel.toString())
-            dialogToRemoveOrCastSpellFromSpellListResolved()
         }
     }
 
@@ -811,25 +672,11 @@ class TrackerViewModel(
         viewModelScope.launch { isShowingPreparedSpells.value = value }
     }
 
-    override fun useHitDie(item: TrackedThing) {
+    fun useHitDie(item: HitDice) {
         reduceByOne(item)
     }
 
-    override fun restoreHitDie(item: TrackedThing) {
+    fun restoreHitDie(item: HitDice) {
         addOne(item)
     }
-
-    private fun onAlertDialogDismissed() {
-        when (dialogType) {
-//            DialogType.ShowSpellList -> {
-//                viewModelScope.launch {
-//                    _spellListBeingPreviewed.emit(null)
-//                }
-//            }
-
-            else -> Unit
-        }
-        dialogType = DialogType.None
-    }
-
 }

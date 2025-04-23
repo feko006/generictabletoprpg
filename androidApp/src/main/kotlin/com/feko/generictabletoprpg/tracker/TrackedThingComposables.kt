@@ -47,10 +47,6 @@ import com.feko.generictabletoprpg.theme.Typography
 import com.feko.generictabletoprpg.tracker.actions.AbilityActions
 import com.feko.generictabletoprpg.tracker.actions.HealthActions
 import com.feko.generictabletoprpg.tracker.actions.HitDiceActions
-import com.feko.generictabletoprpg.tracker.actions.IAbilityActionsTrackerViewModel
-import com.feko.generictabletoprpg.tracker.actions.IBasicActionsTrackerViewModel
-import com.feko.generictabletoprpg.tracker.actions.IHitDiceActionsTrackerViewModel
-import com.feko.generictabletoprpg.tracker.actions.ISpellSlotActionsTrackerViewModel
 import com.feko.generictabletoprpg.tracker.actions.NumberActions
 import com.feko.generictabletoprpg.tracker.actions.PercentageActions
 import com.feko.generictabletoprpg.tracker.actions.SpellListActions
@@ -61,6 +57,7 @@ import com.ramcosta.composedestinations.generated.destinations.SearchAllScreenDe
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import org.burnoutcrew.reorderable.ReorderableLazyListState
 import org.burnoutcrew.reorderable.detectReorder
+import org.burnoutcrew.reorderable.rememberReorderableLazyListState
 
 @Composable
 fun TrackedThingListItem(
@@ -96,7 +93,7 @@ fun TrackedThingListItem(
 fun AbilityListItemContent(
     ability: Ability,
     reorderableLazyListState: ReorderableLazyListState,
-    viewModel: IAbilityActionsTrackerViewModel,
+    viewModel: TrackerViewModel,
 ) {
     DefaultTrackableLayout(
         ability.name,
@@ -106,7 +103,14 @@ fun AbilityListItemContent(
             Text(ability.type.name, style = Typography.bodySmall)
         }
     ) {
-        AbilityActions(ability, viewModel)
+        AbilityActions(
+            canSubtract = ability.canSubtract(),
+            onSubtractClicked = { viewModel.useAbility(ability) },
+            canRefresh = ability.canAdd(),
+            onRefreshClicked = { viewModel.resetValueToDefault(ability) },
+            onEditButtonClicked = { viewModel.showEditDialog(ability) },
+            onDeleteButtonClicked = { viewModel.deleteItemRequested(ability) }
+        )
     }
 }
 
@@ -114,7 +118,7 @@ fun AbilityListItemContent(
 fun HitDiceListItemContent(
     hitDice: HitDice,
     reorderableLazyListState: ReorderableLazyListState,
-    viewModel: IHitDiceActionsTrackerViewModel
+    viewModel: TrackerViewModel
 ) {
     DefaultTrackableLayout(
         hitDice.name,
@@ -124,7 +128,14 @@ fun HitDiceListItemContent(
             Text(hitDice.type.name, style = Typography.bodySmall)
         }
     ) {
-        HitDiceActions(hitDice, viewModel)
+        HitDiceActions(
+            canSubtract = hitDice.canSubtract(),
+            onSubtractClicked = { viewModel.useHitDie(hitDice) },
+            canAdd = hitDice.canAdd(),
+            onAddClicked = { viewModel.restoreHitDie(hitDice) },
+            onEditButtonClicked = { viewModel.showEditDialog(hitDice) },
+            onDeleteButtonClicked = { viewModel.deleteItemRequested(hitDice) }
+        )
     }
 }
 
@@ -218,11 +229,42 @@ fun HealthListItemContent(
 }
 
 @Composable
-fun SpellListItemContent(
+fun SpellListItemContentWithViewModel(
     spellList: SpellList,
     reorderableLazyListState: ReorderableLazyListState,
     navigator: DestinationsNavigator,
     viewModel: TrackerViewModel
+) {
+    SpellListItemContent(
+        spellList,
+        reorderableLazyListState,
+        onListButtonClicked = {
+            viewModel.showPreviewSpellListDialog(
+                spellList,
+                resetListState = true
+            )
+        },
+        onAddButtonClicked = {
+            viewModel.addingSpellToList(spellList)
+            navigator.navigate(
+                SearchAllScreenDestination(
+                    SpellFilter().index(), true
+                )
+            )
+        },
+        onEditButtonClicked = { viewModel.showEditDialog(spellList) },
+        onDeleteButtonClicked = { viewModel.deleteItemRequested(spellList) }
+    )
+}
+
+@Composable
+fun SpellListItemContent(
+    spellList: SpellList,
+    reorderableLazyListState: ReorderableLazyListState,
+    onListButtonClicked: () -> Unit,
+    onAddButtonClicked: () -> Unit,
+    onEditButtonClicked: () -> Unit,
+    onDeleteButtonClicked: () -> Unit
 ) {
     DefaultTrackableLayout(
         spellList.name,
@@ -234,15 +276,10 @@ fun SpellListItemContent(
     ) {
         SpellListActions(
             isListButtonEnabled = spellList.serializedItem.any(),
-            onListButtonClicked = {
-                viewModel.showPreviewSpellListDialog(spellList, resetListState = true)
-            },
-            onAddButtonClicked = {
-                viewModel.addingSpellToList(spellList)
-                navigator.navigate(SearchAllScreenDestination(SpellFilter().index(), true))
-            },
-            onEditButtonClicked = { viewModel.showEditDialog(spellList) },
-            onDeleteButtonClicked = { viewModel.deleteItemRequested(spellList) }
+            onListButtonClicked = onListButtonClicked,
+            onAddButtonClicked = onAddButtonClicked,
+            onEditButtonClicked = onEditButtonClicked,
+            onDeleteButtonClicked = onDeleteButtonClicked
         )
     }
 }
@@ -251,7 +288,7 @@ fun SpellListItemContent(
 fun SpellSlotListItemContent(
     spellSlot: SpellSlot,
     reorderableLazyListState: ReorderableLazyListState,
-    viewModel: ISpellSlotActionsTrackerViewModel
+    viewModel: TrackerViewModel
 ) {
     DefaultTrackableLayout(
         spellSlot.name,
@@ -264,7 +301,14 @@ fun SpellSlotListItemContent(
             }
         }
     ) {
-        SpellSlotActions(spellSlot, viewModel)
+        SpellSlotActions(
+            canSubtract = spellSlot.canSubtract(),
+            onSubtractClicked = { viewModel.useSpell(spellSlot) },
+            canRefresh = spellSlot.canAdd(),
+            onRefreshClicked = { viewModel.resetValueToDefault(spellSlot) },
+            onEditButtonClicked = { viewModel.showEditDialog(spellSlot) },
+            onDeleteButtonClicked = { viewModel.deleteItemRequested(spellSlot) }
+        )
     }
 }
 
@@ -314,7 +358,7 @@ fun StatsListItemContent(
 fun TextListItemContent(
     text: Text,
     reorderableLazyListState: ReorderableLazyListState,
-    viewModel: IBasicActionsTrackerViewModel
+    viewModel: TrackerViewModel
 ) {
     DefaultTrackableLayout(
         text.name,
@@ -343,7 +387,13 @@ fun TextListItemContent(
                 }
             }
         )
-        TextActions(text, canTextBeExpanded, expanded, viewModel) { expanded = it }
+        TextActions(
+            canTextBeExpanded,
+            expanded,
+            onExpandStateChanged = { expanded = it },
+            onEditButtonClicked = { viewModel.showEditDialog(text) },
+            onDeleteButtonClicked = { viewModel.deleteItemRequested(text) }
+        )
     }
 }
 
@@ -552,13 +602,17 @@ fun CompactStatPreview() {
 @Preview
 @Composable
 private fun SpellListTrackedThingPreview() {
-    // TODO
-//    TrackedThing(
-//        SpellList(0, "Spell List", "", 0, 0),
-//        false,
-//        rememberReorderableLazyListState(onMove = { _, _ -> }),
-//        EmptyDestinationsNavigator,
-//        EmptyTrackerViewModel
-//    )
+    TrackedThingListItem(
+        isDragged = false,
+        onItemClicked = { }) {
+        SpellListItemContent(
+            SpellList(0, "Spell List", "", 0, 0),
+            rememberReorderableLazyListState(onMove = { _, _ -> }),
+            onListButtonClicked = {},
+            onAddButtonClicked = {},
+            onEditButtonClicked = {},
+            onDeleteButtonClicked = {}
+        )
+    }
 }
 

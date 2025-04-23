@@ -17,7 +17,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import com.feko.generictabletoprpg.tracker.actions.IBasicActionsTrackerViewModel
 
 @Composable
 fun ItemActionsBase(
@@ -34,30 +33,6 @@ fun ItemActionsBase(
             Icon(Icons.Default.Edit, "")
         }
         IconButton(onClick = onDeleteButtonClicked) {
-            Icon(Icons.Default.Delete, "")
-        }
-    }
-}
-
-@Composable
-fun ItemActionsBase(
-    item: TrackedThing,
-    viewModel: IBasicActionsTrackerViewModel,
-    actions: @Composable () -> Unit
-) {
-    Row(
-        horizontalArrangement = Arrangement.Center,
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        actions()
-        IconButton(
-            onClick = { viewModel.showEditDialog(item) }
-        ) {
-            Icon(Icons.Default.Edit, "")
-        }
-        IconButton(
-            onClick = { viewModel.deleteItemRequested(item) }
-        ) {
             Icon(Icons.Default.Delete, "")
         }
     }

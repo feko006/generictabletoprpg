@@ -16,7 +16,6 @@ import com.feko.generictabletoprpg.common.composable.OverviewScreen
 import com.feko.generictabletoprpg.common.composable.ToastMessage
 import com.feko.generictabletoprpg.searchall.getNavRouteInternal
 import com.feko.generictabletoprpg.searchall.getUniqueListItemKey
-import com.feko.generictabletoprpg.tracker.dialogs.AlertDialogComposable
 import com.feko.generictabletoprpg.tracker.dialogs.TrackerAlertDialogs
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
@@ -46,7 +45,6 @@ fun TrackerScreen(
                 ButtonState(Icons.Default.Refresh) { viewModel.refreshAllRequested() }
             )
         )
-    val isAlertDialogVisible by viewModel.alertDialog.isVisible.collectAsState(false)
     resultRecipient.onNavResult { result ->
         if (result is NavResult.Value<Long>) {
             viewModel.addSpellToList(result.value)
@@ -69,10 +67,6 @@ fun TrackerScreen(
                 onDismissRequest = { viewModel.fabDropdown.dismiss() },
                 onFabClicked = { viewModel.fabDropdown.toggleFabDropdownRequested() }
             ) { DropdownMenuContent { type, context -> viewModel.showCreateDialog(type, context) } }
-        },
-        isAlertDialogVisible = isAlertDialogVisible,
-        alertDialogComposable = {
-            AlertDialogComposable(viewModel, groupName, navigator)
         },
         isReorderable = true,
         onItemReordered = { from, to ->
@@ -118,7 +112,12 @@ fun OverviewListItem(
                 onItemClicked = {
                     viewModel.showPreviewSpellListDialog(item, resetListState = true)
                 }) {
-                SpellListItemContent(item, reorderableLazyListState, navigator, viewModel)
+                SpellListItemContentWithViewModel(
+                    item,
+                    reorderableLazyListState,
+                    navigator,
+                    viewModel
+                )
             }
 
             is SpellSlot -> TrackedThingListItem(isDragged) {
