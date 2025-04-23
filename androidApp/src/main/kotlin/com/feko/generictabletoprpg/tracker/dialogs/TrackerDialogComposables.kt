@@ -1,5 +1,7 @@
 package com.feko.generictabletoprpg.tracker.dialogs
 
+
+import androidx.annotation.StringRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -15,6 +17,7 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
@@ -61,8 +64,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import com.feko.generictabletoprpg.R
 import com.feko.generictabletoprpg.asSignedString
-import com.feko.generictabletoprpg.common.alertdialog.EmptyAlertDialogSubViewModel
-import com.feko.generictabletoprpg.common.alertdialog.IAlertDialogSubViewModel
 import com.feko.generictabletoprpg.common.composable.AlertDialogBase
 import com.feko.generictabletoprpg.common.composable.BoxWithScrollIndicator
 import com.feko.generictabletoprpg.common.composable.CheckboxWithText
@@ -77,7 +78,6 @@ import com.feko.generictabletoprpg.searchall.getUniqueListItemKey
 import com.feko.generictabletoprpg.spell.Spell
 import com.feko.generictabletoprpg.spell.SpellRange
 import com.feko.generictabletoprpg.theme.Typography
-import com.feko.generictabletoprpg.tracker.EmptyTrackerViewModel
 import com.feko.generictabletoprpg.tracker.IntTrackedThing
 import com.feko.generictabletoprpg.tracker.Percentage
 import com.feko.generictabletoprpg.tracker.SpellList
@@ -90,19 +90,17 @@ import com.feko.generictabletoprpg.tracker.Text
 import com.feko.generictabletoprpg.tracker.TrackedThing
 import com.feko.generictabletoprpg.tracker.TrackerViewModel
 import com.feko.generictabletoprpg.tracker.cantripSpellsCount
-import com.feko.generictabletoprpg.tracker.containsPreparedAndCantripSpells
 import com.feko.generictabletoprpg.tracker.dialogs.IAlertDialogTrackerViewModel.DialogType
 import com.feko.generictabletoprpg.tracker.filterPreparedAndCantrips
 import com.feko.generictabletoprpg.tracker.preparedSpellsCount
 import com.ramcosta.composedestinations.generated.destinations.SimpleSpellDetailsScreenDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.navigation.EmptyDestinationsNavigator
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 @Composable
-fun TrackerAlertDialogs(viewModel: TrackerViewModel) {
+fun TrackerAlertDialogs(viewModel: TrackerViewModel, navigator: DestinationsNavigator) {
+    SpellListDialogWithViewModel(viewModel, navigator)
     ConfirmDeletionDialog(viewModel)
     RefreshAllDialog(viewModel)
     ConfirmSpellRemovalFromListDialog(viewModel)
@@ -504,6 +502,252 @@ private fun EditDialogValueInputField(
     }
 }
 
+@Composable
+fun SpellListDialogWithViewModel(
+    viewModel: TrackerViewModel,
+    navigator: DestinationsNavigator
+) {
+    val isDialogVisible by viewModel.spellListDialog.isVisible.collectAsState(false)
+    if (!isDialogVisible) return
+
+    val spellList by viewModel.spellListDialog.state.collectAsState()
+    val isFilteringByPrepared by viewModel.isShowingPreparedSpells.collectAsState()
+    SpellListDialog(
+        spellList,
+        isFilteringByPrepared,
+        navigator,
+        viewModel.spellListDialog.titleResource,
+        viewModel.spellListState,
+        onDialogDismissed = { viewModel.spellListDialog.dismiss() },
+        onFilteringByPreparedStateChanged = { viewModel.setShowingPreparedSpells(it) },
+        canSpellBeCast = { level -> viewModel.canCastSpell(level) },
+        onSpellPreparedStateChanged = { spellListEntry, isPrepared ->
+            viewModel.changeSpellListEntryPreparedState(spellListEntry, isPrepared)
+        },
+        onCastSpellRequested = { level -> viewModel.castSpellRequested(level) },
+        onRemoveSpellRequested = { viewModel.removeSpellFromSpellListRequested(it) }
+    )
+}
+
+@Composable
+fun SpellListDialog(
+    spellList: SpellList,
+    isFilteringByPrepared: Boolean,
+    navigator: DestinationsNavigator,
+    @StringRes
+    dialogTitleResource: Int,
+    spellListState: LazyListState,
+    onDialogDismissed: () -> Unit,
+    onFilteringByPreparedStateChanged: (Boolean) -> Unit,
+    canSpellBeCast: (level: Int) -> Boolean,
+    onSpellPreparedStateChanged: (SpellListEntry, Boolean) -> Unit,
+    onCastSpellRequested: (level: Int) -> Unit,
+    onRemoveSpellRequested: (spell: SpellListEntry) -> Unit
+) {
+    AlertDialogBase(
+        onDialogDismissed,
+        dialogTitle = { DialogTitle(stringResource(dialogTitleResource)) },
+        dialogButtons = {
+            Row(
+                Modifier
+                    .fillMaxWidth()
+                    .padding(top = 8.dp),
+                Arrangement.SpaceBetween
+            ) {
+                val coroutineScope = rememberCoroutineScope()
+                Row {
+                    IconButton(
+                        onClick = {
+                            coroutineScope.launch {
+                                spellListState.animateScrollToItem(0)
+                            }
+                        },
+                        enabled = spellListState.canScrollBackward
+                    ) { Icon(painterResource(R.drawable.vertical_align_top), "") }
+                    IconButton(
+                        onClick = {
+                            coroutineScope.launch {
+                                spellListState.animateScrollToItem(spellList.serializedItem.size - 1)
+                            }
+                        },
+                        enabled = spellListState.canScrollForward
+                    ) { Icon(painterResource(R.drawable.vertical_align_bottom), "") }
+                }
+                TextButton(
+                    onClick = onDialogDismissed,
+                    modifier = Modifier.wrapContentWidth()
+                ) { Text(stringResource(R.string.dismiss)) }
+            }
+        }
+    ) {
+        val numberOfPreparedSpells = spellList.serializedItem.preparedSpellsCount()
+        val numberOfCantripSpells = spellList.serializedItem.cantripSpellsCount()
+        Row(
+            Modifier.padding(bottom = 8.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                buildString {
+                    append(stringResource(R.string.known))
+                    append(": ")
+                    append(spellList.serializedItem.size)
+                    if (numberOfPreparedSpells > 0) {
+                        append(", ")
+                        append(stringResource(R.string.prepared))
+                        append(": ")
+                        append(numberOfPreparedSpells)
+                    }
+                    if (numberOfCantripSpells > 0) {
+                        append(", ")
+                        append(stringResource(R.string.cantrips))
+                        append(": ")
+                        append(numberOfCantripSpells)
+                    }
+                },
+                Modifier
+                    .weight(1f)
+                    .padding(vertical = 16.dp),
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                style = Typography.bodySmall
+            )
+            if (numberOfPreparedSpells > 0 || numberOfCantripSpells > 0) {
+                ElevatedFilterChip(
+                    isFilteringByPrepared,
+                    onClick = {
+                        onFilteringByPreparedStateChanged(!isFilteringByPrepared)
+                    },
+                    label = {
+                        Text(stringResource(R.string.prepared))
+                    },
+                    leadingIcon =
+                        {
+                            if (isFilteringByPrepared) {
+                                Icon(
+                                    imageVector = Icons.Filled.Done,
+                                    contentDescription = "Done icon",
+                                    modifier = Modifier.size(FilterChipDefaults.IconSize)
+                                )
+                            } else {
+                                Icon(
+                                    painter = painterResource(R.drawable.check_box_outline_blank),
+                                    contentDescription = "Done icon",
+                                    modifier = Modifier.size(FilterChipDefaults.IconSize)
+                                )
+                            }
+                        }
+                )
+            } else {
+                onFilteringByPreparedStateChanged(false)
+            }
+        }
+        LazyColumn(
+            Modifier.heightIn(0.dp, (LocalConfiguration.current.screenHeightDp * 0.7f).dp),
+            spellListState,
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            items(
+                spellList.serializedItem.filterPreparedAndCantrips(isFilteringByPrepared),
+                key = { getUniqueListItemKey(it.toSpell()) }) { spellListEntry ->
+                SpellListEntryListItem(
+                    spellListEntry,
+                    canSpellBeCast(spellListEntry.level),
+                    navigator,
+                    onSpellPreparedStateChanged = {
+                        onSpellPreparedStateChanged(spellListEntry, it)
+                    },
+                    onCastSpellClicked = { onCastSpellRequested(spellListEntry.level) },
+                    onRemoveSpellRequested = { onRemoveSpellRequested(spellListEntry) },
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun SpellListEntryListItem(
+    spellListEntry: SpellListEntry,
+    canCastSpell: Boolean,
+    navigator: DestinationsNavigator,
+    onSpellPreparedStateChanged: (Boolean) -> Unit,
+    onCastSpellClicked: () -> Unit,
+    onRemoveSpellRequested: () -> Unit,
+) {
+    ElevatedCard(onClick = {
+        navigator.navigate(
+            SimpleSpellDetailsScreenDestination.invoke(
+                spellListEntry.toSpell()
+            )
+        )
+    }) {
+        Column {
+            Row(
+                Modifier.padding(horizontal = 16.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    spellListEntry.name,
+                    Modifier
+                        .weight(1f)
+                        .padding(vertical = 16.dp),
+                    style = Typography.titleMedium
+                )
+                if (spellListEntry.level > 0) {
+                    Column(
+                        modifier = Modifier.padding(top = 16.dp, bottom = 8.dp),
+                        verticalArrangement = Arrangement.spacedBy(4.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        CompositionLocalProvider(LocalMinimumInteractiveComponentSize provides Dp.Unspecified) {
+                            Checkbox(
+                                spellListEntry.isPrepared,
+                                onCheckedChange = onSpellPreparedStateChanged
+                            )
+                        }
+                        Text(
+                            stringResource(R.string.prepared),
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                            style = Typography.labelSmall
+                        )
+                    }
+                }
+            }
+            HorizontalDivider(Modifier.padding(horizontal = 2.dp))
+            Text(
+                "${stringResource(R.string.level)} ${spellListEntry.level}, ${spellListEntry.school}",
+                Modifier.padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 8.dp),
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                style = Typography.bodySmall
+            )
+            Text(
+                "${stringResource(R.string.casting_time)}: ${spellListEntry.castingTime}",
+                Modifier.padding(start = 16.dp, end = 16.dp, bottom = 16.dp),
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                style = Typography.bodySmall
+            )
+            HorizontalDivider(Modifier.padding(horizontal = 2.dp))
+            Row(
+                Modifier.fillMaxWidth(),
+                Arrangement.SpaceAround,
+                Alignment.CenterVertically
+            ) {
+                if (spellListEntry.level != 0) {
+                    TextButton(
+                        onClick = onCastSpellClicked,
+                        enabled = canCastSpell
+                    ) {
+                        Text(stringResource(R.string.cast))
+                    }
+                }
+                TextButton(onClick = onRemoveSpellRequested) {
+                    Text(stringResource(R.string.remove))
+                }
+            }
+        }
+    }
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 @Deprecated("")
@@ -518,9 +762,6 @@ fun AlertDialogComposable(
     ) {
         Card {
             when (viewModel.dialogType) {
-                DialogType.ShowSpellList ->
-                    SpellListDialog(viewModel, navigator)
-
                 DialogType.EditStats -> StatsEditDialog(viewModel.statsEditDialog, defaultName)
 
                 DialogType.None -> Unit
@@ -805,212 +1046,6 @@ private fun DialogBase(
     }
 }
 
-@Composable
-fun SpellListDialog(
-    viewModel: ISpellListDialogTrackerViewModel,
-    navigator: DestinationsNavigator
-) {
-    val spellListBeingPreviewed by viewModel.spellListBeingPreviewed.collectAsState()
-    val dereferencedSpellList = spellListBeingPreviewed ?: return
-    val numberOfPreparedSpells = dereferencedSpellList.serializedItem.preparedSpellsCount()
-    val numberOfCantripSpells = dereferencedSpellList.serializedItem.cantripSpellsCount()
-    Column(
-        Modifier.padding(16.dp)
-    ) {
-        DialogTitle(viewModel.alertDialog.titleResource)
-        val isFilteringByPrepared by viewModel.isShowingPreparedSpells.collectAsState()
-        Row(
-            Modifier.padding(bottom = 8.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                buildString {
-                    append(stringResource(R.string.known))
-                    append(": ")
-                    append(dereferencedSpellList.serializedItem.size)
-                    if (numberOfPreparedSpells > 0) {
-                        append(", ")
-                        append(stringResource(R.string.prepared))
-                        append(": ")
-                        append(numberOfPreparedSpells)
-                    }
-                    if (numberOfCantripSpells > 0) {
-                        append(", ")
-                        append(stringResource(R.string.cantrips))
-                        append(": ")
-                        append(numberOfCantripSpells)
-                    }
-                },
-                Modifier
-                    .weight(1f)
-                    .padding(vertical = 16.dp),
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
-                style = Typography.bodySmall
-            )
-            if (dereferencedSpellList.serializedItem.containsPreparedAndCantripSpells()) {
-                ElevatedFilterChip(
-                    isFilteringByPrepared,
-                    onClick = {
-                        viewModel.setShowingPreparedSpells(!isFilteringByPrepared)
-                    },
-                    label = {
-                        Text(stringResource(R.string.prepared))
-                    },
-                    leadingIcon =
-                        {
-                            if (isFilteringByPrepared) {
-                                Icon(
-                                    imageVector = Icons.Filled.Done,
-                                    contentDescription = "Done icon",
-                                    modifier = Modifier.size(FilterChipDefaults.IconSize)
-                                )
-                            } else {
-                                Icon(
-                                    painter = painterResource(R.drawable.check_box_outline_blank),
-                                    contentDescription = "Done icon",
-                                    modifier = Modifier.size(FilterChipDefaults.IconSize)
-                                )
-                            }
-                        }
-                )
-            } else {
-                viewModel.setShowingPreparedSpells(false)
-            }
-        }
-        LazyColumn(
-            Modifier.heightIn(0.dp, (LocalConfiguration.current.screenHeightDp * 0.7f).dp),
-            viewModel.spellListState,
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            items(
-                dereferencedSpellList.serializedItem.filterPreparedAndCantrips(isFilteringByPrepared),
-                key = { getUniqueListItemKey(it.toSpell()) }) { spellListEntry ->
-                SpellListEntryListItem(spellListEntry, navigator, viewModel)
-            }
-        }
-        Row(
-            Modifier
-                .fillMaxWidth()
-                .padding(top = 8.dp),
-            Arrangement.SpaceBetween
-        ) {
-            Row {
-                val coroutineScope = rememberCoroutineScope()
-                IconButton(
-                    onClick = {
-                        coroutineScope.launch {
-                            viewModel.spellListState.animateScrollToItem(0)
-                        }
-                    },
-                    enabled = viewModel.spellListState.canScrollBackward
-                ) { Icon(painterResource(R.drawable.vertical_align_top), "") }
-                IconButton(
-                    onClick = {
-                        coroutineScope.launch {
-                            viewModel.spellListState.animateScrollToItem(dereferencedSpellList.serializedItem.size - 1)
-                        }
-                    },
-                    enabled = viewModel.spellListState.canScrollForward
-                ) { Icon(painterResource(R.drawable.vertical_align_bottom), "") }
-            }
-            TextButton(
-                onClick = { viewModel.alertDialog.dismiss() },
-                modifier = Modifier.wrapContentWidth()
-            ) { Text(stringResource(R.string.dismiss)) }
-        }
-    }
-}
-
-@Composable
-private fun SpellListEntryListItem(
-    spellListEntry: SpellListEntry,
-    navigator: DestinationsNavigator,
-    viewModel: ISpellListDialogTrackerViewModel
-) {
-    ElevatedCard(onClick = {
-        navigator.navigate(
-            SimpleSpellDetailsScreenDestination.invoke(
-                spellListEntry.toSpell()
-            )
-        )
-    }) {
-        Column {
-            Row(
-                Modifier.padding(horizontal = 16.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    spellListEntry.name,
-                    Modifier
-                        .weight(1f)
-                        .padding(vertical = 16.dp),
-                    style = Typography.titleMedium
-                )
-                if (spellListEntry.level > 0) {
-                    Column(
-                        modifier = Modifier.padding(top = 16.dp, bottom = 8.dp),
-                        verticalArrangement = Arrangement.spacedBy(4.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        CompositionLocalProvider(LocalMinimumInteractiveComponentSize provides Dp.Unspecified) {
-                            Checkbox(
-                                spellListEntry.isPrepared,
-                                onCheckedChange = {
-                                    viewModel.changeSpellListEntryPreparedState(spellListEntry, it)
-                                }
-                            )
-                        }
-                        Text(
-                            stringResource(R.string.prepared),
-                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
-                            style = Typography.labelSmall
-                        )
-                    }
-                }
-            }
-            HorizontalDivider(Modifier.padding(horizontal = 2.dp))
-            Text(
-                "${stringResource(R.string.level)} ${spellListEntry.level}, ${spellListEntry.school}",
-                Modifier.padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 8.dp),
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
-                style = Typography.bodySmall
-            )
-            Text(
-                "${stringResource(R.string.casting_time)}: ${spellListEntry.castingTime}",
-                Modifier.padding(start = 16.dp, end = 16.dp, bottom = 16.dp),
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
-                style = Typography.bodySmall
-            )
-            HorizontalDivider(Modifier.padding(horizontal = 2.dp))
-            Row(
-                Modifier.fillMaxWidth(),
-                Arrangement.SpaceAround,
-                Alignment.CenterVertically
-            ) {
-                if (spellListEntry.level != 0) {
-                    TextButton(
-                        onClick = {
-                            viewModel.castSpellRequested(spellListEntry.level)
-                        },
-                        enabled = viewModel.canCastSpell(spellListEntry.level)
-                    ) {
-                        Text(stringResource(R.string.cast))
-                    }
-                }
-                TextButton(
-                    onClick = {
-                        viewModel.removeSpellFromSpellListRequested(spellListEntry)
-                    }
-                ) {
-                    Text(stringResource(R.string.remove))
-                }
-            }
-        }
-    }
-}
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Preview
 @Composable
@@ -1021,42 +1056,23 @@ fun SpellListDialogPreview() {
     ) {
         Card {
             SpellListDialog(
-                object : ISpellListDialogTrackerViewModel {
-                    override val spellListState: LazyListState
-                        get() = LazyListState()
-                    override val isShowingPreparedSpells: MutableStateFlow<Boolean>
-                        get() = MutableStateFlow(false)
-
-                    override fun setShowingPreparedSpells(value: Boolean) = Unit
-
-                    override val spellListBeingPreviewed: StateFlow<SpellList?>
-                        get() = MutableStateFlow(
-                            SpellList(0, "Spell List", "", 0, 0)
-                                .apply {
-                                    serializedItem = mutableListOf(
-                                        getSpellListEntry1(),
-                                        getSpellListEntry2()
-                                    )
-                                }
+                spellList = SpellList(0, "Spell List", "", 0, 0)
+                    .apply {
+                        serializedItem = mutableListOf(
+                            getSpellListEntry1(),
+                            getSpellListEntry2()
                         )
-
-                    override fun removeSpellFromSpellListRequested(spell: SpellListEntry) = Unit
-
-                    override fun castSpellRequested(level: Int) = Unit
-
-                    override fun canCastSpell(level: Int): Boolean = true
-
-                    override fun changeSpellListEntryPreparedState(
-                        spellListEntry: SpellListEntry,
-                        isPrepared: Boolean
-                    ) = Unit
-
-                    override val alertDialog: IAlertDialogSubViewModel
-                        get() = EmptyAlertDialogSubViewModel
-
-                },
-
-                EmptyDestinationsNavigator
+                    },
+                isFilteringByPrepared = false,
+                navigator = EmptyDestinationsNavigator,
+                dialogTitleResource = R.string.spell_list,
+                spellListState = rememberLazyListState(),
+                onDialogDismissed = {},
+                onFilteringByPreparedStateChanged = {},
+                canSpellBeCast = { true },
+                onSpellPreparedStateChanged = { _, _ -> },
+                onCastSpellRequested = {},
+                onRemoveSpellRequested = {}
             )
         }
     }
@@ -1067,8 +1083,11 @@ fun SpellListDialogPreview() {
 fun SpellListEntryListItemPreview() {
     SpellListEntryListItem(
         getSpellListEntry2(),
+        canCastSpell = true,
         EmptyDestinationsNavigator,
-        EmptyTrackerViewModel
+        onSpellPreparedStateChanged = {},
+        onCastSpellClicked = {},
+        onRemoveSpellRequested = {},
     )
 }
 

@@ -4,7 +4,6 @@ import com.feko.generictabletoprpg.common.fabdropdown.IFabDropdownSubViewModel
 import com.feko.generictabletoprpg.common.toast.IToastSubViewModel
 import com.feko.generictabletoprpg.tracker.actions.IAbilityActionsTrackerViewModel
 import com.feko.generictabletoprpg.tracker.actions.IHitDiceActionsTrackerViewModel
-import com.feko.generictabletoprpg.tracker.actions.ISpellListActionsTrackerViewModel
 import com.feko.generictabletoprpg.tracker.actions.ISpellSlotActionsTrackerViewModel
 import com.feko.generictabletoprpg.tracker.dialogs.IAlertDialogTrackerViewModel
 import kotlinx.coroutines.flow.Flow
@@ -12,7 +11,6 @@ import kotlinx.coroutines.flow.Flow
 interface ITrackerViewModel
     : IAbilityActionsTrackerViewModel,
     ISpellSlotActionsTrackerViewModel,
-    ISpellListActionsTrackerViewModel,
     IHitDiceActionsTrackerViewModel,
     IAlertDialogTrackerViewModel {
 

@@ -2,8 +2,7 @@ package com.feko.generictabletoprpg.tracker.dialogs
 
 interface IAlertDialogTrackerViewModel
     : IEditDialogTrackerViewModel,
-    IValueInputDialogTrackerViewModel,
-    ISpellListDialogTrackerViewModel {
+    IValueInputDialogTrackerViewModel {
 
     @Deprecated("")
     var dialogType: DialogType
@@ -13,7 +12,6 @@ interface IAlertDialogTrackerViewModel
     @Deprecated("")
     enum class DialogType {
         None,
-        ShowSpellList,
         EditStats
     }
 

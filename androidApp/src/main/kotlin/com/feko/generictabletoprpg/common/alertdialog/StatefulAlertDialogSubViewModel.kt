@@ -12,7 +12,7 @@ class StatefulAlertDialogSubViewModel<T>(
 ) : IMutableAlertDialogSubViewModel by AlertDialogSubViewModel(coroutineScope, onDismissed),
     IStatefulAlertDialogSubViewModel<T> {
 
-    val _state = MutableStateFlow(defaultValue)
+    private val _state = MutableStateFlow(defaultValue)
     override val state: StateFlow<T>
         get() = _state
 

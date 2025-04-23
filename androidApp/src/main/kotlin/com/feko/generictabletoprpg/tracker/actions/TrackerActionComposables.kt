@@ -11,17 +11,12 @@ import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.painterResource
 import com.feko.generictabletoprpg.R
-import com.feko.generictabletoprpg.filters.SpellFilter
-import com.feko.generictabletoprpg.filters.index
 import com.feko.generictabletoprpg.tracker.Health
 import com.feko.generictabletoprpg.tracker.IntTrackedThing
 import com.feko.generictabletoprpg.tracker.ItemActionsBase
 import com.feko.generictabletoprpg.tracker.Percentage
-import com.feko.generictabletoprpg.tracker.SpellList
 import com.feko.generictabletoprpg.tracker.Stats
 import com.feko.generictabletoprpg.tracker.TrackedThing
-import com.ramcosta.composedestinations.generated.destinations.SearchAllScreenDestination
-import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
 @Composable
 fun PercentageActions(
@@ -153,25 +148,20 @@ fun SpellSlotActions(
 
 @Composable
 fun SpellListActions(
-    item: TrackedThing,
-    navigator: DestinationsNavigator,
-    viewModel: ISpellListActionsTrackerViewModel
+    isListButtonEnabled: Boolean,
+    onListButtonClicked: () -> Unit,
+    onAddButtonClicked: () -> Unit,
+    onEditButtonClicked: () -> Unit,
+    onDeleteButtonClicked: () -> Unit,
 ) {
-    ItemActionsBase(item, viewModel) {
-        val spellList = item as SpellList
+    ItemActionsBase(onEditButtonClicked, onDeleteButtonClicked) {
         IconButton(
-            onClick = { viewModel.showPreviewSpellListDialog(spellList, resetListState = true) },
-            enabled = spellList.serializedItem.any()
+            onClick = onListButtonClicked,
+            enabled = isListButtonEnabled
         ) {
             Icon(Icons.AutoMirrored.Filled.List, "")
         }
-        IconButton(
-            onClick = {
-                viewModel.addingSpellToList(spellList)
-                navigator.navigate(SearchAllScreenDestination(SpellFilter().index(), true))
-            },
-            enabled = true
-        ) {
+        IconButton(onClick = onAddButtonClicked) {
             Icon(Icons.Default.Add, "")
         }
     }

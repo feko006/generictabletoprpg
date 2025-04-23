@@ -25,7 +25,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.android.awaitFrame
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -84,11 +83,9 @@ class TrackerViewModel(
 
     @Deprecated(message = "")
     override lateinit var dialogType: DialogType
-    private val _spellListBeingPreviewed = MutableStateFlow<SpellList?>(null)
-    override lateinit var spellListState: LazyListState
-    override lateinit var isShowingPreparedSpells: MutableStateFlow<Boolean>
-    override val spellListBeingPreviewed: StateFlow<SpellList?>
-        get() = _spellListBeingPreviewed
+    private val _spellListBeingPreviewed: SpellList? = null
+    lateinit var spellListState: LazyListState
+    lateinit var isShowingPreparedSpells: MutableStateFlow<Boolean>
 
     private val _confirmDeletionDialog =
         StatefulAlertDialogSubViewModel<TrackedThing>(TrackedThing.Companion.Empty, viewModelScope)
@@ -166,6 +163,12 @@ class TrackerViewModel(
     val editDialog: IStatefulAlertDialogSubViewModel<TrackedThing>
         get() = _editDialog
 
+    private val _spellListDialog =
+        StatefulAlertDialogSubViewModel(SpellList.Empty, viewModelScope)
+            .apply { _titleResource = R.string.spell_list }
+    val spellListDialog: IStatefulAlertDialogSubViewModel<SpellList>
+        get() = _spellListDialog
+
     override val combinedItemFlow: Flow<List<Any>> =
         _items.combine(_searchString) { items, searchString ->
             if (searchString.isBlank()) {
@@ -182,7 +185,7 @@ class TrackerViewModel(
 
     init {
         viewModelScope.launch {
-            withContext(Dispatchers.Default) {
+            withContext(Dispatchers.IO) {
                 allItems = searchAllUseCase.getAllItems()
                 isShowingPreparedSpells = MutableStateFlow(false)
             }
@@ -243,6 +246,7 @@ class TrackerViewModel(
         }
     }
 
+    @Deprecated("")
     override fun confirmDialogAction() {
         if (editedTrackedThing?.validate() == false) {
             return
@@ -251,7 +255,6 @@ class TrackerViewModel(
         when (dialogType) {
             DialogType.EditStats -> createOrEditStats()
 
-            DialogType.ShowSpellList,
             DialogType.None -> Unit
         }
     }
@@ -271,7 +274,7 @@ class TrackerViewModel(
                 if (trackedThing is Health) {
                     trackedThing.temporaryHp = 0
                 }
-                withContext(Dispatchers.Default) {
+                withContext(Dispatchers.IO) {
                     trackedThingDao.insertOrUpdate(trackedThing)
                 }
                 replaceItem(trackedThing)
@@ -287,7 +290,7 @@ class TrackerViewModel(
 
     fun deleteTrackedThing(trackedThing: TrackedThing) {
         viewModelScope.launch {
-            withContext(Dispatchers.Default) {
+            withContext(Dispatchers.IO) {
                 trackedThingDao.delete(trackedThing.id)
             }
             removeItem(trackedThing)
@@ -342,7 +345,7 @@ class TrackerViewModel(
     fun addTemporaryHpToTrackedThing(health: Health, amount: String) {
         viewModelScope.launch {
             health.addTemporaryHp(amount)
-            withContext(Dispatchers.Default) {
+            withContext(Dispatchers.IO) {
                 trackedThingDao.insertOrUpdate(health)
             }
             replaceItem(health.copy())
@@ -369,7 +372,7 @@ class TrackerViewModel(
                     .let(::finalizeStats)
             editedStats.setItem(updatedStatsContainer, json)
             val isNewItem = editedStats.id <= 0
-            withContext(Dispatchers.Default) {
+            withContext(Dispatchers.IO) {
                 ensureNonEmptyName(editedStats)
                 val id = trackedThingDao.insertOrUpdate(editedStats)
                 editedStats.id = id
@@ -497,7 +500,7 @@ class TrackerViewModel(
             if (itemCopy is Health) {
                 itemCopy.temporaryHp = 0
             }
-            withContext(Dispatchers.Default) {
+            withContext(Dispatchers.IO) {
                 trackedThingDao.insertOrUpdate(itemCopy)
             }
             replaceItem(itemCopy)
@@ -525,7 +528,7 @@ class TrackerViewModel(
     private suspend fun reduceByOneSuspending(item: TrackedThing) {
         val itemCopy = item.copy()
         itemCopy.subtract("1")
-        withContext(Dispatchers.Default) {
+        withContext(Dispatchers.IO) {
             trackedThingDao.insertOrUpdate(itemCopy)
         }
         replaceItem(itemCopy)
@@ -535,7 +538,7 @@ class TrackerViewModel(
         viewModelScope.launch {
             val itemCopy = item.copy()
             itemCopy.add("1")
-            withContext(Dispatchers.Default) {
+            withContext(Dispatchers.IO) {
                 trackedThingDao.insertOrUpdate(itemCopy)
             }
             replaceItem(itemCopy)
@@ -646,7 +649,7 @@ class TrackerViewModel(
                         }
                     }
             _items.emit(newList)
-            withContext(Dispatchers.Default) {
+            withContext(Dispatchers.IO) {
                 newList.forEach {
                     trackedThingDao.insertOrUpdate(it)
                 }
@@ -654,24 +657,19 @@ class TrackerViewModel(
         }
     }
 
-    override fun showPreviewSpellListDialog(spellList: SpellList, resetListState: Boolean) {
+    fun showPreviewSpellListDialog(spellList: SpellList, resetListState: Boolean) {
         if (spellList.serializedItem.isEmpty()) {
             return
         }
         if (resetListState) {
             spellListState = LazyListState()
         }
-        viewModelScope.launch {
-            _alertDialog._titleResource = R.string.spell_list
-            dialogType = DialogType.ShowSpellList
-            _spellListBeingPreviewed.emit(spellList)
-            _alertDialog.show()
-        }
+        viewModelScope.launch { _spellListDialog.show(spellList) }
     }
 
     override fun addSpellToList(spellId: Long) {
         viewModelScope.launch {
-            val spellToAdd = withContext(Dispatchers.Default) {
+            val spellToAdd = withContext(Dispatchers.IO) {
                 spellDao.getById(spellId)
             }
             val spellList = requireNotNull(spellListBeingAddedTo)
@@ -695,7 +693,7 @@ class TrackerViewModel(
                             }
                         }.toMutableList()
                 spellList.setItem(sortedSpells, json)
-                withContext(Dispatchers.Default) {
+                withContext(Dispatchers.IO) {
                     trackedThingDao.insertOrUpdate(spellList)
                 }
                 replaceItem(spellList.copy())
@@ -705,21 +703,21 @@ class TrackerViewModel(
         }
     }
 
-    override fun addingSpellToList(spellList: SpellList) {
+    fun addingSpellToList(spellList: SpellList) {
         spellListBeingAddedTo = spellList
     }
 
-    override fun removeSpellFromSpellListRequested(spell: SpellListEntry) {
+    fun removeSpellFromSpellListRequested(spell: SpellListEntry) {
         viewModelScope.launch {
-            _alertDialog.hide()
-            awaitFrame()
+//            _alertDialog.hide()
+//            awaitFrame()
             _confirmSpellRemovalFromListDialog.show(spell)
         }
     }
 
     private fun dialogToRemoveOrCastSpellFromSpellListResolved() {
         viewModelScope.launch {
-            spellListBeingPreviewed.value?.let {
+            _spellListBeingPreviewed?.let {
                 _alertDialog.hide()
                 awaitFrame()
                 showPreviewSpellListDialog(it, resetListState = false)
@@ -729,17 +727,17 @@ class TrackerViewModel(
 
     fun removeSpellFromSpellList(spellListEntry: SpellListEntry) {
         viewModelScope.launch {
-            val spellList = requireNotNull(spellListBeingPreviewed.value)
+            val spellList = requireNotNull(_spellListBeingPreviewed)
             spellList.serializedItem.remove(spellListEntry)
             spellList.setItem(spellList.serializedItem, json)
-            withContext(Dispatchers.Default) {
+            withContext(Dispatchers.IO) {
                 trackedThingDao.insertOrUpdate(spellList)
             }
             replaceItem(spellList.copy())
         }
     }
 
-    override fun castSpellRequested(level: Int) {
+    fun castSpellRequested(level: Int) {
         viewModelScope.launch {
             val availableSpellSlots =
                 _items.value
@@ -751,8 +749,8 @@ class TrackerViewModel(
                 castSpellImmediate(availableSpellSlots.first())
                 return@launch
             }
-            _alertDialog.hide()
-            awaitFrame()
+//            _alertDialog.hide()
+//            awaitFrame()
             _selectSlotLevelToCastDialog.show(availableSpellSlots)
         }
     }
@@ -765,7 +763,8 @@ class TrackerViewModel(
                     .first { it.level == withSlotLevel && it.amount > 0 }
             useSpellSuspending(spellSlot)
             _toast.showMessage(R.string.spell_cast_with_slot_level, withSlotLevel.toString())
-            _spellListBeingPreviewed.emit(_spellListBeingPreviewed.value!!.copy() as SpellList)
+//            _spellListBeingPreviewed.emit(_spellListBeingPreviewed.value!!.copy() as SpellList)
+            _spellListDialog.updateState(_spellListDialog.state.value.copy() as SpellList)
         }
     }
 
@@ -786,32 +785,30 @@ class TrackerViewModel(
         viewModelScope.launch { _showStatsDialog.show(stats.serializedItem) }
     }
 
-    override fun canCastSpell(level: Int): Boolean =
+    fun canCastSpell(level: Int): Boolean =
         _items.value
             .filterIsInstance<SpellSlot>()
             .any { it.level >= level && it.amount > 0 }
 
-    override fun changeSpellListEntryPreparedState(
+    fun changeSpellListEntryPreparedState(
         spellListEntry: SpellListEntry,
         isPrepared: Boolean
     ) {
         viewModelScope.launch {
-            val spellList = requireNotNull(spellListBeingPreviewed.value)
+            val spellList = requireNotNull(_spellListBeingPreviewed)
             spellListEntry.isPrepared = isPrepared
             spellList.setItem(spellList.serializedItem, json)
-            withContext(Dispatchers.Default) {
+            withContext(Dispatchers.IO) {
                 trackedThingDao.insertOrUpdate(spellList)
             }
             val spellListCopy = spellList.copy() as SpellList
             replaceItem(spellListCopy)
-            _spellListBeingPreviewed.emit(spellListCopy)
+            _spellListDialog.updateState(spellListCopy)
         }
     }
 
-    override fun setShowingPreparedSpells(value: Boolean) {
-        viewModelScope.launch {
-            isShowingPreparedSpells.value = value
-        }
+    fun setShowingPreparedSpells(value: Boolean) {
+        viewModelScope.launch { isShowingPreparedSpells.value = value }
     }
 
     override fun useHitDie(item: TrackedThing) {
@@ -824,11 +821,11 @@ class TrackerViewModel(
 
     private fun onAlertDialogDismissed() {
         when (dialogType) {
-            DialogType.ShowSpellList -> {
-                viewModelScope.launch {
-                    _spellListBeingPreviewed.emit(null)
-                }
-            }
+//            DialogType.ShowSpellList -> {
+//                viewModelScope.launch {
+//                    _spellListBeingPreviewed.emit(null)
+//                }
+//            }
 
             else -> Unit
         }

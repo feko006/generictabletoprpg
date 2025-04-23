@@ -62,8 +62,6 @@ data class SpellListEntry(
 
 }
 
-fun List<SpellListEntry>.containsPreparedAndCantripSpells() = any { it.isPrepared || it.level == 0 }
-
 fun List<SpellListEntry>.preparedSpellsCount() = count { it.isPrepared }
 
 fun List<SpellListEntry>.cantripSpellsCount() = count { it.level == 0 }

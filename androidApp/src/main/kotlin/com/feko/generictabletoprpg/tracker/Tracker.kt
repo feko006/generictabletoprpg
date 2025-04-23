@@ -80,7 +80,7 @@ fun TrackerScreen(
         },
         searchFieldHintResource = R.string.search_everywhere
     )
-    TrackerAlertDialogs(viewModel)
+    TrackerAlertDialogs(viewModel, navigator)
 }
 
 @Composable

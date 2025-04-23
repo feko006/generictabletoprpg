@@ -41,6 +41,8 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.feko.generictabletoprpg.R
 import com.feko.generictabletoprpg.asSignedString
+import com.feko.generictabletoprpg.filters.SpellFilter
+import com.feko.generictabletoprpg.filters.index
 import com.feko.generictabletoprpg.theme.Typography
 import com.feko.generictabletoprpg.tracker.actions.AbilityActions
 import com.feko.generictabletoprpg.tracker.actions.HealthActions
@@ -48,7 +50,6 @@ import com.feko.generictabletoprpg.tracker.actions.HitDiceActions
 import com.feko.generictabletoprpg.tracker.actions.IAbilityActionsTrackerViewModel
 import com.feko.generictabletoprpg.tracker.actions.IBasicActionsTrackerViewModel
 import com.feko.generictabletoprpg.tracker.actions.IHitDiceActionsTrackerViewModel
-import com.feko.generictabletoprpg.tracker.actions.ISpellListActionsTrackerViewModel
 import com.feko.generictabletoprpg.tracker.actions.ISpellSlotActionsTrackerViewModel
 import com.feko.generictabletoprpg.tracker.actions.NumberActions
 import com.feko.generictabletoprpg.tracker.actions.PercentageActions
@@ -56,6 +57,7 @@ import com.feko.generictabletoprpg.tracker.actions.SpellListActions
 import com.feko.generictabletoprpg.tracker.actions.SpellSlotActions
 import com.feko.generictabletoprpg.tracker.actions.StatsActions
 import com.feko.generictabletoprpg.tracker.actions.TextActions
+import com.ramcosta.composedestinations.generated.destinations.SearchAllScreenDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import org.burnoutcrew.reorderable.ReorderableLazyListState
 import org.burnoutcrew.reorderable.detectReorder
@@ -220,7 +222,7 @@ fun SpellListItemContent(
     spellList: SpellList,
     reorderableLazyListState: ReorderableLazyListState,
     navigator: DestinationsNavigator,
-    viewModel: ISpellListActionsTrackerViewModel
+    viewModel: TrackerViewModel
 ) {
     DefaultTrackableLayout(
         spellList.name,
@@ -230,7 +232,18 @@ fun SpellListItemContent(
             Text(spellList.type.name, style = Typography.bodySmall)
         }
     ) {
-        SpellListActions(spellList, navigator, viewModel)
+        SpellListActions(
+            isListButtonEnabled = spellList.serializedItem.any(),
+            onListButtonClicked = {
+                viewModel.showPreviewSpellListDialog(spellList, resetListState = true)
+            },
+            onAddButtonClicked = {
+                viewModel.addingSpellToList(spellList)
+                navigator.navigate(SearchAllScreenDestination(SpellFilter().index(), true))
+            },
+            onEditButtonClicked = { viewModel.showEditDialog(spellList) },
+            onDeleteButtonClicked = { viewModel.deleteItemRequested(spellList) }
+        )
     }
 }
 
