@@ -121,7 +121,7 @@ fun ConfirmDeletionDialog(viewModel: TrackerViewModel) {
 
     ConfirmationDialog(
         onConfirm = { viewModel.deleteTrackedThing(viewModel.confirmDeletionDialog.state.value) },
-        onDialogDismissed = { viewModel.confirmDeletionDialog.dismiss() }
+        onDialogDismiss = { viewModel.confirmDeletionDialog.dismiss() }
     )
 }
 
@@ -132,7 +132,7 @@ fun RefreshAllDialog(viewModel: TrackerViewModel) {
 
     ConfirmationDialog(
         onConfirm = { viewModel.refreshAll() },
-        onDialogDismissed = { viewModel.refreshAllDialog.dismiss() },
+        onDialogDismiss = { viewModel.refreshAllDialog.dismiss() },
         dialogTitle = stringResource(R.string.refresh_all_tracked_things_dialog_title)
     )
 }
@@ -149,7 +149,7 @@ fun ConfirmSpellRemovalFromListDialog(viewModel: TrackerViewModel) {
                 viewModel.confirmSpellRemovalFromListDialog.state.value
             )
         },
-        onDialogDismissed = { viewModel.confirmSpellRemovalFromListDialog.dismiss() },
+        onDialogDismiss = { viewModel.confirmSpellRemovalFromListDialog.dismiss() },
         dialogTitle = stringResource(R.string.confirm_spell_removal_from_list_dialog_title)
     )
 }
@@ -303,7 +303,7 @@ fun PreviewStatSkillsDialog(viewModel: TrackerViewModel) {
     if (!isDialogVisible) return
 
     AlertDialogBase(
-        onDialogDismissed = { viewModel.showStatsDialog.dismiss() },
+        onDialogDismiss = { viewModel.showStatsDialog.dismiss() },
         screenHeight = 0.7f,
         dialogTitle = { DialogTitle(stringResource(viewModel.showStatsDialog.titleResource)) },
         Arrangement.Top,
@@ -364,7 +364,7 @@ private fun EditDialog(
     val editedTrackedThing by viewModel.editDialog.state.collectAsState()
     val canConfirmEditOperation = editedTrackedThing.validate()
     AlertDialogBase(
-        onDialogDismissed = { viewModel.editDialog.dismiss() },
+        onDialogDismiss = { viewModel.editDialog.dismiss() },
         dialogTitle = { DialogTitle(stringResource(viewModel.editDialog.titleResource)) },
         verticalArrangement = Arrangement.spacedBy(8.dp),
         dialogButtons = {
@@ -758,7 +758,7 @@ fun StatsEditDialog(
     val editedStats by viewModel.alertDialog.state.collectAsState()
     val statsContainer = requireNotNull(editedStats.serializedItem)
     AlertDialogBase(
-        onDialogDismissed = { viewModel.alertDialog.dismiss() },
+        onDialogDismiss = { viewModel.alertDialog.dismiss() },
         screenHeight = 0.6f,
         dialogTitle = { DialogTitle(stringResource(viewModel.alertDialog.titleResource)) },
         dialogButtons = {

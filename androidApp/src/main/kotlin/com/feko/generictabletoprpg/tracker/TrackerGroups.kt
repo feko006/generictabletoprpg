@@ -6,52 +6,39 @@ import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentWidth
-import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material3.BasicAlertDialog
-import androidx.compose.material3.Card
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.input.ImeAction.Companion.Done
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.DialogProperties
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.documentfile.provider.DocumentFile
 import com.feko.generictabletoprpg.AppViewModel
 import com.feko.generictabletoprpg.ButtonState
 import com.feko.generictabletoprpg.R
 import com.feko.generictabletoprpg.RootDestinations
+import com.feko.generictabletoprpg.com.feko.generictabletoprpg.common.IText
 import com.feko.generictabletoprpg.common.INamed
 import com.feko.generictabletoprpg.common.composable.AddFABButton
+import com.feko.generictabletoprpg.common.composable.AlertDialogBase
+import com.feko.generictabletoprpg.common.composable.ConfirmationDialog
 import com.feko.generictabletoprpg.common.composable.DialogTitle
+import com.feko.generictabletoprpg.common.composable.InputField
 import com.feko.generictabletoprpg.common.composable.OverviewScreen
 import com.feko.generictabletoprpg.common.composable.ToastMessage
 import com.ramcosta.composedestinations.annotation.Destination
@@ -102,7 +89,6 @@ fun TrackerGroupsScreen(
         viewModel.refreshItems()
         appViewModel.itemsRefreshed(RootDestinations.Tracker)
     }
-    val isAlertDialogVisible by viewModel.alertDialog.isVisible.collectAsState(false)
     OverviewScreen(
         viewModel = viewModel,
         listItem = { item, _, _ ->
@@ -117,12 +103,35 @@ fun TrackerGroupsScreen(
             AddFABButton(modifier) {
                 viewModel.newTrackedThingGroupRequested()
             }
-        },
-        isAlertDialogVisible = isAlertDialogVisible,
-        alertDialogComposable = {
-            AlertDialogComposable(viewModel)
         }
     )
+    val dialog by viewModel.dialog.collectAsState(ITrackerGroupDialog.None)
+    AlertDialog(dialog, viewModel)
+}
+
+@Composable
+private fun AlertDialog(
+    dialog: ITrackerGroupDialog,
+    viewModel: TrackerGroupViewModel
+) {
+    when (dialog) {
+        is ITrackerGroupDialog.DeleteDialog ->
+            DeleteDialog(
+                dialog.dialogTitle,
+                onConfirm = { viewModel.deleteGroup(dialog.trackedThingGroup) },
+                onDialogDismissed = viewModel::dismissDialog
+            )
+
+        is ITrackerGroupDialog.EditDialog ->
+            EditDialog(
+                dialogState = dialog,
+                onValueUpdate = viewModel::editDialogValueUpdated,
+                onDialogDismiss = viewModel::dismissDialog,
+                onConfirm = viewModel::insertOrUpdateGroup
+            )
+
+        ITrackerGroupDialog.None -> {}
+    }
 }
 
 private fun onDirectorySelected(
@@ -183,75 +192,56 @@ fun OverviewListItem(
 }
 
 @Composable
-@OptIn(ExperimentalMaterial3Api::class)
-fun AlertDialogComposable(viewModel: TrackerGroupViewModel) {
-    BasicAlertDialog(
-        onDismissRequest = { viewModel.alertDialog.dismiss() },
-        properties = DialogProperties()
-    ) {
-        Card {
-            Column(
-                Modifier.padding(16.dp),
-                Arrangement.spacedBy(16.dp)
+private fun DeleteDialog(
+    dialogTitle: IText,
+    onConfirm: () -> Unit,
+    onDialogDismissed: () -> Unit
+) {
+    ConfirmationDialog(onConfirm, onDialogDismissed, dialogTitle.text())
+}
+
+@Composable
+private fun EditDialog(
+    dialogState: ITrackerGroupDialog.EditDialog,
+    onValueUpdate: (TrackedThingGroup) -> Unit,
+    onDialogDismiss: () -> Unit,
+    onConfirm: (TrackedThingGroup) -> Unit
+) {
+    AlertDialogBase(
+        onDialogDismiss,
+        dialogTitle = {
+            DialogTitle(dialogState.dialogTitle.text())
+        },
+        dialogButtons = {
+            TextButton(onClick = onDialogDismiss) {
+                Text(stringResource(R.string.cancel))
+            }
+            TextButton(
+                onClick = {
+                    onConfirm(dialogState.trackedThingGroup)
+                    onDialogDismiss()
+                },
+                enabled = dialogState.trackedThingGroup.name.isNotEmpty(),
             ) {
-                DialogTitle(viewModel.alertDialog.titleResource)
-                val focusRequester = remember { FocusRequester() }
-                val nameInputData by viewModel.groupName.collectAsState()
-                val isConfirmButtonEnabled by viewModel.confirmButtonEnabled.collectAsState()
-                if (viewModel.dialogType == TrackerGroupViewModel.DialogType.NewOrUpdate) {
-                    TextField(
-                        value = nameInputData.value,
-                        onValueChange = { viewModel.setName(it) },
-                        isError = !nameInputData.isValid,
-                        label = {
-                            Text(
-                                stringResource(R.string.name),
-                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
-                            )
-                        },
-                        trailingIcon = {
-                            IconButton(
-                                onClick = { viewModel.setName("") }
-                            ) {
-                                Icon(Icons.Default.Clear, "")
-                            }
-                        },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .focusRequester(focusRequester),
-                        keyboardOptions = KeyboardOptions(imeAction = Done),
-                        keyboardActions = KeyboardActions(
-                            onDone = {
-                                if (isConfirmButtonEnabled) {
-                                    viewModel.confirmDialogAction()
-                                }
-                            }
-                        )
-                    )
-                    LaunchedEffect(Unit) {
-                        focusRequester.requestFocus()
-                    }
-                }
-                Row {
-                    Spacer(Modifier.weight(1f))
-                    if (viewModel.dialogType == TrackerGroupViewModel.DialogType.Delete) {
-                        TextButton(
-                            onClick = { viewModel.alertDialog.dismiss() },
-                            enabled = true,
-                            modifier = Modifier.wrapContentWidth()
-                        ) {
-                            Text(stringResource(R.string.cancel))
-                        }
-                    }
-                    TextButton(
-                        onClick = { viewModel.confirmDialogAction() },
-                        enabled = isConfirmButtonEnabled,
-                        modifier = Modifier.wrapContentWidth()
-                    ) {
-                        Text(stringResource(R.string.confirm))
-                    }
-                }
+                Text(stringResource(R.string.confirm))
             }
         }
+    ) {
+        InputField(
+            dialogState.trackedThingGroup.name,
+            stringResource(R.string.name),
+            onValueChange = { onValueUpdate(dialogState.trackedThingGroup.copy(name = it)) },
+            onFormSubmit = {
+                onConfirm(dialogState.trackedThingGroup)
+                onDialogDismiss()
+            },
+            canSubmitForm = { it.isNotEmpty() },
+            isInputFieldValid = { it.isNotEmpty() },
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Text,
+                imeAction = ImeAction.Done
+            ),
+            autoFocus = true
+        )
     }
 }

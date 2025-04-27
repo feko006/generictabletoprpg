@@ -263,7 +263,7 @@ private fun RemoveAfterTakingDamageDialog(viewModel: EncounterViewModel) {
                 .collectAsState(InitiativeEntryEntity.Empty)
     ConfirmationDialog(
         onConfirm = { viewModel.deleteEntry(initiativeEntry) },
-        onDialogDismissed = { viewModel.removeAfterTakingDamageDialog.dismiss() },
+        onDialogDismiss = { viewModel.removeAfterTakingDamageDialog.dismiss() },
         dialogTitle = stringResource(R.string.delete_dialog_title),
         dialogMessage = stringResource(
             R.string.remove_from_encounter_after_taking_lethal_damage_dialog_message_template,
@@ -306,7 +306,7 @@ private fun ConfirmDeletionDialog(viewModel: EncounterViewModel) {
 
     ConfirmationDialog(
         onConfirm = { viewModel.deleteEntry(viewModel.confirmDeletionDialog.state.value) },
-        onDialogDismissed = { viewModel.confirmDeletionDialog.dismiss() }
+        onDialogDismiss = { viewModel.confirmDeletionDialog.dismiss() }
     )
 }
 
@@ -317,7 +317,7 @@ private fun ConfirmResetDialog(viewModel: EncounterViewModel) {
 
     ConfirmationDialog(
         onConfirm = { viewModel.resetInitiative() },
-        onDialogDismissed = { viewModel.confirmResetDialog.dismiss() },
+        onDialogDismiss = { viewModel.confirmResetDialog.dismiss() },
         dialogTitle = stringResource(R.string.reset_dialog_title),
         dialogMessage = stringResource(R.string.reset_encounter_message)
     )

@@ -46,8 +46,6 @@ class TrackerViewModel(
 
     private lateinit var allItems: List<Any>
 
-    @Deprecated(message = "")
-    private var editedTrackedThing: TrackedThing? = null
     private var spellListBeingAddedTo: SpellList? = null
     private var fiveEDefaultStats: List<StatEntry>? = null
 

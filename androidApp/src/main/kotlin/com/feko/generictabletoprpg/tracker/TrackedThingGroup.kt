@@ -11,4 +11,11 @@ data class TrackedThingGroup(
     override val name: String,
     var trackedThings: List<TrackedThing> = mutableListOf()
 ) : IIdentifiable,
-    INamed
+    INamed {
+
+    fun toEntity(): TrackedThingGroupEntity = TrackedThingGroupEntity(id, name)
+
+    companion object {
+        val Empty = TrackedThingGroup(0L, "")
+    }
+}

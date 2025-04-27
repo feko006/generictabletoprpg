@@ -36,14 +36,14 @@ import com.feko.generictabletoprpg.theme.Typography
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
 fun AlertDialogBase(
-    onDialogDismissed: () -> Unit,
+    onDialogDismiss: () -> Unit,
     screenHeight: Float = 1f,
     dialogTitle: @Composable ColumnScope.() -> Unit = {},
     verticalArrangement: Arrangement.Vertical = Arrangement.Top,
     dialogButtons: @Composable (RowScope.() -> Unit)? = null,
     dialogContent: @Composable ColumnScope.() -> Unit = {}
 ) {
-    BasicAlertDialog(onDismissRequest = onDialogDismissed) {
+    BasicAlertDialog(onDismissRequest = onDialogDismiss) {
         Card {
             Column(
                 Modifier
@@ -69,20 +69,20 @@ fun AlertDialogBase(
 @Composable
 fun ConfirmationDialog(
     onConfirm: () -> Unit,
-    onDialogDismissed: () -> Unit,
+    onDialogDismiss: () -> Unit,
     dialogTitle: String = stringResource(R.string.delete_dialog_title),
     dialogMessage: String? = null
 ) {
     AlertDialogBase(
-        onDialogDismissed,
+        onDialogDismiss,
         dialogTitle = { DialogTitle(dialogTitle) },
         dialogButtons = {
-            TextButton(onClick = onDialogDismissed) {
+            TextButton(onClick = onDialogDismiss) {
                 Text(stringResource(R.string.cancel))
             }
             TextButton(onClick = {
                 onConfirm()
-                onDialogDismissed()
+                onDialogDismiss()
             }) {
                 Text(stringResource(R.string.confirm))
             }
@@ -94,11 +94,38 @@ fun ConfirmationDialog(
 }
 
 @Composable
+@Deprecated("Use variant with String dialogTitle.")
 fun EnterValueDialog(
     onConfirm: (String) -> Unit,
     onDialogDismissed: () -> Unit,
     @StringRes
     dialogTitle: Int,
+    inputFieldLabel: String = stringResource(R.string.amount),
+    isInputFieldValid: (String) -> Boolean = { it.isNotEmpty() },
+    canSubmitForm: (String) -> Boolean = isInputFieldValid,
+    keyboardOptions: KeyboardOptions = KeyboardOptions(
+        keyboardType = KeyboardType.Text,
+        imeAction = ImeAction.Done
+    ),
+    suffix: @Composable () -> Unit = {}
+) {
+    EnterValueDialog(
+        onConfirm,
+        onDialogDismissed,
+        stringResource(dialogTitle),
+        inputFieldLabel,
+        isInputFieldValid,
+        canSubmitForm,
+        keyboardOptions,
+        suffix
+    )
+}
+
+@Composable
+fun EnterValueDialog(
+    onConfirm: (String) -> Unit,
+    onDialogDismissed: () -> Unit,
+    dialogTitle: String,
     inputFieldLabel: String = stringResource(R.string.amount),
     isInputFieldValid: (String) -> Boolean = { it.isNotEmpty() },
     canSubmitForm: (String) -> Boolean = isInputFieldValid,
