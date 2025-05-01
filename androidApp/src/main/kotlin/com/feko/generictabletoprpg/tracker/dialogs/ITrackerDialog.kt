@@ -3,6 +3,7 @@ package com.feko.generictabletoprpg.tracker.dialogs
 import com.feko.generictabletoprpg.R
 import com.feko.generictabletoprpg.com.feko.generictabletoprpg.common.IText
 import com.feko.generictabletoprpg.com.feko.generictabletoprpg.tracker.dialogs.ISpellListDialogDialogs
+import com.feko.generictabletoprpg.tracker.Health
 import com.feko.generictabletoprpg.tracker.Number
 import com.feko.generictabletoprpg.tracker.Percentage
 import com.feko.generictabletoprpg.tracker.SpellList
@@ -45,5 +46,20 @@ sealed interface ITrackerDialog {
     data class SubtractFromNumberDialog(
         val number: Number,
         val title: IText = IText.StringResourceText(R.string.subtract)
+    ) : ITrackerDialog
+
+    data class DamageHealthDialog(
+        val health: Health,
+        val title: IText = IText.StringResourceText(R.string.take_damage_dialog_title)
+    ) : ITrackerDialog
+
+    data class HealHealthDialog(
+        val health: Health,
+        val title: IText = IText.StringResourceText(R.string.heal_dialog_title)
+    ) : ITrackerDialog
+
+    data class AddTemporaryHpDialog(
+        val health: Health,
+        val title: IText = IText.StringResourceText(R.string.add_temporary_hp_dialog_title)
     ) : ITrackerDialog
 }

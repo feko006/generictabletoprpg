@@ -17,7 +17,7 @@ import com.feko.generictabletoprpg.common.composable.OverviewScreen
 import com.feko.generictabletoprpg.common.composable.ToastMessage
 import com.feko.generictabletoprpg.searchall.getNavRouteInternal
 import com.feko.generictabletoprpg.searchall.getUniqueListItemKey
-import com.feko.generictabletoprpg.tracker.dialogs.TrackerAlertDialogs
+import com.feko.generictabletoprpg.tracker.dialogs.TrackerAlertDialog
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.generated.destinations.SearchAllScreenDestination
@@ -75,7 +75,7 @@ fun TrackerScreen(
         },
         searchFieldHintResource = R.string.search_everywhere
     )
-    TrackerAlertDialogs(viewModel, navigator)
+    TrackerAlertDialog(viewModel, navigator)
 }
 
 @Composable
@@ -110,8 +110,7 @@ fun TrackerListItem(
 
             TrackedThing.Companion.Empty,
             is GenericTrackedThing<*>,
-            is JsonTrackedThing<*> -> {
-            }
+            is JsonTrackedThing<*> -> Unit
         }
     } else {
         OverviewListItem(item, Modifier.clickable { navigator.navigate(getNavRouteInternal(item)) })

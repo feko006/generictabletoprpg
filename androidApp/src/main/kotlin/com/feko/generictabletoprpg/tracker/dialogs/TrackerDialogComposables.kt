@@ -44,6 +44,7 @@ import com.feko.generictabletoprpg.common.composable.IInputFieldValueConverter
 import com.feko.generictabletoprpg.common.composable.InputField
 import com.feko.generictabletoprpg.common.composable.NumberInputField
 import com.feko.generictabletoprpg.theme.Typography
+import com.feko.generictabletoprpg.tracker.Health
 import com.feko.generictabletoprpg.tracker.IntTrackedThing
 import com.feko.generictabletoprpg.tracker.Number
 import com.feko.generictabletoprpg.tracker.Percentage
@@ -59,13 +60,10 @@ import com.feko.generictabletoprpg.tracker.TrackerViewModel
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
 @Composable
-fun TrackerAlertDialogs(viewModel: TrackerViewModel, navigator: DestinationsNavigator) {
+fun TrackerAlertDialog(viewModel: TrackerViewModel, navigator: DestinationsNavigator) {
     val dialog by viewModel.dialog.collectAsState(ITrackerDialog.None)
     AlertDialog(dialog, viewModel, navigator)
 
-    DamageHealthDialog(viewModel)
-    HealHealthDialog(viewModel)
-    AddTemporaryHpDialog(viewModel)
     PreviewStatSkillsDialog(viewModel)
     EditDialog(viewModel)
     StatsEditDialog(
@@ -112,7 +110,17 @@ private fun AlertDialog(
                 viewModel::dismissDialog
             )
 
-        is ITrackerDialog.None -> {}
+        is ITrackerDialog.DamageHealthDialog ->
+            DamageHealthDialog(dialog, viewModel::damageHealth, viewModel::dismissDialog)
+
+        is ITrackerDialog.HealHealthDialog ->
+            HealHealthDialog(dialog, viewModel::healHealth, viewModel::dismissDialog)
+
+        is ITrackerDialog.AddTemporaryHpDialog ->
+            AddTemporaryHpDialog(dialog, viewModel::addTemporaryHp, viewModel::dismissDialog)
+
+        is ITrackerDialog.None -> {
+        }
     }
 }
 
@@ -209,16 +217,15 @@ fun SubtractFromNumberDialog(
 }
 
 @Composable
-fun HealHealthDialog(viewModel: TrackerViewModel) {
-    val isDialogVisible by viewModel.healHealthDialog.isVisible.collectAsState(false)
-    if (!isDialogVisible) return
-
+fun HealHealthDialog(
+    dialog: ITrackerDialog.HealHealthDialog,
+    onConfirm: (Health, String) -> Unit,
+    onDismiss: () -> Unit
+) {
     EnterValueDialog(
-        onConfirm = {
-            viewModel.healHealth(viewModel.healHealthDialog.state.value, it)
-        },
-        onDialogDismissed = { viewModel.healHealthDialog.dismiss() },
-        dialogTitle = viewModel.healHealthDialog.titleResource,
+        onConfirm = { onConfirm(dialog.health, it) },
+        onDialogDismissed = onDismiss,
+        dialogTitle = dialog.title.text(),
         keyboardOptions = KeyboardOptions(
             keyboardType = KeyboardType.Number,
             imeAction = ImeAction.Done
@@ -227,16 +234,15 @@ fun HealHealthDialog(viewModel: TrackerViewModel) {
 }
 
 @Composable
-fun DamageHealthDialog(viewModel: TrackerViewModel) {
-    val isDialogVisible by viewModel.damageHealthDialog.isVisible.collectAsState(false)
-    if (!isDialogVisible) return
-
+fun DamageHealthDialog(
+    dialog: ITrackerDialog.DamageHealthDialog,
+    onConfirm: (Health, String) -> Unit,
+    onDismiss: () -> Unit
+) {
     EnterValueDialog(
-        onConfirm = {
-            viewModel.damageHealth(viewModel.damageHealthDialog.state.value, it)
-        },
-        onDialogDismissed = { viewModel.damageHealthDialog.dismiss() },
-        dialogTitle = viewModel.damageHealthDialog.titleResource,
+        onConfirm = { onConfirm(dialog.health, it) },
+        onDialogDismissed = onDismiss,
+        dialogTitle = dialog.title.text(),
         keyboardOptions = KeyboardOptions(
             keyboardType = KeyboardType.Number,
             imeAction = ImeAction.Done
@@ -245,16 +251,15 @@ fun DamageHealthDialog(viewModel: TrackerViewModel) {
 }
 
 @Composable
-fun AddTemporaryHpDialog(viewModel: TrackerViewModel) {
-    val isDialogVisible by viewModel.addTemporaryHpDialog.isVisible.collectAsState(false)
-    if (!isDialogVisible) return
-
+fun AddTemporaryHpDialog(
+    dialog: ITrackerDialog.AddTemporaryHpDialog,
+    onConfirm: (Health, String) -> Unit,
+    onDismiss: () -> Unit
+) {
     EnterValueDialog(
-        onConfirm = {
-            viewModel.addTemporaryHpToTrackedThing(viewModel.addTemporaryHpDialog.state.value, it)
-        },
-        onDialogDismissed = { viewModel.addTemporaryHpDialog.dismiss() },
-        dialogTitle = viewModel.addTemporaryHpDialog.titleResource,
+        onConfirm = { onConfirm(dialog.health, it) },
+        onDialogDismissed = onDismiss,
+        dialogTitle = dialog.title.text(),
         keyboardOptions = KeyboardOptions(
             keyboardType = KeyboardType.Number,
             imeAction = ImeAction.Done

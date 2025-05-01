@@ -56,24 +56,6 @@ class TrackerViewModel(
     lateinit var spellListState: LazyListState
     private val isShowingPreparedSpells = MutableStateFlow(false)
 
-    private val _healHealthDialog =
-        StatefulAlertDialogSubViewModel(Health.Empty, viewModelScope)
-            .apply { _titleResource = R.string.heal_dialog_title }
-    val healHealthDialog: IStatefulAlertDialogSubViewModel<Health>
-        get() = _healHealthDialog
-
-    private val _damageHealthDialog =
-        StatefulAlertDialogSubViewModel(Health.Empty, viewModelScope)
-            .apply { _titleResource = R.string.take_damage_dialog_title }
-    val damageHealthDialog: IStatefulAlertDialogSubViewModel<Health>
-        get() = _damageHealthDialog
-
-    private val _addTemporaryHpDialog =
-        StatefulAlertDialogSubViewModel(Health.Empty, viewModelScope)
-            .apply { _titleResource = R.string.add_temporary_hp_dialog_title }
-    val addTemporaryHpDialog: IStatefulAlertDialogSubViewModel<Health>
-        get() = _addTemporaryHpDialog
-
     private val _showStatsDialog =
         StatefulAlertDialogSubViewModel(StatsContainer.Empty, viewModelScope)
             .apply { _titleResource = R.string.skills }
@@ -247,7 +229,7 @@ class TrackerViewModel(
         }
     }
 
-    fun addTemporaryHpToTrackedThing(health: Health, amount: String) {
+    fun addTemporaryHp(health: Health, amount: String) {
         viewModelScope.launch {
             health.addTemporaryHp(amount)
             withContext(Dispatchers.IO) {
@@ -464,13 +446,13 @@ class TrackerViewModel(
         _dialog.update { ITrackerDialog.SubtractFromNumberDialog(number) }
 
     fun takeDamageRequested(health: Health) =
-        viewModelScope.launch { _damageHealthDialog.show(health) }
+        _dialog.update { ITrackerDialog.DamageHealthDialog(health) }
 
     fun healRequested(health: Health) =
-        viewModelScope.launch { _healHealthDialog.show(health) }
+        _dialog.update { ITrackerDialog.HealHealthDialog(health) }
 
     fun addTemporaryHpRequested(health: Health) =
-        viewModelScope.launch { _addTemporaryHpDialog.show(health) }
+        _dialog.update { ITrackerDialog.AddTemporaryHpDialog(health) }
 
     fun deleteItemRequested(item: TrackedThing) {
         _dialog.update { ITrackerDialog.ConfirmDeletionDialog(item) }
