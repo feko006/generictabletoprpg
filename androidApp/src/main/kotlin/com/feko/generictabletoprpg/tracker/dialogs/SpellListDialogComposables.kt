@@ -66,11 +66,13 @@ sealed interface ISpellListDialogDialogs {
 
     data class SelectSpellSlotDialog(
         val availableSlots: List<Int>,
+        val onDismiss: () -> Unit,
         val title: IText = IText.StringResourceText(R.string.select_slot_level_for_casting_spell)
     ) : ISpellListDialogDialogs
 
     data class ConfirmSpellRemovalDialog(
         val spellListEntry: SpellListEntry,
+        val onDismiss: () -> Unit,
         val title: IText = IText.StringResourceText(R.string.confirm_spell_removal_from_list_dialog_title)
     ) : ISpellListDialogDialogs
 }
@@ -79,8 +81,7 @@ sealed interface ISpellListDialogDialogs {
 fun SpellListDialogWithViewModel(
     dialog: ITrackerDialog.SpellListDialog,
     viewModel: TrackerViewModel,
-    navigator: DestinationsNavigator,
-    onDialogDismissed: () -> Unit
+    navigator: DestinationsNavigator
 ) {
     SpellListDialog(
         dialog.spellList,
@@ -88,7 +89,7 @@ fun SpellListDialogWithViewModel(
         navigator,
         dialog.title.text(),
         viewModel.spellListState,
-        onDialogDismissed = onDialogDismissed,
+        onDialogDismissed = dialog.onDismiss,
         onFilteringByPreparedStateChanged = { viewModel.setShowingPreparedSpells(it) },
         canSpellBeCast = { level -> viewModel.canCastSpell(level) },
         onSpellPreparedStateChanged = { spellListEntry, isPrepared ->
@@ -105,13 +106,13 @@ fun SpellListDialogWithViewModel(
         is ISpellListDialogDialogs.SelectSpellSlotDialog ->
             SelectSpellSlotLevelToCastDialog(
                 dialog.secondaryDialog,
-                viewModel::dismissSpellListSecondaryDialog
+                dialog.onDismiss
             ) { viewModel.castSpell(it) }
 
         is ISpellListDialogDialogs.ConfirmSpellRemovalDialog ->
             ConfirmSpellRemovalFromListDialog(
                 dialog.secondaryDialog,
-                viewModel::dismissSpellListSecondaryDialog
+                dialog.onDismiss
             ) {
                 viewModel.removeSpellFromSpellList(
                     dialog.spellList,

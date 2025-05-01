@@ -306,7 +306,8 @@ private fun ConfirmDeletionDialog(viewModel: EncounterViewModel) {
 
     ConfirmationDialog(
         onConfirm = { viewModel.deleteEntry(viewModel.confirmDeletionDialog.state.value) },
-        onDialogDismiss = { viewModel.confirmDeletionDialog.dismiss() }
+        onDialogDismiss = { viewModel.confirmDeletionDialog.dismiss() },
+        stringResource(R.string.delete_dialog_title)
     )
 }
 

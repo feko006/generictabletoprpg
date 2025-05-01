@@ -70,7 +70,7 @@ fun AlertDialogBase(
 fun ConfirmationDialog(
     onConfirm: () -> Unit,
     onDialogDismiss: () -> Unit,
-    dialogTitle: String = stringResource(R.string.delete_dialog_title),
+    dialogTitle: String,
     dialogMessage: String? = null
 ) {
     AlertDialogBase(

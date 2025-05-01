@@ -56,12 +56,7 @@ class TrackerViewModel(
     private var fiveEDefaultStats: List<StatEntry>? = null
 
     lateinit var spellListState: LazyListState
-    lateinit var isShowingPreparedSpells: MutableStateFlow<Boolean>
-
-    private val _confirmDeletionDialog =
-        StatefulAlertDialogSubViewModel<TrackedThing>(TrackedThing.Companion.Empty, viewModelScope)
-    val confirmDeletionDialog: IStatefulAlertDialogSubViewModel<TrackedThing>
-        get() = _confirmDeletionDialog
+    private val isShowingPreparedSpells = MutableStateFlow(false)
 
     private val _refreshAllDialog = AlertDialogSubViewModel(viewModelScope)
     val refreshAllDialog: IAlertDialogSubViewModel
@@ -134,7 +129,6 @@ class TrackerViewModel(
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
                 allItems = searchAllUseCase.getAllItems()
-                isShowingPreparedSpells = MutableStateFlow(false)
                 isShowingPreparedSpells.collect {
                     _dialog.update {
                         if (it !is ITrackerDialog.SpellListDialog) return@collect
@@ -199,8 +193,10 @@ class TrackerViewModel(
         viewModelScope.launch {
             ensureNonEmptyName(trackedThing)
             if (trackedThing.id == 0L) {
-                val id = trackedThingDao.insertOrUpdate(trackedThing)
-                trackedThing.id = id
+                withContext(Dispatchers.IO) {
+                    val id = trackedThingDao.insertOrUpdate(trackedThing)
+                    trackedThing.id = id
+                }
                 addItem(trackedThing) {
                     if (it is TrackedThing)
                         it.index
@@ -503,7 +499,9 @@ class TrackerViewModel(
         viewModelScope.launch { _addTemporaryHpDialog.show(health) }
 
     fun deleteItemRequested(item: TrackedThing) {
-        viewModelScope.launch { _confirmDeletionDialog.show(item) }
+        _dialog.update {
+            ITrackerDialog.ConfirmDeletionDialog(item, ::dismissDialog, ::deleteTrackedThing)
+        }
     }
 
     fun refreshAllRequested() {
@@ -543,7 +541,11 @@ class TrackerViewModel(
             spellListState = LazyListState()
         }
         _dialog.update {
-            ITrackerDialog.SpellListDialog(spellList, isShowingPreparedSpells.value)
+            ITrackerDialog.SpellListDialog(
+                spellList,
+                isShowingPreparedSpells.value,
+                ::dismissDialog
+            )
         }
     }
 
@@ -590,7 +592,13 @@ class TrackerViewModel(
     fun removeSpellFromSpellListRequested(spell: SpellListEntry) {
         _dialog.update {
             if (it !is ITrackerDialog.SpellListDialog) return
-            it.copy(secondaryDialog = ISpellListDialogDialogs.ConfirmSpellRemovalDialog(spell))
+            it.copy(
+                secondaryDialog =
+                    ISpellListDialogDialogs.ConfirmSpellRemovalDialog(
+                        spell,
+                        ::dismissSpellListSecondaryDialog
+                    )
+            )
         }
     }
 
@@ -626,7 +634,10 @@ class TrackerViewModel(
                 if (it !is ITrackerDialog.SpellListDialog) return@launch
                 it.copy(
                     secondaryDialog =
-                        ISpellListDialogDialogs.SelectSpellSlotDialog(availableSpellSlots)
+                        ISpellListDialogDialogs.SelectSpellSlotDialog(
+                            availableSpellSlots,
+                            ::dismissSpellListSecondaryDialog
+                        )
                 )
             }
         }
@@ -701,11 +712,11 @@ class TrackerViewModel(
         addOne(item)
     }
 
-    fun dismissDialog() {
+    private fun dismissDialog() {
         _dialog.update { ITrackerDialog.None }
     }
 
-    fun dismissSpellListSecondaryDialog() {
+    private fun dismissSpellListSecondaryDialog() {
         _dialog.update {
             if (it !is ITrackerDialog.SpellListDialog) return
             it.copy(secondaryDialog = ISpellListDialogDialogs.None)

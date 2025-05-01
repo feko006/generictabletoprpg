@@ -60,9 +60,8 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 @Composable
 fun TrackerAlertDialogs(viewModel: TrackerViewModel, navigator: DestinationsNavigator) {
     val dialog by viewModel.dialog.collectAsState(ITrackerDialog.None)
-    AlertDialog(dialog, viewModel, navigator) { viewModel.dismissDialog() }
+    AlertDialog(dialog, viewModel, navigator)
 
-    ConfirmDeletionDialog(viewModel)
     RefreshAllDialog(viewModel)
     AddToPercentageDialog(viewModel)
     SubtractFromPercentageDialog(viewModel)
@@ -85,25 +84,25 @@ fun TrackerAlertDialogs(viewModel: TrackerViewModel, navigator: DestinationsNavi
 private fun AlertDialog(
     dialog: ITrackerDialog,
     viewModel: TrackerViewModel,
-    navigator: DestinationsNavigator,
-    onDialogDismissed: () -> Unit
+    navigator: DestinationsNavigator
 ) {
     when (dialog) {
         is ITrackerDialog.SpellListDialog ->
-            SpellListDialogWithViewModel(dialog, viewModel, navigator, onDialogDismissed)
+            SpellListDialogWithViewModel(dialog, viewModel, navigator)
+
+        is ITrackerDialog.ConfirmDeletionDialog ->
+            ConfirmDeletionDialog(dialog)
 
         is ITrackerDialog.None -> {}
     }
 }
 
 @Composable
-fun ConfirmDeletionDialog(viewModel: TrackerViewModel) {
-    val isDialogVisible by viewModel.confirmDeletionDialog.isVisible.collectAsState(false)
-    if (!isDialogVisible) return
-
+fun ConfirmDeletionDialog(dialog: ITrackerDialog.ConfirmDeletionDialog) {
     ConfirmationDialog(
-        onConfirm = { viewModel.deleteTrackedThing(viewModel.confirmDeletionDialog.state.value) },
-        onDialogDismiss = { viewModel.confirmDeletionDialog.dismiss() }
+        onConfirm = { dialog.onConfirm(dialog.itemToDelete) },
+        dialog.onDismiss,
+        dialogTitle = dialog.title.text()
     )
 }
 
