@@ -62,7 +62,6 @@ fun TrackerAlertDialogs(viewModel: TrackerViewModel, navigator: DestinationsNavi
     val dialog by viewModel.dialog.collectAsState(ITrackerDialog.None)
     AlertDialog(dialog, viewModel, navigator)
 
-    RefreshAllDialog(viewModel)
     AddToPercentageDialog(viewModel)
     SubtractFromPercentageDialog(viewModel)
     AddToNumberDialog(viewModel)
@@ -93,6 +92,9 @@ private fun AlertDialog(
         is ITrackerDialog.ConfirmDeletionDialog ->
             ConfirmDeletionDialog(dialog, viewModel::deleteTrackedThing, viewModel::dismissDialog)
 
+        is ITrackerDialog.RefreshAllDialog ->
+            RefreshAllDialog(dialog, viewModel::refreshAll, viewModel::dismissDialog)
+
         is ITrackerDialog.None -> {}
     }
 }
@@ -111,15 +113,12 @@ fun ConfirmDeletionDialog(
 }
 
 @Composable
-fun RefreshAllDialog(viewModel: TrackerViewModel) {
-    val isDialogVisible by viewModel.refreshAllDialog.isVisible.collectAsState(false)
-    if (!isDialogVisible) return
-
-    ConfirmationDialog(
-        onConfirm = { viewModel.refreshAll() },
-        onDialogDismiss = { viewModel.refreshAllDialog.dismiss() },
-        dialogTitle = stringResource(R.string.refresh_all_tracked_things_dialog_title)
-    )
+fun RefreshAllDialog(
+    dialog: ITrackerDialog.RefreshAllDialog,
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit
+) {
+    ConfirmationDialog(onConfirm, onDismiss, dialogTitle = dialog.title.text())
 }
 
 @Composable

@@ -8,8 +8,6 @@ import com.feko.generictabletoprpg.com.feko.generictabletoprpg.tracker.dialogs.I
 import com.feko.generictabletoprpg.common.INamed
 import com.feko.generictabletoprpg.common.OverviewViewModel
 import com.feko.generictabletoprpg.common.SmartNamedSearchComparator
-import com.feko.generictabletoprpg.common.alertdialog.AlertDialogSubViewModel
-import com.feko.generictabletoprpg.common.alertdialog.IAlertDialogSubViewModel
 import com.feko.generictabletoprpg.common.alertdialog.IStatefulAlertDialogSubViewModel
 import com.feko.generictabletoprpg.common.alertdialog.StatefulAlertDialogSubViewModel
 import com.feko.generictabletoprpg.common.fabdropdown.FabDropdownSubViewModel
@@ -57,10 +55,6 @@ class TrackerViewModel(
 
     lateinit var spellListState: LazyListState
     private val isShowingPreparedSpells = MutableStateFlow(false)
-
-    private val _refreshAllDialog = AlertDialogSubViewModel(viewModelScope)
-    val refreshAllDialog: IAlertDialogSubViewModel
-        get() = _refreshAllDialog
 
     private val _addPercentageDialog =
         StatefulAlertDialogSubViewModel(Percentage.Empty, viewModelScope)
@@ -503,7 +497,7 @@ class TrackerViewModel(
     }
 
     fun refreshAllRequested() {
-        viewModelScope.launch { _refreshAllDialog.show() }
+        _dialog.update { ITrackerDialog.RefreshAllDialog() }
     }
 
     fun itemReordered(from: Int, to: Int) {

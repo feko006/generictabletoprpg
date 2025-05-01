@@ -20,4 +20,8 @@ sealed interface ITrackerDialog {
         val itemToDelete: TrackedThing,
         val title: IText = IText.StringResourceText(R.string.delete_dialog_title)
     ) : ITrackerDialog
+
+    data class RefreshAllDialog(
+        val title: IText = IText.StringResourceText(R.string.refresh_all_tracked_things_dialog_title)
+    ) : ITrackerDialog
 }
