@@ -11,6 +11,7 @@ import com.feko.generictabletoprpg.tracker.StatsContainer
 import com.feko.generictabletoprpg.tracker.TrackedThing
 
 sealed interface ITrackerDialog {
+
     data object None : ITrackerDialog
 
     data class SpellListDialog(
@@ -67,5 +68,10 @@ sealed interface ITrackerDialog {
     data class PreviewStatSkillsDialog(
         val stats: StatsContainer,
         val title: IText = IText.StringResourceText(R.string.skills)
+    ) : ITrackerDialog
+
+    data class EditDialog(
+        val editedItem: TrackedThing,
+        val title: IText
     ) : ITrackerDialog
 }

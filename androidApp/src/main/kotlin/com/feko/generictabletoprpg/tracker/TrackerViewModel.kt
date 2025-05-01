@@ -4,12 +4,11 @@ import android.content.Context
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.lifecycle.viewModelScope
 import com.feko.generictabletoprpg.R
+import com.feko.generictabletoprpg.com.feko.generictabletoprpg.common.IText
 import com.feko.generictabletoprpg.com.feko.generictabletoprpg.tracker.dialogs.ISpellListDialogDialogs
 import com.feko.generictabletoprpg.common.INamed
 import com.feko.generictabletoprpg.common.OverviewViewModel
 import com.feko.generictabletoprpg.common.SmartNamedSearchComparator
-import com.feko.generictabletoprpg.common.alertdialog.IStatefulAlertDialogSubViewModel
-import com.feko.generictabletoprpg.common.alertdialog.StatefulAlertDialogSubViewModel
 import com.feko.generictabletoprpg.common.fabdropdown.FabDropdownSubViewModel
 import com.feko.generictabletoprpg.common.fabdropdown.IFabDropdownSubViewModel
 import com.feko.generictabletoprpg.common.toast.IToastSubViewModel
@@ -55,11 +54,6 @@ class TrackerViewModel(
 
     lateinit var spellListState: LazyListState
     private val isShowingPreparedSpells = MutableStateFlow(false)
-
-    private val _editDialog =
-        StatefulAlertDialogSubViewModel<TrackedThing>(TrackedThing.Companion.Empty, viewModelScope)
-    val editDialog: IStatefulAlertDialogSubViewModel<TrackedThing>
-        get() = _editDialog
 
     override val combinedItemFlow: Flow<List<Any>> =
         _items.combine(_searchString) { items, searchString ->
@@ -112,10 +106,12 @@ class TrackerViewModel(
             } else {
                 val newTrackedThing =
                     TrackedThing.emptyOfType(type, _items.value.size, groupId)
-                _editDialog.apply {
-                    _titleResource = type.nameResource
-                    show(newTrackedThing)
-                }
+                _dialog.emit(
+                    ITrackerDialog.EditDialog(
+                        newTrackedThing,
+                        IText.StringResourceText(type.nameResource)
+                    )
+                )
             }
             _fabDropdown.collapse()
         }
@@ -130,10 +126,9 @@ class TrackerViewModel(
                     show(copy as Stats)
                 }
             } else {
-                _editDialog.apply {
-                    _titleResource = R.string.edit
-                    show(copy)
-                }
+                _dialog.emit(
+                    ITrackerDialog.EditDialog(copy, IText.StringResourceText(R.string.edit))
+                )
             }
             _fabDropdown.collapse()
         }
@@ -652,6 +647,13 @@ class TrackerViewModel(
         _dialog.update {
             if (it !is ITrackerDialog.SpellListDialog) return
             it.copy(secondaryDialog = ISpellListDialogDialogs.None)
+        }
+    }
+
+    fun editDialogValueUpdated(trackedThing: TrackedThing) {
+        _dialog.update {
+            if (it !is ITrackerDialog.EditDialog) return
+            it.copy(editedItem = trackedThing)
         }
     }
 }

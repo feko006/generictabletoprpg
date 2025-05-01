@@ -64,7 +64,6 @@ fun TrackerAlertDialog(viewModel: TrackerViewModel, navigator: DestinationsNavig
     val dialog by viewModel.dialog.collectAsState(ITrackerDialog.None)
     AlertDialog(dialog, viewModel, navigator)
 
-    EditDialog(viewModel)
     StatsEditDialog(
         viewModel.statsEditDialog,
         viewModel.groupName
@@ -120,6 +119,15 @@ private fun AlertDialog(
 
         is ITrackerDialog.PreviewStatSkillsDialog ->
             PreviewStatSkillsDialog(dialog, viewModel::dismissDialog)
+
+        is ITrackerDialog.EditDialog ->
+            EditDialog(
+                dialog,
+                viewModel.groupName,
+                viewModel::createOrEditTrackedThing,
+                viewModel::editDialogValueUpdated,
+                viewModel::dismissDialog
+            )
 
         is ITrackerDialog.None -> Unit
     }
@@ -326,24 +334,27 @@ fun PreviewStatSkillsDialog(
 
 @Composable
 private fun EditDialog(
-    viewModel: TrackerViewModel,
-    defaultName: String = viewModel.groupName
+    dialog: ITrackerDialog.EditDialog,
+    defaultName: String,
+    onConfirm: (TrackedThing) -> Unit,
+    onValueUpdate: (TrackedThing) -> Unit,
+    onDismiss: () -> Unit
 ) {
-    val isDialogVisible by viewModel.editDialog.isVisible.collectAsState(false)
-    if (!isDialogVisible) return
-
-    val editedTrackedThing by viewModel.editDialog.state.collectAsState()
+    val editedTrackedThing = dialog.editedItem
     val canConfirmEditOperation = editedTrackedThing.validate()
     AlertDialogBase(
-        onDialogDismiss = { viewModel.editDialog.dismiss() },
-        dialogTitle = { DialogTitle(stringResource(viewModel.editDialog.titleResource)) },
+        onDialogDismiss = onDismiss,
+        dialogTitle = { DialogTitle(dialog.title.text()) },
         verticalArrangement = Arrangement.spacedBy(8.dp),
         dialogButtons = {
-            TextButton(onClick = { viewModel.editDialog.dismiss() }) {
+            TextButton(onClick = onDismiss) {
                 Text(stringResource(R.string.cancel))
             }
             TextButton(
-                onClick = { confirmEditOperation(viewModel, editedTrackedThing) },
+                onClick = {
+                    onConfirm(dialog.editedItem)
+                    onDismiss()
+                },
                 enabled = canConfirmEditOperation,
                 modifier = Modifier.wrapContentWidth()
             ) {
@@ -354,14 +365,15 @@ private fun EditDialog(
         val isSpellList = editedTrackedThing is SpellList
         val onFormSubmit = {
             if (canConfirmEditOperation) {
-                confirmEditOperation(viewModel, editedTrackedThing)
+                onConfirm(dialog.editedItem)
+                onDismiss()
             }
         }
         InputField(
             editedTrackedThing.name,
             "${stringResource(R.string.name)} ($defaultName)",
             onValueChange = {
-                viewModel.editDialog.updateState(editedTrackedThing.copy().apply { name = it })
+                onValueUpdate(editedTrackedThing.copy().apply { name = it })
             },
             onFormSubmit = onFormSubmit,
             keyboardOptions = KeyboardOptions(
@@ -376,7 +388,7 @@ private fun EditDialog(
                 label = stringResource(R.string.level),
                 convertInputValue = IInputFieldValueConverter.IntInputFieldValueConverter,
                 onValueChange = {
-                    viewModel.editDialog.updateState(spellSlot.apply { level = it }.copy())
+                    onValueUpdate(spellSlot.apply { level = it }.copy())
                 },
                 isInputFieldValid = { spellSlot.isLevelValid() },
                 keyboardOptions = KeyboardOptions(
@@ -389,7 +401,7 @@ private fun EditDialog(
             isSpellList,
             editedTrackedThing,
             {
-                viewModel.editDialog.updateState(
+                onValueUpdate(
                     editedTrackedThing
                         .copy()
                         .apply {
@@ -401,14 +413,6 @@ private fun EditDialog(
             onFormSubmit
         )
     }
-}
-
-private fun confirmEditOperation(
-    viewModel: TrackerViewModel,
-    editedTrackedThing: TrackedThing
-) {
-    viewModel.createOrEditTrackedThing(editedTrackedThing)
-    viewModel.editDialog.dismiss()
 }
 
 @Composable
