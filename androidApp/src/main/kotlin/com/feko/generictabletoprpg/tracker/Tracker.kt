@@ -87,60 +87,34 @@ fun OverviewListItem(
 ) {
     if (item is TrackedThing) {
         when (item) {
-            is Ability -> TrackedThingListItem(isDragged) {
-                AbilityListItemContent(item, reorderableLazyListState, viewModel)
-            }
+            is Ability -> AbilityListItem(isDragged, item, reorderableLazyListState, viewModel)
 
-            is Health -> TrackedThingListItem(isDragged) {
-                HealthListItemContent(item, reorderableLazyListState, viewModel)
-            }
+            is Health -> HealthListItem(isDragged, item, reorderableLazyListState, viewModel)
 
-            is HitDice -> TrackedThingListItem(isDragged) {
-                HitDiceListItemContent(item, reorderableLazyListState, viewModel)
-            }
+            is HitDice -> HitDiceListItem(isDragged, item, reorderableLazyListState, viewModel)
 
-            is Number -> TrackedThingListItem(isDragged) {
-                NumberListItemContent(item, reorderableLazyListState, viewModel)
-            }
+            is Number -> NumberListItem(isDragged, item, reorderableLazyListState, viewModel)
 
-            is Percentage -> TrackedThingListItem(isDragged) {
-                PercentageListItemContent(item, reorderableLazyListState, viewModel)
-            }
+            is Percentage ->
+                PercentageListItem(isDragged, item, reorderableLazyListState, viewModel)
 
-            is SpellList -> TrackedThingListItem(
-                isDragged,
-                onItemClicked = {
-                    viewModel.showPreviewSpellListDialog(item, resetListState = true)
-                }) {
-                SpellListItemContentWithViewModel(
-                    item,
-                    reorderableLazyListState,
-                    navigator,
-                    viewModel
-                )
-            }
+            is SpellList ->
+                SpellListItem(isDragged, item, reorderableLazyListState, navigator, viewModel)
 
-            is SpellSlot -> TrackedThingListItem(isDragged) {
-                SpellSlotListItemContent(item, reorderableLazyListState, viewModel)
-            }
+            is SpellSlot -> SpellSlotListItem(isDragged, item, reorderableLazyListState, viewModel)
 
-            is Stats -> TrackedThingListItem(
-                isDragged,
-                onItemClicked = { viewModel.showStatsDialog(item) }) {
-                StatsListItemContent(item, reorderableLazyListState, viewModel)
-            }
+            is Stats -> StatsListItem(isDragged, item, reorderableLazyListState, viewModel)
 
-            is Text -> TrackedThingListItem(isDragged) {
-                TextListItemContent(item, reorderableLazyListState, viewModel)
-            }
+            is Text -> TextListItem(isDragged, item, reorderableLazyListState, viewModel)
 
-            else -> {}
+            TrackedThing.Companion.Empty,
+            is GenericTrackedThing<*>,
+            is JsonTrackedThing<*> -> {
+            }
         }
     } else {
         com.feko.generictabletoprpg.common.composable.OverviewListItem(
             item,
-            Modifier.clickable {
-                navigator.navigate(getNavRouteInternal(item))
-            })
+            Modifier.clickable { navigator.navigate(getNavRouteInternal(item)) })
     }
 }
