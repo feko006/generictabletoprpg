@@ -12,6 +12,7 @@ import com.feko.generictabletoprpg.AppViewModel
 import com.feko.generictabletoprpg.ButtonState
 import com.feko.generictabletoprpg.R
 import com.feko.generictabletoprpg.common.composable.AddFABButtonWithDropdown
+import com.feko.generictabletoprpg.common.composable.OverviewListItem
 import com.feko.generictabletoprpg.common.composable.OverviewScreen
 import com.feko.generictabletoprpg.common.composable.ToastMessage
 import com.feko.generictabletoprpg.searchall.getNavRouteInternal
@@ -54,7 +55,7 @@ fun TrackerScreen(
     OverviewScreen(
         viewModel = viewModel,
         listItem = { item, isDragged, state ->
-            OverviewListItem(item, isDragged, state!!, navigator, viewModel)
+            TrackerListItem(item, isDragged, state!!, navigator, viewModel)
         },
         uniqueListItemKey = {
             getUniqueListItemKey(it)
@@ -78,7 +79,7 @@ fun TrackerScreen(
 }
 
 @Composable
-fun OverviewListItem(
+fun TrackerListItem(
     item: Any,
     isDragged: Boolean,
     reorderableLazyListState: ReorderableLazyListState,
@@ -113,8 +114,6 @@ fun OverviewListItem(
             }
         }
     } else {
-        com.feko.generictabletoprpg.common.composable.OverviewListItem(
-            item,
-            Modifier.clickable { navigator.navigate(getNavRouteInternal(item)) })
+        OverviewListItem(item, Modifier.clickable { navigator.navigate(getNavRouteInternal(item)) })
     }
 }

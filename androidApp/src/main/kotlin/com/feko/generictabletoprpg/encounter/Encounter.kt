@@ -332,7 +332,7 @@ private fun PickLegendaryActionDialog(viewModel: EncounterViewModel) {
     val entriesWithLegendaryActions
             by viewModel.pickLegendaryActionDialog.state.collectAsState()
     SelectFromListDialog(
-        R.string.select_legendary_action,
+        stringResource(R.string.select_legendary_action),
         entriesWithLegendaryActions,
         getListItemKey = { it.id },
         onItemSelected = { viewModel.useLegendaryActionAndProgressInitiative(it) },

@@ -2,9 +2,9 @@ package com.feko.generictabletoprpg.common.composable
 
 import android.widget.Toast
 import androidx.annotation.StringRes
-import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.ScrollableState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
@@ -72,15 +72,6 @@ import com.feko.generictabletoprpg.disease.Disease
 import com.feko.generictabletoprpg.feat.Feat
 import com.feko.generictabletoprpg.spell.Spell
 import com.feko.generictabletoprpg.weapon.Weapon
-
-data class InputFieldData(
-    val value: String,
-    val isValid: Boolean
-) {
-    companion object {
-        val EMPTY = InputFieldData("", true)
-    }
-}
 
 @Composable
 fun SearchTextField(
@@ -377,7 +368,7 @@ fun CheckboxWithText(
 
 @Composable
 fun BoxWithScrollIndicator(
-    scrollState: ScrollState,
+    scrollableState: ScrollableState,
     backgroundColor: Color,
     modifier: Modifier = Modifier,
     scrollUpArrowAlignment: Alignment = Alignment.TopCenter,
@@ -388,7 +379,7 @@ fun BoxWithScrollIndicator(
 ) {
     Box(modifier) {
         content()
-        if (scrollState.canScrollBackward) {
+        if (scrollableState.canScrollBackward) {
             Box(
                 modifier = Modifier
                     .align(Alignment.TopCenter)
@@ -411,7 +402,7 @@ fun BoxWithScrollIndicator(
                     .align(scrollUpArrowAlignment)
             )
         }
-        if (scrollState.canScrollForward) {
+        if (scrollableState.canScrollForward) {
             Box(
                 modifier = Modifier
                     .align(Alignment.BottomCenter)

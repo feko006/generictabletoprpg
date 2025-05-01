@@ -173,8 +173,7 @@ fun EnterValueDialog(
 
 @Composable
 fun <T> SelectFromListDialog(
-    @StringRes
-    dialogTitle: Int,
+    dialogTitle: String,
     listItems: List<T>,
     getListItemKey: ((item: T) -> Any)?,
     onItemSelected: (T) -> Unit,

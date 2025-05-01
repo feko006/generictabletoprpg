@@ -92,7 +92,7 @@ fun TrackerGroupsScreen(
     OverviewScreen(
         viewModel = viewModel,
         listItem = { item, _, _ ->
-            OverviewListItem(
+            TrackerGroupListItem(
                 item = item,
                 navigator = navigator,
                 viewModel = viewModel,
@@ -160,7 +160,7 @@ private fun onDirectorySelected(
 }
 
 @Composable
-fun OverviewListItem(
+private fun TrackerGroupListItem(
     item: TrackedThingGroup,
     navigator: DestinationsNavigator,
     viewModel: TrackerGroupViewModel,
