@@ -499,9 +499,7 @@ class TrackerViewModel(
         viewModelScope.launch { _addTemporaryHpDialog.show(health) }
 
     fun deleteItemRequested(item: TrackedThing) {
-        _dialog.update {
-            ITrackerDialog.ConfirmDeletionDialog(item, ::dismissDialog, ::deleteTrackedThing)
-        }
+        _dialog.update { ITrackerDialog.ConfirmDeletionDialog(item) }
     }
 
     fun refreshAllRequested() {
@@ -541,11 +539,7 @@ class TrackerViewModel(
             spellListState = LazyListState()
         }
         _dialog.update {
-            ITrackerDialog.SpellListDialog(
-                spellList,
-                isShowingPreparedSpells.value,
-                ::dismissDialog
-            )
+            ITrackerDialog.SpellListDialog(spellList, isShowingPreparedSpells.value)
         }
     }
 
@@ -592,13 +586,7 @@ class TrackerViewModel(
     fun removeSpellFromSpellListRequested(spell: SpellListEntry) {
         _dialog.update {
             if (it !is ITrackerDialog.SpellListDialog) return
-            it.copy(
-                secondaryDialog =
-                    ISpellListDialogDialogs.ConfirmSpellRemovalDialog(
-                        spell,
-                        ::dismissSpellListSecondaryDialog
-                    )
-            )
+            it.copy(secondaryDialog = ISpellListDialogDialogs.ConfirmSpellRemovalDialog(spell))
         }
     }
 
@@ -634,10 +622,7 @@ class TrackerViewModel(
                 if (it !is ITrackerDialog.SpellListDialog) return@launch
                 it.copy(
                     secondaryDialog =
-                        ISpellListDialogDialogs.SelectSpellSlotDialog(
-                            availableSpellSlots,
-                            ::dismissSpellListSecondaryDialog
-                        )
+                        ISpellListDialogDialogs.SelectSpellSlotDialog(availableSpellSlots)
                 )
             }
         }
@@ -712,11 +697,11 @@ class TrackerViewModel(
         addOne(item)
     }
 
-    private fun dismissDialog() {
+    fun dismissDialog() {
         _dialog.update { ITrackerDialog.None }
     }
 
-    private fun dismissSpellListSecondaryDialog() {
+    fun dismissSpellListSecondaryDialog() {
         _dialog.update {
             if (it !is ITrackerDialog.SpellListDialog) return
             it.copy(secondaryDialog = ISpellListDialogDialogs.None)

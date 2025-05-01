@@ -91,17 +91,21 @@ private fun AlertDialog(
             SpellListDialogWithViewModel(dialog, viewModel, navigator)
 
         is ITrackerDialog.ConfirmDeletionDialog ->
-            ConfirmDeletionDialog(dialog)
+            ConfirmDeletionDialog(dialog, viewModel::deleteTrackedThing, viewModel::dismissDialog)
 
         is ITrackerDialog.None -> {}
     }
 }
 
 @Composable
-fun ConfirmDeletionDialog(dialog: ITrackerDialog.ConfirmDeletionDialog) {
+fun ConfirmDeletionDialog(
+    dialog: ITrackerDialog.ConfirmDeletionDialog,
+    onConfirm: (TrackedThing) -> Unit,
+    onDismiss: () -> Unit
+) {
     ConfirmationDialog(
-        onConfirm = { dialog.onConfirm(dialog.itemToDelete) },
-        dialog.onDismiss,
+        onConfirm = { onConfirm(dialog.itemToDelete) },
+        onDismiss,
         dialogTitle = dialog.title.text()
     )
 }

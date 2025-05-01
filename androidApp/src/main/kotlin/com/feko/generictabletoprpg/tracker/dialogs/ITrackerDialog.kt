@@ -12,15 +12,12 @@ sealed interface ITrackerDialog {
     data class SpellListDialog(
         val spellList: SpellList,
         val isFilteringByPreparedSpells: Boolean,
-        val onDismiss: () -> Unit,
         val title: IText = IText.StringResourceText(R.string.spell_list),
         val secondaryDialog: ISpellListDialogDialogs = ISpellListDialogDialogs.None
     ) : ITrackerDialog
 
     data class ConfirmDeletionDialog(
         val itemToDelete: TrackedThing,
-        val onDismiss: () -> Unit,
-        val onConfirm: (TrackedThing) -> Unit,
         val title: IText = IText.StringResourceText(R.string.delete_dialog_title)
     ) : ITrackerDialog
 }

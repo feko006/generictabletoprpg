@@ -66,13 +66,11 @@ sealed interface ISpellListDialogDialogs {
 
     data class SelectSpellSlotDialog(
         val availableSlots: List<Int>,
-        val onDismiss: () -> Unit,
         val title: IText = IText.StringResourceText(R.string.select_slot_level_for_casting_spell)
     ) : ISpellListDialogDialogs
 
     data class ConfirmSpellRemovalDialog(
         val spellListEntry: SpellListEntry,
-        val onDismiss: () -> Unit,
         val title: IText = IText.StringResourceText(R.string.confirm_spell_removal_from_list_dialog_title)
     ) : ISpellListDialogDialogs
 }
@@ -84,12 +82,10 @@ fun SpellListDialogWithViewModel(
     navigator: DestinationsNavigator
 ) {
     SpellListDialog(
-        dialog.spellList,
-        dialog.isFilteringByPreparedSpells,
+        dialog,
         navigator,
-        dialog.title.text(),
         viewModel.spellListState,
-        onDialogDismissed = dialog.onDismiss,
+        onDialogDismissed = viewModel::dismissDialog,
         onFilteringByPreparedStateChanged = { viewModel.setShowingPreparedSpells(it) },
         canSpellBeCast = { level -> viewModel.canCastSpell(level) },
         onSpellPreparedStateChanged = { spellListEntry, isPrepared ->
@@ -106,13 +102,13 @@ fun SpellListDialogWithViewModel(
         is ISpellListDialogDialogs.SelectSpellSlotDialog ->
             SelectSpellSlotLevelToCastDialog(
                 dialog.secondaryDialog,
-                dialog.onDismiss
+                viewModel::dismissSpellListSecondaryDialog
             ) { viewModel.castSpell(it) }
 
         is ISpellListDialogDialogs.ConfirmSpellRemovalDialog ->
             ConfirmSpellRemovalFromListDialog(
                 dialog.secondaryDialog,
-                dialog.onDismiss
+                viewModel::dismissSpellListSecondaryDialog
             ) {
                 viewModel.removeSpellFromSpellList(
                     dialog.spellList,
@@ -126,10 +122,8 @@ fun SpellListDialogWithViewModel(
 
 @Composable
 private fun SpellListDialog(
-    spellList: SpellList,
-    isFilteringByPrepared: Boolean,
+    dialog: ITrackerDialog.SpellListDialog,
     navigator: DestinationsNavigator,
-    dialogTitle: String,
     spellListState: LazyListState,
     onDialogDismissed: () -> Unit,
     onFilteringByPreparedStateChanged: (Boolean) -> Unit,
@@ -140,7 +134,7 @@ private fun SpellListDialog(
 ) {
     AlertDialogBase(
         onDialogDismissed,
-        dialogTitle = { DialogTitle(dialogTitle) },
+        dialogTitle = { DialogTitle(dialog.title.text()) },
         dialogButtons = {
             Row(
                 Modifier
@@ -161,7 +155,7 @@ private fun SpellListDialog(
                     IconButton(
                         onClick = {
                             coroutineScope.launch {
-                                spellListState.animateScrollToItem(spellList.serializedItem.size - 1)
+                                spellListState.animateScrollToItem(dialog.spellList.serializedItem.size - 1)
                             }
                         },
                         enabled = spellListState.canScrollForward
@@ -174,8 +168,8 @@ private fun SpellListDialog(
             }
         }
     ) {
-        val numberOfPreparedSpells = spellList.serializedItem.preparedSpellsCount()
-        val numberOfCantripSpells = spellList.serializedItem.cantripSpellsCount()
+        val numberOfPreparedSpells = dialog.spellList.serializedItem.preparedSpellsCount()
+        val numberOfCantripSpells = dialog.spellList.serializedItem.cantripSpellsCount()
         Row(
             Modifier.padding(bottom = 8.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -185,7 +179,7 @@ private fun SpellListDialog(
                 buildString {
                     append(stringResource(R.string.known))
                     append(": ")
-                    append(spellList.serializedItem.size)
+                    append(dialog.spellList.serializedItem.size)
                     if (numberOfPreparedSpells > 0) {
                         append(", ")
                         append(stringResource(R.string.prepared))
@@ -207,16 +201,16 @@ private fun SpellListDialog(
             )
             if (numberOfPreparedSpells > 0 || numberOfCantripSpells > 0) {
                 ElevatedFilterChip(
-                    isFilteringByPrepared,
+                    dialog.isFilteringByPreparedSpells,
                     onClick = {
-                        onFilteringByPreparedStateChanged(!isFilteringByPrepared)
+                        onFilteringByPreparedStateChanged(!dialog.isFilteringByPreparedSpells)
                     },
                     label = {
                         Text(stringResource(R.string.prepared))
                     },
                     leadingIcon =
                         {
-                            if (isFilteringByPrepared) {
+                            if (dialog.isFilteringByPreparedSpells) {
                                 Icon(
                                     imageVector = Icons.Filled.Done,
                                     contentDescription = "Done icon",
@@ -245,7 +239,7 @@ private fun SpellListDialog(
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 items(
-                    spellList.serializedItem.filterPreparedAndCantrips(isFilteringByPrepared),
+                    dialog.spellList.serializedItem.filterPreparedAndCantrips(dialog.isFilteringByPreparedSpells),
                     key = { getUniqueListItemKey(it.toSpell()) }) { spellListEntry ->
                     SpellListEntryListItem(
                         spellListEntry,
@@ -371,16 +365,17 @@ private fun ConfirmSpellRemovalFromListDialog(
 @Composable
 fun SpellListDialogPreview() {
     SpellListDialog(
-        spellList = SpellList(0, "Spell List", "", 0, 0)
-            .apply {
-                serializedItem = mutableListOf(
-                    getSpellListEntry1(),
-                    getSpellListEntry2()
-                )
-            },
-        isFilteringByPrepared = false,
+        ITrackerDialog.SpellListDialog(
+            spellList = SpellList(0, "Spell List", "", 0, 0)
+                .apply {
+                    serializedItem = mutableListOf(
+                        getSpellListEntry1(),
+                        getSpellListEntry2()
+                    )
+                },
+            isFilteringByPreparedSpells = false
+        ),
         navigator = EmptyDestinationsNavigator,
-        dialogTitle = "Spell List",
         spellListState = rememberLazyListState(),
         onDialogDismissed = {},
         onFilteringByPreparedStateChanged = {},
