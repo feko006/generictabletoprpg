@@ -56,12 +56,6 @@ class TrackerViewModel(
     lateinit var spellListState: LazyListState
     private val isShowingPreparedSpells = MutableStateFlow(false)
 
-    private val _showStatsDialog =
-        StatefulAlertDialogSubViewModel(StatsContainer.Empty, viewModelScope)
-            .apply { _titleResource = R.string.skills }
-    val showStatsDialog: IStatefulAlertDialogSubViewModel<StatsContainer>
-        get() = _showStatsDialog
-
     private val _editDialog =
         StatefulAlertDialogSubViewModel<TrackedThing>(TrackedThing.Companion.Empty, viewModelScope)
     val editDialog: IStatefulAlertDialogSubViewModel<TrackedThing>
@@ -454,13 +448,11 @@ class TrackerViewModel(
     fun addTemporaryHpRequested(health: Health) =
         _dialog.update { ITrackerDialog.AddTemporaryHpDialog(health) }
 
-    fun deleteItemRequested(item: TrackedThing) {
+    fun deleteItemRequested(item: TrackedThing) =
         _dialog.update { ITrackerDialog.ConfirmDeletionDialog(item) }
-    }
 
-    fun refreshAllRequested() {
+    fun refreshAllRequested() =
         _dialog.update { ITrackerDialog.RefreshAllDialog() }
-    }
 
     fun itemReordered(from: Int, to: Int) {
         val itemCount = _items.value.size
@@ -612,9 +604,8 @@ class TrackerViewModel(
         }
     }
 
-    fun showStatsDialog(stats: Stats) {
-        viewModelScope.launch { _showStatsDialog.show(stats.serializedItem) }
-    }
+    fun showStatsDialog(stats: Stats) =
+        _dialog.update { ITrackerDialog.PreviewStatSkillsDialog(stats.serializedItem) }
 
     fun canCastSpell(level: Int): Boolean =
         _items.value

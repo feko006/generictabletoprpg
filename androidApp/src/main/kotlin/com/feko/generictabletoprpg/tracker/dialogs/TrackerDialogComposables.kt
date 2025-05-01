@@ -64,7 +64,6 @@ fun TrackerAlertDialog(viewModel: TrackerViewModel, navigator: DestinationsNavig
     val dialog by viewModel.dialog.collectAsState(ITrackerDialog.None)
     AlertDialog(dialog, viewModel, navigator)
 
-    PreviewStatSkillsDialog(viewModel)
     EditDialog(viewModel)
     StatsEditDialog(
         viewModel.statsEditDialog,
@@ -119,8 +118,10 @@ private fun AlertDialog(
         is ITrackerDialog.AddTemporaryHpDialog ->
             AddTemporaryHpDialog(dialog, viewModel::addTemporaryHp, viewModel::dismissDialog)
 
-        is ITrackerDialog.None -> {
-        }
+        is ITrackerDialog.PreviewStatSkillsDialog ->
+            PreviewStatSkillsDialog(dialog, viewModel::dismissDialog)
+
+        is ITrackerDialog.None -> Unit
     }
 }
 
@@ -268,23 +269,23 @@ fun AddTemporaryHpDialog(
 }
 
 @Composable
-fun PreviewStatSkillsDialog(viewModel: TrackerViewModel) {
-    val isDialogVisible by viewModel.showStatsDialog.isVisible.collectAsState(false)
-    if (!isDialogVisible) return
-
+fun PreviewStatSkillsDialog(
+    dialog: ITrackerDialog.PreviewStatSkillsDialog,
+    onDismiss: () -> Unit
+) {
     AlertDialogBase(
-        onDialogDismiss = { viewModel.showStatsDialog.dismiss() },
+        onDialogDismiss = onDismiss,
         screenHeight = 0.7f,
-        dialogTitle = { DialogTitle(stringResource(viewModel.showStatsDialog.titleResource)) },
+        dialogTitle = { DialogTitle(dialog.title.text()) },
         Arrangement.Top,
         dialogButtons = {
             TextButton(
-                onClick = { viewModel.showStatsDialog.dismiss() },
+                onClick = onDismiss,
                 modifier = Modifier.wrapContentWidth()
             ) { Text(stringResource(R.string.dismiss)) }
         }
     ) {
-        val statsContainer by viewModel.showStatsDialog.state.collectAsState()
+        val statsContainer = dialog.stats
         val stats = statsContainer.stats
         val skills = stats
             .flatMap { it.skills }

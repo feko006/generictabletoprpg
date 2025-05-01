@@ -7,6 +7,7 @@ import com.feko.generictabletoprpg.tracker.Health
 import com.feko.generictabletoprpg.tracker.Number
 import com.feko.generictabletoprpg.tracker.Percentage
 import com.feko.generictabletoprpg.tracker.SpellList
+import com.feko.generictabletoprpg.tracker.StatsContainer
 import com.feko.generictabletoprpg.tracker.TrackedThing
 
 sealed interface ITrackerDialog {
@@ -61,5 +62,10 @@ sealed interface ITrackerDialog {
     data class AddTemporaryHpDialog(
         val health: Health,
         val title: IText = IText.StringResourceText(R.string.add_temporary_hp_dialog_title)
+    ) : ITrackerDialog
+
+    data class PreviewStatSkillsDialog(
+        val stats: StatsContainer,
+        val title: IText = IText.StringResourceText(R.string.skills)
     ) : ITrackerDialog
 }
