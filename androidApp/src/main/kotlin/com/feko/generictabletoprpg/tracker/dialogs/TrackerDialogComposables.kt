@@ -62,8 +62,6 @@ fun TrackerAlertDialogs(viewModel: TrackerViewModel, navigator: DestinationsNavi
     val dialog by viewModel.dialog.collectAsState(ITrackerDialog.None)
     AlertDialog(dialog, viewModel, navigator)
 
-    AddToPercentageDialog(viewModel)
-    SubtractFromPercentageDialog(viewModel)
     AddToNumberDialog(viewModel)
     SubtractFromNumberDialog(viewModel)
     DamageHealthDialog(viewModel)
@@ -95,6 +93,16 @@ private fun AlertDialog(
         is ITrackerDialog.RefreshAllDialog ->
             RefreshAllDialog(dialog, viewModel::refreshAll, viewModel::dismissDialog)
 
+        is ITrackerDialog.AddToPercentageDialog ->
+            AddToPercentageDialog(dialog, viewModel::addToPercentage, viewModel::dismissDialog)
+
+        is ITrackerDialog.SubtractFromPercentageDialog ->
+            SubtractFromPercentageDialog(
+                dialog,
+                viewModel::subtractFromPercentage,
+                viewModel::dismissDialog
+            )
+
         is ITrackerDialog.None -> {}
     }
 }
@@ -122,14 +130,15 @@ fun RefreshAllDialog(
 }
 
 @Composable
-fun AddToPercentageDialog(viewModel: TrackerViewModel) {
-    val isDialogVisible by viewModel.addPercentageDialog.isVisible.collectAsState(false)
-    if (!isDialogVisible) return
-
+fun AddToPercentageDialog(
+    dialog: ITrackerDialog.AddToPercentageDialog,
+    onConfirm: (Percentage, String) -> Unit,
+    onDismiss: () -> Unit
+) {
     EnterValueDialog(
-        onConfirm = { viewModel.addToPercentage(viewModel.addPercentageDialog.state.value, it) },
-        onDialogDismissed = { viewModel.addPercentageDialog.dismiss() },
-        dialogTitle = R.string.increase_percentage_dialog_title,
+        onConfirm = { onConfirm(dialog.percentage, it) },
+        onDialogDismissed = onDismiss,
+        dialogTitle = dialog.title.text(),
         keyboardOptions = KeyboardOptions(
             keyboardType = KeyboardType.Decimal,
             imeAction = ImeAction.Done
@@ -139,16 +148,15 @@ fun AddToPercentageDialog(viewModel: TrackerViewModel) {
 }
 
 @Composable
-fun SubtractFromPercentageDialog(viewModel: TrackerViewModel) {
-    val isDialogVisible by viewModel.reducePercentageDialog.isVisible.collectAsState(false)
-    if (!isDialogVisible) return
-
+fun SubtractFromPercentageDialog(
+    dialog: ITrackerDialog.SubtractFromPercentageDialog,
+    onConfirm: (Percentage, String) -> Unit,
+    onDismiss: () -> Unit
+) {
     EnterValueDialog(
-        onConfirm = {
-            viewModel.subtractFromPercentage(viewModel.reducePercentageDialog.state.value, it)
-        },
-        onDialogDismissed = { viewModel.reducePercentageDialog.dismiss() },
-        dialogTitle = R.string.reduce_percentage_dialog_title,
+        onConfirm = { onConfirm(dialog.percentage, it) },
+        onDialogDismissed = onDismiss,
+        dialogTitle = dialog.title.text(),
         keyboardOptions = KeyboardOptions(
             keyboardType = KeyboardType.Decimal,
             imeAction = ImeAction.Done

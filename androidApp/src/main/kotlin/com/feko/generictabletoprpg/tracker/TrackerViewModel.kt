@@ -56,16 +56,6 @@ class TrackerViewModel(
     lateinit var spellListState: LazyListState
     private val isShowingPreparedSpells = MutableStateFlow(false)
 
-    private val _addPercentageDialog =
-        StatefulAlertDialogSubViewModel(Percentage.Empty, viewModelScope)
-    val addPercentageDialog: IStatefulAlertDialogSubViewModel<Percentage>
-        get() = _addPercentageDialog
-
-    private val _reducePercentageDialog =
-        StatefulAlertDialogSubViewModel(Percentage.Empty, viewModelScope)
-    val reducePercentageDialog: IStatefulAlertDialogSubViewModel<Percentage>
-        get() = _reducePercentageDialog
-
     private val _addNumberDialog =
         StatefulAlertDialogSubViewModel(Number.Empty, viewModelScope)
     val addNumberDialog: IStatefulAlertDialogSubViewModel<Number>
@@ -472,10 +462,10 @@ class TrackerViewModel(
     }
 
     fun addToPercentageRequested(percentage: Percentage) =
-        viewModelScope.launch { _addPercentageDialog.show(percentage) }
+        _dialog.update { ITrackerDialog.AddToPercentageDialog(percentage) }
 
     fun subtractFromPercentageRequested(percentage: Percentage) =
-        viewModelScope.launch { _reducePercentageDialog.show(percentage) }
+        _dialog.update { ITrackerDialog.SubtractFromPercentageDialog(percentage) }
 
     fun addToNumberRequested(number: Number) =
         viewModelScope.launch { _addNumberDialog.show(number) }
