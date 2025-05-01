@@ -3,6 +3,7 @@ package com.feko.generictabletoprpg.tracker.dialogs
 import com.feko.generictabletoprpg.R
 import com.feko.generictabletoprpg.com.feko.generictabletoprpg.common.IText
 import com.feko.generictabletoprpg.com.feko.generictabletoprpg.tracker.dialogs.ISpellListDialogDialogs
+import com.feko.generictabletoprpg.tracker.Number
 import com.feko.generictabletoprpg.tracker.Percentage
 import com.feko.generictabletoprpg.tracker.SpellList
 import com.feko.generictabletoprpg.tracker.TrackedThing
@@ -34,5 +35,15 @@ sealed interface ITrackerDialog {
     data class SubtractFromPercentageDialog(
         val percentage: Percentage,
         val title: IText = IText.StringResourceText(R.string.reduce_percentage_dialog_title)
+    ) : ITrackerDialog
+
+    data class AddToNumberDialog(
+        val number: Number,
+        val title: IText = IText.StringResourceText(R.string.add)
+    ) : ITrackerDialog
+
+    data class SubtractFromNumberDialog(
+        val number: Number,
+        val title: IText = IText.StringResourceText(R.string.subtract)
     ) : ITrackerDialog
 }

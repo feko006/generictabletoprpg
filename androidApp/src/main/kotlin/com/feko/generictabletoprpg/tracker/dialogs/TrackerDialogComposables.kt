@@ -45,6 +45,7 @@ import com.feko.generictabletoprpg.common.composable.InputField
 import com.feko.generictabletoprpg.common.composable.NumberInputField
 import com.feko.generictabletoprpg.theme.Typography
 import com.feko.generictabletoprpg.tracker.IntTrackedThing
+import com.feko.generictabletoprpg.tracker.Number
 import com.feko.generictabletoprpg.tracker.Percentage
 import com.feko.generictabletoprpg.tracker.SpellList
 import com.feko.generictabletoprpg.tracker.SpellSlot
@@ -62,8 +63,6 @@ fun TrackerAlertDialogs(viewModel: TrackerViewModel, navigator: DestinationsNavi
     val dialog by viewModel.dialog.collectAsState(ITrackerDialog.None)
     AlertDialog(dialog, viewModel, navigator)
 
-    AddToNumberDialog(viewModel)
-    SubtractFromNumberDialog(viewModel)
     DamageHealthDialog(viewModel)
     HealHealthDialog(viewModel)
     AddTemporaryHpDialog(viewModel)
@@ -100,6 +99,16 @@ private fun AlertDialog(
             SubtractFromPercentageDialog(
                 dialog,
                 viewModel::subtractFromPercentage,
+                viewModel::dismissDialog
+            )
+
+        is ITrackerDialog.AddToNumberDialog ->
+            AddToNumberDialog(dialog, viewModel::addToNumber, viewModel::dismissDialog)
+
+        is ITrackerDialog.SubtractFromNumberDialog ->
+            SubtractFromNumberDialog(
+                dialog,
+                viewModel::subtractFromNumber,
                 viewModel::dismissDialog
             )
 
@@ -166,16 +175,15 @@ fun SubtractFromPercentageDialog(
 }
 
 @Composable
-fun AddToNumberDialog(viewModel: TrackerViewModel) {
-    val isDialogVisible by viewModel.addNumberDialog.isVisible.collectAsState(false)
-    if (!isDialogVisible) return
-
+fun AddToNumberDialog(
+    dialog: ITrackerDialog.AddToNumberDialog,
+    onConfirm: (Number, String) -> Unit,
+    onDismiss: () -> Unit
+) {
     EnterValueDialog(
-        onConfirm = {
-            viewModel.addToNumber(viewModel.addNumberDialog.state.value, it)
-        },
-        onDialogDismissed = { viewModel.addNumberDialog.dismiss() },
-        dialogTitle = R.string.add,
+        onConfirm = { onConfirm(dialog.number, it) },
+        onDialogDismissed = onDismiss,
+        dialogTitle = dialog.title.text(),
         keyboardOptions = KeyboardOptions(
             keyboardType = KeyboardType.Number,
             imeAction = ImeAction.Done
@@ -184,16 +192,15 @@ fun AddToNumberDialog(viewModel: TrackerViewModel) {
 }
 
 @Composable
-fun SubtractFromNumberDialog(viewModel: TrackerViewModel) {
-    val isDialogVisible by viewModel.reduceNumberDialog.isVisible.collectAsState(false)
-    if (!isDialogVisible) return
-
+fun SubtractFromNumberDialog(
+    dialog: ITrackerDialog.SubtractFromNumberDialog,
+    onConfirm: (Number, String) -> Unit,
+    onDismiss: () -> Unit
+) {
     EnterValueDialog(
-        onConfirm = {
-            viewModel.subtractFromNumber(viewModel.reduceNumberDialog.state.value, it)
-        },
-        onDialogDismissed = { viewModel.reduceNumberDialog.dismiss() },
-        dialogTitle = R.string.subtract,
+        onConfirm = { onConfirm(dialog.number, it) },
+        onDialogDismissed = onDismiss,
+        dialogTitle = dialog.title.text(),
         keyboardOptions = KeyboardOptions(
             keyboardType = KeyboardType.Number,
             imeAction = ImeAction.Done

@@ -56,16 +56,6 @@ class TrackerViewModel(
     lateinit var spellListState: LazyListState
     private val isShowingPreparedSpells = MutableStateFlow(false)
 
-    private val _addNumberDialog =
-        StatefulAlertDialogSubViewModel(Number.Empty, viewModelScope)
-    val addNumberDialog: IStatefulAlertDialogSubViewModel<Number>
-        get() = _addNumberDialog
-
-    private val _reduceNumberDialog =
-        StatefulAlertDialogSubViewModel(Number.Empty, viewModelScope)
-    val reduceNumberDialog: IStatefulAlertDialogSubViewModel<Number>
-        get() = _reduceNumberDialog
-
     private val _healHealthDialog =
         StatefulAlertDialogSubViewModel(Health.Empty, viewModelScope)
             .apply { _titleResource = R.string.heal_dialog_title }
@@ -468,10 +458,10 @@ class TrackerViewModel(
         _dialog.update { ITrackerDialog.SubtractFromPercentageDialog(percentage) }
 
     fun addToNumberRequested(number: Number) =
-        viewModelScope.launch { _addNumberDialog.show(number) }
+        _dialog.update { ITrackerDialog.AddToNumberDialog(number) }
 
     fun subtractFromNumberRequested(number: Number) =
-        viewModelScope.launch { _reduceNumberDialog.show(number) }
+        _dialog.update { ITrackerDialog.SubtractFromNumberDialog(number) }
 
     fun takeDamageRequested(health: Health) =
         viewModelScope.launch { _damageHealthDialog.show(health) }
