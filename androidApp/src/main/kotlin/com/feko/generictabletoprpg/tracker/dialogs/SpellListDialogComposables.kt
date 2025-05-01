@@ -29,6 +29,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -64,11 +65,13 @@ import kotlinx.coroutines.launch
 sealed interface ISpellListDialogDialogs {
     data object None : ISpellListDialogDialogs
 
+    @Immutable
     data class SelectSpellSlotDialog(
         val availableSlots: List<Int>,
         val title: IText = IText.StringResourceText(R.string.select_slot_level_for_casting_spell)
     ) : ISpellListDialogDialogs
 
+    @Immutable
     data class ConfirmSpellRemovalDialog(
         val spellListEntry: SpellListEntry,
         val title: IText = IText.StringResourceText(R.string.confirm_spell_removal_from_list_dialog_title)

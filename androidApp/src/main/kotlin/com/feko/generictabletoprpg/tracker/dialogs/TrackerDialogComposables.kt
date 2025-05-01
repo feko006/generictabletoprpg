@@ -63,13 +63,6 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 fun TrackerAlertDialog(viewModel: TrackerViewModel, navigator: DestinationsNavigator) {
     val dialog by viewModel.dialog.collectAsState(ITrackerDialog.None)
     AlertDialog(dialog, viewModel, navigator)
-
-    StatsEditDialog(
-        viewModel.statsEditDialog,
-        viewModel.groupName
-    ) {
-        viewModel.insertOrUpdateStats(it)
-    }
 }
 
 @Composable
@@ -126,6 +119,15 @@ private fun AlertDialog(
                 viewModel.groupName,
                 viewModel::createOrEditTrackedThing,
                 viewModel::editDialogValueUpdated,
+                viewModel::dismissDialog
+            )
+
+        is ITrackerDialog.StatsEditDialog ->
+            StatsEditDialog(
+                dialog,
+                viewModel.groupName,
+                viewModel::insertOrUpdateStats,
+                viewModel::editStatsDialogValueUpdated,
                 viewModel::dismissDialog
             )
 
@@ -477,24 +479,23 @@ private fun EditDialogValueInputField(
 
 @Composable
 fun StatsEditDialog(
-    viewModel: IStatsEditDialogSubViewModel,
+    dialog: ITrackerDialog.StatsEditDialog,
     defaultName: String,
-    onFormSubmitted: (Stats) -> Unit
+    onFormSubmit: (Stats) -> Unit,
+    onValueUpdate: (Stats) -> Unit,
+    onDismiss: () -> Unit
 ) {
-    val isDialogVisible by viewModel.alertDialog.isVisible.collectAsState(false)
-    if (!isDialogVisible) return
-
-    val editedStats by viewModel.alertDialog.state.collectAsState()
+    val editedStats = dialog.stats
     val statsContainer = requireNotNull(editedStats.serializedItem)
     AlertDialogBase(
-        onDialogDismiss = { viewModel.alertDialog.dismiss() },
+        onDialogDismiss = onDismiss,
         screenHeight = 0.6f,
-        dialogTitle = { DialogTitle(stringResource(viewModel.alertDialog.titleResource)) },
+        dialogTitle = { DialogTitle(dialog.title.text()) },
         dialogButtons = {
             TextButton(
                 onClick = {
-                    onFormSubmitted(editedStats)
-                    viewModel.alertDialog.dismiss()
+                    onFormSubmit(editedStats)
+                    onDismiss()
                 },
                 modifier = Modifier.wrapContentWidth()
             ) {
@@ -506,7 +507,9 @@ fun StatsEditDialog(
         BoxWithScrollIndicator(
             scrollState,
             backgroundColor = CardDefaults.cardColors().containerColor,
-            Modifier.weight(1f)
+            Modifier
+                .weight(1f)
+                .padding(top = 8.dp)
         ) {
             Column(Modifier.verticalScroll(scrollState)) {
                 Text(
@@ -520,14 +523,20 @@ fun StatsEditDialog(
                 InputField(
                     value = editedStats.name,
                     label = "${stringResource(R.string.name)} ($defaultName)",
-                    onValueChange = { viewModel.updateStatsName(it) },
+                    onValueChange = {
+                        onValueUpdate((editedStats.copy() as Stats).apply { name = it })
+                    }
                 )
                 NumberInputField(
                     value = statsContainer.proficiencyBonus,
                     label = stringResource(R.string.proficiency_bonus),
                     convertInputValue = IInputFieldValueConverter.IntInputFieldValueConverter,
                     onValueChange = {
-                        viewModel.updateStatsProficiencyBonus(it)
+                        onValueUpdate(
+                            (editedStats.copy() as Stats).apply {
+                                serializedItem = serializedItem.copy(proficiencyBonus = it)
+                            }
+                        )
                     },
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Number,
@@ -539,7 +548,10 @@ fun StatsEditDialog(
                     label = stringResource(R.string.initiative_additional_bonus),
                     convertInputValue = IInputFieldValueConverter.IntInputFieldValueConverter,
                     onValueChange = {
-                        viewModel.updateStatsInitiativeAdditionalBonus(it)
+                        onValueUpdate(
+                            (editedStats.copy() as Stats).apply {
+                                serializedItem = serializedItem.copy(initiativeAdditionalBonus = it)
+                            })
                     },
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Number,
@@ -551,7 +563,11 @@ fun StatsEditDialog(
                     label = stringResource(R.string.spell_save_dc_additional_bonus),
                     convertInputValue = IInputFieldValueConverter.IntInputFieldValueConverter,
                     onValueChange = {
-                        viewModel.updateSpellSaveDcAdditionalBonus(it)
+                        onValueUpdate(
+                            (editedStats.copy() as Stats).apply {
+                                serializedItem =
+                                    serializedItem.copy(spellSaveDcAdditionalBonus = it)
+                            })
                     },
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Number,
@@ -563,7 +579,11 @@ fun StatsEditDialog(
                     label = stringResource(R.string.spell_attack_additional_bonus),
                     convertInputValue = IInputFieldValueConverter.IntInputFieldValueConverter,
                     onValueChange = {
-                        viewModel.updateSpellAttackAdditionalBonus(it)
+                        onValueUpdate(
+                            (editedStats.copy() as Stats).apply {
+                                serializedItem =
+                                    serializedItem.copy(spellAttackAdditionalBonus = it)
+                            })
                     },
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Number,
@@ -575,11 +595,15 @@ fun StatsEditDialog(
                     StatsStatEntry(
                         statEntry,
                         statIndex,
-                        viewModel,
                         statsContainer,
+                        onValueUpdate = {
+                            onValueUpdate(
+                                (editedStats.copy() as Stats).apply { serializedItem = it }
+                            )
+                        },
                         onFormSubmit = {
-                            onFormSubmitted(editedStats)
-                            viewModel.alertDialog.dismiss()
+                            onFormSubmit(editedStats)
+                            onDismiss()
                         }
                     )
                     if (statIndex < statsContainer.stats.size - 1) {
@@ -609,8 +633,8 @@ fun SkillRow(
 private fun StatsStatEntry(
     statEntry: StatEntry,
     statIndex: Int,
-    viewModel: IStatsEditDialogSubViewModel,
     statsContainer: StatsContainer,
+    onValueUpdate: (StatsContainer) -> Unit,
     onFormSubmit: () -> Unit
 ) {
     HeaderWithDividers("${statEntry.name} (${statEntry.shortName})")
@@ -621,7 +645,13 @@ private fun StatsStatEntry(
             label = "${stringResource(R.string.score)}$bonusText",
             convertInputValue = IInputFieldValueConverter.IntInputFieldValueConverter,
             onValueChange = {
-                viewModel.updateStatScore(statIndex, it)
+                val newStatEntry = statsContainer.stats[statIndex].copy(score = it)
+                onValueUpdate(
+                    statsContainer.copy(
+                        stats = statsContainer.stats.mapIndexed { index, statEntry ->
+                            if (index == statIndex) newStatEntry else statEntry
+                        })
+                )
             },
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Number,
@@ -633,7 +663,14 @@ private fun StatsStatEntry(
             label = stringResource(R.string.saving_throw_additional_bonus),
             convertInputValue = IInputFieldValueConverter.IntInputFieldValueConverter,
             onValueChange = {
-                viewModel.updateStatSavingThrowAdditionalBonus(statIndex, it)
+                val newStatEntry =
+                    statsContainer.stats[statIndex].copy(savingThrowAdditionalBonus = it)
+                onValueUpdate(
+                    statsContainer.copy(
+                        stats = statsContainer.stats.mapIndexed { index, statEntry ->
+                            if (index == statIndex) newStatEntry else statEntry
+                        })
+                )
             },
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Number,
@@ -644,11 +681,29 @@ private fun StatsStatEntry(
     CheckboxWithText(
         statEntry.isProficientInSavingThrow,
         R.string.saving_throw_proficiency
-    ) { checked -> viewModel.updateStatSavingThrowProficiency(statIndex, checked) }
+    ) { checked ->
+        val newStatEntry =
+            statsContainer.stats[statIndex].copy(isProficientInSavingThrow = checked)
+        onValueUpdate(
+            statsContainer.copy(
+                stats = statsContainer.stats.mapIndexed { index, statEntry ->
+                    if (index == statIndex) newStatEntry else statEntry
+                })
+        )
+    }
     CheckboxWithText(
         statEntry.isSpellcastingModifier,
         R.string.spellcasting_modifier
-    ) { checked -> viewModel.updateStatSpellcastingModifier(statIndex, checked) }
+    ) { checked ->
+        val newStatEntry =
+            statsContainer.stats[statIndex].copy(isSpellcastingModifier = checked)
+        onValueUpdate(
+            statsContainer.copy(
+                stats = statsContainer.stats.mapIndexed { index, statEntry ->
+                    if (index == statIndex) newStatEntry else statEntry
+                })
+        )
+    }
     if (statEntry.skills.isNotEmpty()) {
         Column(
             Modifier
@@ -665,7 +720,7 @@ private fun StatsStatEntry(
                     skillIndex,
                     statsContainer,
                     statEntry,
-                    viewModel,
+                    onValueUpdate,
                     onFormSubmit
                 )
             }
@@ -680,7 +735,7 @@ private fun StatsStatEntrySkill(
     skillIndex: Int,
     statsContainer: StatsContainer,
     statEntry: StatEntry,
-    viewModel: IStatsEditDialogSubViewModel,
+    onValueUpdate: (StatsContainer) -> Unit,
     onFormSubmit: () -> Unit
 ) {
     HeaderWithDividers(skill.name, Modifier.padding(bottom = 8.dp))
@@ -697,8 +752,22 @@ private fun StatsStatEntrySkill(
             value = skill.additionalBonus,
             label = stringResource(R.string.skill_additional_bonus),
             convertInputValue = IInputFieldValueConverter.IntInputFieldValueConverter,
-            onValueChange = {
-                viewModel.updateStatSkillAdditionalBonus(statIndex, skillIndex, it)
+            onValueChange = { bonus ->
+                val newStatEntry =
+                    statsContainer.stats[statIndex].let {
+                        val newSkill = it.skills[skillIndex].copy(additionalBonus = bonus)
+                        it.copy(
+                            skills = it.skills.mapIndexed { index, skill ->
+                                if (index == skillIndex) newSkill else skill
+                            }
+                        )
+                    }
+                onValueUpdate(
+                    statsContainer.copy(
+                        stats = statsContainer.stats.mapIndexed { index, statEntry ->
+                            if (index == statIndex) newStatEntry else statEntry
+                        })
+                )
             },
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Number,
@@ -716,7 +785,23 @@ private fun StatsStatEntrySkill(
     CheckboxWithText(
         skill.isProficient,
         R.string.proficiency
-    ) { checked -> viewModel.updateStatSkillProficiency(statIndex, skillIndex, checked) }
+    ) { checked ->
+        val newStatEntry =
+            statsContainer.stats[statIndex].let {
+                val newSkill = it.skills[skillIndex].copy(isProficient = checked)
+                it.copy(
+                    skills = it.skills.mapIndexed { index, skill ->
+                        if (index == skillIndex) newSkill else skill
+                    }
+                )
+            }
+        onValueUpdate(
+            statsContainer.copy(
+                stats = statsContainer.stats.mapIndexed { index, statEntry ->
+                    if (index == statIndex) newStatEntry else statEntry
+                })
+        )
+    }
 }
 
 @Composable

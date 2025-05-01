@@ -17,7 +17,6 @@ import com.feko.generictabletoprpg.import.IJson
 import com.feko.generictabletoprpg.searchall.ISearchAllUseCase
 import com.feko.generictabletoprpg.spell.SpellDao
 import com.feko.generictabletoprpg.tracker.dialogs.ITrackerDialog
-import com.feko.generictabletoprpg.tracker.dialogs.StatsEditDialogSubViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -43,9 +42,6 @@ class TrackerViewModel(
 
     private val _dialog: MutableStateFlow<ITrackerDialog> = MutableStateFlow(ITrackerDialog.None)
     val dialog: Flow<ITrackerDialog> = _dialog
-
-    var statsEditDialog: StatsEditDialogSubViewModel =
-        StatsEditDialogSubViewModel(viewModelScope, json)
 
     private lateinit var allItems: List<Any>
 
@@ -102,7 +98,12 @@ class TrackerViewModel(
                 val defaultStatsContainer =
                     newStats.serializedItem.copy(stats = defaultStats)
                 newStats.setItem(defaultStatsContainer, json)
-                statsEditDialog._alertDialog.show(newStats)
+                _dialog.emit(
+                    ITrackerDialog.StatsEditDialog(
+                        newStats,
+                        IText.StringResourceText(R.string.five_e_stats)
+                    )
+                )
             } else {
                 val newTrackedThing =
                     TrackedThing.emptyOfType(type, _items.value.size, groupId)
@@ -121,10 +122,12 @@ class TrackerViewModel(
         viewModelScope.launch {
             val copy = item.copy()
             if (item.type == TrackedThing.Type.FiveEStats) {
-                statsEditDialog._alertDialog.apply {
-                    _titleResource = R.string.edit
-                    show(copy as Stats)
-                }
+                _dialog.emit(
+                    ITrackerDialog.StatsEditDialog(
+                        copy as Stats,
+                        IText.StringResourceText(R.string.edit)
+                    )
+                )
             } else {
                 _dialog.emit(
                     ITrackerDialog.EditDialog(copy, IText.StringResourceText(R.string.edit))
@@ -256,6 +259,16 @@ class TrackerViewModel(
                 }
             } else {
                 replaceItem(stats)
+            }
+        }
+    }
+
+    fun editStatsDialogValueUpdated(stats: Stats) {
+        viewModelScope.launch {
+            _dialog.update {
+                if (it !is ITrackerDialog.StatsEditDialog) return@launch
+                stats.setItem(stats.serializedItem, json)
+                it.copy(stats = stats)
             }
         }
     }
