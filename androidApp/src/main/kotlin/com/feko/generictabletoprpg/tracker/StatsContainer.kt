@@ -13,4 +13,8 @@ data class StatsContainer(
     val initiativeAdditionalBonus: Int,
     val stats: List<StatEntry>,
     val use5eCalculations: Boolean = true
-)
+) {
+    companion object {
+        val Empty = StatsContainer(0, 0, 0, 0, 0, 0, 0, emptyList())
+    }
+}

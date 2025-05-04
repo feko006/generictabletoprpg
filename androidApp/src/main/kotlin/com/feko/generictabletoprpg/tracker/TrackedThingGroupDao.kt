@@ -15,7 +15,7 @@ abstract class TrackedThingGroupDao :
     IDelete {
 
     override fun getEntityFromCoreModel(item: TrackedThingGroup): TrackedThingGroupEntity =
-        TrackedThingGroupEntity(item.id, item.name)
+        item.toEntity()
 
     @Query("select * from tracked_thing_groups order by name")
     abstract override fun getAllSortedByNameInternal(): List<TrackedThingGroupEntity>

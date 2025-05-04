@@ -10,9 +10,10 @@ import com.feko.generictabletoprpg.R
 import com.feko.generictabletoprpg.common.composable.DetailsScreen
 import com.feko.generictabletoprpg.common.composable.TextWithLabel
 import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.annotation.RootGraph
 import org.koin.androidx.compose.koinViewModel
 
-@Destination
+@Destination<RootGraph>
 @Composable
 fun AmmunitionDetailsScreen(
     id: Long,

@@ -22,6 +22,8 @@ class SpellList(
     companion object {
         val spellListType =
             Types.newParameterizedType(List::class.java, SpellListEntry::class.java)!!
+
+        val Empty = SpellList(0L, "", "", 0, 0L)
     }
 
     override fun getPrintableValue(): String = serializedItem.size.toString()

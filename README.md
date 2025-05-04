@@ -6,19 +6,21 @@ This is an app that helps you quickly access your dungeonmastersvault data via y
 It can also help you track various things (see below).
 
 [<img src="https://fdroid.gitlab.io/artwork/badge/get-it-on.png"
-     alt="Get it on F-Droid"
-     height="80">](https://f-droid.org/packages/com.feko.generictabletoprpg/)
+alt="Get it on F-Droid"
+height="80">](https://f-droid.org/packages/com.feko.generictabletoprpg/)
 
-Or download the latest APK from the [Releases Section](https://github.com/feko006/generictabletoprpg/releases/latest).
+Or download the latest APK from
+the [Releases Section](https://github.com/feko006/generictabletoprpg/releases/latest).
 
 ## Table of Contents
 
 - [Features](#features)
-	- [DMV Import](#dmv-import)
-	- [Tracker](#tracker)
-	- [Supported Types](#supported-types)
-	- [Long Rest](#long-rest)
-	- [Own Your Data](#own-your-data)
+    - [DMV Import](#dmv-import)
+    - [Tracker](#tracker)
+        - [Supported Types](#supported-types)
+        - [Long Rest](#long-rest)
+    - [Encounters](#encounters)
+    - [Own Your Data](#own-your-data)
 - [Disclaimers](#disclaimers)
 - [License](#license)
 
@@ -62,6 +64,17 @@ Refreshes some of the tracked things like HP, spell slots...
 <details>
     <summary>See it in action...</summary>
 	<img src="readme-assets/long-rest-showcase.gif" height="500" style="border-radius: 20px;" />
+</details>
+
+### Encounters
+
+Avoid a part of the tediousness of combat with the encounter tracker. Track initiative, lair
+actions, HP, legendary actions and more! Mark entries as favorites and reset the encounter for
+starting a new one.
+
+<details>
+    <dummary>See it in action...</dummary>
+    <img src="readme-assets/encounters-showcase.gif" height="500" style="border-radius: 20px;" />
 </details>
 
 ### Own Your Data

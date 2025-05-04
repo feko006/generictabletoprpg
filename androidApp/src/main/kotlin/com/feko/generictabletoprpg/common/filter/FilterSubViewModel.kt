@@ -14,7 +14,7 @@ class FilterSubViewModel(
 ) : IFilterSubViewModel {
     override val activeFilter: StateFlow<Filter?>
         get() = _activeFilter
-    val _activeFilter = MutableStateFlow(defaultFilter)
+    private val _activeFilter = MutableStateFlow(defaultFilter)
     override val isButtonVisible: Flow<Boolean>
         get() = _isButtonVisible
     override val offButtonVisible: Flow<Boolean> = activeFilter.map { it != defaultFilter }

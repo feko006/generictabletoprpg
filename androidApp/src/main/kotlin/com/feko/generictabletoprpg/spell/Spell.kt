@@ -129,6 +129,8 @@ data class Spell(
                     processEdnMapPort.getValueOrDefault(componentsMap, ":material-component", "")
                 )
             }
+
+            val Empty = SpellComponents(false, false, false, null)
         }
     }
 }

@@ -10,8 +10,7 @@ class Health(
     amount: Int,
     index: Int = 0,
     groupId: Long = 0L
-) :
-    IntTrackedThing(id, name, amount, Type.Health, index, groupId) {
+) : IntTrackedThing(id, name, amount, Type.Health, index, groupId) {
 
     override fun copy(): TrackedThing =
         Health(temporaryHp, id, name, amount, index, groupId).also {
@@ -31,5 +30,9 @@ class Health(
         if (temporaryHp < newTemporaryHp) {
             temporaryHp = newTemporaryHp
         }
+    }
+
+    companion object {
+        val Empty = Health(0, 0L, "", 0, 0, 0L)
     }
 }

@@ -16,6 +16,8 @@ import com.feko.generictabletoprpg.condition.ConditionDao
 import com.feko.generictabletoprpg.condition.ConditionEntity
 import com.feko.generictabletoprpg.disease.DiseaseDao
 import com.feko.generictabletoprpg.disease.DiseaseEntity
+import com.feko.generictabletoprpg.encounter.InitiativeEntryDao
+import com.feko.generictabletoprpg.encounter.InitiativeEntryEntity
 import com.feko.generictabletoprpg.feat.FeatDao
 import com.feko.generictabletoprpg.feat.FeatEntity
 import com.feko.generictabletoprpg.spell.SpellDao
@@ -42,9 +44,10 @@ import com.feko.generictabletoprpg.weapon.WeaponEntity
         AmmunitionEntity::class,
         ArmorEntity::class,
         TrackedThingEntity::class,
-        TrackedThingGroupEntity::class
+        TrackedThingGroupEntity::class,
+        InitiativeEntryEntity::class
     ],
-    version = 14,
+    version = 15,
     autoMigrations = [
         AutoMigration(from = 1, to = 2),
         AutoMigration(from = 2, to = 3),
@@ -59,6 +62,7 @@ import com.feko.generictabletoprpg.weapon.WeaponEntity
         AutoMigration(from = 11, to = 12),
         AutoMigration(from = 12, to = 13),
         AutoMigration(from = 13, to = 14),
+        AutoMigration(from = 14, to = 15)
     ]
 )
 abstract class GenericTabletopRpgDatabase : RoomDatabase() {
@@ -72,4 +76,5 @@ abstract class GenericTabletopRpgDatabase : RoomDatabase() {
     abstract fun armorDao(): ArmorDao
     abstract fun trackedThingDao(): TrackedThingDao
     abstract fun trackedThingGroupDao(): TrackedThingGroupDao
+    abstract fun initiativeEntryDao(): InitiativeEntryDao
 }
