@@ -62,11 +62,11 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 @Composable
 fun TrackerAlertDialog(viewModel: TrackerViewModel, navigator: DestinationsNavigator) {
     val dialog by viewModel.dialog.collectAsState(ITrackerDialog.None)
-    AlertDialog(dialog, viewModel, navigator)
+    TrackerAlertDialog(dialog, viewModel, navigator)
 }
 
 @Composable
-private fun AlertDialog(
+private fun TrackerAlertDialog(
     dialog: ITrackerDialog,
     viewModel: TrackerViewModel,
     navigator: DestinationsNavigator

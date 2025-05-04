@@ -106,11 +106,11 @@ fun TrackerGroupsScreen(
         }
     )
     val dialog by viewModel.dialog.collectAsState(ITrackerGroupDialog.None)
-    AlertDialog(dialog, viewModel)
+    TrackerGroupsAlertDialog(dialog, viewModel)
 }
 
 @Composable
-private fun AlertDialog(
+private fun TrackerGroupsAlertDialog(
     dialog: ITrackerGroupDialog,
     viewModel: TrackerGroupViewModel
 ) {

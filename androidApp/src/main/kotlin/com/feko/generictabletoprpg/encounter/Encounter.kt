@@ -135,7 +135,8 @@ fun EncounterScreen(appViewModel: AppViewModel) {
         }
         ActionButtons(viewModel)
     }
-    InitiativeDialog(viewModel)
+    EncounterAlertDialog(viewModel, entries)
+
     HealDialog(viewModel)
     DamageDialog(viewModel)
     RemoveAfterTakingDamageDialog(viewModel)
@@ -145,6 +146,7 @@ fun EncounterScreen(appViewModel: AppViewModel) {
     PickLegendaryActionDialog(viewModel)
     ToastMessage(viewModel.toastMessage)
 }
+
 
 @Composable
 private fun ActionButtons(viewModel: EncounterViewModel) {
@@ -188,27 +190,6 @@ private fun ActionButtons(viewModel: EncounterViewModel) {
     }
 }
 
-@Composable
-private fun InitiativeDialog(viewModel: EncounterViewModel) {
-    val isInitiativeDialogVisible
-            by viewModel.updateInitiativeDialog.isVisible.collectAsState(false)
-    if (!isInitiativeDialogVisible) return
-
-    EnterValueDialog(
-        onConfirm = {
-            viewModel.updateInitiative(
-                viewModel.updateInitiativeDialog.state.value,
-                it.toIntOrNull() ?: 0
-            )
-        },
-        onDialogDismissed = { viewModel.updateInitiativeDialog.dismiss() },
-        dialogTitle = R.string.initiative,
-        keyboardOptions = KeyboardOptions(
-            keyboardType = KeyboardType.Number,
-            imeAction = ImeAction.Done
-        )
-    )
-}
 
 @Composable
 private fun HealDialog(viewModel: EncounterViewModel) {

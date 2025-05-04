@@ -14,11 +14,15 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class EncounterViewModel(private val dao: InitiativeEntryDao) : ViewModel() {
 
     val entries: Flow<List<InitiativeEntryEntity>> = dao.getAllSortedByInitiative()
+
+    private val _dialog = MutableStateFlow<IEncounterDialog>(IEncounterDialog.None)
+    val dialog: Flow<IEncounterDialog> = _dialog
 
     private val _editAlertDialog =
         StatefulAlertDialogSubViewModel(InitiativeEntryEntity.Empty, viewModelScope)
@@ -61,11 +65,11 @@ class EncounterViewModel(private val dao: InitiativeEntryDao) : ViewModel() {
         get() = _removeAfterTakingDamageDialog
 
     val encounterState: Flow<EncounterState> =
-        entries.map {
-            if (it.isEmpty()) return@map EncounterState.Empty
-            val indexOfEntryWithCurrentTurn = it.indexOfFirst { it.hasTurn }
+        entries.map { entry ->
+            if (entry.isEmpty()) return@map EncounterState.Empty
+            val indexOfEntryWithCurrentTurn = entry.indexOfFirst { it.hasTurn }
             if (indexOfEntryWithCurrentTurn == -1) return@map EncounterState.ReadyToStart
-            return@map if (it[indexOfEntryWithCurrentTurn].isTurnCompleted)
+            return@map if (entry[indexOfEntryWithCurrentTurn].isTurnCompleted)
                 EncounterState.TurnCompletedChoiceRequired
             else
                 EncounterState.TurnInProgress
@@ -74,11 +78,6 @@ class EncounterViewModel(private val dao: InitiativeEntryDao) : ViewModel() {
     private val _scrollToItemWithIndex = MutableSharedFlow<Int>()
     val scrollToItemWithIndex: Flow<Int>
         get() = _scrollToItemWithIndex
-
-    private val _updateInitiativeDialog =
-        StatefulAlertDialogSubViewModel(InitiativeEntryEntity.Empty, viewModelScope)
-    val updateInitiativeDialog: IStatefulAlertDialogSubViewModel<InitiativeEntryEntity>
-        get() = _updateInitiativeDialog
 
     fun createOrUpdateInitiativeEntry(entity: InitiativeEntryEntity) {
         viewModelScope.launch {
@@ -112,11 +111,8 @@ class EncounterViewModel(private val dao: InitiativeEntryDao) : ViewModel() {
         }
     }
 
-    fun showInitiativeDialog(initiativeEntry: InitiativeEntryEntity) {
-        viewModelScope.launch {
-            _updateInitiativeDialog.show(initiativeEntry)
-        }
-    }
+    fun showInitiativeDialog(initiativeEntry: InitiativeEntryEntity) =
+        _dialog.update { IEncounterDialog.InitiativeDialog(initiativeEntry) }
 
     fun showHealDialog(initiativeEntry: InitiativeEntryEntity) {
         viewModelScope.launch {
@@ -258,5 +254,9 @@ class EncounterViewModel(private val dao: InitiativeEntryDao) : ViewModel() {
         dao.setCurrentTurn(entries[indexOfNextEntry].id)
         dao.setTurnCompleted(0L)
         _scrollToItemWithIndex.emit(indexOfNextEntry)
+    }
+
+    fun dismissDialog() {
+        _dialog.update { IEncounterDialog.None }
     }
 }
