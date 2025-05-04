@@ -53,7 +53,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.feko.generictabletoprpg.AppViewModel
 import com.feko.generictabletoprpg.R
-import com.feko.generictabletoprpg.common.composable.ConfirmationDialog
 import com.feko.generictabletoprpg.common.composable.EmptyList
 import com.feko.generictabletoprpg.common.composable.SelectFromListDialog
 import com.feko.generictabletoprpg.common.composable.ToastMessage
@@ -120,7 +119,6 @@ fun EncounterScreen(appViewModel: AppViewModel) {
     }
     EncounterAlertDialog(viewModel)
 
-    ConfirmResetDialog(viewModel)
     PickLegendaryActionDialog(viewModel)
     ToastMessage(viewModel.toastMessage)
 }
@@ -166,19 +164,6 @@ private fun ActionButtons(viewModel: EncounterViewModel) {
             }
         }
     }
-}
-
-@Composable
-private fun ConfirmResetDialog(viewModel: EncounterViewModel) {
-    val isConfirmResetDialogVisible by viewModel.confirmResetDialog.isVisible.collectAsState(false)
-    if (!isConfirmResetDialogVisible) return
-
-    ConfirmationDialog(
-        onConfirm = { viewModel.resetInitiative() },
-        onDialogDismiss = { viewModel.confirmResetDialog.dismiss() },
-        dialogTitle = stringResource(R.string.reset_dialog_title),
-        dialogMessage = stringResource(R.string.reset_encounter_message)
-    )
 }
 
 @Composable

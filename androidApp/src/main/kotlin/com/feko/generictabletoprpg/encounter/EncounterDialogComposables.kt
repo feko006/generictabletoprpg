@@ -64,6 +64,9 @@ private fun EncounterAlertDialog(dialog: IEncounterDialog, viewModel: EncounterV
         is IEncounterDialog.ConfirmDeletionDialog ->
             ConfirmDeletionDialog(dialog, viewModel::deleteEntry, viewModel::dismissDialog)
 
+        is IEncounterDialog.ConfirmResetDialog ->
+            ConfirmResetDialog(dialog, viewModel::resetInitiative, viewModel::dismissDialog)
+
         IEncounterDialog.None -> Unit
     }
 }
@@ -293,5 +296,19 @@ private fun ConfirmDeletionDialog(
         onConfirm = { onConfirm(dialog.entry) },
         onDialogDismiss = onDismiss,
         stringResource(R.string.delete_dialog_title)
+    )
+}
+
+@Composable
+private fun ConfirmResetDialog(
+    dialog: IEncounterDialog.ConfirmResetDialog,
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit
+) {
+    ConfirmationDialog(
+        onConfirm = onConfirm,
+        onDialogDismiss = onDismiss,
+        dialogTitle = dialog.title.text(),
+        dialogMessage = dialog.message.text()
     )
 }

@@ -4,8 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.feko.generictabletoprpg.R
 import com.feko.generictabletoprpg.com.feko.generictabletoprpg.common.IText
-import com.feko.generictabletoprpg.common.alertdialog.AlertDialogSubViewModel
-import com.feko.generictabletoprpg.common.alertdialog.IAlertDialogSubViewModel
 import com.feko.generictabletoprpg.common.alertdialog.IStatefulAlertDialogSubViewModel
 import com.feko.generictabletoprpg.common.alertdialog.StatefulAlertDialogSubViewModel
 import com.feko.generictabletoprpg.common.toast.IToastSubViewModel
@@ -26,9 +24,6 @@ class EncounterViewModel(private val dao: InitiativeEntryDao) : ViewModel() {
     val dialog: Flow<IEncounterDialog> = _dialog
 
     private var areLairActionsAdded = false
-
-    private val _confirmResetDialog = AlertDialogSubViewModel(viewModelScope)
-    val confirmResetDialog: IAlertDialogSubViewModel = _confirmResetDialog
 
     private val _currentRound = MutableStateFlow(0)
     val currentRound: Flow<Int>
@@ -129,11 +124,7 @@ class EncounterViewModel(private val dao: InitiativeEntryDao) : ViewModel() {
     fun showDeleteDialog(initiativeEntry: InitiativeEntryEntity) =
         _dialog.update { IEncounterDialog.ConfirmDeletionDialog(initiativeEntry) }
 
-    fun showResetDialog() {
-        viewModelScope.launch {
-            _confirmResetDialog.show()
-        }
-    }
+    fun showResetDialog() = _dialog.update { IEncounterDialog.ConfirmResetDialog }
 
     fun addLairActions() {
         viewModelScope.launch {
