@@ -3,6 +3,7 @@ package com.feko.generictabletoprpg.encounter
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.feko.generictabletoprpg.R
+import com.feko.generictabletoprpg.com.feko.generictabletoprpg.common.IText
 import com.feko.generictabletoprpg.common.alertdialog.AlertDialogSubViewModel
 import com.feko.generictabletoprpg.common.alertdialog.IAlertDialogSubViewModel
 import com.feko.generictabletoprpg.common.alertdialog.IStatefulAlertDialogSubViewModel
@@ -24,9 +25,7 @@ class EncounterViewModel(private val dao: InitiativeEntryDao) : ViewModel() {
     private val _dialog = MutableStateFlow<IEncounterDialog>(IEncounterDialog.None)
     val dialog: Flow<IEncounterDialog> = _dialog
 
-    private val _editAlertDialog =
-        StatefulAlertDialogSubViewModel(InitiativeEntryEntity.Empty, viewModelScope)
-    val editAlertDialog: IStatefulAlertDialogSubViewModel<InitiativeEntryEntity> = _editAlertDialog
+    private var areLairActionsAdded = false
 
     private val _confirmDeletionDialog =
         StatefulAlertDialogSubViewModel(InitiativeEntryEntity.Empty, viewModelScope)
@@ -60,6 +59,12 @@ class EncounterViewModel(private val dao: InitiativeEntryDao) : ViewModel() {
                 EncounterState.TurnInProgress
         }
 
+    init {
+        viewModelScope.launch {
+            entries.collect { entries -> areLairActionsAdded = entries.any { it.isLairAction } }
+        }
+    }
+
     private val _scrollToItemWithIndex = MutableSharedFlow<Int>()
     val scrollToItemWithIndex: Flow<Int>
         get() = _scrollToItemWithIndex
@@ -85,16 +90,19 @@ class EncounterViewModel(private val dao: InitiativeEntryDao) : ViewModel() {
             val newHealthValue = (initiativeEntry.health - amount).coerceAtLeast(0)
             dao.update(initiativeEntry.copy(health = newHealthValue))
             if (newHealthValue == 0 && !initiativeEntry.keepOnRefresh) {
-                _removeAfterTakingDamageDialog.show(initiativeEntry)
+                _dialog.update { IEncounterDialog.RemoveAfterTakingDamageDialog(initiativeEntry) }
             }
         }
     }
 
-    fun showCreateNewDialog() {
-        viewModelScope.launch {
-            _editAlertDialog.show(InitiativeEntryEntity.Empty)
+    fun showCreateNewDialog() =
+        _dialog.update {
+            IEncounterDialog.EditDialog(
+                InitiativeEntryEntity.Empty,
+                isLairActionsButtonVisible = !areLairActionsAdded,
+                IText.StringResourceText(R.string.add)
+            )
         }
-    }
 
     fun showInitiativeDialog(initiativeEntry: InitiativeEntryEntity) =
         _dialog.update { IEncounterDialog.InitiativeDialog(initiativeEntry) }
@@ -105,19 +113,23 @@ class EncounterViewModel(private val dao: InitiativeEntryDao) : ViewModel() {
     fun showDamageDialog(initiativeEntry: InitiativeEntryEntity) =
         _dialog.update { IEncounterDialog.DamageDialog(initiativeEntry) }
 
-    fun duplicateEntry(initiativeEntry: InitiativeEntryEntity) {
-        viewModelScope.launch {
-            _editAlertDialog.show(
-                initiativeEntry.copy(id = 0L, hasTurn = false, isTurnCompleted = false)
+    fun duplicateEntry(initiativeEntry: InitiativeEntryEntity) =
+        _dialog.update {
+            IEncounterDialog.EditDialog(
+                initiativeEntry.copy(id = 0L, hasTurn = false, isTurnCompleted = false),
+                isLairActionsButtonVisible = !areLairActionsAdded,
+                IText.StringResourceText(R.string.add)
             )
         }
-    }
 
-    fun showEditDialog(initiativeEntry: InitiativeEntryEntity) {
-        viewModelScope.launch {
-            _editAlertDialog.show(initiativeEntry)
+    fun showEditDialog(initiativeEntry: InitiativeEntryEntity) =
+        _dialog.update {
+            IEncounterDialog.EditDialog(
+                initiativeEntry,
+                isLairActionsButtonVisible = !areLairActionsAdded,
+                IText.StringResourceText(R.string.edit)
+            )
         }
-    }
 
     fun showDeleteDialog(initiativeEntry: InitiativeEntryEntity) {
         viewModelScope.launch {
@@ -237,5 +249,12 @@ class EncounterViewModel(private val dao: InitiativeEntryDao) : ViewModel() {
 
     fun dismissDialog() {
         _dialog.update { IEncounterDialog.None }
+    }
+
+    fun editDialogItemUpdated(entry: InitiativeEntryEntity) {
+        _dialog.update {
+            if (it !is IEncounterDialog.EditDialog) return
+            it.copy(entry = entry)
+        }
     }
 }

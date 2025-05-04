@@ -15,14 +15,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberBasicTooltipState
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.Add
@@ -33,7 +29,6 @@ import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
@@ -43,34 +38,23 @@ import androidx.compose.material3.IconToggleButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TooltipDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.feko.generictabletoprpg.AppViewModel
 import com.feko.generictabletoprpg.R
-import com.feko.generictabletoprpg.common.composable.AlertDialogBase
-import com.feko.generictabletoprpg.common.composable.BoxWithScrollIndicator
 import com.feko.generictabletoprpg.common.composable.ConfirmationDialog
-import com.feko.generictabletoprpg.common.composable.DialogTitle
 import com.feko.generictabletoprpg.common.composable.EmptyList
-import com.feko.generictabletoprpg.common.composable.IInputFieldValueConverter
-import com.feko.generictabletoprpg.common.composable.InputField
-import com.feko.generictabletoprpg.common.composable.NumberInputField
 import com.feko.generictabletoprpg.common.composable.SelectFromListDialog
 import com.feko.generictabletoprpg.common.composable.ToastMessage
 import com.ramcosta.composedestinations.annotation.Destination
@@ -136,7 +120,6 @@ fun EncounterScreen(appViewModel: AppViewModel) {
     }
     EncounterAlertDialog(viewModel)
 
-    EditDialog(viewModel, entries)
     ConfirmDeletionDialog(viewModel)
     ConfirmResetDialog(viewModel)
     PickLegendaryActionDialog(viewModel)
@@ -183,32 +166,6 @@ private fun ActionButtons(viewModel: EncounterViewModel) {
                 }
             }
         }
-    }
-}
-
-@Composable
-private fun EditDialog(
-    viewModel: EncounterViewModel,
-    entries: List<InitiativeEntryEntity>
-) {
-    val isEditAlertDialogVisible by viewModel.editAlertDialog.isVisible.collectAsState(false)
-    if (isEditAlertDialogVisible) {
-        val initiativeEntry by viewModel.editAlertDialog.state.collectAsState(
-            InitiativeEntryEntity.Empty
-        )
-        val isLairActionsButtonVisible by remember(entries) {
-            derivedStateOf {
-                entries.none { it.isLairAction }
-            }
-        }
-        EditInitiativeEntryAlertDialog(
-            initiativeEntry,
-            isLairActionsButtonVisible,
-            onItemUpdated = { viewModel.editAlertDialog.updateState(it) },
-            onEditFinished = { viewModel.createOrUpdateInitiativeEntry(it) },
-            onAddLairActions = { viewModel.addLairActions() },
-            onDialogDismissed = { viewModel.editAlertDialog.dismiss() }
-        )
     }
 }
 
@@ -451,160 +408,4 @@ fun InitiativeListItemPreview() {
         onEditButtonClicked = {},
         onDeleteButtonClicked = {}
     )
-}
-
-@Composable
-fun EditInitiativeEntryAlertDialog(
-    initiativeEntry: InitiativeEntryEntity,
-    isLairActionsButtonVisible: Boolean,
-    onItemUpdated: (InitiativeEntryEntity) -> Unit,
-    onEditFinished: (InitiativeEntryEntity) -> Unit,
-    onAddLairActions: () -> Unit,
-    onDialogDismissed: () -> Unit
-) {
-    AlertDialogBase(
-        onDialogDismissed,
-        screenHeight = 0.6f,
-        dialogTitle = {
-            val dialogTitle by remember(initiativeEntry) {
-                derivedStateOf {
-                    if (initiativeEntry.isSavedInDatabase) R.string.edit
-                    else R.string.add
-                }
-            }
-            DialogTitle(stringResource(dialogTitle))
-        },
-        Arrangement.spacedBy(8.dp),
-        dialogButtons = {
-            Column {
-                if (isLairActionsButtonVisible) {
-                    TextButton(
-                        onClick = {
-                            onAddLairActions()
-                            onDialogDismissed()
-                        },
-                        modifier = Modifier
-                            .align(Alignment.End)
-                            .wrapContentWidth()
-                    ) { Text(stringResource(R.string.add_lair_actions)) }
-                }
-                TextButton(
-                    onClick = {
-                        onEditFinished(initiativeEntry)
-                        onDialogDismissed()
-                    },
-                    modifier = Modifier
-                        .align(Alignment.End)
-                        .wrapContentWidth(),
-                    enabled = initiativeEntry.isEntryValid
-                ) { Text(stringResource(R.string.confirm)) }
-            }
-        }) {
-        val scrollState = rememberScrollState()
-        BoxWithScrollIndicator(
-            scrollState,
-            backgroundColor = CardDefaults.cardColors().containerColor,
-            Modifier.weight(1f)
-        ) {
-            Column(
-                Modifier.verticalScroll(scrollState),
-                Arrangement.spacedBy(8.dp)
-            ) {
-                val name = initiativeEntry.name
-                InputField(
-                    value = name,
-                    label = stringResource(R.string.name),
-                    onValueChange = {
-                        onItemUpdated(initiativeEntry.copy(name = it))
-                    },
-                    isInputFieldValid = { initiativeEntry.isNameValid },
-                    autoFocus = !initiativeEntry.isSavedInDatabase
-                )
-
-                NumberInputField(
-                    value = initiativeEntry.initiative,
-                    label = stringResource(R.string.initiative),
-                    convertInputValue = IInputFieldValueConverter.IntInputFieldValueConverter,
-                    onValueChange = { onItemUpdated(initiativeEntry.copy(initiative = it)) },
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Number,
-                        imeAction = ImeAction.Next
-                    )
-                )
-
-                NumberInputField(
-                    value = initiativeEntry.health,
-                    label = stringResource(R.string.health),
-                    convertInputValue = IInputFieldValueConverter.IntInputFieldValueConverter,
-                    onValueChange = { onItemUpdated(initiativeEntry.copy(health = it)) },
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Number,
-                        imeAction = ImeAction.Next
-                    )
-                )
-
-                NumberInputField(
-                    value = initiativeEntry.armorClass,
-                    label = stringResource(R.string.armor_class),
-                    convertInputValue = IInputFieldValueConverter.IntInputFieldValueConverter,
-                    onValueChange = { onItemUpdated(initiativeEntry.copy(armorClass = it)) },
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Number,
-                        imeAction = ImeAction.Next
-                    )
-                )
-
-                NumberInputField(
-                    value = initiativeEntry.legendaryActions,
-                    label = stringResource(R.string.legendary_actions),
-                    convertInputValue = IInputFieldValueConverter.IntInputFieldValueConverter,
-                    onValueChange = {
-                        onItemUpdated(
-                            initiativeEntry.copy(
-                                legendaryActions = it,
-                                availableLegendaryActions = it
-                            )
-                        )
-                    },
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Number,
-                        imeAction = ImeAction.Next
-                    )
-                )
-
-                NumberInputField(
-                    value = initiativeEntry.spellSaveDc,
-                    label = stringResource(R.string.spell_save_dc),
-                    convertInputValue = IInputFieldValueConverter.IntInputFieldValueConverter,
-                    onValueChange = { onItemUpdated(initiativeEntry.copy(spellSaveDc = it)) },
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Number,
-                        imeAction = ImeAction.Next
-                    )
-                )
-
-                NumberInputField(
-                    value = initiativeEntry.spellAttackModifier,
-                    label = stringResource(R.string.spell_attack_modifier),
-                    convertInputValue = IInputFieldValueConverter.IntInputFieldValueConverter,
-                    onValueChange = {
-                        onItemUpdated(
-                            initiativeEntry.copy(
-                                spellAttackModifier = it
-                            )
-                        )
-                    },
-                    onFormSubmit = {
-                        onEditFinished(initiativeEntry)
-                        onDialogDismissed()
-                    },
-                    canSubmitForm = { initiativeEntry.isEntryValid },
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Number,
-                        imeAction = ImeAction.Done
-                    )
-                )
-            }
-        }
-    }
 }

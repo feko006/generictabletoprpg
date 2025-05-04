@@ -30,4 +30,10 @@ sealed interface IEncounterDialog {
             arrayOf(entry.name)
         )
     ) : IEncounterDialog
+
+    data class EditDialog(
+        val entry: InitiativeEntryEntity,
+        val isLairActionsButtonVisible: Boolean,
+        val title: IText
+    ) : IEncounterDialog
 }
