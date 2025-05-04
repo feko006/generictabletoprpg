@@ -27,8 +27,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Being able to create tracked groups with empty names and health and similar tracked items with no
   proper value
 - Hit dice not restoring properly on long rest (refresh) when there is only 1
-- Fixed tracked things order not being updated when deleting entries causing incorrect order in
+- Tracked things order not being updated when deleting entries causing incorrect order in
   certain scenarios
+- Crash when having two tracked spell slots of the same level and attempting to cast a spell from
+  the spell list dialog
 
 ### Changed
 

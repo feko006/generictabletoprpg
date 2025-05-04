@@ -398,17 +398,11 @@ class TrackerViewModel(
         }
     }
 
-    fun useAbility(item: Ability) {
-        reduceByOne(item)
-    }
+    fun useAbility(item: Ability) = reduceByOne(item)
 
-    fun useSpell(item: SpellSlot) {
-        reduceByOne(item)
-    }
+    fun useSpell(item: SpellSlot) = reduceByOne(item)
 
-    private suspend fun useSpellSuspending(item: TrackedThing) {
-        reduceByOneSuspending(item)
-    }
+    private suspend fun useSpellSuspending(item: TrackedThing) = reduceByOneSuspending(item)
 
     private fun reduceByOne(item: TrackedThing) {
         viewModelScope.launch {
@@ -573,6 +567,7 @@ class TrackerViewModel(
                     .filterIsInstance<SpellSlot>()
                     .filter { it.level >= level && it.amount > 0 }
                     .map { it.level }
+                    .distinct()
             require(availableSpellSlots.isNotEmpty())
             if (availableSpellSlots.size == 1) {
                 castSpellImmediate(availableSpellSlots.first())
