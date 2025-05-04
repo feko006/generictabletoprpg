@@ -174,6 +174,7 @@ class TrackerViewModel(
                 trackedThingDao.delete(trackedThing.id)
             }
             removeItem(trackedThing)
+            updateItemOrder()
         }
     }
 
@@ -466,6 +467,10 @@ class TrackerViewModel(
         val itemCount = _items.value.size
         if (from == itemCount || to == itemCount) return
 
+        updateItemOrder { add(to, removeAt(from)) }
+    }
+
+    private fun updateItemOrder(transformList: (MutableList<TrackedThing>.() -> Unit)? = null) {
         viewModelScope.launch {
             val newList =
                 _items
@@ -473,7 +478,7 @@ class TrackerViewModel(
                     .filterIsInstance<TrackedThing>()
                     .toMutableList()
                     .apply {
-                        add(to, removeAt(from))
+                        transformList?.invoke(this)
                         forEachIndexed { index, item ->
                             item.index = index
                         }
@@ -539,12 +544,11 @@ class TrackerViewModel(
         spellListBeingAddedTo = spellList
     }
 
-    fun removeSpellFromSpellListRequested(spell: SpellListEntry) {
+    fun removeSpellFromSpellListRequested(spell: SpellListEntry) =
         _dialog.update {
             if (it !is ITrackerDialog.SpellListDialog) return
             it.copy(secondaryDialog = ISpellListDialogDialogs.ConfirmSpellRemovalDialog(spell))
         }
-    }
 
     fun removeSpellFromSpellList(spellList: SpellList, spellListEntry: SpellListEntry) {
         viewModelScope.launch {
@@ -640,33 +644,23 @@ class TrackerViewModel(
         }
     }
 
-    fun setShowingPreparedSpells(value: Boolean) {
-        viewModelScope.launch { isShowingPreparedSpells.value = value }
-    }
+    fun setShowingPreparedSpells(value: Boolean) = isShowingPreparedSpells.update { value }
 
-    fun useHitDie(item: HitDice) {
-        reduceByOne(item)
-    }
+    fun useHitDie(item: HitDice) = reduceByOne(item)
 
-    fun restoreHitDie(item: HitDice) {
-        addOne(item)
-    }
+    fun restoreHitDie(item: HitDice) = addOne(item)
 
-    fun dismissDialog() {
-        _dialog.update { ITrackerDialog.None }
-    }
+    fun dismissDialog() = _dialog.update { ITrackerDialog.None }
 
-    fun dismissSpellListSecondaryDialog() {
+    fun dismissSpellListSecondaryDialog() =
         _dialog.update {
             if (it !is ITrackerDialog.SpellListDialog) return
             it.copy(secondaryDialog = ISpellListDialogDialogs.None)
         }
-    }
 
-    fun editDialogValueUpdated(trackedThing: TrackedThing) {
+    fun editDialogValueUpdated(trackedThing: TrackedThing) =
         _dialog.update {
             if (it !is ITrackerDialog.EditDialog) return
             it.copy(editedItem = trackedThing)
         }
-    }
 }
