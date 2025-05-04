@@ -1,8 +1,9 @@
 plugins {
-    id("com.android.application")
-    id("org.jetbrains.kotlin.android")
-    id("com.google.devtools.ksp")
-    id("org.jetbrains.kotlin.plugin.serialization")
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.jetbrains.kotlin.android)
+    alias(libs.plugins.jetbrains.kotlin.serialization)
+    alias(libs.plugins.google.ksp)
+    alias(libs.plugins.compose.compiler)
 }
 
 android {
@@ -11,14 +12,14 @@ android {
     }
     namespace = "com.feko.generictabletoprpg"
     compileSdk = 35
-    buildToolsVersion = "34.0.0"
+    buildToolsVersion = "35.0.0"
 
     defaultConfig {
         applicationId = "com.feko.generictabletoprpg"
         minSdk = 21
         targetSdk = 35
-        versionCode = 6
-        versionName = "1.2.1"
+        versionCode = 8
+        versionName = "1.3.0"
 
         vectorDrawables {
             useSupportLibrary = true

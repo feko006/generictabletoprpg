@@ -2,7 +2,6 @@ package com.feko.generictabletoprpg.armor
 
 import androidx.room.Dao
 import androidx.room.Query
-import com.feko.generictabletoprpg.armor.*
 import com.feko.generictabletoprpg.common.BaseDao
 import com.feko.generictabletoprpg.common.IGetAll
 import com.feko.generictabletoprpg.common.IGetById

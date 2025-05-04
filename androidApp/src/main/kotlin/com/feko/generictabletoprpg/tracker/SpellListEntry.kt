@@ -35,6 +35,23 @@ data class SpellListEntry(
                     components, castingTime, classesThatCanCast, range, isRitual, isPrepared = false
                 )
             }
+
+        val Empty = SpellListEntry(
+            0L,
+            "",
+            "",
+            "",
+            "",
+            false,
+            0,
+            "",
+            Spell.SpellComponents.Empty,
+            "",
+            emptyList(),
+            SpellRange.Empty,
+            false,
+            false
+        )
     }
 
     fun toSpell() =
@@ -44,8 +61,6 @@ data class SpellListEntry(
         )
 
 }
-
-fun List<SpellListEntry>.containsPreparedAndCantripSpells() = any { it.isPrepared || it.level == 0 }
 
 fun List<SpellListEntry>.preparedSpellsCount() = count { it.isPrepared }
 

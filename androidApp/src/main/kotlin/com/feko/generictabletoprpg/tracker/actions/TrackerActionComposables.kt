@@ -11,31 +11,29 @@ import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.painterResource
 import com.feko.generictabletoprpg.R
-import com.feko.generictabletoprpg.destinations.SearchAllScreenDestination
-import com.feko.generictabletoprpg.filters.SpellFilter
-import com.feko.generictabletoprpg.filters.index
 import com.feko.generictabletoprpg.tracker.Health
-import com.feko.generictabletoprpg.tracker.IntTrackedThing
 import com.feko.generictabletoprpg.tracker.ItemActionsBase
-import com.feko.generictabletoprpg.tracker.SpellList
+import com.feko.generictabletoprpg.tracker.Percentage
 import com.feko.generictabletoprpg.tracker.Stats
 import com.feko.generictabletoprpg.tracker.TrackedThing
-import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
 @Composable
 fun PercentageActions(
-    item: TrackedThing,
-    viewModel: IPercentageActionsTrackerViewModel
+    item: Percentage,
+    onAddButtonClicked: () -> Unit,
+    onSubtractButtonClicked: () -> Unit,
+    onEditButtonClicked: () -> Unit,
+    onDeleteButtonClicked: () -> Unit,
 ) {
-    ItemActionsBase(item, viewModel) {
+    ItemActionsBase(onEditButtonClicked, onDeleteButtonClicked) {
         IconButton(
-            onClick = { viewModel.addToPercentageRequested(item) },
+            onClick = onAddButtonClicked,
             enabled = item.canAdd()
         ) {
             Icon(Icons.Default.Add, "")
         }
         IconButton(
-            onClick = { viewModel.subtractFromPercentageRequested(item) },
+            onClick = onSubtractButtonClicked,
             enabled = item.canSubtract()
         ) {
             Icon(painterResource(R.drawable.subtract), "")
@@ -46,17 +44,20 @@ fun PercentageActions(
 @Composable
 fun NumberActions(
     item: TrackedThing,
-    viewModel: INumberActionsTrackerViewModel
+    onAddButtonClicked: () -> Unit,
+    onSubtractButtonClicked: () -> Unit,
+    onEditButtonClicked: () -> Unit,
+    onDeleteButtonClicked: () -> Unit,
 ) {
-    ItemActionsBase(item, viewModel) {
+    ItemActionsBase(onEditButtonClicked, onDeleteButtonClicked) {
         IconButton(
-            onClick = { viewModel.addToNumberRequested(item) },
+            onClick = onAddButtonClicked,
             enabled = item.canAdd()
         ) {
             Icon(Icons.Default.Add, "")
         }
         IconButton(
-            onClick = { viewModel.subtractFromNumberRequested(item) },
+            onClick = onSubtractButtonClicked,
             enabled = item.canSubtract()
         ) {
             Icon(painterResource(R.drawable.subtract), "")
@@ -66,31 +67,36 @@ fun NumberActions(
 
 @Composable
 fun HealthActions(
-    item: TrackedThing,
-    viewModel: IHealthActionsTrackerViewModel
+    health: Health,
+    onHealButtonClicked: () -> Unit,
+    onDamageButtonClicked: () -> Unit,
+    onAddTemporaryHpButtonClicked: () -> Unit,
+    onResetButtonClicked: () -> Unit,
+    onEditButtonClicked: () -> Unit,
+    onDeleteButtonClicked: () -> Unit,
 ) {
-    ItemActionsBase(item, viewModel) {
+    ItemActionsBase(onEditButtonClicked, onDeleteButtonClicked) {
         IconButton(
-            onClick = { viewModel.healRequested(item) },
-            enabled = item.canAdd()
+            onClick = onHealButtonClicked,
+            enabled = health.canAdd()
         ) {
             Icon(painterResource(R.drawable.heart_plus), "")
         }
         IconButton(
-            onClick = { viewModel.takeDamageRequested(item) },
-            enabled = item.canSubtract()
+            onClick = onDamageButtonClicked,
+            enabled = health.canSubtract()
         ) {
             Icon(painterResource(R.drawable.heart_minus), "")
         }
         IconButton(
-            onClick = { viewModel.addTemporaryHp(item) },
+            onClick = onAddTemporaryHpButtonClicked,
             enabled = true
         ) {
             Icon(painterResource(R.drawable.shield_with_heart), "")
         }
         IconButton(
-            onClick = { viewModel.resetValueToDefault(item) },
-            enabled = item.canAdd() || (item as Health).temporaryHp > 0
+            onClick = onResetButtonClicked,
+            enabled = health.canAdd() || health.temporaryHp > 0
         ) {
             Icon(Icons.Default.Refresh, "")
         }
@@ -99,19 +105,23 @@ fun HealthActions(
 
 @Composable
 fun AbilityActions(
-    item: TrackedThing,
-    viewModel: IAbilityActionsTrackerViewModel
+    canSubtract: Boolean,
+    onSubtractClicked: () -> Unit,
+    canRefresh: Boolean,
+    onRefreshClicked: () -> Unit,
+    onEditButtonClicked: () -> Unit,
+    onDeleteButtonClicked: () -> Unit,
 ) {
-    ItemActionsBase(item, viewModel) {
+    ItemActionsBase(onEditButtonClicked, onDeleteButtonClicked) {
         IconButton(
-            onClick = { viewModel.useAbility(item) },
-            enabled = item.canSubtract()
+            onClick = onSubtractClicked,
+            enabled = canSubtract
         ) {
             Icon(painterResource(R.drawable.subtract), "")
         }
         IconButton(
-            onClick = { viewModel.resetValueToDefault(item) },
-            enabled = item.canAdd()
+            onClick = onRefreshClicked,
+            enabled = canRefresh
         ) {
             Icon(Icons.Default.Refresh, "")
         }
@@ -120,19 +130,23 @@ fun AbilityActions(
 
 @Composable
 fun SpellSlotActions(
-    item: TrackedThing,
-    viewModel: ISpellSlotActionsTrackerViewModel
+    canSubtract: Boolean,
+    onSubtractClicked: () -> Unit,
+    canRefresh: Boolean,
+    onRefreshClicked: () -> Unit,
+    onEditButtonClicked: () -> Unit,
+    onDeleteButtonClicked: () -> Unit
 ) {
-    ItemActionsBase(item, viewModel) {
+    ItemActionsBase(onEditButtonClicked, onDeleteButtonClicked) {
         IconButton(
-            onClick = { viewModel.useSpell(item) },
-            enabled = item.canSubtract()
+            onClick = onSubtractClicked,
+            enabled = canSubtract
         ) {
             Icon(painterResource(R.drawable.subtract), "")
         }
         IconButton(
-            onClick = { viewModel.resetValueToDefault(item) },
-            enabled = item.canAdd()
+            onClick = onRefreshClicked,
+            enabled = canRefresh
         ) {
             Icon(Icons.Default.Refresh, "")
         }
@@ -141,36 +155,38 @@ fun SpellSlotActions(
 
 @Composable
 fun SpellListActions(
-    item: TrackedThing,
-    navigator: DestinationsNavigator,
-    viewModel: ISpellListActionsTrackerViewModel
+    isListButtonEnabled: Boolean,
+    onListButtonClicked: () -> Unit,
+    onAddButtonClicked: () -> Unit,
+    onEditButtonClicked: () -> Unit,
+    onDeleteButtonClicked: () -> Unit,
 ) {
-    ItemActionsBase(item, viewModel) {
-        val spellList = item as SpellList
+    ItemActionsBase(onEditButtonClicked, onDeleteButtonClicked) {
         IconButton(
-            onClick = { viewModel.showPreviewSpellListDialog(spellList, resetListState = true) },
-            enabled = spellList.serializedItem.any()
+            onClick = onListButtonClicked,
+            enabled = isListButtonEnabled
         ) {
             Icon(Icons.AutoMirrored.Filled.List, "")
         }
-        IconButton(
-            onClick = {
-                viewModel.addingSpellToList(spellList)
-                navigator.navigate(SearchAllScreenDestination(SpellFilter().index(), true))
-            },
-            enabled = true
-        ) {
+        IconButton(onClick = onAddButtonClicked) {
             Icon(Icons.Default.Add, "")
         }
     }
 }
 
 @Composable
-fun StatsActions(item: TrackedThing, viewModel: IStatsActionsTrackerViewModel) {
-    ItemActionsBase(item, viewModel) {
-        val stats = item as Stats
+fun StatsActions(
+    stats: Stats,
+    onPreviewButtonClicked: () -> Unit,
+    onEditButtonClicked: () -> Unit,
+    onDeleteButtonClicked: () -> Unit
+) {
+    ItemActionsBase(
+        onEditButtonClicked = onEditButtonClicked,
+        onDeleteButtonClicked = onDeleteButtonClicked
+    ) {
         IconButton(
-            onClick = { viewModel.showStatsDialog(stats) },
+            onClick = onPreviewButtonClicked,
             enabled = stats.serializedItem.stats.any()
         ) {
             Icon(Icons.AutoMirrored.Filled.List, "")
@@ -179,13 +195,15 @@ fun StatsActions(item: TrackedThing, viewModel: IStatsActionsTrackerViewModel) {
 }
 
 @Composable
-fun TextListActions(
-    item: TrackedThing,
+fun TextActions(
+    canTextBeExpanded: Boolean,
     expanded: Boolean,
-    viewModel: IBasicActionsTrackerViewModel,
-    onExpandStateChanged: (Boolean) -> Unit
+    onExpandStateChanged: (Boolean) -> Unit,
+    onEditButtonClicked: () -> Unit,
+    onDeleteButtonClicked: () -> Unit
 ) {
-    ItemActionsBase(item, viewModel) {
+    ItemActionsBase(onEditButtonClicked, onDeleteButtonClicked) {
+        if (!canTextBeExpanded) return@ItemActionsBase
         IconButton(
             onClick = {
                 onExpandStateChanged(!expanded)
@@ -203,20 +221,23 @@ fun TextListActions(
 
 @Composable
 fun HitDiceActions(
-    item: TrackedThing,
-    viewModel: IHitDiceActionsTrackerViewModel
+    canSubtract: Boolean,
+    onSubtractClicked: () -> Unit,
+    canAdd: Boolean,
+    onAddClicked: () -> Unit,
+    onEditButtonClicked: () -> Unit,
+    onDeleteButtonClicked: () -> Unit
 ) {
-    if (item !is IntTrackedThing) return
-    ItemActionsBase(item, viewModel) {
+    ItemActionsBase(onEditButtonClicked, onDeleteButtonClicked) {
         IconButton(
-            onClick = { viewModel.useHitDie(item) },
-            enabled = item.canSubtract()
+            onClick = onSubtractClicked,
+            enabled = canSubtract,
         ) {
             Icon(painterResource(R.drawable.subtract), "")
         }
         IconButton(
-            onClick = { viewModel.restoreHitDie(item) },
-            enabled = item.canAdd()
+            onClick = onAddClicked,
+            enabled = canAdd
         ) {
             Icon(Icons.Default.Add, "")
         }

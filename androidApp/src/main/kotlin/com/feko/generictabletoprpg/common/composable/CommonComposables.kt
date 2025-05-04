@@ -2,10 +2,15 @@ package com.feko.generictabletoprpg.common.composable
 
 import android.widget.Toast
 import androidx.annotation.StringRes
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.ScrollableState
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
@@ -14,6 +19,8 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DropdownMenu
@@ -36,12 +43,15 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
@@ -50,6 +60,7 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.feko.generictabletoprpg.R
 import com.feko.generictabletoprpg.action.Action
@@ -61,15 +72,6 @@ import com.feko.generictabletoprpg.disease.Disease
 import com.feko.generictabletoprpg.feat.Feat
 import com.feko.generictabletoprpg.spell.Spell
 import com.feko.generictabletoprpg.weapon.Weapon
-
-data class InputFieldData(
-    val value: String,
-    val isValid: Boolean
-) {
-    companion object {
-        val EMPTY = InputFieldData("", true)
-    }
-}
 
 @Composable
 fun SearchTextField(
@@ -159,12 +161,69 @@ fun Dropdown(
     }
 }
 
+sealed interface IInputFieldValueConverter<T : Number> : (String) -> T {
+    data object IntInputFieldValueConverter : IInputFieldValueConverter<Int> {
+        override fun invoke(inputValue: String): Int = inputValue.toIntOrNull() ?: 0
+    }
+    data object FloatInputFieldValueConverter : IInputFieldValueConverter<Float> {
+        override fun invoke(inputValue: String): Float = inputValue.toFloatOrNull() ?: 0f
+    }
+}
+
+@Composable
+fun <T : Number> NumberInputField(
+    value: T,
+    label: String,
+    convertInputValue: IInputFieldValueConverter<T>,
+    onValueChange: (T) -> Unit,
+    modifier: Modifier = Modifier,
+    onFormSubmit: () -> Unit = {},
+    canSubmitForm: (T) -> Boolean = { true },
+    isInputFieldValid: (Number) -> Boolean = { true },
+    focusRequester: FocusRequester = remember { FocusRequester() },
+    focusManager: FocusManager = LocalFocusManager.current,
+    keyboardOptions: KeyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+    focusDirection: FocusDirection = FocusDirection.Down,
+    autoFocus: Boolean = false,
+    maxLines: Int = 1,
+    suffix: @Composable (() -> Unit) = {},
+    colors: TextFieldColors = TextFieldDefaults.colors()
+) {
+    var inputValue by remember { mutableStateOf(if (value == 0) "" else value.toString()) }
+    @Suppress("KotlinConstantConditions")
+    if (value != 0 && value != convertInputValue(inputValue)) {
+        inputValue = value.toString()
+    }
+    InputField(
+        inputValue,
+        label,
+        onValueChange = {
+            inputValue = it
+            onValueChange(convertInputValue(it))
+        },
+        modifier,
+        onFormSubmit,
+        canSubmitForm = { canSubmitForm(convertInputValue(it)) },
+        isInputFieldValid = { isInputFieldValid(convertInputValue(it)) },
+        focusRequester,
+        focusManager,
+        keyboardOptions,
+        focusDirection,
+        autoFocus,
+        maxLines,
+        suffix,
+        colors
+    )
+}
+
 @Composable
 fun InputField(
     value: String,
     label: String,
     onValueChange: (String) -> Unit,
+    modifier: Modifier = Modifier,
     onFormSubmit: () -> Unit = {},
+    canSubmitForm: (String) -> Boolean = { true },
     isInputFieldValid: (String) -> Boolean = { true },
     focusRequester: FocusRequester = remember { FocusRequester() },
     focusManager: FocusManager = LocalFocusManager.current,
@@ -190,11 +249,16 @@ fun InputField(
         },
         modifier = Modifier
             .fillMaxWidth()
-            .focusRequester(focusRequester),
+            .focusRequester(focusRequester)
+            .then(modifier),
         keyboardOptions = keyboardOptions,
         keyboardActions = KeyboardActions(
             onNext = { focusManager.moveFocus(focusDirection) },
-            onDone = { onFormSubmit() }
+            onDone = {
+                if (canSubmitForm(value)) {
+                    onFormSubmit()
+                }
+            }
         ),
         colors = colors
     )
@@ -299,5 +363,67 @@ fun CheckboxWithText(
             { checked -> onCheckChanged(checked) }
         )
         Text(stringResource(textStringResource))
+    }
+}
+
+@Composable
+fun BoxWithScrollIndicator(
+    scrollableState: ScrollableState,
+    backgroundColor: Color,
+    modifier: Modifier = Modifier,
+    scrollUpArrowAlignment: Alignment = Alignment.TopCenter,
+    scrollDownArrowAlignment: Alignment = Alignment.BottomCenter,
+    fadeSize: Dp = 36.dp,
+    arrowSize: Dp = 24.dp,
+    content: @Composable (BoxScope.() -> Unit)
+) {
+    Box(modifier) {
+        content()
+        if (scrollableState.canScrollBackward) {
+            Box(
+                modifier = Modifier
+                    .align(Alignment.TopCenter)
+                    .fillMaxWidth()
+                    .height(fadeSize)
+                    .background(
+                        Brush.verticalGradient(
+                            colors = listOf(
+                                backgroundColor,
+                                Color.Transparent
+                            )
+                        )
+                    )
+            )
+            Icon(
+                Icons.Default.KeyboardArrowUp,
+                "",
+                Modifier
+                    .size(arrowSize)
+                    .align(scrollUpArrowAlignment)
+            )
+        }
+        if (scrollableState.canScrollForward) {
+            Box(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .fillMaxWidth()
+                    .height(fadeSize)
+                    .background(
+                        Brush.verticalGradient(
+                            colors = listOf(
+                                Color.Transparent,
+                                backgroundColor
+                            )
+                        )
+                    )
+            )
+            Icon(
+                Icons.Default.KeyboardArrowDown,
+                "",
+                Modifier
+                    .size(arrowSize)
+                    .align(scrollDownArrowAlignment)
+            )
+        }
     }
 }

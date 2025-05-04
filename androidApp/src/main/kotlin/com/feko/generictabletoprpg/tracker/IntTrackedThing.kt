@@ -16,6 +16,13 @@ abstract class IntTrackedThing(
         value = toValue(amount)
     }
 
+    private var _defaultValue = "0"
+    override var defaultValue: String
+        get() = _defaultValue
+        set(value) {
+            _defaultValue = normalize(value)
+        }
+
     companion object {
         @JvmStatic
         protected fun toValue(amount: Int) = amount.toString()
@@ -25,12 +32,14 @@ abstract class IntTrackedThing(
     }
 
     override fun setNewValue(value: String) {
-        this.value = value
+        this.value = normalize(value)
         amount = value.toIntOrNull() ?: -1
     }
 
+    private fun normalize(value: String) = value.toIntOrNull()?.toString() ?: "0"
+
     override fun isValueValid(): Boolean =
-        super.isValueValid() && amount >= 0 && amount <= toAmount(defaultValue)
+        super.isValueValid() && amount > 0 && amount <= toAmount(defaultValue)
 
     override fun getPrintableValue(): String = "$value / $defaultValue"
 

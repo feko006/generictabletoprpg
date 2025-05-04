@@ -6,7 +6,6 @@ import com.feko.generictabletoprpg.common.BaseDao
 import com.feko.generictabletoprpg.common.IGetAll
 import com.feko.generictabletoprpg.common.IGetById
 import com.feko.generictabletoprpg.common.IInsertAll
-import com.feko.generictabletoprpg.weapon.*
 
 @Dao
 abstract class WeaponDao

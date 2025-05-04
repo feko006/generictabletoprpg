@@ -27,9 +27,10 @@ import com.feko.generictabletoprpg.AppViewModel
 import com.feko.generictabletoprpg.R
 import com.feko.generictabletoprpg.RootDestinations
 import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.annotation.RootGraph
 import org.koin.androidx.compose.koinViewModel
 
-@Destination
+@Destination<RootGraph>
 @Composable
 fun ImportScreen(
     appViewModel: AppViewModel

@@ -39,6 +39,8 @@
     <string name="prepared">Prepared</string>
     <string name="known">Known</string>
     <string name="cantrips">Cantrips</string>
+    <string name="delete_dialog_title">Delete?</string>
+    <string name="reset_dialog_title">Reset?</string>
     <!--Action-->
     <string name="action">Action</string>
     <string name="action_details_title">Action Details</string>
@@ -71,7 +73,6 @@
     <string name="create_new_tracked_group_dialog_title">Create new group</string>
     <string name="edit_tracked_group_dialog_title">Edit group</string>
     <string name="delete_tracked_group_dialog_title">Delete group</string>
-    <string name="delete_tracked_thing_dialog_title">Delete?</string>
     <string name="refresh_all_tracked_things_dialog_title">Refresh all?</string>
     <string name="increase_percentage_dialog_title">Increase percentage</string>
     <string name="reduce_percentage_dialog_title">Reduce percentage</string>
@@ -79,7 +80,6 @@
     <string name="heal_dialog_title">Heal</string>
     <string name="add_temporary_hp_dialog_title">Add temporary HP</string>
     <string name="spell_list">Spell List</string>
-    <string name="add_spell_to_list">Add spell</string>
     <string name="spell_already_in_list">The spell is already in the list</string>
     <string name="spell_successfully_added_to_list">Spell successfully added to list!</string>
     <string name="confirm_spell_removal_from_list_dialog_title">Remove spell?</string>
@@ -155,4 +155,15 @@
     <string name="skills">Skills</string>
     <string name="initiative_additional_bonus">Initiative Additional Bonus</string>
     <string name="saving_throws">Saving Throws</string>
+    <string name="armor_class">Armor Class (AC)</string>
+    <string name="legendary_actions">Legendary Actions</string>
+    <string name="spell_attack_modifier">Spell Attack Modifier</string>
+    <string name="add_lair_actions">Add Lair Actions</string>
+    <string name="lair_action">Lair Action</string>
+    <string name="legendary_action_used">Used legendary action from %s</string>
+    <string name="select_legendary_action">Select Legendary Action</string>
+    <string name="round">Round</string>
+    <string name="reset_encounter_message">This will delete all non-favorite entries</string>
+    <string name="remove_from_encounter_after_taking_lethal_damage_dialog_message_template">%s has taken lethal damage bringing its HP to 0. Do you want to remove it?</string>
+    <string name="encounters">Encounters</string>
 </resources>

@@ -1,6 +1,5 @@
 package com.feko.generictabletoprpg
 
-import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
@@ -36,24 +35,20 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.feko.generictabletoprpg.theme.GenerictabletoprpgTheme
 import com.ramcosta.composedestinations.DestinationsNavHost
+import com.ramcosta.composedestinations.generated.NavGraphs
 import com.ramcosta.composedestinations.navigation.dependency
-import com.ramcosta.composedestinations.navigation.navigate
+import com.ramcosta.composedestinations.utils.navGraph
+import com.ramcosta.composedestinations.utils.toDestinationsNavigator
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
 class MainActivity : ComponentActivity() {
-    companion object {
-        lateinit var appContext: Context
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        appContext = applicationContext
         enableEdgeToEdge()
 
         setContent {
@@ -166,13 +161,14 @@ fun NavigationDrawer(
                             scope.launch {
                                 drawerState.close()
                             }
-                            navController.navigate(rootDestination.direction) {
-                                popUpTo(navController.graph.findStartDestination().id) {
-                                    saveState = true
+                            navController.toDestinationsNavigator()
+                                .navigate(rootDestination.direction) {
+                                    popUpTo(navController.navGraph.defaultStartDirection) {
+                                        saveState = true
+                                    }
+                                    launchSingleTop = true
+                                    restoreState = true
                                 }
-                                launchSingleTop = true
-                                restoreState = true
-                            }
                         })
                 }
             }

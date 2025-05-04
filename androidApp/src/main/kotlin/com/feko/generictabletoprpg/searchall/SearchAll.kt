@@ -19,14 +19,6 @@ import com.feko.generictabletoprpg.common.IIdentifiable
 import com.feko.generictabletoprpg.common.composable.OverviewListItem
 import com.feko.generictabletoprpg.common.composable.OverviewScreen
 import com.feko.generictabletoprpg.condition.Condition
-import com.feko.generictabletoprpg.destinations.ActionDetailsScreenDestination
-import com.feko.generictabletoprpg.destinations.AmmunitionDetailsScreenDestination
-import com.feko.generictabletoprpg.destinations.ArmorDetailsScreenDestination
-import com.feko.generictabletoprpg.destinations.ConditionDetailsScreenDestination
-import com.feko.generictabletoprpg.destinations.DiseaseDetailsScreenDestination
-import com.feko.generictabletoprpg.destinations.FeatDetailsScreenDestination
-import com.feko.generictabletoprpg.destinations.SpellDetailsScreenDestination
-import com.feko.generictabletoprpg.destinations.WeaponDetailsScreenDestination
 import com.feko.generictabletoprpg.disease.Disease
 import com.feko.generictabletoprpg.feat.Feat
 import com.feko.generictabletoprpg.filters.Filter
@@ -34,13 +26,22 @@ import com.feko.generictabletoprpg.filters.asFilter
 import com.feko.generictabletoprpg.spell.Spell
 import com.feko.generictabletoprpg.weapon.Weapon
 import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.annotation.RootGraph
+import com.ramcosta.composedestinations.generated.destinations.ActionDetailsScreenDestination
+import com.ramcosta.composedestinations.generated.destinations.AmmunitionDetailsScreenDestination
+import com.ramcosta.composedestinations.generated.destinations.ArmorDetailsScreenDestination
+import com.ramcosta.composedestinations.generated.destinations.ConditionDetailsScreenDestination
+import com.ramcosta.composedestinations.generated.destinations.DiseaseDetailsScreenDestination
+import com.ramcosta.composedestinations.generated.destinations.FeatDetailsScreenDestination
+import com.ramcosta.composedestinations.generated.destinations.SpellDetailsScreenDestination
+import com.ramcosta.composedestinations.generated.destinations.WeaponDetailsScreenDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.result.ResultBackNavigator
 import com.ramcosta.composedestinations.spec.Direction
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 
-@Destination
+@Destination<RootGraph>
 @Composable
 fun SearchAllScreen(
     defaultFilter: Int? = null,

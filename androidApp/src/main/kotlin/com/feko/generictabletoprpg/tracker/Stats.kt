@@ -38,6 +38,9 @@ class Stats(
 
     override fun getPrintableValue(): String = throw IllegalStateException()
 
+    companion object {
+        val Empty = Stats(0L, "", "", 0, 0L)
+    }
 }
 
 fun createDefault5EStatEntries(context: Context): List<StatEntry> {

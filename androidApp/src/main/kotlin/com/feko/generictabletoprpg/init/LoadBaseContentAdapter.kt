@@ -5,11 +5,7 @@ import android.content.res.Resources
 import com.feko.generictabletoprpg.R
 
 class LoadBaseContentAdapter(context: Context) : ILoadBaseContent {
-    private var resources: Resources
-
-    init {
-        resources = context.resources
-    }
+    private var resources: Resources = context.resources
 
     override fun loadOrcbrewBaseContent(): String =
         resources

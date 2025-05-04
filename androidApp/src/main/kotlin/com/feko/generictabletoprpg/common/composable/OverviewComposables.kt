@@ -59,8 +59,6 @@ fun <TViewModel, T> OverviewScreen(
     listItem: @Composable (T, Boolean, ReorderableLazyListState?) -> Unit,
     uniqueListItemKey: (Any) -> Any = { (it as IIdentifiable).id },
     fabButton: @Composable ((Modifier) -> Unit)? = null,
-    isAlertDialogVisible: Boolean = false,
-    alertDialogComposable: @Composable () -> Unit = {},
     isReorderable: Boolean = false,
     onItemReordered: (ItemPosition, ItemPosition) -> Unit = { _, _ -> },
     @StringRes
@@ -124,6 +122,13 @@ fun <TViewModel, T> OverviewScreen(
                     fabButtonSpacer(fabButton != null)
                 }
             }
+            val scrollToEndOfList by viewModel.scrollToEndOfList.collectAsState(false)
+            if (scrollToEndOfList) {
+                LaunchedEffect(key1 = searchString) {
+                    listState.scrollToItem(listItems.size)
+                    viewModel.consumeScrollToEndOfListEvent()
+                }
+            }
             LaunchedEffect(key1 = searchString) {
                 listState.scrollToItem(0)
             }
@@ -136,8 +141,7 @@ fun <TViewModel, T> OverviewScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(16.dp)
-        )
-        {
+        ) {
             fabButton(Modifier.align(Alignment.BottomEnd))
         }
     }
@@ -160,9 +164,6 @@ fun <TViewModel, T> OverviewScreen(
             Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.systemBars))
         }
     }
-    if (isAlertDialogVisible) {
-        alertDialogComposable()
-    }
 }
 
 fun LazyListScope.fabButtonSpacer(isFabButtonVisible: Boolean) {
@@ -174,7 +175,7 @@ fun LazyListScope.fabButtonSpacer(isFabButtonVisible: Boolean) {
 }
 
 @Composable
-private fun EmptyList() {
+fun EmptyList() {
     Box(Modifier.fillMaxSize()) {
         Column(
             Modifier

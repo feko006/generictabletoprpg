@@ -32,7 +32,7 @@ sealed class TrackedThing(
         FiveEStats(R.string.five_e_stats)
     }
 
-    var defaultValue: String = ""
+    open var defaultValue: String = ""
 
     companion object {
         fun emptyOfType(type: Type, index: Int, groupId: Long): TrackedThing =
@@ -50,6 +50,17 @@ sealed class TrackedThing(
                 Type.HitDice -> HitDice(0, "", 0, index, groupId)
                 Type.FiveEStats -> Stats(0, "", "[]", index, groupId)
             }
+
+        @DoNotObfuscate
+        object Empty : TrackedThing(name = "", type = Type.None) {
+            override fun setNewValue(value: String) {}
+            override fun getPrintableValue(): String = ""
+            override fun add(delta: String) {}
+            override fun subtract(delta: String) {}
+            override fun copy(): TrackedThing = this
+            override fun canAdd(): Boolean = false
+            override fun canSubtract(): Boolean = false
+        }
     }
 
     abstract fun setNewValue(value: String)
