@@ -6,6 +6,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import com.feko.generictabletoprpg.common.composable.ConfirmationDialog
 import com.feko.generictabletoprpg.common.composable.EnterValueDialog
 
 
@@ -26,6 +27,9 @@ private fun EncounterAlertDialog(dialog: IEncounterDialog, viewModel: EncounterV
 
         is IEncounterDialog.DamageDialog ->
             DamageDialog(dialog, viewModel::damage, viewModel::dismissDialog)
+
+        is IEncounterDialog.RemoveAfterTakingDamageDialog ->
+            RemoveAfterTakingDamageDialog(dialog, viewModel::deleteEntry, viewModel::dismissDialog)
 
         IEncounterDialog.None -> Unit
     }
@@ -80,5 +84,19 @@ private fun DamageDialog(
             keyboardType = KeyboardType.Number,
             imeAction = ImeAction.Done
         )
+    )
+}
+
+@Composable
+private fun RemoveAfterTakingDamageDialog(
+    dialog: IEncounterDialog.RemoveAfterTakingDamageDialog,
+    onConfirm: (InitiativeEntryEntity) -> Unit,
+    onDismiss: () -> Unit
+) {
+    ConfirmationDialog(
+        onConfirm = { onConfirm(dialog.entry) },
+        onDialogDismiss = onDismiss,
+        dialogTitle = dialog.title.text(),
+        dialogMessage = dialog.message.text()
     )
 }

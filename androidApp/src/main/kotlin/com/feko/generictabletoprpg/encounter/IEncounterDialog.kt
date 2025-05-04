@@ -21,4 +21,13 @@ sealed interface IEncounterDialog {
         val entry: InitiativeEntryEntity,
         val title: IText = IText.StringResourceText(R.string.take_damage_dialog_title)
     ) : IEncounterDialog
+
+    data class RemoveAfterTakingDamageDialog(
+        val entry: InitiativeEntryEntity,
+        val title: IText = IText.StringResourceText(R.string.delete_dialog_title),
+        val message: IText = IText.StringResourceText(
+            R.string.remove_from_encounter_after_taking_lethal_damage_dialog_message_template,
+            arrayOf(entry.name)
+        )
+    ) : IEncounterDialog
 }

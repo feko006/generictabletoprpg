@@ -49,11 +49,6 @@ class EncounterViewModel(private val dao: InitiativeEntryDao) : ViewModel() {
     val pickLegendaryActionDialog: IStatefulAlertDialogSubViewModel<List<InitiativeEntryEntity>>
         get() = _pickLegendaryActionDialog
 
-    private val _removeAfterTakingDamageDialog =
-        StatefulAlertDialogSubViewModel(InitiativeEntryEntity.Empty, viewModelScope)
-    val removeAfterTakingDamageDialog: IStatefulAlertDialogSubViewModel<InitiativeEntryEntity>
-        get() = _removeAfterTakingDamageDialog
-
     val encounterState: Flow<EncounterState> =
         entries.map { entry ->
             if (entry.isEmpty()) return@map EncounterState.Empty

@@ -136,7 +136,6 @@ fun EncounterScreen(appViewModel: AppViewModel) {
     }
     EncounterAlertDialog(viewModel)
 
-    RemoveAfterTakingDamageDialog(viewModel)
     EditDialog(viewModel, entries)
     ConfirmDeletionDialog(viewModel)
     ConfirmResetDialog(viewModel)
@@ -185,26 +184,6 @@ private fun ActionButtons(viewModel: EncounterViewModel) {
             }
         }
     }
-}
-
-@Composable
-private fun RemoveAfterTakingDamageDialog(viewModel: EncounterViewModel) {
-    val isRemoveAfterTakingDamageDialogVisible
-            by viewModel.removeAfterTakingDamageDialog.isVisible.collectAsState(false)
-    if (!isRemoveAfterTakingDamageDialogVisible) return
-
-    val initiativeEntry
-            by viewModel.removeAfterTakingDamageDialog.state
-                .collectAsState(InitiativeEntryEntity.Empty)
-    ConfirmationDialog(
-        onConfirm = { viewModel.deleteEntry(initiativeEntry) },
-        onDialogDismiss = { viewModel.removeAfterTakingDamageDialog.dismiss() },
-        dialogTitle = stringResource(R.string.delete_dialog_title),
-        dialogMessage = stringResource(
-            R.string.remove_from_encounter_after_taking_lethal_damage_dialog_message_template,
-            initiativeEntry.name
-        )
-    )
 }
 
 @Composable

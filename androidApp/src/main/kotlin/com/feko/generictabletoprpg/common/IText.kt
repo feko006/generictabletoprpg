@@ -8,9 +8,13 @@ sealed interface IText {
     @Composable
     fun text(): String
 
-    data class StringResourceText(@StringRes private val stringResource: Int) : IText {
+    data class StringResourceText(
+        @StringRes private val stringResource: Int,
+        @Suppress("ArrayInDataClass")
+        private val formatArgs: Array<String> = emptyArray()
+    ) : IText {
         @Composable
-        override fun text(): String = stringResource(stringResource)
+        override fun text(): String = stringResource(stringResource, formatArgs)
     }
 
     data class StringText(private val string: String) : IText {
