@@ -15,7 +15,7 @@ class HitDice(
 
     override fun resetValueToDefault() {
         val maximumValue = defaultValue.toInt()
-        val toAdd = (maximumValue / 2f).toInt()
+        val toAdd = (maximumValue / 2f).toInt().coerceAtLeast(1)
         val newValue = (amount + toAdd).coerceAtMost(maximumValue)
         setNewValue(newValue.toString())
     }

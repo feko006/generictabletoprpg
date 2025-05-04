@@ -26,6 +26,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Editing a text trackable displaying a numeric instead of a text keyboard
 - Being able to create tracked groups with empty names and health and similar tracked items with no
   proper value
+- Hit dice not restoring properly on long rest (refresh) when there is only 1
 
 ### Changed
 
