@@ -7,6 +7,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ListItem
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -27,6 +28,7 @@ import com.feko.generictabletoprpg.common.composable.EnterValueDialog
 import com.feko.generictabletoprpg.common.composable.IInputFieldValueConverter
 import com.feko.generictabletoprpg.common.composable.InputField
 import com.feko.generictabletoprpg.common.composable.NumberInputField
+import com.feko.generictabletoprpg.common.composable.SelectFromListDialog
 
 
 @Composable
@@ -66,6 +68,13 @@ private fun EncounterAlertDialog(dialog: IEncounterDialog, viewModel: EncounterV
 
         is IEncounterDialog.ConfirmResetDialog ->
             ConfirmResetDialog(dialog, viewModel::resetInitiative, viewModel::dismissDialog)
+
+        is IEncounterDialog.PickLegendaryActionDialog ->
+            PickLegendaryActionDialog(
+                dialog,
+                viewModel::useLegendaryActionAndProgressInitiative,
+                viewModel::dismissDialog
+            )
 
         IEncounterDialog.None -> Unit
     }
@@ -311,4 +320,24 @@ private fun ConfirmResetDialog(
         dialogTitle = dialog.title.text(),
         dialogMessage = dialog.message.text()
     )
+}
+
+@Composable
+private fun PickLegendaryActionDialog(
+    dialog: IEncounterDialog.PickLegendaryActionDialog,
+    onItemSelect: (InitiativeEntryEntity) -> Unit,
+    onDismiss: () -> Unit
+) {
+    SelectFromListDialog(
+        dialog.title.text(),
+        dialog.entriesWithLegendaryActions,
+        getListItemKey = { it.id },
+        onItemSelect = onItemSelect,
+        onDialogDismiss = onDismiss
+    ) {
+        ListItem(
+            headlineContent = { Text(it.name) },
+            trailingContent = { Text(it.printableLegendaryActions) }
+        )
+    }
 }

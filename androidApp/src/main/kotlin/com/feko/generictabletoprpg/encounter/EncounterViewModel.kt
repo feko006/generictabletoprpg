@@ -4,8 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.feko.generictabletoprpg.R
 import com.feko.generictabletoprpg.com.feko.generictabletoprpg.common.IText
-import com.feko.generictabletoprpg.common.alertdialog.IStatefulAlertDialogSubViewModel
-import com.feko.generictabletoprpg.common.alertdialog.StatefulAlertDialogSubViewModel
 import com.feko.generictabletoprpg.common.toast.IToastSubViewModel
 import com.feko.generictabletoprpg.common.toast.ToastSubViewModel
 import kotlinx.coroutines.flow.Flow
@@ -32,11 +30,6 @@ class EncounterViewModel(private val dao: InitiativeEntryDao) : ViewModel() {
     private val _toastMessage = ToastSubViewModel(viewModelScope)
     val toastMessage: IToastSubViewModel
         get() = _toastMessage
-
-    private val _pickLegendaryActionDialog =
-        StatefulAlertDialogSubViewModel(emptyList<InitiativeEntryEntity>(), viewModelScope)
-    val pickLegendaryActionDialog: IStatefulAlertDialogSubViewModel<List<InitiativeEntryEntity>>
-        get() = _pickLegendaryActionDialog
 
     val encounterState: Flow<EncounterState> =
         entries.map { entry ->
@@ -195,7 +188,9 @@ class EncounterViewModel(private val dao: InitiativeEntryDao) : ViewModel() {
                 entries.filter { it.canUseLegendaryAction }
             val numberOfEntriesWithLegendaryActions = entriesWithLegendaryActions.size
             if (numberOfEntriesWithLegendaryActions > 1) {
-                _pickLegendaryActionDialog.show(entriesWithLegendaryActions)
+                _dialog.update {
+                    IEncounterDialog.PickLegendaryActionDialog(entriesWithLegendaryActions)
+                }
             } else if (numberOfEntriesWithLegendaryActions == 1) {
                 useLegendaryActionAndProgressInitiative(entriesWithLegendaryActions.first())
             }

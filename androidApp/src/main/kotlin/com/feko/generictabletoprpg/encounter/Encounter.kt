@@ -35,7 +35,6 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconToggleButton
-import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TooltipDefaults
@@ -54,7 +53,6 @@ import androidx.compose.ui.unit.dp
 import com.feko.generictabletoprpg.AppViewModel
 import com.feko.generictabletoprpg.R
 import com.feko.generictabletoprpg.common.composable.EmptyList
-import com.feko.generictabletoprpg.common.composable.SelectFromListDialog
 import com.feko.generictabletoprpg.common.composable.ToastMessage
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
@@ -118,8 +116,6 @@ fun EncounterScreen(appViewModel: AppViewModel) {
         ActionButtons(viewModel)
     }
     EncounterAlertDialog(viewModel)
-
-    PickLegendaryActionDialog(viewModel)
     ToastMessage(viewModel.toastMessage)
 }
 
@@ -163,28 +159,6 @@ private fun ActionButtons(viewModel: EncounterViewModel) {
                 }
             }
         }
-    }
-}
-
-@Composable
-private fun PickLegendaryActionDialog(viewModel: EncounterViewModel) {
-    val isPickLegendaryActionDialogVisible
-            by viewModel.pickLegendaryActionDialog.isVisible.collectAsState(false)
-    if (!isPickLegendaryActionDialogVisible) return
-
-    val entriesWithLegendaryActions
-            by viewModel.pickLegendaryActionDialog.state.collectAsState()
-    SelectFromListDialog(
-        stringResource(R.string.select_legendary_action),
-        entriesWithLegendaryActions,
-        getListItemKey = { it.id },
-        onItemSelected = { viewModel.useLegendaryActionAndProgressInitiative(it) },
-        onDialogDismissed = { viewModel.pickLegendaryActionDialog.dismiss() }
-    ) {
-        ListItem(
-            headlineContent = { Text(it.name) },
-            trailingContent = { Text(it.printableLegendaryActions) }
-        )
     }
 }
 

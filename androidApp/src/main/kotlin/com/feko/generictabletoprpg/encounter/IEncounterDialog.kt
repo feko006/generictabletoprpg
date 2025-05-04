@@ -51,4 +51,10 @@ sealed interface IEncounterDialog {
         val title: IText = IText.StringResourceText(R.string.reset_dialog_title)
         val message: IText = IText.StringResourceText(R.string.reset_encounter_message)
     }
+
+    data class PickLegendaryActionDialog(
+        val entriesWithLegendaryActions: List<InitiativeEntryEntity>
+    ) : IEncounterDialog {
+        val title: IText = IText.StringResourceText(R.string.select_legendary_action)
+    }
 }

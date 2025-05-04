@@ -176,15 +176,15 @@ fun <T> SelectFromListDialog(
     dialogTitle: String,
     listItems: List<T>,
     getListItemKey: ((item: T) -> Any)?,
-    onItemSelected: (T) -> Unit,
-    onDialogDismissed: () -> Unit,
+    onItemSelect: (T) -> Unit,
+    onDialogDismiss: () -> Unit,
     listItem: @Composable (T) -> Unit
 ) {
     AlertDialogBase(
-        onDialogDismissed,
+        onDialogDismiss,
         dialogTitle = { DialogTitle(dialogTitle) },
         dialogButtons = {
-            TextButton(onClick = onDialogDismissed) {
+            TextButton(onClick = onDialogDismiss) {
                 Text(stringResource(R.string.cancel))
             }
         }) {
@@ -194,8 +194,8 @@ fun <T> SelectFromListDialog(
         ) {
             items(listItems, getListItemKey) {
                 Box(Modifier.clickable {
-                    onItemSelected(it)
-                    onDialogDismissed()
+                    onItemSelect(it)
+                    onDialogDismiss()
                 }) {
                     listItem(it)
                 }
