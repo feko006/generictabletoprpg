@@ -6,25 +6,8 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
-import com.feko.generictabletoprpg.R
-import com.feko.generictabletoprpg.com.feko.generictabletoprpg.common.IText
 import com.feko.generictabletoprpg.common.composable.EnterValueDialog
 
-
-sealed interface IEncounterDialog {
-
-    data object None : IEncounterDialog
-
-    data class InitiativeDialog(
-        val entry: InitiativeEntryEntity,
-        val title: IText = IText.StringResourceText(R.string.initiative)
-    ) : IEncounterDialog
-
-    data class HealDialog(
-        val entry: InitiativeEntryEntity,
-        val title: IText = IText.StringResourceText(R.string.heal_dialog_title)
-    ) : IEncounterDialog
-}
 
 @Composable
 fun EncounterAlertDialog(viewModel: EncounterViewModel) {
@@ -40,6 +23,9 @@ private fun EncounterAlertDialog(dialog: IEncounterDialog, viewModel: EncounterV
 
         is IEncounterDialog.HealDialog ->
             HealDialog(dialog, viewModel::heal, viewModel::dismissDialog)
+
+        is IEncounterDialog.DamageDialog ->
+            DamageDialog(dialog, viewModel::damage, viewModel::dismissDialog)
 
         IEncounterDialog.None -> Unit
     }
@@ -80,3 +66,19 @@ private fun HealDialog(
     )
 }
 
+@Composable
+private fun DamageDialog(
+    dialog: IEncounterDialog.DamageDialog,
+    onConfirm: (InitiativeEntryEntity, Int) -> Unit,
+    onDismiss: () -> Unit
+) {
+    EnterValueDialog(
+        onConfirm = { onConfirm(dialog.entry, it.toIntOrNull() ?: 0) },
+        onDialogDismissed = onDismiss,
+        dialogTitle = dialog.title.text(),
+        keyboardOptions = KeyboardOptions(
+            keyboardType = KeyboardType.Number,
+            imeAction = ImeAction.Done
+        )
+    )
+}

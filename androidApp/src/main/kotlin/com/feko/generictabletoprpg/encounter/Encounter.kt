@@ -68,7 +68,6 @@ import com.feko.generictabletoprpg.common.composable.BoxWithScrollIndicator
 import com.feko.generictabletoprpg.common.composable.ConfirmationDialog
 import com.feko.generictabletoprpg.common.composable.DialogTitle
 import com.feko.generictabletoprpg.common.composable.EmptyList
-import com.feko.generictabletoprpg.common.composable.EnterValueDialog
 import com.feko.generictabletoprpg.common.composable.IInputFieldValueConverter
 import com.feko.generictabletoprpg.common.composable.InputField
 import com.feko.generictabletoprpg.common.composable.NumberInputField
@@ -137,7 +136,6 @@ fun EncounterScreen(appViewModel: AppViewModel) {
     }
     EncounterAlertDialog(viewModel)
 
-    DamageDialog(viewModel)
     RemoveAfterTakingDamageDialog(viewModel)
     EditDialog(viewModel, entries)
     ConfirmDeletionDialog(viewModel)
@@ -187,28 +185,6 @@ private fun ActionButtons(viewModel: EncounterViewModel) {
             }
         }
     }
-}
-
-
-@Composable
-private fun DamageDialog(viewModel: EncounterViewModel) {
-    val isDamageDialogVisible by viewModel.damageDialog.isVisible.collectAsState(false)
-    if (!isDamageDialogVisible) return
-
-    EnterValueDialog(
-        onConfirm = {
-            viewModel.damage(
-                viewModel.damageDialog.state.value,
-                it.toIntOrNull() ?: 0
-            )
-        },
-        onDialogDismissed = { viewModel.damageDialog.dismiss() },
-        dialogTitle = R.string.take_damage_dialog_title,
-        keyboardOptions = KeyboardOptions(
-            keyboardType = KeyboardType.Number,
-            imeAction = ImeAction.Done
-        )
-    )
 }
 
 @Composable
