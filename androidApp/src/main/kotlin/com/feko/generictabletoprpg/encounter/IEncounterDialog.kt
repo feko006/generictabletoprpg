@@ -36,4 +36,9 @@ sealed interface IEncounterDialog {
         val isLairActionsButtonVisible: Boolean,
         val title: IText
     ) : IEncounterDialog
+
+    data class ConfirmDeletionDialog(
+        val entry: InitiativeEntryEntity,
+        val title: IText = IText.StringResourceText(R.string.delete_dialog_title)
+    ) : IEncounterDialog
 }

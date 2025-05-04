@@ -120,7 +120,6 @@ fun EncounterScreen(appViewModel: AppViewModel) {
     }
     EncounterAlertDialog(viewModel)
 
-    ConfirmDeletionDialog(viewModel)
     ConfirmResetDialog(viewModel)
     PickLegendaryActionDialog(viewModel)
     ToastMessage(viewModel.toastMessage)
@@ -167,19 +166,6 @@ private fun ActionButtons(viewModel: EncounterViewModel) {
             }
         }
     }
-}
-
-@Composable
-private fun ConfirmDeletionDialog(viewModel: EncounterViewModel) {
-    val isConfirmDeletionDialogVisible
-            by viewModel.confirmDeletionDialog.isVisible.collectAsState(false)
-    if (!isConfirmDeletionDialogVisible) return
-
-    ConfirmationDialog(
-        onConfirm = { viewModel.deleteEntry(viewModel.confirmDeletionDialog.state.value) },
-        onDialogDismiss = { viewModel.confirmDeletionDialog.dismiss() },
-        stringResource(R.string.delete_dialog_title)
-    )
 }
 
 @Composable

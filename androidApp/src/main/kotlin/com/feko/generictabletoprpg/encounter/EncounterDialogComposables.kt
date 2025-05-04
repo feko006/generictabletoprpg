@@ -50,7 +50,7 @@ private fun EncounterAlertDialog(dialog: IEncounterDialog, viewModel: EncounterV
         is IEncounterDialog.RemoveAfterTakingDamageDialog ->
             RemoveAfterTakingDamageDialog(dialog, viewModel::deleteEntry, viewModel::dismissDialog)
 
-        is IEncounterDialog.EditDialog -> {
+        is IEncounterDialog.EditDialog ->
             EditDialog(
                 dialog.title.text(),
                 dialog.entry,
@@ -60,7 +60,9 @@ private fun EncounterAlertDialog(dialog: IEncounterDialog, viewModel: EncounterV
                 onAddLairActions = viewModel::addLairActions,
                 onDismiss = viewModel::dismissDialog
             )
-        }
+
+        is IEncounterDialog.ConfirmDeletionDialog ->
+            ConfirmDeletionDialog(dialog, viewModel::deleteEntry, viewModel::dismissDialog)
 
         IEncounterDialog.None -> Unit
     }
@@ -279,4 +281,17 @@ fun EditDialog(
             }
         }
     }
+}
+
+@Composable
+private fun ConfirmDeletionDialog(
+    dialog: IEncounterDialog.ConfirmDeletionDialog,
+    onConfirm: (InitiativeEntryEntity) -> Unit,
+    onDismiss: () -> Unit
+) {
+    ConfirmationDialog(
+        onConfirm = { onConfirm(dialog.entry) },
+        onDialogDismiss = onDismiss,
+        stringResource(R.string.delete_dialog_title)
+    )
 }

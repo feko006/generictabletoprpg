@@ -27,11 +27,6 @@ class EncounterViewModel(private val dao: InitiativeEntryDao) : ViewModel() {
 
     private var areLairActionsAdded = false
 
-    private val _confirmDeletionDialog =
-        StatefulAlertDialogSubViewModel(InitiativeEntryEntity.Empty, viewModelScope)
-    val confirmDeletionDialog: IStatefulAlertDialogSubViewModel<InitiativeEntryEntity> =
-        _confirmDeletionDialog
-
     private val _confirmResetDialog = AlertDialogSubViewModel(viewModelScope)
     val confirmResetDialog: IAlertDialogSubViewModel = _confirmResetDialog
 
@@ -131,11 +126,8 @@ class EncounterViewModel(private val dao: InitiativeEntryDao) : ViewModel() {
             )
         }
 
-    fun showDeleteDialog(initiativeEntry: InitiativeEntryEntity) {
-        viewModelScope.launch {
-            _confirmDeletionDialog.show(initiativeEntry)
-        }
-    }
+    fun showDeleteDialog(initiativeEntry: InitiativeEntryEntity) =
+        _dialog.update { IEncounterDialog.ConfirmDeletionDialog(initiativeEntry) }
 
     fun showResetDialog() {
         viewModelScope.launch {
