@@ -43,7 +43,7 @@ open class OverviewViewModel<T : Any>(
         }
     }
 
-    protected val _scrollToEndOfList = MutableStateFlow<Boolean>(false)
+    private val _scrollToEndOfList = MutableStateFlow(false)
     val scrollToEndOfList: Flow<Boolean>
         get() = _scrollToEndOfList
 

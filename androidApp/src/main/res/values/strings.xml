@@ -80,7 +80,6 @@
     <string name="heal_dialog_title">Heal</string>
     <string name="add_temporary_hp_dialog_title">Add temporary HP</string>
     <string name="spell_list">Spell List</string>
-    <string name="add_spell_to_list">Add spell</string>
     <string name="spell_already_in_list">The spell is already in the list</string>
     <string name="spell_successfully_added_to_list">Spell successfully added to list!</string>
     <string name="confirm_spell_removal_from_list_dialog_title">Remove spell?</string>

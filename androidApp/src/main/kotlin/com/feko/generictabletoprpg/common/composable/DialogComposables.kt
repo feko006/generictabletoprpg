@@ -1,6 +1,5 @@
 package com.feko.generictabletoprpg.common.composable
 
-import androidx.annotation.StringRes
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -94,34 +93,6 @@ fun ConfirmationDialog(
 }
 
 @Composable
-@Deprecated("Use variant with String dialogTitle.")
-fun EnterValueDialog(
-    onConfirm: (String) -> Unit,
-    onDialogDismissed: () -> Unit,
-    @StringRes
-    dialogTitle: Int,
-    inputFieldLabel: String = stringResource(R.string.amount),
-    isInputFieldValid: (String) -> Boolean = { it.isNotEmpty() },
-    canSubmitForm: (String) -> Boolean = isInputFieldValid,
-    keyboardOptions: KeyboardOptions = KeyboardOptions(
-        keyboardType = KeyboardType.Text,
-        imeAction = ImeAction.Done
-    ),
-    suffix: @Composable () -> Unit = {}
-) {
-    EnterValueDialog(
-        onConfirm,
-        onDialogDismissed,
-        stringResource(dialogTitle),
-        inputFieldLabel,
-        isInputFieldValid,
-        canSubmitForm,
-        keyboardOptions,
-        suffix
-    )
-}
-
-@Composable
 fun EnterValueDialog(
     onConfirm: (String) -> Unit,
     onDialogDismissed: () -> Unit,
@@ -207,9 +178,4 @@ fun <T> SelectFromListDialog(
 @Composable
 fun DialogTitle(dialogTitle: String) {
     Text(dialogTitle, style = Typography.titleLarge)
-}
-
-@Composable
-fun DialogTitle(@StringRes dialogTitleResource: Int) {
-    DialogTitle(stringResource(dialogTitleResource))
 }

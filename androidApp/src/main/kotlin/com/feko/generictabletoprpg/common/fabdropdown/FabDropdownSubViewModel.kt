@@ -10,9 +10,9 @@ class FabDropdownSubViewModel(
 ) : IFabDropdownSubViewModel {
     override val isMenuExpanded: Flow<Boolean>
         get() = _isMenuExpanded
-    val _isMenuExpanded: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    private val _isMenuExpanded: MutableStateFlow<Boolean> = MutableStateFlow(false)
 
-    suspend fun toggleFabDropdown() {
+    private suspend fun toggleFabDropdown() {
         _isMenuExpanded.emit(!_isMenuExpanded.value)
     }
 
