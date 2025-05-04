@@ -135,9 +135,8 @@ fun EncounterScreen(appViewModel: AppViewModel) {
         }
         ActionButtons(viewModel)
     }
-    EncounterAlertDialog(viewModel, entries)
+    EncounterAlertDialog(viewModel)
 
-    HealDialog(viewModel)
     DamageDialog(viewModel)
     RemoveAfterTakingDamageDialog(viewModel)
     EditDialog(viewModel, entries)
@@ -190,27 +189,6 @@ private fun ActionButtons(viewModel: EncounterViewModel) {
     }
 }
 
-
-@Composable
-private fun HealDialog(viewModel: EncounterViewModel) {
-    val isHealthDialogVisible by viewModel.healDialog.isVisible.collectAsState(false)
-    if (!isHealthDialogVisible) return
-
-    EnterValueDialog(
-        onConfirm = {
-            viewModel.heal(
-                viewModel.healDialog.state.value,
-                it.toIntOrNull() ?: 0
-            )
-        },
-        onDialogDismissed = { viewModel.healDialog.dismiss() },
-        dialogTitle = R.string.heal_dialog_title,
-        keyboardOptions = KeyboardOptions(
-            keyboardType = KeyboardType.Number,
-            imeAction = ImeAction.Done
-        )
-    )
-}
 
 @Composable
 private fun DamageDialog(viewModel: EncounterViewModel) {

@@ -19,13 +19,15 @@ sealed interface IEncounterDialog {
         val entry: InitiativeEntryEntity,
         val title: IText = IText.StringResourceText(R.string.initiative)
     ) : IEncounterDialog
+
+    data class HealDialog(
+        val entry: InitiativeEntryEntity,
+        val title: IText = IText.StringResourceText(R.string.heal_dialog_title)
+    ) : IEncounterDialog
 }
 
 @Composable
-fun EncounterAlertDialog(
-    viewModel: EncounterViewModel,
-    entries: List<InitiativeEntryEntity>
-) {
+fun EncounterAlertDialog(viewModel: EncounterViewModel) {
     val dialog by viewModel.dialog.collectAsState(IEncounterDialog.None)
     EncounterAlertDialog(dialog, viewModel)
 }
@@ -35,6 +37,9 @@ private fun EncounterAlertDialog(dialog: IEncounterDialog, viewModel: EncounterV
     when (dialog) {
         is IEncounterDialog.InitiativeDialog ->
             InitiativeDialog(dialog, viewModel::updateInitiative, viewModel::dismissDialog)
+
+        is IEncounterDialog.HealDialog ->
+            HealDialog(dialog, viewModel::heal, viewModel::dismissDialog)
 
         IEncounterDialog.None -> Unit
     }
@@ -57,3 +62,21 @@ private fun InitiativeDialog(
         )
     )
 }
+
+@Composable
+private fun HealDialog(
+    dialog: IEncounterDialog.HealDialog,
+    onConfirm: (InitiativeEntryEntity, Int) -> Unit,
+    onDismiss: () -> Unit
+) {
+    EnterValueDialog(
+        onConfirm = { onConfirm(dialog.entry, it.toIntOrNull() ?: 0) },
+        onDialogDismissed = onDismiss,
+        dialogTitle = dialog.title.text(),
+        keyboardOptions = KeyboardOptions(
+            keyboardType = KeyboardType.Number,
+            imeAction = ImeAction.Done
+        )
+    )
+}
+

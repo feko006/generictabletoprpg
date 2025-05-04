@@ -49,11 +49,6 @@ class EncounterViewModel(private val dao: InitiativeEntryDao) : ViewModel() {
     val pickLegendaryActionDialog: IStatefulAlertDialogSubViewModel<List<InitiativeEntryEntity>>
         get() = _pickLegendaryActionDialog
 
-    private val _healDialog =
-        StatefulAlertDialogSubViewModel(InitiativeEntryEntity.Empty, viewModelScope)
-    val healDialog: IStatefulAlertDialogSubViewModel<InitiativeEntryEntity>
-        get() = _healDialog
-
     private val _damageDialog =
         StatefulAlertDialogSubViewModel(InitiativeEntryEntity.Empty, viewModelScope)
     val damageDialog: IStatefulAlertDialogSubViewModel<InitiativeEntryEntity>
@@ -114,11 +109,8 @@ class EncounterViewModel(private val dao: InitiativeEntryDao) : ViewModel() {
     fun showInitiativeDialog(initiativeEntry: InitiativeEntryEntity) =
         _dialog.update { IEncounterDialog.InitiativeDialog(initiativeEntry) }
 
-    fun showHealDialog(initiativeEntry: InitiativeEntryEntity) {
-        viewModelScope.launch {
-            _healDialog.show(initiativeEntry)
-        }
-    }
+    fun showHealDialog(initiativeEntry: InitiativeEntryEntity) =
+        _dialog.update { IEncounterDialog.HealDialog(initiativeEntry) }
 
     fun showDamageDialog(initiativeEntry: InitiativeEntryEntity) {
         viewModelScope.launch {
