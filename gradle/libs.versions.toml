@@ -5,7 +5,8 @@ androidx-test-runner = "1.6.2"
 androidx-test-rules = "1.6.1"
 androidx-test-ext-junit = "1.2.1"
 compose-destinations = "2.1.0"
-compose-material3 = "1.4.0-alpha16"
+material3 = "1.4.0-alpha16"
+material3-adaptive = "1.2.0-alpha07"
 material-icons = "1.7.8"
 compose-reorderable = "0.9.6"
 compose-ui = "1.8.2"
@@ -26,8 +27,6 @@ document-file = "1.1.0"
 
 [libraries]
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activity-compose" }
-androidx-compose-material3 = { group = "androidx.compose.material3", name = "material3", version.ref = "compose-material3" }
-androidx-compose-material-icons-extended = { group = "androidx.compose.material", name = "material-icons-extended", version.ref = "material-icons" }
 androidx-compose-ui = { group = "androidx.compose.ui", name = "ui", version.ref = "compose-ui" }
 androidx-compose-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest", version.ref = "compose-ui" }
 androidx-compose-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling", version.ref = "compose-ui" }
@@ -36,12 +35,15 @@ androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = 
 androidx-document-file = { group = "androidx.documentfile", name = "documentfile", version.ref = "document-file" }
 androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycle" }
 androidx-lifecycle-viewmodel-compose = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-compose", version.ref = "lifecycle-viewmodel-compose" }
+androidx-material-icons-extended = { group = "androidx.compose.material", name = "material-icons-extended", version.ref = "material-icons" }
+androidx-material3 = { group = "androidx.compose.material3", name = "material3", version.ref = "material3" }
+androidx-material3-adaptive = { group = "androidx.compose.material3.adaptive", name = "adaptive", version.ref = "material3-adaptive" }
 androidx-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
 androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
 androidx-room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
-androidx-test-runner = { group = "androidx.test", name = "runner", version.ref = "androidx-test-runner" }
-androidx-test-rules = { group = "androidx.test", name = "rules", version.ref = "androidx-test-rules" }
 androidx-test-ext-junit = { group = "androidx.test.ext", name = "junit-ktx", version.ref = "androidx-test-ext-junit" }
+androidx-test-rules = { group = "androidx.test", name = "rules", version.ref = "androidx-test-rules" }
+androidx-test-runner = { group = "androidx.test", name = "runner", version.ref = "androidx-test-runner" }
 bpsm-edn-java = { group = "us.bpsm", name = "edn-java", version.ref = "edn-java" }
 burnoutcrew-composereorderable = { group = "org.burnoutcrew.composereorderable", name = "reorderable", version.ref = "compose-reorderable" }
 insert-koin = { group = "io.insert-koin", name = "koin-androidx-compose", version.ref = "koin" }
@@ -52,8 +54,8 @@ junit = { module = "junit:junit", version.ref = "junit" }
 raamcosta-compose-destinations-core = { group = "io.github.raamcosta.compose-destinations", name = "core", version.ref = "compose-destinations" }
 raamcosta-compose-destinations-ksp = { group = "io.github.raamcosta.compose-destinations", name = "ksp", version.ref = "compose-destinations" }
 squareup-moshi = { group = "com.squareup.moshi", name = "moshi", version.ref = "moshi" }
-squareup-moshi-kotlin = { group = "com.squareup.moshi", name = "moshi-kotlin", version.ref = "moshi" }
 squareup-moshi-adapters = { group = "com.squareup.moshi", name = "moshi-adapters", version.ref = "moshi" }
+squareup-moshi-kotlin = { group = "com.squareup.moshi", name = "moshi-kotlin", version.ref = "moshi" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

@@ -69,14 +69,15 @@ android {
 
 dependencies {
     implementation(libs.androidx.activity.compose)
-    implementation(libs.androidx.compose.material3)
-    implementation(libs.androidx.compose.material.icons.extended)
     implementation(libs.androidx.compose.ui)
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.document.file)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
+    implementation(libs.androidx.material.icons.extended)
+    implementation(libs.androidx.material3)
+    implementation(libs.androidx.material3.adaptive)
     implementation(libs.androidx.room.ktx)
     implementation(libs.androidx.room.runtime)
     implementation(libs.bpsm.edn.java)
@@ -86,8 +87,8 @@ dependencies {
     implementation(libs.jetbrains.kotlinx.serialization.json)
     implementation(libs.raamcosta.compose.destinations.core)
     implementation(libs.squareup.moshi)
-    implementation(libs.squareup.moshi.kotlin)
     implementation(libs.squareup.moshi.adapters)
+    implementation(libs.squareup.moshi.kotlin)
 
     androidTestImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.runner)
