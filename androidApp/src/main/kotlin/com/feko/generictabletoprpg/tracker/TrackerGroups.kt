@@ -32,7 +32,7 @@ import com.feko.generictabletoprpg.AppViewModel
 import com.feko.generictabletoprpg.ButtonState
 import com.feko.generictabletoprpg.R
 import com.feko.generictabletoprpg.RootDestinations
-import com.feko.generictabletoprpg.com.feko.generictabletoprpg.common.IText
+import com.feko.generictabletoprpg.common.IText
 import com.feko.generictabletoprpg.common.INamed
 import com.feko.generictabletoprpg.common.composable.AddFABButton
 import com.feko.generictabletoprpg.common.composable.AlertDialogBase

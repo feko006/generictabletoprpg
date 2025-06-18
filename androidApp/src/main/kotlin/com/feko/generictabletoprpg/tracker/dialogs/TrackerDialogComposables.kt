@@ -33,7 +33,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.feko.generictabletoprpg.R
 import com.feko.generictabletoprpg.asSignedString
-import com.feko.generictabletoprpg.com.feko.generictabletoprpg.tracker.dialogs.SpellListDialogWithViewModel
+import com.feko.generictabletoprpg.tracker.dialogs.SpellListDialogWithViewModel
 import com.feko.generictabletoprpg.common.composable.AlertDialogBase
 import com.feko.generictabletoprpg.common.composable.BoxWithScrollIndicator
 import com.feko.generictabletoprpg.common.composable.CheckboxWithText

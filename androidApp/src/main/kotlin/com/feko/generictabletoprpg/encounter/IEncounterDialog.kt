@@ -1,7 +1,7 @@
 package com.feko.generictabletoprpg.encounter
 
 import com.feko.generictabletoprpg.R
-import com.feko.generictabletoprpg.com.feko.generictabletoprpg.common.IText
+import com.feko.generictabletoprpg.common.IText
 
 sealed interface IEncounterDialog {
 

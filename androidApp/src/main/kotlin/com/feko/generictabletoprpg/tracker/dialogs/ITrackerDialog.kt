@@ -2,8 +2,8 @@ package com.feko.generictabletoprpg.tracker.dialogs
 
 import androidx.compose.runtime.Immutable
 import com.feko.generictabletoprpg.R
-import com.feko.generictabletoprpg.com.feko.generictabletoprpg.common.IText
-import com.feko.generictabletoprpg.com.feko.generictabletoprpg.tracker.dialogs.ISpellListDialogDialogs
+import com.feko.generictabletoprpg.common.IText
+import com.feko.generictabletoprpg.tracker.dialogs.ISpellListDialogDialogs
 import com.feko.generictabletoprpg.tracker.Health
 import com.feko.generictabletoprpg.tracker.Number
 import com.feko.generictabletoprpg.tracker.Percentage

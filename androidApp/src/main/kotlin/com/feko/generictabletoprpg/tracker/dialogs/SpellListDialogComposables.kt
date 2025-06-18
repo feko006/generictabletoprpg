@@ -1,4 +1,4 @@
-package com.feko.generictabletoprpg.com.feko.generictabletoprpg.tracker.dialogs
+package com.feko.generictabletoprpg.tracker.dialogs
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -40,7 +40,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.feko.generictabletoprpg.R
-import com.feko.generictabletoprpg.com.feko.generictabletoprpg.common.IText
+import com.feko.generictabletoprpg.common.IText
 import com.feko.generictabletoprpg.common.composable.AlertDialogBase
 import com.feko.generictabletoprpg.common.composable.BoxWithScrollIndicator
 import com.feko.generictabletoprpg.common.composable.ConfirmationDialog

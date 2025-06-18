@@ -2,7 +2,7 @@ package com.feko.generictabletoprpg.tracker
 
 import androidx.lifecycle.viewModelScope
 import com.feko.generictabletoprpg.R
-import com.feko.generictabletoprpg.com.feko.generictabletoprpg.common.IText
+import com.feko.generictabletoprpg.common.IText
 import com.feko.generictabletoprpg.common.OverviewViewModel
 import com.feko.generictabletoprpg.export.IExportSubViewModel
 import kotlinx.coroutines.Dispatchers

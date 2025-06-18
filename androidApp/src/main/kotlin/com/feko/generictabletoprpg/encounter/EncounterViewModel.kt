@@ -3,7 +3,7 @@ package com.feko.generictabletoprpg.encounter
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.feko.generictabletoprpg.R
-import com.feko.generictabletoprpg.com.feko.generictabletoprpg.common.IText
+import com.feko.generictabletoprpg.common.IText
 import com.feko.generictabletoprpg.common.toast.IToastSubViewModel
 import com.feko.generictabletoprpg.common.toast.ToastSubViewModel
 import kotlinx.coroutines.flow.Flow
