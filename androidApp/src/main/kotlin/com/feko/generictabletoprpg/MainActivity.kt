@@ -33,7 +33,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.feko.generictabletoprpg.theme.GenerictabletoprpgTheme
-import com.feko.generictabletoprpg.ui.components.LoadingIndicator
+import com.feko.generictabletoprpg.ui.components.FillingLoadingIndicator
 import com.ramcosta.composedestinations.DestinationsNavHost
 import com.ramcosta.composedestinations.generated.NavGraphs
 import com.ramcosta.composedestinations.navigation.dependency
@@ -64,7 +64,7 @@ class MainActivity : ComponentActivity() {
         val appState by appViewModel.appState.collectAsState()
 
         when (appState) {
-            is AppViewModel.AppState.ImportingBaseContent -> LoadingIndicator()
+            is AppViewModel.AppState.ImportingBaseContent -> FillingLoadingIndicator()
 
 
             is AppViewModel.AppState.ShowingScreen -> {
