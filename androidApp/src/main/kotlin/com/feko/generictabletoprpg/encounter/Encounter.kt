@@ -309,7 +309,7 @@ fun IconAndTextWithTooltip(@DrawableRes iconResource: Int, value: String, toolti
     val state = rememberBasicTooltipState(isPersistent = false)
     val coroutineScope = rememberCoroutineScope()
     BasicTooltipBox(
-        TooltipDefaults.rememberPlainTooltipPositionProvider(),
+        TooltipDefaults.rememberTooltipPositionProvider(),
         tooltip = {
             ElevatedCard {
                 Text(tooltipText, Modifier.padding(horizontal = 8.dp, vertical = 4.dp))
