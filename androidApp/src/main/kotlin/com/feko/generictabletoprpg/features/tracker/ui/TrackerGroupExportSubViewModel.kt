@@ -1,0 +1,83 @@
+package com.feko.generictabletoprpg.features.tracker.ui
+
+import com.feko.generictabletoprpg.features.io.domain.model.AppModel
+import com.feko.generictabletoprpg.common.data.local.IGetAllDao
+import com.feko.generictabletoprpg.common.data.local.IGetAllByParentSortedByIndexDao
+import com.feko.generictabletoprpg.common.ui.viewmodel.ExportState
+import com.feko.generictabletoprpg.common.ui.viewmodel.ExportSubViewModel
+import com.feko.generictabletoprpg.common.domain.IJson
+import com.feko.generictabletoprpg.features.tracker.domain.model.TrackedThing
+import com.feko.generictabletoprpg.features.tracker.domain.model.TrackedThingGroup
+import java.io.OutputStream
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
+
+class TrackerGroupExportSubViewModel(
+    private val getAllTrackedThingGroups: IGetAllDao<TrackedThingGroup>,
+    private val getAllTrackedThings: IGetAllByParentSortedByIndexDao<TrackedThing>,
+    private val json: IJson
+) : ExportSubViewModel<TrackedThingGroup>() {
+
+    override fun getExportedFileData(): Pair<String, String> {
+        val dereferencedState = exportState
+        val mimeType = "text/json"
+        return when (dereferencedState) {
+            is ExportState.ExportingAll -> {
+                val date =
+                    SimpleDateFormat("yyyy-MM-dd-HH-mm-ss", Locale.getDefault())
+                        .format(Date())
+                Pair(mimeType, "tracked-groups-$date.json")
+            }
+
+            is ExportState.ExportingSingle -> {
+                val trackedGroupFileName = dereferencedState.item.name.replace(" ", "-")
+                Pair(
+                    mimeType,
+                    "tracked-group-$trackedGroupFileName.json"
+                )
+            }
+
+            else ->
+                throw IllegalStateException("File data requested without previously specifying whether to export all or a single item.")
+        }
+
+    }
+
+    @Suppress("MoveVariableDeclarationIntoWhen")
+    override suspend fun exportDataInternal(outputStream: OutputStream) {
+        val dereferencedState = exportState
+        val json = when (dereferencedState) {
+            is ExportState.ExportingAll -> {
+                val allTrackedThingGroups = getAllTrackedThingGroups.getAllSortedByName()
+                allTrackedThingGroups.forEach {
+                    it.trackedThings = getAllTrackedThings.getAllSortedByIndex(it.id)
+                }
+                json.to(
+                    AppModel(trackedGroups = allTrackedThingGroups),
+                    AppModel::class.java
+                )
+            }
+
+            is ExportState.ExportingSingle -> {
+                val trackedThingGroup =
+                    dereferencedState.item
+                        .apply {
+                            trackedThings = getAllTrackedThings.getAllSortedByIndex(id)
+                        }
+                json.to(
+                    AppModel(trackedGroups = listOf(trackedThingGroup)),
+                    AppModel::class.java
+                )
+            }
+
+            else ->
+                throw IllegalStateException("File data requested without previously specifying whether to export all or a single item.")
+        }
+        outputStream
+            .bufferedWriter()
+            .use {
+                it.write(json)
+            }
+    }
+}

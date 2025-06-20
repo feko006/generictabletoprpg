@@ -1,0 +1,11 @@
+package com.feko.generictabletoprpg.features.action
+
+import com.feko.generictabletoprpg.features.action.ui.ActionDetailsViewModel
+import com.feko.generictabletoprpg.common.data.local.GenericTabletopRpgDatabase
+import org.koin.core.module.dsl.viewModel
+import org.koin.dsl.module
+
+val actionModule = module {
+    single { get<GenericTabletopRpgDatabase>().actionDao() }
+    viewModel { ActionDetailsViewModel(get<ActionDao>()) }
+}

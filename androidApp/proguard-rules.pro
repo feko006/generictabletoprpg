@@ -20,4 +20,4 @@
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
 
--keep @com.feko.generictabletoprpg.common.DoNotObfuscate public class * { *; }
+-keep @com.feko.generictabletoprpg.common.domain.model.DoNotObfuscate public class * { *; }

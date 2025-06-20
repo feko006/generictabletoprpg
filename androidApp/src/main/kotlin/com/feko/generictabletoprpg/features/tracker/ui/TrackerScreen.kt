@@ -1,0 +1,129 @@
+package com.feko.generictabletoprpg.features.tracker.ui
+
+import com.feko.generictabletoprpg.features.tracker.domain.model.NumberTrackedThing
+import androidx.compose.foundation.clickable
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import com.feko.generictabletoprpg.common.ui.viewmodel.AppViewModel
+import com.feko.generictabletoprpg.common.ui.viewmodel.ButtonState
+import com.feko.generictabletoprpg.R
+import com.feko.generictabletoprpg.common.ui.components.AddFABButtonWithDropdown
+import com.feko.generictabletoprpg.common.ui.components.OverviewListItem
+import com.feko.generictabletoprpg.common.ui.components.OverviewScreen
+import com.feko.generictabletoprpg.common.ui.components.ToastMessage
+import com.feko.generictabletoprpg.features.searchall.ui.getNavRouteInternal
+import com.feko.generictabletoprpg.features.searchall.ui.getUniqueListItemKey
+import com.feko.generictabletoprpg.features.tracker.domain.model.AbilityTrackedThing
+import com.feko.generictabletoprpg.features.tracker.domain.model.GenericTrackedThing
+import com.feko.generictabletoprpg.features.tracker.domain.model.HealthTrackedThing
+import com.feko.generictabletoprpg.features.tracker.domain.model.HitDiceTrackedThing
+import com.feko.generictabletoprpg.features.tracker.domain.model.JsonTrackedThing
+import com.feko.generictabletoprpg.features.tracker.domain.model.PercentageTrackedThing
+import com.feko.generictabletoprpg.features.tracker.domain.model.SpellListTrackedThing
+import com.feko.generictabletoprpg.features.tracker.domain.model.SpellSlotTrackedThing
+import com.feko.generictabletoprpg.features.tracker.domain.model.StatsTrackedThing
+import com.feko.generictabletoprpg.features.tracker.domain.model.TextTrackedThing
+import com.feko.generictabletoprpg.features.tracker.domain.model.TrackedThing
+import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.annotation.RootGraph
+import com.ramcosta.composedestinations.generated.destinations.SearchAllScreenDestination
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import com.ramcosta.composedestinations.result.NavResult
+import com.ramcosta.composedestinations.result.ResultRecipient
+import org.burnoutcrew.reorderable.ReorderableLazyListState
+import org.koin.androidx.compose.koinViewModel
+import org.koin.core.parameter.parameterSetOf
+
+@Destination<RootGraph>
+@Composable
+fun TrackerScreen(
+    groupId: Long,
+    groupName: String,
+    appViewModel: AppViewModel,
+    navigator: DestinationsNavigator,
+    resultRecipient: ResultRecipient<SearchAllScreenDestination, Long>
+) {
+    val viewModel: TrackerViewModel =
+        koinViewModel(parameters = { parameterSetOf(groupId, groupName) })
+    appViewModel
+        .set(
+            appBarTitle = stringResource(R.string.tracker_title),
+            navBarActions = listOf(
+                ButtonState(Icons.Default.Refresh) { viewModel.refreshAllRequested() }
+            )
+        )
+    resultRecipient.onNavResult { result ->
+        if (result is NavResult.Value<Long>) {
+            viewModel.addSpellToList(result.value)
+        }
+    }
+    ToastMessage(viewModel.toast)
+    OverviewScreen(
+        viewModel = viewModel,
+        listItem = { item, isDragged, state ->
+            TrackerListItem(item, isDragged, state!!, navigator, viewModel)
+        },
+        uniqueListItemKey = {
+            getUniqueListItemKey(it)
+        },
+        fabButton = { modifier ->
+            val expanded by viewModel.fabDropdown.isMenuExpanded.collectAsState(false)
+            AddFABButtonWithDropdown(
+                expanded = expanded,
+                modifier = modifier,
+                onDismissRequest = { viewModel.fabDropdown.dismiss() },
+                onFabClicked = { viewModel.fabDropdown.toggleFabDropdownRequested() }
+            ) { DropdownMenuContent { type, context -> viewModel.showCreateDialog(type, context) } }
+        },
+        isReorderable = true,
+        onItemReordered = { from, to ->
+            viewModel.itemReordered(from.index, to.index)
+        },
+        searchFieldHintResource = R.string.search_everywhere
+    )
+    TrackerAlertDialog(viewModel, navigator)
+}
+
+@Composable
+fun TrackerListItem(
+    item: Any,
+    isDragged: Boolean,
+    reorderableLazyListState: ReorderableLazyListState,
+    navigator: DestinationsNavigator,
+    viewModel: TrackerViewModel
+) {
+    if (item is TrackedThing) {
+        when (item) {
+            is AbilityTrackedThing -> AbilityListItem(isDragged, item, reorderableLazyListState, viewModel)
+
+            is HealthTrackedThing -> HealthListItem(isDragged, item, reorderableLazyListState, viewModel)
+
+            is HitDiceTrackedThing -> HitDiceListItem(isDragged, item, reorderableLazyListState, viewModel)
+
+            is NumberTrackedThing -> NumberListItem(isDragged, item, reorderableLazyListState, viewModel)
+
+            is PercentageTrackedThing ->
+                PercentageListItem(isDragged, item, reorderableLazyListState, viewModel)
+
+            is SpellListTrackedThing ->
+                SpellListItem(isDragged, item, reorderableLazyListState, navigator, viewModel)
+
+            is SpellSlotTrackedThing -> SpellSlotListItem(isDragged, item, reorderableLazyListState, viewModel)
+
+            is StatsTrackedThing -> StatsListItem(isDragged, item, reorderableLazyListState, viewModel)
+
+            is TextTrackedThing -> TextListItem(isDragged, item, reorderableLazyListState, viewModel)
+
+            TrackedThing.Companion.Empty,
+            is GenericTrackedThing<*>,
+            is JsonTrackedThing<*> -> Unit
+        }
+    } else {
+        OverviewListItem(item, Modifier.clickable { navigator.navigate(getNavRouteInternal(item)) })
+    }
+}

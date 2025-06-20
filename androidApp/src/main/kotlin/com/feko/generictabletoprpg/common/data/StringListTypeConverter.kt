@@ -1,0 +1,17 @@
+package com.feko.generictabletoprpg.common.data
+
+import androidx.room.TypeConverter
+
+object StringListTypeConverter {
+    @TypeConverter
+    fun fromStringList(stringList: List<String>): String =
+        stringList.joinToString()
+
+    @TypeConverter
+    fun toStringList(string: String): List<String> =
+        if (string.isEmpty()) {
+            listOf()
+        } else {
+            string.split(", ")
+        }
+}

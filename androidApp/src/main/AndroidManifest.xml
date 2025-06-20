@@ -14,7 +14,7 @@
         android:theme="@style/Theme.Generictabletoprpg"
         tools:targetApi="31">
         <activity
-            android:name=".MainActivity"
+            android:name=".common.ui.MainActivity"
             android:exported="true"
             android:theme="@style/Theme.Generictabletoprpg"
             android:windowSoftInputMode="adjustResize">
