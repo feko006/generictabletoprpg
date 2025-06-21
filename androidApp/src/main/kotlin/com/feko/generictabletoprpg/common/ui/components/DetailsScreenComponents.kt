@@ -1,48 +1,44 @@
 package com.feko.generictabletoprpg.common.ui.components
 
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
+import com.feko.generictabletoprpg.common.domain.model.IText
+import com.feko.generictabletoprpg.common.ui.theme.LocalDimens
 import com.feko.generictabletoprpg.common.ui.viewmodel.DetailsViewModel
 
 @Composable
 fun <TViewModel, T> DetailsScreen(
     id: Long,
     viewModel: TViewModel,
-    screenContent: @Composable (T, Dp) -> Unit
+    title: IText,
+    onNavigationIconClick: () -> Unit,
+    screenContent: @Composable ColumnScope.(T) -> Unit
 ) where TViewModel : DetailsViewModel<T> {
     val screenState by viewModel.screenState.collectAsState(
         DetailsViewModel.DetailsScreenState.Loading
     )
     viewModel.itemIdChanged(id)
     when (screenState) {
-        is DetailsViewModel.DetailsScreenState.Loading -> {
-            Box(Modifier.fillMaxSize()) {
-                CircularProgressIndicator(
-                    Modifier
-                        .size(100.dp)
-                        .align(Alignment.Center)
-                )
-            }
-        }
+        is DetailsViewModel.DetailsScreenState.Loading -> FillingLoadingIndicator()
 
         is DetailsViewModel.DetailsScreenState.ItemReady<*> -> {
             @Suppress("UNCHECKED_CAST")
             val readiedItem =
                 screenState as DetailsViewModel.DetailsScreenState.ItemReady<T>
-            DetailsScreen(readiedItem.item, screenContent)
+            Scaffold(
+                topBar = { GttrpgTopAppBar(title, onNavigationIconClick) }
+            ) { paddingValues ->
+                DetailsScreen(readiedItem.item, Modifier.padding(paddingValues), screenContent)
+            }
         }
     }
 }
@@ -50,14 +46,19 @@ fun <TViewModel, T> DetailsScreen(
 @Composable
 fun <T> DetailsScreen(
     item: T,
-    screenContent: @Composable (T, Dp) -> Unit
+    modifier: Modifier,
+    screenContent: @Composable ColumnScope.(T) -> Unit
 ) {
-    val padding = 8.dp
-    Column(
-        Modifier
-            .padding(padding)
-            .verticalScroll(rememberScrollState())
-    ) {
-        screenContent(item, padding)
+    Column(Modifier.verticalScroll(rememberScrollState())) {
+        Column(
+            modifier.then(
+                LocalDimens.current.paddingMedium.let {
+                    Modifier.padding(start = it, end = it, bottom = it)
+                }
+            ),
+            Arrangement.spacedBy(LocalDimens.current.paddingSmall)
+        ) {
+            screenContent(item)
+        }
     }
 }

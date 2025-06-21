@@ -16,7 +16,7 @@ import com.feko.generictabletoprpg.common.ui.theme.LocalDimens
 fun FillingLoadingIndicator() {
     Box(Modifier.fillMaxSize(), Alignment.Center) {
         LoadingIndicator(
-            Modifier.size(LocalDimens.current.iconLarge),
+            Modifier.size(LocalDimens.current.visualLarge),
             polygons = listOf(
                 MaterialShapes.Square,
                 MaterialShapes.Triangle,

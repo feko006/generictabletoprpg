@@ -4,12 +4,16 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 data class Dimens(
-    val iconLarge: Dp
+    val paddingSmall: Dp,
+    val paddingMedium: Dp,
+    val visualLarge: Dp
 )
 
 fun scaledDimens(factor: Float): Dimens =
     Dimens(
-        iconLarge = (100 * factor).dp
+        paddingSmall = (8 * factor).dp,
+        paddingMedium = (16 * factor).dp,
+        visualLarge = (100 * factor).dp
     )
 
 val compactDimens = scaledDimens(1f)

@@ -4,20 +4,25 @@ import android.content.Context
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.documentfile.provider.DocumentFile
-import com.feko.generictabletoprpg.common.ui.viewmodel.AppViewModel
-import com.feko.generictabletoprpg.common.ui.viewmodel.ButtonState
 import com.feko.generictabletoprpg.R
+import com.feko.generictabletoprpg.common.domain.model.IText.StringResourceText.Companion.asText
 import com.feko.generictabletoprpg.common.ui.RootDestinations
 import com.feko.generictabletoprpg.common.ui.components.AddFABButton
+import com.feko.generictabletoprpg.common.ui.components.GttrpgTopAppBar
 import com.feko.generictabletoprpg.common.ui.components.OverviewScreen
 import com.feko.generictabletoprpg.common.ui.components.ToastMessage
+import com.feko.generictabletoprpg.common.ui.viewmodel.AppViewModel
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
@@ -30,57 +35,52 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun TrackerGroupsScreen(
     navigator: DestinationsNavigator,
-    appViewModel: AppViewModel
+    appViewModel: AppViewModel,
+    onNavigationIconClick: () -> Unit
 ) {
     val viewModel: TrackerGroupViewModel = koinViewModel()
     val context = LocalContext.current
-    ToastMessage(viewModel.export.toast)
     val pickDirectoryLauncher =
         rememberLauncherForActivityResult(
             ActivityResultContracts.OpenDocumentTree()
         ) launch@{ directoryUri ->
             onDirectorySelected(directoryUri, viewModel, context)
         }
-    val exportButtonVisible by viewModel.exportButtonVisible.collectAsState(false)
-    val navBarActions = mutableListOf<ButtonState>()
-    if (exportButtonVisible) {
-        navBarActions.add(
-            ButtonState(
-                painter = painterResource(R.drawable.send_to_mobile)
-            ) {
-                viewModel.export.exportAllRequested()
-                pickDirectoryLauncher.launch(null)
-            }
-        )
-    }
-    appViewModel.run {
-        set(
-            appBarTitle = stringResource(R.string.tracker_title),
-            navBarActions = navBarActions
-        )
-        updateActiveDrawerItem(RootDestinations.Tracker)
-    }
+    appViewModel.updateActiveDrawerItem(RootDestinations.Tracker)
     val refreshables by appViewModel.refreshesPending.collectAsState()
     if (refreshables.contains(RootDestinations.Tracker)) {
         viewModel.refreshItems()
         appViewModel.itemsRefreshed(RootDestinations.Tracker)
     }
-    OverviewScreen(
-        viewModel = viewModel,
-        listItem = { item, _, _ ->
-            TrackerGroupListItem(
-                item = item,
-                navigator = navigator,
-                viewModel = viewModel,
-                pickDirectoryLauncher
-            )
-        },
-        fabButton = { modifier ->
-            AddFABButton(modifier) {
-                viewModel.newTrackedThingGroupRequested()
+    Scaffold(
+        topBar = {
+            GttrpgTopAppBar(R.string.tracker_title.asText(), onNavigationIconClick) {
+                val exportButtonVisible by viewModel.exportButtonVisible.collectAsState(false)
+                if (exportButtonVisible) {
+                    IconButton(onClick = {
+                        viewModel.export.exportAllRequested()
+                        pickDirectoryLauncher.launch(null)
+                    }) { Icon(painterResource(R.drawable.send_to_mobile), "") }
+                }
             }
-        }
-    )
+        },
+        floatingActionButton = { AddFABButton { viewModel.newTrackedThingGroupRequested() } }
+    ) { paddingValues ->
+        OverviewScreen(
+            viewModel = viewModel,
+            listItem = { item, _, _ ->
+                TrackerGroupListItem(
+                    item = item,
+                    navigator = navigator,
+                    viewModel = viewModel,
+                    pickDirectoryLauncher
+                )
+            },
+            Modifier.padding(paddingValues),
+            addFabButtonSpacerToList = true
+        )
+    }
+    ToastMessage(viewModel.export.toast)
     val dialog by viewModel.dialog.collectAsState(ITrackerGroupDialog.None)
     TrackerGroupsAlertDialog(dialog, viewModel)
 }

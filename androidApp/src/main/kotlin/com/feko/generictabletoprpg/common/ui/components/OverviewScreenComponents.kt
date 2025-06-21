@@ -41,9 +41,9 @@ import androidx.compose.ui.unit.dp
 import com.feko.generictabletoprpg.R
 import com.feko.generictabletoprpg.common.domain.model.IIdentifiable
 import com.feko.generictabletoprpg.common.domain.model.INamed
+import com.feko.generictabletoprpg.common.ui.theme.Typography
 import com.feko.generictabletoprpg.common.ui.viewmodel.OverviewViewModel
 import com.feko.generictabletoprpg.features.spell.Spell
-import com.feko.generictabletoprpg.common.ui.theme.Typography
 import kotlinx.coroutines.launch
 import org.burnoutcrew.reorderable.ItemPosition
 import org.burnoutcrew.reorderable.ReorderableItem
@@ -54,13 +54,13 @@ import org.burnoutcrew.reorderable.reorderable
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
+// TODO: Rename after repurposing to SearchableList
 fun <TViewModel, T> OverviewScreen(
     viewModel: TViewModel,
     listItem: @Composable (T, Boolean, ReorderableLazyListState?) -> Unit,
+    modifier: Modifier = Modifier,
+    addFabButtonSpacerToList: Boolean = false,
     uniqueListItemKey: (Any) -> Any = { (it as IIdentifiable).id },
-    fabButton: @Composable ((Modifier) -> Unit)? = null,
-    isReorderable: Boolean = false,
-    onItemReordered: (ItemPosition, ItemPosition) -> Unit = { _, _ -> },
     @StringRes
     searchFieldHintResource: Int = R.string.search,
     isBottomSheetVisible: Boolean = false,
@@ -68,59 +68,29 @@ fun <TViewModel, T> OverviewScreen(
     bottomSheetContent: @Composable () -> Unit = {}
 ) where TViewModel : OverviewViewModel<T>,
         T : Any {
-    val listItems by viewModel.items.collectAsState(listOf())
-    val searchString by viewModel.searchString.collectAsState("")
-    Column(
-        modifier = Modifier.padding(8.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        SearchTextField(
-            searchString, {
-                viewModel.searchStringUpdated(it)
-            },
-            searchFieldHintResource
-        )
+    OverviewScreenLayout(
+        viewModel,
+        modifier,
+        searchFieldHintResource,
+        isBottomSheetVisible,
+        onBottomSheetHidden,
+        bottomSheetContent
+    ) { searchString ->
+        val listItems by viewModel.items.collectAsState(emptyList())
         if (listItems.isNotEmpty()) {
-            val listState: LazyListState
-            if (isReorderable) {
-                val state = rememberReorderableLazyListState(onMove = onItemReordered)
-                listState = state.listState
-                LazyColumn(
-                    Modifier
-                        .fillMaxSize()
-                        .reorderable(state)
-                        .detectReorderAfterLongPress(state),
-                    state = state.listState,
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    items(
-                        listItems,
-                        key = uniqueListItemKey
-                    ) { item ->
-                        ReorderableItem(
-                            reorderableState = state,
-                            key = uniqueListItemKey(item)
-                        ) { isDragging ->
-                            listItem(item, isDragging, state)
-                        }
-                    }
-                    fabButtonSpacer(fabButton != null)
+            val listState: LazyListState = rememberLazyListState()
+            LazyColumn(
+                Modifier.fillMaxSize(),
+                listState,
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                items(
+                    listItems,
+                    key = uniqueListItemKey
+                ) { item ->
+                    listItem(item, false, null)
                 }
-            } else {
-                listState = rememberLazyListState()
-                LazyColumn(
-                    Modifier.fillMaxSize(),
-                    listState,
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    items(
-                        listItems,
-                        key = uniqueListItemKey
-                    ) { item ->
-                        listItem(item, false, null)
-                    }
-                    fabButtonSpacer(fabButton != null)
-                }
+                fabButtonSpacer(addFabButtonSpacerToList)
             }
             val scrollToEndOfList by viewModel.scrollToEndOfList.collectAsState(false)
             if (scrollToEndOfList) {
@@ -136,14 +106,99 @@ fun <TViewModel, T> OverviewScreen(
             EmptyList()
         }
     }
-    if (fabButton != null) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp)
-        ) {
-            fabButton(Modifier.align(Alignment.BottomEnd))
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+// TODO: Rename after repurposing to SearchableList
+fun <TViewModel, T> ReorderableOverviewScreen(
+    viewModel: TViewModel,
+    listItem: @Composable (T, Boolean, ReorderableLazyListState?) -> Unit,
+    modifier: Modifier = Modifier,
+    addFabButtonSpacerToList: Boolean = false,
+    uniqueListItemKey: (Any) -> Any = { (it as IIdentifiable).id },
+    onItemReordered: (ItemPosition, ItemPosition) -> Unit = { _, _ -> },
+    @StringRes
+    searchFieldHintResource: Int = R.string.search,
+    isBottomSheetVisible: Boolean = false,
+    onBottomSheetHidden: () -> Unit = {},
+    bottomSheetContent: @Composable () -> Unit = {}
+) where TViewModel : OverviewViewModel<T>,
+        T : Any {
+    OverviewScreenLayout(
+        viewModel,
+        modifier,
+        searchFieldHintResource,
+        isBottomSheetVisible,
+        onBottomSheetHidden,
+        bottomSheetContent
+    ) { searchString ->
+        val listItems by viewModel.items.collectAsState(emptyList())
+        if (listItems.isNotEmpty()) {
+            val state = rememberReorderableLazyListState(onMove = onItemReordered)
+            val listState = state.listState
+            LazyColumn(
+                Modifier
+                    .fillMaxSize()
+                    .reorderable(state)
+                    .detectReorderAfterLongPress(state),
+                state = state.listState,
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                items(
+                    listItems,
+                    key = uniqueListItemKey
+                ) { item ->
+                    ReorderableItem(
+                        reorderableState = state,
+                        key = uniqueListItemKey(item)
+                    ) { isDragging ->
+                        listItem(item, isDragging, state)
+                    }
+                }
+                fabButtonSpacer(addFabButtonSpacerToList)
+            }
+            val scrollToEndOfList by viewModel.scrollToEndOfList.collectAsState(false)
+            if (scrollToEndOfList) {
+                LaunchedEffect(key1 = searchString) {
+                    listState.scrollToItem(listItems.size)
+                    viewModel.consumeScrollToEndOfListEvent()
+                }
+            }
+            LaunchedEffect(key1 = searchString) {
+                listState.scrollToItem(0)
+            }
+        } else {
+            EmptyList()
         }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun <TViewModel, T> OverviewScreenLayout(
+    viewModel: TViewModel,
+    modifier: Modifier,
+    @StringRes
+    searchFieldHintResource: Int = R.string.search,
+    isBottomSheetVisible: Boolean = false,
+    onBottomSheetHidden: () -> Unit = {},
+    bottomSheetContent: @Composable () -> Unit = {},
+    listContent: @Composable (String) -> Unit
+) where TViewModel : OverviewViewModel<T>,
+        T : Any {
+    val searchString by viewModel.searchString.collectAsState("")
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        SearchTextField(
+            searchString, {
+                viewModel.searchStringUpdated(it)
+            },
+            searchFieldHintResource
+        )
+        listContent(searchString)
     }
     if (isBottomSheetVisible) {
         val coroutineScope = rememberCoroutineScope()

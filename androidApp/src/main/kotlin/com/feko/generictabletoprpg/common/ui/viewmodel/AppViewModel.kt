@@ -7,6 +7,7 @@ import com.feko.generictabletoprpg.features.basecontent.domain.usecase.ILoadBase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -31,33 +32,16 @@ class AppViewModel(
             withContext(Dispatchers.Default) {
                 loadBaseContentUseCase.invoke()
             }
-            _appState.emit(AppState.ShowingScreen.Default)
-        }
-    }
-
-    fun set(
-        appBarTitle: String? = null,
-        navBarActions: List<ButtonState>? = null
-    ) {
-        viewModelScope.launch {
-            var nextAppState = appState.value
-            if (nextAppState is AppState.ShowingScreen) {
-                nextAppState =
-                    nextAppState.copy(
-                        appBarTitle ?: nextAppState.appBarTitle,
-                        navBarActions ?: nextAppState.navBarActions
-                    )
-                _appState.emit(nextAppState)
-            }
+            _appState.emit(AppState.ShowingScreen)
         }
     }
 
     fun updateActiveDrawerItem(destination: RootDestinations) {
-        viewModelScope.launch {
-            _activeDrawerItemRoute.emit(destination.direction.route)
-        }
+        _activeDrawerItemRoute.update { destination.direction.route }
     }
 
+    // TODO: Just restart the app...
+    @Deprecated("")
     fun contentImported() {
         viewModelScope.launch {
             _refreshesPending.emit(RootDestinations.Companion.refreshables())
@@ -75,13 +59,6 @@ class AppViewModel(
 
     sealed class AppState {
         data object ImportingBaseContent : AppState()
-        data class ShowingScreen(
-            val appBarTitle: String,
-            val navBarActions: List<ButtonState>
-        ) : AppState() {
-            companion object {
-                val Default = ShowingScreen("", listOf())
-            }
-        }
+        data object ShowingScreen : AppState()
     }
 }
