@@ -43,6 +43,7 @@ import com.feko.generictabletoprpg.common.ui.components.IInputFieldValueConverte
 import com.feko.generictabletoprpg.common.ui.components.InputField
 import com.feko.generictabletoprpg.common.ui.components.NumberInputField
 import com.feko.generictabletoprpg.common.ui.theme.Typography
+import com.feko.generictabletoprpg.features.spell.Spell
 import com.feko.generictabletoprpg.features.tracker.domain.model.HealthTrackedThing
 import com.feko.generictabletoprpg.features.tracker.domain.model.IntTrackedThing
 import com.feko.generictabletoprpg.features.tracker.domain.model.NumberTrackedThing
@@ -51,27 +52,26 @@ import com.feko.generictabletoprpg.features.tracker.domain.model.SpellListTracke
 import com.feko.generictabletoprpg.features.tracker.domain.model.SpellSlotTrackedThing
 import com.feko.generictabletoprpg.features.tracker.domain.model.StatEntry
 import com.feko.generictabletoprpg.features.tracker.domain.model.StatSkillEntry
-import com.feko.generictabletoprpg.features.tracker.domain.model.StatsTrackedThing
 import com.feko.generictabletoprpg.features.tracker.domain.model.StatsContainer
+import com.feko.generictabletoprpg.features.tracker.domain.model.StatsTrackedThing
 import com.feko.generictabletoprpg.features.tracker.domain.model.TextTrackedThing
 import com.feko.generictabletoprpg.features.tracker.domain.model.TrackedThing
-import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
 @Composable
-fun TrackerAlertDialog(viewModel: TrackerViewModel, navigator: DestinationsNavigator) {
+fun TrackerAlertDialog(viewModel: TrackerViewModel, onSpellClick: (Spell) -> Unit) {
     val dialog by viewModel.dialog.collectAsState(ITrackerDialog.None)
-    TrackerAlertDialog(dialog, viewModel, navigator)
+    TrackerAlertDialog(dialog, viewModel, onSpellClick)
 }
 
 @Composable
 private fun TrackerAlertDialog(
     dialog: ITrackerDialog,
     viewModel: TrackerViewModel,
-    navigator: DestinationsNavigator
+    onSpellClick: (Spell) -> Unit,
 ) {
     when (dialog) {
         is ITrackerDialog.SpellListDialog ->
-            SpellListDialogWithViewModel(dialog, viewModel, navigator)
+            SpellListDialogWithViewModel(dialog, viewModel, onSpellClick)
 
         is ITrackerDialog.ConfirmDeletionDialog ->
             ConfirmDeletionDialog(dialog, viewModel::deleteTrackedThing, viewModel::dismissDialog)

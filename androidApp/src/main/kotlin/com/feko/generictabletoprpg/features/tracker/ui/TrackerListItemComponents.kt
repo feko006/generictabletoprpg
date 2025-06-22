@@ -47,8 +47,6 @@ import com.feko.generictabletoprpg.common.domain.asSignedString
 import com.feko.generictabletoprpg.common.ui.components.draggableHandle
 import com.feko.generictabletoprpg.common.ui.components.longPressDraggableHandle
 import com.feko.generictabletoprpg.common.ui.theme.Typography
-import com.feko.generictabletoprpg.features.filters.SpellFilter
-import com.feko.generictabletoprpg.features.filters.index
 import com.feko.generictabletoprpg.features.tracker.domain.model.AbilityTrackedThing
 import com.feko.generictabletoprpg.features.tracker.domain.model.HealthTrackedThing
 import com.feko.generictabletoprpg.features.tracker.domain.model.HitDiceTrackedThing
@@ -60,8 +58,6 @@ import com.feko.generictabletoprpg.features.tracker.domain.model.StatsContainer
 import com.feko.generictabletoprpg.features.tracker.domain.model.StatsTrackedThing
 import com.feko.generictabletoprpg.features.tracker.domain.model.TextTrackedThing
 import com.feko.generictabletoprpg.features.tracker.domain.model.createDefault5EStatEntries
-import com.ramcosta.composedestinations.generated.destinations.SearchAllScreenDestination
-import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import sh.calvin.reorderable.DragGestureDetector
 import sh.calvin.reorderable.ReorderableCollectionItemScope
 
@@ -313,8 +309,8 @@ fun SpellListItem(
     isDragged: Boolean,
     spellList: SpellListTrackedThing,
     scope: ReorderableCollectionItemScope,
-    navigator: DestinationsNavigator,
-    viewModel: TrackerViewModel
+    viewModel: TrackerViewModel,
+    onSelectSpellRequest: () -> Unit
 ) {
     TrackedThingListItem(
         isDragged,
@@ -333,11 +329,7 @@ fun SpellListItem(
             },
             onAddButtonClicked = {
                 viewModel.addingSpellToList(spellList)
-                navigator.navigate(
-                    SearchAllScreenDestination(
-                        SpellFilter().index(), true
-                    )
-                )
+                onSelectSpellRequest()
             },
             onEditButtonClicked = { viewModel.showEditDialog(spellList) },
             onDeleteButtonClicked = { viewModel.deleteItemRequested(spellList) }

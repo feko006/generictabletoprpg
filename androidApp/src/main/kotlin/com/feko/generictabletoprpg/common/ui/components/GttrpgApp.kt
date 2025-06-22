@@ -10,6 +10,7 @@ import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.Text
+import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -17,20 +18,15 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.navigation.compose.rememberNavController
+import androidx.navigation3.runtime.rememberNavBackStack
 import com.feko.generictabletoprpg.common.ui.RootDestinations
 import com.feko.generictabletoprpg.common.ui.theme.LocalDimens
 import com.feko.generictabletoprpg.common.ui.viewmodel.AppViewModel
-import com.ramcosta.composedestinations.DestinationsNavHost
-import com.ramcosta.composedestinations.generated.NavGraphs
-import com.ramcosta.composedestinations.navigation.dependency
-import com.ramcosta.composedestinations.utils.navGraph
-import com.ramcosta.composedestinations.utils.toDestinationsNavigator
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3AdaptiveApi::class)
 fun GttrpgApp() {
     val appViewModel: AppViewModel = koinViewModel()
     val appState by appViewModel.appState.collectAsState()
@@ -46,30 +42,31 @@ fun GttrpgApp() {
             if (drawerState.isOpen) {
                 BackHandler { scope.launch { drawerState.close() } }
             }
-            val navController = rememberNavController()
+            val backStack = rememberNavBackStack(INavigationDestination.startDestination)
             ModalNavigationDrawer(
                 drawerContent = {
                     ModalDrawerSheet {
                         Column(
                             Modifier.padding(LocalDimens.current.paddingSmall)
                         ) {
-                            RootDestinations.entries.forEach { rootDestination ->
+                            val rootDestinations = RootDestinations.entries
+                            rootDestinations.forEach { rootDestination ->
                                 NavigationDrawerItem(
                                     label = { Text(stringResource(rootDestination.title)) },
-                                    selected = activeDrawerItemRoute.value == rootDestination.direction.route,
+                                    selected = activeDrawerItemRoute.value == rootDestination.destination,
                                     onClick = {
-                                        appViewModel.updateActiveDrawerItem(rootDestination)
+                                        appViewModel.updateActiveDrawerItem(rootDestination.destination)
                                         scope.launch {
                                             drawerState.close()
                                         }
-                                        navController.toDestinationsNavigator()
-                                            .navigate(rootDestination.direction) {
-                                                popUpTo(navController.navGraph.defaultStartDirection) {
-                                                    saveState = true
-                                                }
-                                                launchSingleTop = true
-                                                restoreState = true
+                                        for (i in backStack.indices.reversed()) {
+                                            val shouldPop =
+                                                rootDestinations.none { it.destination == backStack[i] }
+                                            if (shouldPop) {
+                                                backStack.removeAt(i)
                                             }
+                                        }
+                                        backStack.add(rootDestination.destination)
                                     })
                             }
                         }
@@ -77,22 +74,7 @@ fun GttrpgApp() {
                 },
                 Modifier.safeDrawingPadding(),
                 drawerState
-            ) {
-                DestinationsNavHost(
-                    navGraph = NavGraphs.root,
-                    navController = navController,
-                    dependenciesContainerBuilder = {
-                        dependency(appViewModel)
-                        dependency {
-                            scope.launch {
-                                drawerState.apply {
-                                    if (isOpen) close() else open()
-                                }
-                            }
-                        }
-                    }
-                )
-            }
+            ) { NavigationHost(scope, drawerState, backStack, appViewModel) }
         }
     }
 }

@@ -11,13 +11,13 @@ android {
         create("release") { }
     }
     namespace = "com.feko.generictabletoprpg"
-    compileSdk = 35
+    compileSdk = 36
     buildToolsVersion = "35.0.0"
 
     defaultConfig {
         applicationId = "com.feko.generictabletoprpg"
         minSdk = 21
-        targetSdk = 35
+        targetSdk = 36
         versionCode = 8
         versionName = "1.3.0"
 
@@ -82,10 +82,10 @@ dependencies {
     implementation(libs.insert.koin)
     implementation(libs.jakewharton.timber)
     implementation(libs.jetbrains.kotlinx.serialization.json)
-    implementation(libs.raamcosta.compose.destinations.core)
     implementation(libs.squareup.moshi)
     implementation(libs.squareup.moshi.adapters)
     implementation(libs.squareup.moshi.kotlin)
+    implementation(libs.bundles.androidx.navigation3)
 
     androidTestImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.runner)
@@ -97,7 +97,6 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.tooling)
 
     ksp(libs.androidx.room.compiler)
-    ksp(libs.raamcosta.compose.destinations.ksp)
 }
 
 ksp {

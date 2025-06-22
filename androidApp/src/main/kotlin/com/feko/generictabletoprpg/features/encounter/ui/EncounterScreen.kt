@@ -23,11 +23,8 @@ import com.feko.generictabletoprpg.common.domain.model.IText.StringResourceText.
 import com.feko.generictabletoprpg.common.ui.components.EmptyList
 import com.feko.generictabletoprpg.common.ui.components.GttrpgTopAppBar
 import com.feko.generictabletoprpg.common.ui.components.ToastMessage
-import com.ramcosta.composedestinations.annotation.Destination
-import com.ramcosta.composedestinations.annotation.RootGraph
 import org.koin.androidx.compose.koinViewModel
 
-@Destination<RootGraph>
 @Composable
 fun EncounterScreen(onNavigationIconClick: () -> Unit) {
     val viewModel: EncounterViewModel = koinViewModel()

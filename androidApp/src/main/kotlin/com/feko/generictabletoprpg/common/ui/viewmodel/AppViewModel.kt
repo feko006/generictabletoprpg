@@ -3,6 +3,7 @@ package com.feko.generictabletoprpg.common.ui.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.feko.generictabletoprpg.common.ui.RootDestinations
+import com.feko.generictabletoprpg.common.ui.components.INavigationDestination
 import com.feko.generictabletoprpg.features.basecontent.domain.usecase.ILoadBaseContentUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -23,9 +24,9 @@ class AppViewModel(
     private val _appState: MutableStateFlow<AppState> =
         MutableStateFlow(AppState.ImportingBaseContent)
 
-    val activeDrawerItemRoute: StateFlow<String>
+    val activeDrawerItemRoute: StateFlow<INavigationDestination>
         get() = _activeDrawerItemRoute
-    private val _activeDrawerItemRoute = MutableStateFlow("")
+    private val _activeDrawerItemRoute = MutableStateFlow(INavigationDestination.startDestination)
 
     init {
         viewModelScope.launch {
@@ -36,8 +37,8 @@ class AppViewModel(
         }
     }
 
-    fun updateActiveDrawerItem(destination: RootDestinations) {
-        _activeDrawerItemRoute.update { destination.direction.route }
+    fun updateActiveDrawerItem(destination: INavigationDestination) {
+        _activeDrawerItemRoute.update { destination }
     }
 
     // TODO: Just restart the app...

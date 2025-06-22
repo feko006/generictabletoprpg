@@ -8,11 +8,8 @@ import com.feko.generictabletoprpg.common.domain.model.IText.StringResourceText.
 import com.feko.generictabletoprpg.common.ui.components.DetailsScreen
 import com.feko.generictabletoprpg.common.ui.components.TextWithLabel
 import com.feko.generictabletoprpg.features.condition.Condition
-import com.ramcosta.composedestinations.annotation.Destination
-import com.ramcosta.composedestinations.annotation.RootGraph
 import org.koin.androidx.compose.koinViewModel
 
-@Destination<RootGraph>
 @Composable
 fun ConditionDetailsScreen(
     id: Long,

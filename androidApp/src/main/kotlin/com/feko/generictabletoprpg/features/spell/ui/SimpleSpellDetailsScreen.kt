@@ -10,10 +10,7 @@ import com.feko.generictabletoprpg.common.domain.model.IText.StringResourceText.
 import com.feko.generictabletoprpg.common.ui.components.DetailsScreen
 import com.feko.generictabletoprpg.common.ui.components.GttrpgTopAppBar
 import com.feko.generictabletoprpg.features.spell.Spell
-import com.ramcosta.composedestinations.annotation.Destination
-import com.ramcosta.composedestinations.annotation.RootGraph
 
-@Destination<RootGraph>
 @Composable
 fun SimpleSpellDetailsScreen(
     spell: Spell,

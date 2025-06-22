@@ -32,7 +32,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -48,25 +48,21 @@ import com.feko.generictabletoprpg.common.ui.theme.Typography
 import com.feko.generictabletoprpg.features.searchall.ui.getUniqueListItemKey
 import com.feko.generictabletoprpg.features.spell.Spell
 import com.feko.generictabletoprpg.features.spell.SpellRange
-import com.feko.generictabletoprpg.features.tracker.domain.model.SpellListTrackedThing
 import com.feko.generictabletoprpg.features.tracker.domain.model.SpellListEntry
+import com.feko.generictabletoprpg.features.tracker.domain.model.SpellListTrackedThing
 import com.feko.generictabletoprpg.features.tracker.domain.model.cantripSpellsCount
 import com.feko.generictabletoprpg.features.tracker.domain.model.filterPreparedAndCantrips
 import com.feko.generictabletoprpg.features.tracker.domain.model.preparedSpellsCount
-import com.ramcosta.composedestinations.generated.destinations.SimpleSpellDetailsScreenDestination
-import com.ramcosta.composedestinations.navigation.DestinationsNavigator
-import com.ramcosta.composedestinations.navigation.EmptyDestinationsNavigator
 import kotlinx.coroutines.launch
 
 @Composable
 fun SpellListDialogWithViewModel(
     dialog: ITrackerDialog.SpellListDialog,
     viewModel: TrackerViewModel,
-    navigator: DestinationsNavigator
+    onSpellClick: (Spell) -> Unit,
 ) {
     SpellListDialog(
         dialog,
-        navigator,
         viewModel.spellListState,
         onDialogDismissed = viewModel::dismissDialog,
         onFilteringByPreparedStateChanged = { viewModel.setShowingPreparedSpells(it) },
@@ -79,7 +75,8 @@ fun SpellListDialogWithViewModel(
             )
         },
         onCastSpellRequested = { level -> viewModel.castSpellRequested(level) },
-        onRemoveSpellRequested = { viewModel.removeSpellFromSpellListRequested(it) }
+        onRemoveSpellRequested = { viewModel.removeSpellFromSpellListRequested(it) },
+        onSpellClick = onSpellClick
     )
     when (dialog.secondaryDialog) {
         is ISpellListDialogDialogs.SelectSpellSlotDialog ->
@@ -106,14 +103,14 @@ fun SpellListDialogWithViewModel(
 @Composable
 private fun SpellListDialog(
     dialog: ITrackerDialog.SpellListDialog,
-    navigator: DestinationsNavigator,
     spellListState: LazyListState,
     onDialogDismissed: () -> Unit,
     onFilteringByPreparedStateChanged: (Boolean) -> Unit,
     canSpellBeCast: (level: Int) -> Boolean,
     onSpellPreparedStateChanged: (SpellListEntry, Boolean) -> Unit,
     onCastSpellRequested: (level: Int) -> Unit,
-    onRemoveSpellRequested: (spell: SpellListEntry) -> Unit
+    onRemoveSpellRequested: (spell: SpellListEntry) -> Unit,
+    onSpellClick: (Spell) -> Unit
 ) {
     AlertDialogBase(
         onDialogDismissed,
@@ -215,7 +212,7 @@ private fun SpellListDialog(
         BoxWithScrollIndicator(
             spellListState,
             CardDefaults.cardColors().containerColor,
-            Modifier.heightIn(0.dp, (LocalConfiguration.current.screenHeightDp * 0.7f).dp)
+            Modifier.heightIn(0.dp, (LocalWindowInfo.current.containerSize.height * 0.7f).dp)
         ) {
             LazyColumn(
                 state = spellListState,
@@ -227,12 +224,12 @@ private fun SpellListDialog(
                     SpellListEntryListItem(
                         spellListEntry,
                         canSpellBeCast(spellListEntry.level),
-                        navigator,
                         onSpellPreparedStateChanged = {
                             onSpellPreparedStateChanged(spellListEntry, it)
                         },
                         onCastSpellClicked = { onCastSpellRequested(spellListEntry.level) },
                         onRemoveSpellRequested = { onRemoveSpellRequested(spellListEntry) },
+                        onSpellClick = onSpellClick
                     )
                 }
             }
@@ -244,14 +241,12 @@ private fun SpellListDialog(
 private fun SpellListEntryListItem(
     spellListEntry: SpellListEntry,
     canCastSpell: Boolean,
-    navigator: DestinationsNavigator,
     onSpellPreparedStateChanged: (Boolean) -> Unit,
     onCastSpellClicked: () -> Unit,
     onRemoveSpellRequested: () -> Unit,
+    onSpellClick: (Spell) -> Unit
 ) {
-    ElevatedCard(onClick = {
-        navigator.navigate(SimpleSpellDetailsScreenDestination.invoke(spellListEntry.toSpell()))
-    }) {
+    ElevatedCard(onClick = { onSpellClick(spellListEntry.toSpell()) }) {
         Column {
             Row(
                 Modifier.padding(horizontal = 16.dp),
@@ -358,14 +353,14 @@ fun SpellListDialogPreview() {
                 },
             isFilteringByPreparedSpells = false
         ),
-        navigator = EmptyDestinationsNavigator,
         spellListState = rememberLazyListState(),
         onDialogDismissed = {},
         onFilteringByPreparedStateChanged = {},
         canSpellBeCast = { true },
         onSpellPreparedStateChanged = { _, _ -> },
         onCastSpellRequested = {},
-        onRemoveSpellRequested = {}
+        onRemoveSpellRequested = {},
+        onSpellClick = {}
     )
 }
 
@@ -375,10 +370,10 @@ fun SpellListEntryListItemPreview() {
     SpellListEntryListItem(
         getSpellListEntry2(),
         canCastSpell = true,
-        EmptyDestinationsNavigator,
         onSpellPreparedStateChanged = {},
         onCastSpellClicked = {},
         onRemoveSpellRequested = {},
+        onSpellClick = {}
     )
 }
 

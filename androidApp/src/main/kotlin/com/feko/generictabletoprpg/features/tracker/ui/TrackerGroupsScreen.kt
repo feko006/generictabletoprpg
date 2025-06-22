@@ -23,20 +23,16 @@ import com.feko.generictabletoprpg.common.ui.components.GttrpgTopAppBar
 import com.feko.generictabletoprpg.common.ui.components.OverviewScreen
 import com.feko.generictabletoprpg.common.ui.components.ToastMessage
 import com.feko.generictabletoprpg.common.ui.viewmodel.AppViewModel
-import com.ramcosta.composedestinations.annotation.Destination
-import com.ramcosta.composedestinations.annotation.RootGraph
-import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
-@Destination<RootGraph>(start = true)
 @Composable
 fun TrackerGroupsScreen(
-    navigator: DestinationsNavigator,
     appViewModel: AppViewModel,
-    onNavigationIconClick: () -> Unit
+    onNavigationIconClick: () -> Unit,
+    onNavigateToTrackerScreen: (Long, String) -> Unit
 ) {
     val viewModel: TrackerGroupViewModel = koinViewModel()
     val context = LocalContext.current
@@ -46,7 +42,7 @@ fun TrackerGroupsScreen(
         ) launch@{ directoryUri ->
             onDirectorySelected(directoryUri, viewModel, context)
         }
-    appViewModel.updateActiveDrawerItem(RootDestinations.Tracker)
+    appViewModel.updateActiveDrawerItem(RootDestinations.Tracker.destination)
     val refreshables by appViewModel.refreshesPending.collectAsState()
     if (refreshables.contains(RootDestinations.Tracker)) {
         viewModel.refreshItems()
@@ -71,9 +67,9 @@ fun TrackerGroupsScreen(
             listItem = { item, _, _ ->
                 TrackerGroupListItem(
                     item = item,
-                    navigator = navigator,
                     viewModel = viewModel,
-                    pickDirectoryLauncher
+                    pickDirectoryLauncher,
+                    onNavigateToTrackerScreen
                 )
             },
             Modifier.padding(paddingValues),

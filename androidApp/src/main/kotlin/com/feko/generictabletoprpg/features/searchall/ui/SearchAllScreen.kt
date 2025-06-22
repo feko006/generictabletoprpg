@@ -19,45 +19,27 @@ import com.feko.generictabletoprpg.common.ui.components.GttrpgTopAppBar
 import com.feko.generictabletoprpg.common.ui.components.OverviewListItem
 import com.feko.generictabletoprpg.common.ui.components.OverviewScreen
 import com.feko.generictabletoprpg.common.ui.viewmodel.AppViewModel
-import com.feko.generictabletoprpg.features.action.Action
-import com.feko.generictabletoprpg.features.ammunition.Ammunition
-import com.feko.generictabletoprpg.features.armor.Armor
-import com.feko.generictabletoprpg.features.condition.Condition
-import com.feko.generictabletoprpg.features.disease.Disease
-import com.feko.generictabletoprpg.features.feat.Feat
+import com.feko.generictabletoprpg.common.ui.viewmodel.ResultViewModel
 import com.feko.generictabletoprpg.features.filters.asFilter
 import com.feko.generictabletoprpg.features.filters.ui.Filter
-import com.feko.generictabletoprpg.features.spell.Spell
-import com.feko.generictabletoprpg.features.weapon.Weapon
-import com.ramcosta.composedestinations.annotation.Destination
-import com.ramcosta.composedestinations.annotation.RootGraph
-import com.ramcosta.composedestinations.generated.destinations.ActionDetailsScreenDestination
-import com.ramcosta.composedestinations.generated.destinations.AmmunitionDetailsScreenDestination
-import com.ramcosta.composedestinations.generated.destinations.ArmorDetailsScreenDestination
-import com.ramcosta.composedestinations.generated.destinations.ConditionDetailsScreenDestination
-import com.ramcosta.composedestinations.generated.destinations.DiseaseDetailsScreenDestination
-import com.ramcosta.composedestinations.generated.destinations.FeatDetailsScreenDestination
-import com.ramcosta.composedestinations.generated.destinations.SpellDetailsScreenDestination
-import com.ramcosta.composedestinations.generated.destinations.WeaponDetailsScreenDestination
-import com.ramcosta.composedestinations.navigation.DestinationsNavigator
-import com.ramcosta.composedestinations.result.ResultBackNavigator
-import com.ramcosta.composedestinations.spec.Direction
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 
-@Destination<RootGraph>
 @Composable
 fun SearchAllScreen(
-    defaultFilter: Int? = null,
-    startedForResult: Boolean = false,
-    resultNavigator: ResultBackNavigator<Long>,
-    navigator: DestinationsNavigator,
     appViewModel: AppViewModel,
-    onNavigationIconClick: () -> Unit
+    onNavigationIconClick: () -> Unit,
+    onNavigateBack: () -> Unit,
+    onOpenDetails: (Any) -> Unit,
+    fixedFilter: Int? = null,
+    resultViewModel: ResultViewModel<Long>? = null
 ) {
+    val isStartedForResult = resultViewModel != null
     val refreshesPending by appViewModel.refreshesPending.collectAsState()
-    val viewModel: SearchAllViewModel = koinViewModel { parametersOf(defaultFilter?.asFilter()) }
-    appViewModel.updateActiveDrawerItem(RootDestinations.SearchAll)
+    val viewModel: SearchAllViewModel = koinViewModel { parametersOf(fixedFilter?.asFilter()) }
+    if (!isStartedForResult) {
+        appViewModel.updateActiveDrawerItem(RootDestinations.SearchAll.destination)
+    }
     if (RootDestinations.SearchAll in refreshesPending) {
         viewModel.refreshItems()
         appViewModel.itemsRefreshed(RootDestinations.SearchAll)
@@ -89,10 +71,11 @@ fun SearchAllScreen(
                     Modifier
                         .fillMaxWidth()
                         .clickable {
-                            if (startedForResult) {
-                                resultNavigator.navigateBack((item as IIdentifiable).id)
+                            if (isStartedForResult) {
+                                resultViewModel.setSelectionResult((item as IIdentifiable).id)
+                                onNavigateBack()
                             } else {
-                                navigator.navigate(getNavRouteInternal(item))
+                                onOpenDetails(item)
                             }
                         })
             },
@@ -105,7 +88,7 @@ fun SearchAllScreen(
                 val filter = viewModel.filter.activeFilter.collectAsState()
                 Filter(
                     filter.value,
-                    isTypeFixed = startedForResult
+                    isTypeFixed = isStartedForResult
                 ) { updatedFilter ->
                     viewModel.filter.filterUpdated(updatedFilter)
                 }
@@ -115,18 +98,3 @@ fun SearchAllScreen(
 }
 
 fun getUniqueListItemKey(it: Any) = "${it::class}${(it as IIdentifiable).id}"
-
-fun getNavRouteInternal(item: Any): Direction {
-    val id = (item as IIdentifiable).id
-    return when (item) {
-        is Action -> ActionDetailsScreenDestination(id)
-        is Ammunition -> AmmunitionDetailsScreenDestination(id)
-        is Armor -> ArmorDetailsScreenDestination(id)
-        is Condition -> ConditionDetailsScreenDestination(id)
-        is Disease -> DiseaseDetailsScreenDestination(id)
-        is Feat -> FeatDetailsScreenDestination(id)
-        is Spell -> SpellDetailsScreenDestination(id)
-        is Weapon -> WeaponDetailsScreenDestination(id)
-        else -> throw IllegalStateException("Unknown list item")
-    }
-}

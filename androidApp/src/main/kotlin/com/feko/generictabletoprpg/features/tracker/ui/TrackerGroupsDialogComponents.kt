@@ -29,8 +29,6 @@ import com.feko.generictabletoprpg.common.ui.components.ConfirmationDialog
 import com.feko.generictabletoprpg.common.ui.components.DialogTitle
 import com.feko.generictabletoprpg.common.ui.components.InputField
 import com.feko.generictabletoprpg.features.tracker.domain.model.TrackedThingGroup
-import com.ramcosta.composedestinations.generated.destinations.TrackerScreenDestination
-import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
 @Composable
 fun TrackerGroupsAlertDialog(
@@ -60,9 +58,9 @@ fun TrackerGroupsAlertDialog(
 @Composable
 fun TrackerGroupListItem(
     item: TrackedThingGroup,
-    navigator: DestinationsNavigator,
     viewModel: TrackerGroupViewModel,
     pickDirectoryLauncher: ManagedActivityResultLauncher<Uri?, Uri?>,
+    onTrackerGroupClick: (id: Long, name: String) -> Unit
 ) {
     ListItem(
         headlineContent = {
@@ -84,9 +82,8 @@ fun TrackerGroupListItem(
         },
         modifier = Modifier
             .fillMaxWidth()
-            .clickable {
-                navigator.navigate(TrackerScreenDestination(item.id, item.name))
-            })
+            .clickable(onClick = { onTrackerGroupClick(item.id, item.name) })
+    )
 }
 
 @Composable

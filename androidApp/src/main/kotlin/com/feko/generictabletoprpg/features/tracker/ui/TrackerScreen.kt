@@ -18,8 +18,9 @@ import com.feko.generictabletoprpg.common.ui.components.GttrpgTopAppBar
 import com.feko.generictabletoprpg.common.ui.components.OverviewListItem
 import com.feko.generictabletoprpg.common.ui.components.ReorderableOverviewScreen
 import com.feko.generictabletoprpg.common.ui.components.ToastMessage
-import com.feko.generictabletoprpg.features.searchall.ui.getNavRouteInternal
+import com.feko.generictabletoprpg.common.ui.viewmodel.ResultViewModel
 import com.feko.generictabletoprpg.features.searchall.ui.getUniqueListItemKey
+import com.feko.generictabletoprpg.features.spell.Spell
 import com.feko.generictabletoprpg.features.tracker.domain.model.AbilityTrackedThing
 import com.feko.generictabletoprpg.features.tracker.domain.model.GenericTrackedThing
 import com.feko.generictabletoprpg.features.tracker.domain.model.HealthTrackedThing
@@ -32,31 +33,25 @@ import com.feko.generictabletoprpg.features.tracker.domain.model.SpellSlotTracke
 import com.feko.generictabletoprpg.features.tracker.domain.model.StatsTrackedThing
 import com.feko.generictabletoprpg.features.tracker.domain.model.TextTrackedThing
 import com.feko.generictabletoprpg.features.tracker.domain.model.TrackedThing
-import com.ramcosta.composedestinations.annotation.Destination
-import com.ramcosta.composedestinations.annotation.RootGraph
-import com.ramcosta.composedestinations.generated.destinations.SearchAllScreenDestination
-import com.ramcosta.composedestinations.navigation.DestinationsNavigator
-import com.ramcosta.composedestinations.result.NavResult
-import com.ramcosta.composedestinations.result.ResultRecipient
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parameterSetOf
 import sh.calvin.reorderable.ReorderableCollectionItemScope
 
-@Destination<RootGraph>
 @Composable
 fun TrackerScreen(
     groupId: Long,
     groupName: String,
     onNavigationIconClick: () -> Unit,
-    navigator: DestinationsNavigator,
-    resultRecipient: ResultRecipient<SearchAllScreenDestination, Long>
+    spellSelectionResultViewModel: ResultViewModel<Long>,
+    onNavigateToSimpleSpellDetailsScreen: (Spell) -> Unit,
+    onOpenDetails: (Any) -> Unit,
+    onSelectSpellRequest: () -> Unit
 ) {
     val viewModel: TrackerViewModel =
         koinViewModel(parameters = { parameterSetOf(groupId, groupName) })
-    resultRecipient.onNavResult { result ->
-        if (result is NavResult.Value<Long>) {
-            viewModel.addSpellToList(result.value)
-        }
+    spellSelectionResultViewModel.selectionResult?.let {
+        spellSelectionResultViewModel.consumeSelectionResult()
+        viewModel.addSpellToList(it)
     }
     Scaffold(
         topBar = {
@@ -82,7 +77,14 @@ fun TrackerScreen(
         ReorderableOverviewScreen(
             viewModel = viewModel,
             listItem = { item, isDragged, scope ->
-                TrackerListItem(item, isDragged, scope, navigator, viewModel)
+                TrackerListItem(
+                    item,
+                    isDragged,
+                    scope,
+                    viewModel,
+                    onOpenDetails,
+                    onSelectSpellRequest
+                )
             },
             Modifier.padding(paddingValues),
             addFabButtonSpacerToList = true,
@@ -92,7 +94,7 @@ fun TrackerScreen(
         )
     }
     ToastMessage(viewModel.toast)
-    TrackerAlertDialog(viewModel, navigator)
+    TrackerAlertDialog(viewModel, onNavigateToSimpleSpellDetailsScreen)
 }
 
 @Composable
@@ -100,8 +102,9 @@ fun TrackerListItem(
     item: Any,
     isDragged: Boolean,
     scope: ReorderableCollectionItemScope,
-    navigator: DestinationsNavigator,
-    viewModel: TrackerViewModel
+    viewModel: TrackerViewModel,
+    onOpenDetails: (Any) -> Unit,
+    onSelectSpellRequest: () -> Unit
 ) {
     if (item is TrackedThing) {
         when (item) {
@@ -121,7 +124,7 @@ fun TrackerListItem(
                 PercentageListItem(isDragged, item, scope, viewModel)
 
             is SpellListTrackedThing ->
-                SpellListItem(isDragged, item, scope, navigator, viewModel)
+                SpellListItem(isDragged, item, scope, viewModel, onSelectSpellRequest)
 
             is SpellSlotTrackedThing ->
                 SpellSlotListItem(isDragged, item, scope, viewModel)
@@ -137,6 +140,6 @@ fun TrackerListItem(
             is JsonTrackedThing<*> -> Unit
         }
     } else {
-        OverviewListItem(item, Modifier.clickable { navigator.navigate(getNavRouteInternal(item)) })
+        OverviewListItem(item, Modifier.clickable(onClick = { onOpenDetails(item) }))
     }
 }

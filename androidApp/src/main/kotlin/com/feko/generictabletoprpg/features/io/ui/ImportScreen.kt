@@ -31,18 +31,15 @@ import com.feko.generictabletoprpg.common.ui.RootDestinations
 import com.feko.generictabletoprpg.common.ui.components.GttrpgTopAppBar
 import com.feko.generictabletoprpg.common.ui.theme.LocalDimens
 import com.feko.generictabletoprpg.common.ui.viewmodel.AppViewModel
-import com.ramcosta.composedestinations.annotation.Destination
-import com.ramcosta.composedestinations.annotation.RootGraph
 import org.koin.androidx.compose.koinViewModel
 
-@Destination<RootGraph>
 @Composable
 fun ImportScreen(
     appViewModel: AppViewModel,
     onNavigationIconClick: () -> Unit
 ) {
     val viewModel: ImportViewModel = koinViewModel()
-    appViewModel.updateActiveDrawerItem(RootDestinations.Import)
+    appViewModel.updateActiveDrawerItem(RootDestinations.Import.destination)
     Scaffold(
         topBar = { GttrpgTopAppBar(R.string.import_title.asText(), onNavigationIconClick) }
     ) { paddingValues ->
