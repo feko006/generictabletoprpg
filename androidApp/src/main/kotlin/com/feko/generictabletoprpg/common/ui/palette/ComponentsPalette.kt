@@ -10,13 +10,13 @@ import androidx.compose.ui.tooling.preview.PreviewScreenSizes
 import com.feko.generictabletoprpg.common.domain.model.IText.StringText.Companion.asText
 import com.feko.generictabletoprpg.common.ui.components.FillingLoadingIndicator
 import com.feko.generictabletoprpg.common.ui.components.GttrpgTopAppBar
-import com.feko.generictabletoprpg.common.ui.theme.GenerictabletoprpgTheme
+import com.feko.generictabletoprpg.common.ui.theme.GttrpgTheme
 
 @PreviewScreenSizes
 @Preview
 @Composable
 fun LoadingIndicatorPreview() {
-    GenerictabletoprpgTheme {
+    GttrpgTheme {
         FillingLoadingIndicator()
     }
 }
@@ -25,7 +25,7 @@ fun LoadingIndicatorPreview() {
 @Preview
 @Composable
 fun TopAppBarPreview() {
-    GenerictabletoprpgTheme {
+    GttrpgTheme {
         GttrpgTopAppBar("Top App Bar".asText(), {}) {
             IconButton({}) {
                 Icon(Icons.Default.Diamond, "")

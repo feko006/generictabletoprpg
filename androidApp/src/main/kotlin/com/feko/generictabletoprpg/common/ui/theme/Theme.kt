@@ -41,7 +41,7 @@ val LocalDimens = staticCompositionLocalOf<Dimens> { error("No Dimens provided")
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-fun GenerictabletoprpgTheme(
+fun GttrpgTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     dynamicColor: Boolean = true,
     content: @Composable () -> Unit

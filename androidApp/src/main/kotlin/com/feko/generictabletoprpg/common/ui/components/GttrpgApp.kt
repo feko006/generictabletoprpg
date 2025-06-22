@@ -1,5 +1,6 @@
 package com.feko.generictabletoprpg.common.ui.components
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
@@ -42,6 +43,9 @@ fun GttrpgApp() {
             val activeDrawerItemRoute = appViewModel.activeDrawerItemRoute.collectAsState()
             val scope = rememberCoroutineScope()
             val drawerState = rememberDrawerState(DrawerValue.Closed)
+            if (drawerState.isOpen) {
+                BackHandler { scope.launch { drawerState.close() } }
+            }
             val navController = rememberNavController()
             ModalNavigationDrawer(
                 drawerContent = {
