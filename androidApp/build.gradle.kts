@@ -78,7 +78,7 @@ dependencies {
     implementation(libs.androidx.room.ktx)
     implementation(libs.androidx.room.runtime)
     implementation(libs.bpsm.edn.java)
-    implementation(libs.burnoutcrew.composereorderable)
+    implementation(libs.reorderable)
     implementation(libs.insert.koin)
     implementation(libs.jakewharton.timber)
     implementation(libs.jetbrains.kotlinx.serialization.json)

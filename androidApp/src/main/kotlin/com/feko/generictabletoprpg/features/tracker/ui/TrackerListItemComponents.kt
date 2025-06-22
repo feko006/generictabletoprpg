@@ -4,6 +4,7 @@ import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -31,8 +32,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -41,6 +44,8 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.feko.generictabletoprpg.R
 import com.feko.generictabletoprpg.common.domain.asSignedString
+import com.feko.generictabletoprpg.common.ui.components.draggableHandle
+import com.feko.generictabletoprpg.common.ui.components.longPressDraggableHandle
 import com.feko.generictabletoprpg.common.ui.theme.Typography
 import com.feko.generictabletoprpg.features.filters.SpellFilter
 import com.feko.generictabletoprpg.features.filters.index
@@ -51,19 +56,20 @@ import com.feko.generictabletoprpg.features.tracker.domain.model.NumberTrackedTh
 import com.feko.generictabletoprpg.features.tracker.domain.model.PercentageTrackedThing
 import com.feko.generictabletoprpg.features.tracker.domain.model.SpellListTrackedThing
 import com.feko.generictabletoprpg.features.tracker.domain.model.SpellSlotTrackedThing
-import com.feko.generictabletoprpg.features.tracker.domain.model.StatsTrackedThing
 import com.feko.generictabletoprpg.features.tracker.domain.model.StatsContainer
+import com.feko.generictabletoprpg.features.tracker.domain.model.StatsTrackedThing
 import com.feko.generictabletoprpg.features.tracker.domain.model.TextTrackedThing
 import com.feko.generictabletoprpg.features.tracker.domain.model.createDefault5EStatEntries
 import com.ramcosta.composedestinations.generated.destinations.SearchAllScreenDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
-import org.burnoutcrew.reorderable.ReorderableLazyListState
-import org.burnoutcrew.reorderable.detectReorder
-import org.burnoutcrew.reorderable.rememberReorderableLazyListState
+import sh.calvin.reorderable.DragGestureDetector
+import sh.calvin.reorderable.ReorderableCollectionItemScope
 
 @Composable
 fun TrackedThingListItem(
     isDragged: Boolean,
+    scope: ReorderableCollectionItemScope,
+    interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     onItemClicked: () -> Unit = {},
     content: @Composable () -> Unit
 ) {
@@ -80,12 +86,15 @@ fun TrackedThingListItem(
         animateDpAsState(targetElevation, label = "Tracked thing dragging elevation")
     val scale =
         animateFloatAsState(targetScale, label = "Tracked thing dragging scale")
+    val hapticFeedback = LocalHapticFeedback.current
     Card(
         onClick = onItemClicked,
         Modifier
             .fillMaxWidth()
             .scale(scale.value)
-            .shadow(elevation.value)
+            .longPressDraggableHandle(scope, hapticFeedback, interactionSource)
+            .shadow(elevation.value),
+        interactionSource = interactionSource
     ) {
         content()
     }
@@ -94,12 +103,13 @@ fun TrackedThingListItem(
 @Composable
 private fun DefaultTrackableLayout(
     trackableName: String,
-    reorderableLazyListState: ReorderableLazyListState,
+    scope: ReorderableCollectionItemScope,
+    interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     valuePreview: @Composable (ColumnScope.() -> Unit)? = null,
     content: @Composable ColumnScope.() -> Unit
 ) {
     Row(modifier = Modifier.height(IntrinsicSize.Min)) {
-        ReorderHandle(reorderableLazyListState)
+        ReorderHandle(scope, interactionSource)
         Column(
             verticalArrangement = Arrangement.spacedBy(8.dp),
             modifier = Modifier.padding(
@@ -143,18 +153,19 @@ private fun DefaultTrackableLayout(
 fun AbilityListItem(
     isDragged: Boolean,
     ability: AbilityTrackedThing,
-    reorderableLazyListState: ReorderableLazyListState,
+    scope: ReorderableCollectionItemScope,
     viewModel: TrackerViewModel,
 ) {
-    TrackedThingListItem(isDragged) {
+    val interactionSource = remember { MutableInteractionSource() }
+    TrackedThingListItem(isDragged, scope, interactionSource) {
         DefaultTrackableLayout(
             ability.name,
-            reorderableLazyListState,
+            scope,
+            interactionSource,
             valuePreview = {
                 Text(ability.getPrintableValue())
                 Text(ability.type.name, style = Typography.bodySmall)
-            }
-        ) {
+            }) {
             AbilityActions(
                 canSubtract = ability.canSubtract(),
                 onSubtractClicked = { viewModel.useAbility(ability) },
@@ -171,18 +182,19 @@ fun AbilityListItem(
 fun HitDiceListItem(
     isDragged: Boolean,
     hitDice: HitDiceTrackedThing,
-    reorderableLazyListState: ReorderableLazyListState,
+    scope: ReorderableCollectionItemScope,
     viewModel: TrackerViewModel
 ) {
-    TrackedThingListItem(isDragged) {
+    val interactionSource = remember { MutableInteractionSource() }
+    TrackedThingListItem(isDragged, scope, interactionSource) {
         DefaultTrackableLayout(
             hitDice.name,
-            reorderableLazyListState,
+            scope,
+            interactionSource,
             valuePreview = {
                 Text(hitDice.getPrintableValue())
                 Text(hitDice.type.name, style = Typography.bodySmall)
-            }
-        ) {
+            }) {
             HitDiceActions(
                 canSubtract = hitDice.canSubtract(),
                 onSubtractClicked = { viewModel.useHitDie(hitDice) },
@@ -199,17 +211,18 @@ fun HitDiceListItem(
 fun PercentageListItem(
     isDragged: Boolean,
     percentage: PercentageTrackedThing,
-    reorderableLazyListState: ReorderableLazyListState,
+    scope: ReorderableCollectionItemScope,
     viewModel: TrackerViewModel
 ) {
-    TrackedThingListItem(isDragged) {
+    val interactionSource = remember { MutableInteractionSource() }
+    TrackedThingListItem(isDragged, scope, interactionSource) {
         DefaultTrackableLayout(
             percentage.name,
-            reorderableLazyListState,
+            scope,
+            interactionSource,
             valuePreview = {
                 Text(percentage.getPrintableValue())
-            }
-        ) {
+            }) {
             PercentageActions(
                 percentage,
                 onAddButtonClicked = { viewModel.addToPercentageRequested(percentage) },
@@ -225,18 +238,19 @@ fun PercentageListItem(
 fun NumberListItem(
     isDragged: Boolean,
     number: NumberTrackedThing,
-    reorderableLazyListState: ReorderableLazyListState,
+    scope: ReorderableCollectionItemScope,
     viewModel: TrackerViewModel
 ) {
-    TrackedThingListItem(isDragged) {
+    val interactionSource = remember { MutableInteractionSource() }
+    TrackedThingListItem(isDragged, scope, interactionSource) {
         DefaultTrackableLayout(
             number.name,
-            reorderableLazyListState,
+            scope,
+            interactionSource,
             valuePreview = {
                 Text(number.getPrintableValue())
                 Text(number.type.name, style = Typography.bodySmall)
-            }
-        ) {
+            }) {
             NumberActions(
                 number,
                 onAddButtonClicked = { viewModel.addToNumberRequested(number) },
@@ -252,13 +266,15 @@ fun NumberListItem(
 fun HealthListItem(
     isDragged: Boolean,
     health: HealthTrackedThing,
-    reorderableLazyListState: ReorderableLazyListState,
+    scope: ReorderableCollectionItemScope,
     viewModel: TrackerViewModel
 ) {
-    TrackedThingListItem(isDragged) {
+    val interactionSource = remember { MutableInteractionSource() }
+    TrackedThingListItem(isDragged, scope, interactionSource) {
         DefaultTrackableLayout(
             health.name,
-            reorderableLazyListState,
+            scope,
+            interactionSource,
             valuePreview = {
                 Text(health.getPrintableValue())
                 if (health.temporaryHp > 0) {
@@ -278,8 +294,7 @@ fun HealthListItem(
                     }
                 }
                 Text(health.type.name, style = Typography.bodySmall)
-            }
-        ) {
+            }) {
             HealthActions(
                 health,
                 onHealButtonClicked = { viewModel.healRequested(health) },
@@ -297,18 +312,19 @@ fun HealthListItem(
 fun SpellListItem(
     isDragged: Boolean,
     spellList: SpellListTrackedThing,
-    reorderableLazyListState: ReorderableLazyListState,
+    scope: ReorderableCollectionItemScope,
     navigator: DestinationsNavigator,
     viewModel: TrackerViewModel
 ) {
     TrackedThingListItem(
         isDragged,
+        scope,
         onItemClicked = {
             viewModel.showPreviewSpellListDialog(spellList, resetListState = true)
         }) {
         SpellListItemContent(
             spellList,
-            reorderableLazyListState,
+            scope,
             onListButtonClicked = {
                 viewModel.showPreviewSpellListDialog(
                     spellList,
@@ -332,7 +348,7 @@ fun SpellListItem(
 @Composable
 fun SpellListItemContent(
     spellList: SpellListTrackedThing,
-    reorderableLazyListState: ReorderableLazyListState,
+    scope: ReorderableCollectionItemScope,
     onListButtonClicked: () -> Unit,
     onAddButtonClicked: () -> Unit,
     onEditButtonClicked: () -> Unit,
@@ -340,12 +356,11 @@ fun SpellListItemContent(
 ) {
     DefaultTrackableLayout(
         spellList.name,
-        reorderableLazyListState,
+        scope,
         valuePreview = {
             Text(spellList.getPrintableValue())
             Text(spellList.type.name, style = Typography.bodySmall)
-        }
-    ) {
+        }) {
         SpellListActions(
             isListButtonEnabled = spellList.serializedItem.any(),
             onListButtonClicked = onListButtonClicked,
@@ -360,21 +375,22 @@ fun SpellListItemContent(
 fun SpellSlotListItem(
     isDragged: Boolean,
     spellSlot: SpellSlotTrackedThing,
-    reorderableLazyListState: ReorderableLazyListState,
+    scope: ReorderableCollectionItemScope,
     viewModel: TrackerViewModel
 ) {
-    TrackedThingListItem(isDragged) {
+    val interactionSource = remember { MutableInteractionSource() }
+    TrackedThingListItem(isDragged, scope, interactionSource) {
         DefaultTrackableLayout(
             spellSlot.name,
-            reorderableLazyListState,
+            scope,
+            interactionSource,
             valuePreview = {
                 Text(spellSlot.getPrintableValue())
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) row@{
                     Text(spellSlot.type.name, style = Typography.bodySmall)
                     Text("Lv ${spellSlot.level}", style = Typography.bodySmall)
                 }
-            }
-        ) {
+            }) {
             SpellSlotActions(
                 canSubtract = spellSlot.canSubtract(),
                 onSubtractClicked = { viewModel.useSpell(spellSlot) },
@@ -391,11 +407,14 @@ fun SpellSlotListItem(
 fun StatsListItem(
     isDragged: Boolean,
     stats: StatsTrackedThing,
-    reorderableLazyListState: ReorderableLazyListState,
+    scope: ReorderableCollectionItemScope,
     viewModel: TrackerViewModel
 ) {
+    val interactionSource = remember { MutableInteractionSource() }
     TrackedThingListItem(
         isDragged,
+        scope,
+        interactionSource,
         onItemClicked = { viewModel.showStatsDialog(stats) }) {
         Row(modifier = Modifier.height(IntrinsicSize.Min)) {
             Column(
@@ -412,7 +431,8 @@ fun StatsListItem(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     ReorderHandle(
-                        reorderableLazyListState,
+                        scope,
+                        interactionSource,
                         Modifier.padding(end = 8.dp),
                         iconAlignment = Alignment.TopCenter
                     )
@@ -438,13 +458,15 @@ fun StatsListItem(
 fun TextListItem(
     isDragged: Boolean,
     text: TextTrackedThing,
-    reorderableLazyListState: ReorderableLazyListState,
+    scope: ReorderableCollectionItemScope,
     viewModel: TrackerViewModel
 ) {
-    TrackedThingListItem(isDragged) {
+    val interactionSource = remember { MutableInteractionSource() }
+    TrackedThingListItem(isDragged, scope, interactionSource) {
         DefaultTrackableLayout(
             text.name,
-            reorderableLazyListState
+            scope = scope,
+            interactionSource
         ) {
             var canTextBeExpanded by remember { mutableStateOf(false) }
             var expanded by remember { mutableStateOf(false) }
@@ -482,15 +504,17 @@ fun TextListItem(
 
 @Composable
 private fun ReorderHandle(
-    state: ReorderableLazyListState,
+    scope: ReorderableCollectionItemScope,
+    interactionSource: MutableInteractionSource,
     modifier: Modifier = Modifier,
     iconAlignment: Alignment = Alignment.Center
 ) {
+    val hapticFeedback = LocalHapticFeedback.current
     Box(
         Modifier
             .fillMaxHeight()
+            .draggableHandle(scope, hapticFeedback, interactionSource)
             .padding(8.dp)
-            .detectReorder(state)
             .then(modifier)
     ) {
         Icon(
@@ -637,17 +661,37 @@ fun CompactStatPreview() {
 @Preview
 @Composable
 private fun SpellListTrackedThingPreview() {
+    val scope = object : ReorderableCollectionItemScope {
+        override fun Modifier.draggableHandle(
+            enabled: Boolean,
+            interactionSource: MutableInteractionSource?,
+            onDragStarted: (Offset) -> Unit,
+            onDragStopped: () -> Unit,
+            dragGestureDetector: DragGestureDetector
+        ): Modifier = this
+
+        override fun Modifier.longPressDraggableHandle(
+            enabled: Boolean,
+            interactionSource: MutableInteractionSource?,
+            onDragStarted: (Offset) -> Unit,
+            onDragStopped: () -> Unit
+        ): Modifier = this
+    }
+    val interactionSource = remember { MutableInteractionSource() }
     TrackedThingListItem(
         isDragged = false,
-        onItemClicked = { }) {
-        SpellListItemContent(
-            SpellListTrackedThing(0, "Spell List", "", 0, 0),
-            rememberReorderableLazyListState(onMove = { _, _ -> }),
-            onListButtonClicked = {},
-            onAddButtonClicked = {},
-            onEditButtonClicked = {},
-            onDeleteButtonClicked = {}
-        )
-    }
+        scope,
+        interactionSource,
+        onItemClicked = { },
+        {
+            SpellListItemContent(
+                SpellListTrackedThing(0, "Spell List", "", 0, 0),
+                scope,
+                onListButtonClicked = {},
+                onAddButtonClicked = {},
+                onEditButtonClicked = {},
+                onDeleteButtonClicked = {}
+            )
+        })
 }
 

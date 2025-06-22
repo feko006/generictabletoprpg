@@ -38,11 +38,10 @@ import com.ramcosta.composedestinations.generated.destinations.SearchAllScreenDe
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.result.NavResult
 import com.ramcosta.composedestinations.result.ResultRecipient
-import org.burnoutcrew.reorderable.ReorderableLazyListState
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parameterSetOf
+import sh.calvin.reorderable.ReorderableCollectionItemScope
 
-// TODO: Fix reorderable crash
 @Destination<RootGraph>
 @Composable
 fun TrackerScreen(
@@ -82,8 +81,8 @@ fun TrackerScreen(
     ) { paddingValues ->
         ReorderableOverviewScreen(
             viewModel = viewModel,
-            listItem = { item, isDragged, state ->
-                TrackerListItem(item, isDragged, state!!, navigator, viewModel)
+            listItem = { item, isDragged, scope ->
+                TrackerListItem(item, isDragged, scope, navigator, viewModel)
             },
             Modifier.padding(paddingValues),
             addFabButtonSpacerToList = true,
@@ -100,66 +99,38 @@ fun TrackerScreen(
 fun TrackerListItem(
     item: Any,
     isDragged: Boolean,
-    reorderableLazyListState: ReorderableLazyListState,
+    scope: ReorderableCollectionItemScope,
     navigator: DestinationsNavigator,
     viewModel: TrackerViewModel
 ) {
     if (item is TrackedThing) {
         when (item) {
-            is AbilityTrackedThing -> AbilityListItem(
-                isDragged,
-                item,
-                reorderableLazyListState,
-                viewModel
-            )
+            is AbilityTrackedThing ->
+                AbilityListItem(isDragged, item, scope, viewModel)
 
-            is HealthTrackedThing -> HealthListItem(
-                isDragged,
-                item,
-                reorderableLazyListState,
-                viewModel
-            )
+            is HealthTrackedThing ->
+                HealthListItem(isDragged, item, scope, viewModel)
 
-            is HitDiceTrackedThing -> HitDiceListItem(
-                isDragged,
-                item,
-                reorderableLazyListState,
-                viewModel
-            )
+            is HitDiceTrackedThing ->
+                HitDiceListItem(isDragged, item, scope, viewModel)
 
-            is NumberTrackedThing -> NumberListItem(
-                isDragged,
-                item,
-                reorderableLazyListState,
-                viewModel
-            )
+            is NumberTrackedThing ->
+                NumberListItem(isDragged, item, scope, viewModel)
 
             is PercentageTrackedThing ->
-                PercentageListItem(isDragged, item, reorderableLazyListState, viewModel)
+                PercentageListItem(isDragged, item, scope, viewModel)
 
             is SpellListTrackedThing ->
-                SpellListItem(isDragged, item, reorderableLazyListState, navigator, viewModel)
+                SpellListItem(isDragged, item, scope, navigator, viewModel)
 
-            is SpellSlotTrackedThing -> SpellSlotListItem(
-                isDragged,
-                item,
-                reorderableLazyListState,
-                viewModel
-            )
+            is SpellSlotTrackedThing ->
+                SpellSlotListItem(isDragged, item, scope, viewModel)
 
-            is StatsTrackedThing -> StatsListItem(
-                isDragged,
-                item,
-                reorderableLazyListState,
-                viewModel
-            )
+            is StatsTrackedThing ->
+                StatsListItem(isDragged, item, scope, viewModel)
 
-            is TextTrackedThing -> TextListItem(
-                isDragged,
-                item,
-                reorderableLazyListState,
-                viewModel
-            )
+            is TextTrackedThing ->
+                TextListItem(isDragged, item, scope, viewModel)
 
             TrackedThing.Companion.Empty,
             is GenericTrackedThing<*>,

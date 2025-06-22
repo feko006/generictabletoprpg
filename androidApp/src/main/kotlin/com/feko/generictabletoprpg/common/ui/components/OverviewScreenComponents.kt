@@ -1,6 +1,7 @@
 package com.feko.generictabletoprpg.common.ui.components
 
 import androidx.annotation.StringRes
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,6 +16,7 @@ import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListItemInfo
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
@@ -36,6 +38,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.hapticfeedback.HapticFeedback
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.feko.generictabletoprpg.R
@@ -45,12 +50,10 @@ import com.feko.generictabletoprpg.common.ui.theme.Typography
 import com.feko.generictabletoprpg.common.ui.viewmodel.OverviewViewModel
 import com.feko.generictabletoprpg.features.spell.Spell
 import kotlinx.coroutines.launch
-import org.burnoutcrew.reorderable.ItemPosition
-import org.burnoutcrew.reorderable.ReorderableItem
-import org.burnoutcrew.reorderable.ReorderableLazyListState
-import org.burnoutcrew.reorderable.detectReorderAfterLongPress
-import org.burnoutcrew.reorderable.rememberReorderableLazyListState
-import org.burnoutcrew.reorderable.reorderable
+import sh.calvin.reorderable.ReorderableCollectionItemScope
+import sh.calvin.reorderable.ReorderableItem
+import sh.calvin.reorderable.ReorderableLazyListState
+import sh.calvin.reorderable.rememberReorderableLazyListState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -113,11 +116,11 @@ fun <TViewModel, T> OverviewScreen(
 // TODO: Rename after repurposing to SearchableList
 fun <TViewModel, T> ReorderableOverviewScreen(
     viewModel: TViewModel,
-    listItem: @Composable (T, Boolean, ReorderableLazyListState?) -> Unit,
+    listItem: @Composable (T, Boolean, ReorderableCollectionItemScope) -> Unit,
     modifier: Modifier = Modifier,
     addFabButtonSpacerToList: Boolean = false,
     uniqueListItemKey: (Any) -> Any = { (it as IIdentifiable).id },
-    onItemReordered: (ItemPosition, ItemPosition) -> Unit = { _, _ -> },
+    onItemReordered: (LazyListItemInfo, LazyListItemInfo) -> Unit = { _, _ -> },
     @StringRes
     searchFieldHintResource: Int = R.string.search,
     isBottomSheetVisible: Boolean = false,
@@ -134,26 +137,24 @@ fun <TViewModel, T> ReorderableOverviewScreen(
         bottomSheetContent
     ) { searchString ->
         val listItems by viewModel.items.collectAsState(emptyList())
+        val hapticFeedback = LocalHapticFeedback.current
         if (listItems.isNotEmpty()) {
-            val state = rememberReorderableLazyListState(onMove = onItemReordered)
-            val listState = state.listState
+            val listState = rememberLazyListState()
+            val state = rememberReorderableLazyListState(listState, onMove = { from, to ->
+                onItemReordered(from, to)
+                hapticFeedback.performHapticFeedback(HapticFeedbackType.SegmentFrequentTick)
+            })
             LazyColumn(
-                Modifier
-                    .fillMaxSize()
-                    .reorderable(state)
-                    .detectReorderAfterLongPress(state),
-                state = state.listState,
+                Modifier.fillMaxSize(),
+                listState,
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 items(
                     listItems,
                     key = uniqueListItemKey
                 ) { item ->
-                    ReorderableItem(
-                        reorderableState = state,
-                        key = uniqueListItemKey(item)
-                    ) { isDragging ->
-                        listItem(item, isDragging, state)
+                    ReorderableItem(state, uniqueListItemKey(item)) { isDragging ->
+                        listItem(item, isDragging, this)
                     }
                 }
                 fabButtonSpacer(addFabButtonSpacerToList)
@@ -171,6 +172,46 @@ fun <TViewModel, T> ReorderableOverviewScreen(
         } else {
             EmptyList()
         }
+    }
+}
+
+fun Modifier.draggableHandle(
+    scope: ReorderableCollectionItemScope,
+    hapticFeedback: HapticFeedback,
+    interactionSource: MutableInteractionSource?
+) = run {
+    with(scope) {
+        draggableHandle(
+            onDragStarted = {
+                hapticFeedback.performHapticFeedback(
+                    HapticFeedbackType.GestureThresholdActivate
+                )
+            },
+            onDragStopped = {
+                hapticFeedback.performHapticFeedback(HapticFeedbackType.GestureEnd)
+            },
+            interactionSource = interactionSource
+        )
+    }
+}
+
+fun Modifier.longPressDraggableHandle(
+    scope: ReorderableCollectionItemScope,
+    hapticFeedback: HapticFeedback,
+    interactionSource: MutableInteractionSource?
+) = run {
+    with(scope) {
+        longPressDraggableHandle(
+            onDragStarted = {
+                hapticFeedback.performHapticFeedback(
+                    HapticFeedbackType.GestureThresholdActivate
+                )
+            },
+            onDragStopped = {
+                hapticFeedback.performHapticFeedback(HapticFeedbackType.GestureEnd)
+            },
+            interactionSource = interactionSource
+        )
     }
 }
 
@@ -200,6 +241,7 @@ private fun <TViewModel, T> OverviewScreenLayout(
         )
         listContent(searchString)
     }
+    // TODO: Remove from this screen
     if (isBottomSheetVisible) {
         val coroutineScope = rememberCoroutineScope()
         val bottomSheetState = rememberModalBottomSheetState()

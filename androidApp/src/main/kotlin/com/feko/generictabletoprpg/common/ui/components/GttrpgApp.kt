@@ -83,13 +83,13 @@ fun GttrpgApp() {
                     navController = navController,
                     dependenciesContainerBuilder = {
                         dependency(appViewModel)
-                        dependency({
+                        dependency {
                             scope.launch {
                                 drawerState.apply {
                                     if (isOpen) close() else open()
                                 }
                             }
-                        })
+                        }
                     }
                 )
             }
