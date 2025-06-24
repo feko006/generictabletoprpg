@@ -7,7 +7,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.Card
+import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -68,7 +68,7 @@ fun EncounterScreen(onNavigationIconClick: () -> Unit) {
             }
             val currentRound by viewModel.currentRound.collectAsState(0)
             if (currentRound > 0) {
-                Card(
+                ElevatedCard(
                     Modifier
                         .align(Alignment.CenterHorizontally)
                         .padding(8.dp)

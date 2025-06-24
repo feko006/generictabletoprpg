@@ -2,6 +2,7 @@ package com.feko.generictabletoprpg.features.tracker.ui
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyItemScope
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.Icon
@@ -16,7 +17,7 @@ import com.feko.generictabletoprpg.common.domain.model.IText.StringResourceText.
 import com.feko.generictabletoprpg.common.ui.components.AddFABButtonWithDropdown
 import com.feko.generictabletoprpg.common.ui.components.GttrpgTopAppBar
 import com.feko.generictabletoprpg.common.ui.components.OverviewListItem
-import com.feko.generictabletoprpg.common.ui.components.ReorderableOverviewScreen
+import com.feko.generictabletoprpg.common.ui.components.SearchableReorderableLazyList
 import com.feko.generictabletoprpg.common.ui.components.ToastMessage
 import com.feko.generictabletoprpg.common.ui.viewmodel.ResultViewModel
 import com.feko.generictabletoprpg.features.searchall.ui.getUniqueListItemKey
@@ -74,7 +75,7 @@ fun TrackerScreen(
             ) { DropdownMenuContent { type, context -> viewModel.showCreateDialog(type, context) } }
         }
     ) { paddingValues ->
-        ReorderableOverviewScreen(
+        SearchableReorderableLazyList(
             viewModel = viewModel,
             listItem = { item, isDragged, scope ->
                 TrackerListItem(
@@ -90,7 +91,8 @@ fun TrackerScreen(
             addFabButtonSpacerToList = true,
             uniqueListItemKey = { getUniqueListItemKey(it) },
             onItemReordered = { from, to -> viewModel.itemReordered(from.index, to.index) },
-            searchFieldHintResource = R.string.search_everywhere
+            searchFieldHint = R.string.search_everywhere.asText(),
+            addHorizontalDivider = false
         )
     }
     ToastMessage(viewModel.toast)
@@ -98,7 +100,7 @@ fun TrackerScreen(
 }
 
 @Composable
-fun TrackerListItem(
+fun LazyItemScope.TrackerListItem(
     item: Any,
     isDragged: Boolean,
     scope: ReorderableCollectionItemScope,

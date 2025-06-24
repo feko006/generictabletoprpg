@@ -1,14 +1,15 @@
 package com.feko.generictabletoprpg.features.searchall.ui
 
 import androidx.lifecycle.viewModelScope
-import com.feko.generictabletoprpg.common.ui.viewmodel.OverviewViewModel
 import com.feko.generictabletoprpg.common.ui.viewmodel.FilterSubViewModel
 import com.feko.generictabletoprpg.common.ui.viewmodel.IFilterSubViewModel
+import com.feko.generictabletoprpg.common.ui.viewmodel.OverviewViewModel
 import com.feko.generictabletoprpg.features.filters.Filter
 import com.feko.generictabletoprpg.features.searchall.domain.usecase.ISearchAllUseCase
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class SearchAllViewModel(
@@ -31,9 +32,7 @@ class SearchAllViewModel(
     }
 
     fun filterRequested() {
-        viewModelScope.launch {
-            _isBottomSheetVisible.emit(true)
-        }
+        _isBottomSheetVisible.update { true }
     }
 
     override fun getAllItems(): List<Any> = searchAllUseCase.getAllItems()
@@ -41,8 +40,6 @@ class SearchAllViewModel(
     override fun getFilterFlow(): StateFlow<Filter?> = filter.activeFilter
 
     fun bottomSheetHidden() {
-        viewModelScope.launch {
-            _isBottomSheetVisible.emit(false)
-        }
+        _isBottomSheetVisible.update { false }
     }
 }

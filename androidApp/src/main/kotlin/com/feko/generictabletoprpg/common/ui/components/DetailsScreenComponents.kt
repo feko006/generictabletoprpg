@@ -56,7 +56,7 @@ fun <T> DetailsScreen(
                     Modifier.padding(start = it, end = it, bottom = it)
                 }
             ),
-            Arrangement.spacedBy(LocalDimens.current.paddingSmall)
+            Arrangement.spacedBy(LocalDimens.current.gapSmall)
         ) {
             screenContent(item)
         }

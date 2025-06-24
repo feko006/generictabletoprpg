@@ -20,7 +20,7 @@ import com.feko.generictabletoprpg.common.domain.model.IText.StringResourceText.
 import com.feko.generictabletoprpg.common.ui.RootDestinations
 import com.feko.generictabletoprpg.common.ui.components.AddFABButton
 import com.feko.generictabletoprpg.common.ui.components.GttrpgTopAppBar
-import com.feko.generictabletoprpg.common.ui.components.OverviewScreen
+import com.feko.generictabletoprpg.common.ui.components.SearchableLazyList
 import com.feko.generictabletoprpg.common.ui.components.ToastMessage
 import com.feko.generictabletoprpg.common.ui.viewmodel.AppViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -57,7 +57,7 @@ fun TrackerGroupsScreen(
         },
         floatingActionButton = { AddFABButton { viewModel.newTrackedThingGroupRequested() } }
     ) { paddingValues ->
-        OverviewScreen(
+        SearchableLazyList(
             viewModel = viewModel,
             listItem = { item, _, _ ->
                 TrackerGroupListItem(

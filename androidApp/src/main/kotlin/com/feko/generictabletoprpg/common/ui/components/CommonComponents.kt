@@ -21,7 +21,6 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -63,53 +62,16 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.feko.generictabletoprpg.R
+import com.feko.generictabletoprpg.common.ui.viewmodel.IToastSubViewModel
 import com.feko.generictabletoprpg.features.action.Action
 import com.feko.generictabletoprpg.features.ammunition.Ammunition
 import com.feko.generictabletoprpg.features.armor.Armor
-import com.feko.generictabletoprpg.common.ui.viewmodel.IToastSubViewModel
 import com.feko.generictabletoprpg.features.condition.Condition
 import com.feko.generictabletoprpg.features.disease.Disease
 import com.feko.generictabletoprpg.features.feat.Feat
 import com.feko.generictabletoprpg.features.spell.Spell
 import com.feko.generictabletoprpg.features.weapon.Weapon
-import kotlin.collections.get
 
-@Composable
-fun SearchTextField(
-    searchString: String,
-    onValueChange: (String) -> Unit,
-    @StringRes
-    hintResource: Int = R.string.search
-) {
-    val donePressed = remember { mutableStateOf(false) }
-    TextField(
-        value = searchString,
-        onValueChange = onValueChange,
-        modifier = Modifier.fillMaxWidth(),
-        label = {
-            Text(
-                stringResource(hintResource),
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
-            )
-        },
-        leadingIcon = { Icon(Icons.Default.Search, "") },
-        trailingIcon = {
-            IconButton(
-                onClick = { onValueChange("") }
-            ) {
-                Icon(Icons.Default.Clear, "")
-            }
-        },
-        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-        keyboardActions = KeyboardActions(onDone = {
-            donePressed.value = true
-        })
-    )
-    if (donePressed.value) {
-        LocalFocusManager.current.clearFocus()
-        donePressed.value = false
-    }
-}
 
 @Composable
 fun TextWithLabel(
@@ -166,6 +128,7 @@ sealed interface IInputFieldValueConverter<T : Number> : (String) -> T {
     data object IntInputFieldValueConverter : IInputFieldValueConverter<Int> {
         override fun invoke(inputValue: String): Int = inputValue.toIntOrNull() ?: 0
     }
+
     data object FloatInputFieldValueConverter : IInputFieldValueConverter<Float> {
         override fun invoke(inputValue: String): Float = inputValue.toFloatOrNull() ?: 0f
     }
