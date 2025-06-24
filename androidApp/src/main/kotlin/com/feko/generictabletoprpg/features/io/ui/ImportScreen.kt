@@ -1,6 +1,7 @@
 package com.feko.generictabletoprpg.features.io.ui
 
 import android.widget.Toast
+import androidx.activity.compose.LocalActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
@@ -64,7 +65,6 @@ fun ImportScreen(
                             inputStream.bufferedReader()
                                 .use { it.readText() }
                         }
-                    appViewModel.contentImported()
                     viewModel.fileSelected(contents)
                 }
             val screenState by viewModel.screenState.collectAsState()
@@ -79,7 +79,7 @@ fun ImportScreen(
                     .show()
             }
             when (screenState) {
-                is ImportViewModel.ImportScreenState.ReadyToImport -> {
+                is ImportViewModel.IImportScreenState.ReadyToImport -> {
                     Column(
                         verticalArrangement = Arrangement.spacedBy(8.dp),
                         horizontalAlignment = Alignment.CenterHorizontally
@@ -98,13 +98,20 @@ fun ImportScreen(
                     }
                 }
 
-                is ImportViewModel.ImportScreenState.Importing -> {
+                is ImportViewModel.IImportScreenState.Importing -> {
                     Box(Modifier.fillMaxSize()) {
                         CircularProgressIndicator(
                             Modifier
                                 .size(LocalDimens.current.visualLarge)
                                 .align(Alignment.Center)
                         )
+                    }
+                }
+
+                is ImportViewModel.IImportScreenState.RestartApp -> {
+                    LocalActivity.current?.apply {
+                        finish()
+                        startActivity(intent)
                     }
                 }
             }

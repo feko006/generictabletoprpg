@@ -35,14 +35,9 @@ fun SearchAllScreen(
     resultViewModel: ResultViewModel<Long>? = null
 ) {
     val isStartedForResult = resultViewModel != null
-    val refreshesPending by appViewModel.refreshesPending.collectAsState()
     val viewModel: SearchAllViewModel = koinViewModel { parametersOf(fixedFilter?.asFilter()) }
     if (!isStartedForResult) {
         appViewModel.updateActiveDrawerItem(RootDestinations.SearchAll.destination)
-    }
-    if (RootDestinations.SearchAll in refreshesPending) {
-        viewModel.refreshItems()
-        appViewModel.itemsRefreshed(RootDestinations.SearchAll)
     }
     Scaffold(
         topBar = {

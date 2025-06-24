@@ -90,7 +90,7 @@ fun NavigationHost(
                 maxVerticalPartitions = panes
             )
         )
-    ) entryProvider@{ key ->
+    ) { key ->
         if (key !is INavigationDestination) {
             throw IllegalStateException("Destination target unknown.")
         }
@@ -202,7 +202,7 @@ fun NavigationHost(
             is INavigationDestination.SimpleSpellDetailsDestination ->
                 NavEntry(
                     key,
-                    metadata = ListDetailSceneStrategy.detailPane()
+                    metadata = ListDetailSceneStrategy.extraPane()
                 ) {
                     SimpleSpellDetailsScreen(key.spell, onNavigationIconClick)
                 }

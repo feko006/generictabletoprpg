@@ -43,11 +43,6 @@ fun TrackerGroupsScreen(
             onDirectorySelected(directoryUri, viewModel, context)
         }
     appViewModel.updateActiveDrawerItem(RootDestinations.Tracker.destination)
-    val refreshables by appViewModel.refreshesPending.collectAsState()
-    if (refreshables.contains(RootDestinations.Tracker)) {
-        viewModel.refreshItems()
-        appViewModel.itemsRefreshed(RootDestinations.Tracker)
-    }
     Scaffold(
         topBar = {
             GttrpgTopAppBar(R.string.tracker_title.asText(), onNavigationIconClick) {

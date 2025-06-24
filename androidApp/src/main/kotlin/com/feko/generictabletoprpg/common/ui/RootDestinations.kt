@@ -18,10 +18,5 @@ enum class RootDestinations(
             isShownForResult = false
         )
     ),
-    Import(R.string.import_title, INavigationDestination.ImportDestination);
-
-    companion object {
-        fun refreshables(): List<RootDestinations> =
-            entries.dropLast(1)
-    }
+    Import(R.string.import_title, INavigationDestination.ImportDestination)
 }

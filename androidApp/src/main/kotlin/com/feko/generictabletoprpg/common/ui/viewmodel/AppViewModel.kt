@@ -2,7 +2,6 @@ package com.feko.generictabletoprpg.common.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.feko.generictabletoprpg.common.ui.RootDestinations
 import com.feko.generictabletoprpg.common.ui.components.INavigationDestination
 import com.feko.generictabletoprpg.features.basecontent.domain.usecase.ILoadBaseContentUseCase
 import kotlinx.coroutines.Dispatchers
@@ -15,10 +14,6 @@ import kotlinx.coroutines.withContext
 class AppViewModel(
     loadBaseContentUseCase: ILoadBaseContentUseCase
 ) : ViewModel() {
-    val refreshesPending: StateFlow<List<RootDestinations>>
-        get() = _refreshesPending
-    private val _refreshesPending: MutableStateFlow<List<RootDestinations>> =
-        MutableStateFlow(listOf())
     val appState: StateFlow<AppState>
         get() = _appState
     private val _appState: MutableStateFlow<AppState> =
@@ -39,23 +34,6 @@ class AppViewModel(
 
     fun updateActiveDrawerItem(destination: INavigationDestination) {
         _activeDrawerItemRoute.update { destination }
-    }
-
-    // TODO: Just restart the app...
-    @Deprecated("")
-    fun contentImported() {
-        viewModelScope.launch {
-            _refreshesPending.emit(RootDestinations.Companion.refreshables())
-        }
-    }
-
-    fun itemsRefreshed(destination: RootDestinations) {
-        viewModelScope.launch {
-            val newRefreshablesList =
-                _refreshesPending.value
-                    .minusElement(destination)
-            _refreshesPending.emit(newRefreshablesList)
-        }
     }
 
     sealed class AppState {
