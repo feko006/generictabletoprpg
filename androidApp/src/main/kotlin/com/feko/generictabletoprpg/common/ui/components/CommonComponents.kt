@@ -26,12 +26,10 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuAnchorType
 import androidx.compose.material3.ExposedDropdownMenuBox
-import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldColors
@@ -62,6 +60,8 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.feko.generictabletoprpg.R
+import com.feko.generictabletoprpg.common.domain.model.IText
+import com.feko.generictabletoprpg.common.ui.theme.LocalDimens
 import com.feko.generictabletoprpg.common.ui.viewmodel.IToastSubViewModel
 import com.feko.generictabletoprpg.features.action.Action
 import com.feko.generictabletoprpg.features.ammunition.Ammunition
@@ -86,42 +86,6 @@ fun TextWithLabel(
             append(": $text")
         }
     )
-}
-
-@Composable
-@OptIn(ExperimentalMaterial3Api::class)
-fun Dropdown(
-    textFieldValue: String,
-    dropdownExpanded: Boolean,
-    enabled: Boolean,
-    onDropdownExpandedStateChanged: (Boolean) -> Unit,
-    dropdownMenuContent: @Composable () -> Unit
-) {
-    ExposedDropdownMenuBox(
-        expanded = dropdownExpanded,
-        onExpandedChange = { onDropdownExpandedStateChanged(enabled && !dropdownExpanded) },
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        OutlinedTextField(
-            value = textFieldValue,
-            onValueChange = {},
-            trailingIcon = {
-                ExposedDropdownMenuDefaults.TrailingIcon(expanded = dropdownExpanded)
-            },
-            colors = ExposedDropdownMenuDefaults.textFieldColors(),
-            modifier = Modifier
-                .fillMaxWidth()
-                .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable, true),
-            readOnly = true
-        )
-        DropdownMenu(
-            expanded = dropdownExpanded,
-            onDismissRequest = { onDropdownExpandedStateChanged(false) },
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            dropdownMenuContent()
-        }
-    }
 }
 
 sealed interface IInputFieldValueConverter<T : Number> : (String) -> T {
@@ -311,22 +275,22 @@ fun ToastMessage(toast: IToastSubViewModel) {
 @Composable
 fun CheckboxWithText(
     isChecked: Boolean,
-    textStringResource: Int,
-    onCheckChanged: (Boolean) -> Unit
+    text: IText,
+    onCheckChange: (Boolean) -> Unit
 ) {
     Row(
         Modifier
             .fillMaxWidth()
-            .clickable { onCheckChanged(!isChecked) }
-            .padding(end = 8.dp),
+            .clickable { onCheckChange(!isChecked) }
+            .padding(end = LocalDimens.current.paddingSmall),
         Arrangement.Start,
         Alignment.CenterVertically
     ) {
         Checkbox(
             isChecked,
-            { checked -> onCheckChanged(checked) }
+            { checked -> onCheckChange(checked) }
         )
-        Text(stringResource(textStringResource))
+        Text(text.text())
     }
 }
 

@@ -32,8 +32,8 @@ import com.feko.generictabletoprpg.features.disease.ui.DiseaseDetailsScreen
 import com.feko.generictabletoprpg.features.encounter.ui.EncounterScreen
 import com.feko.generictabletoprpg.features.feat.Feat
 import com.feko.generictabletoprpg.features.feat.ui.FeatDetailsScreen
-import com.feko.generictabletoprpg.features.filters.SpellFilter
-import com.feko.generictabletoprpg.features.filters.index
+import com.feko.generictabletoprpg.features.filter.SpellFilter
+import com.feko.generictabletoprpg.features.filter.index
 import com.feko.generictabletoprpg.features.io.ui.ImportScreen
 import com.feko.generictabletoprpg.features.searchall.ui.SearchAllScreen
 import com.feko.generictabletoprpg.features.spell.Spell

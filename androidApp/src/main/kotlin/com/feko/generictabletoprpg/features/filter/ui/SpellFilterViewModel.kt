@@ -1,4 +1,4 @@
-package com.feko.generictabletoprpg.features.filters.ui
+package com.feko.generictabletoprpg.features.filter.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

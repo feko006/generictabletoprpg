@@ -2,11 +2,11 @@ package com.feko.generictabletoprpg.common.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.feko.generictabletoprpg.features.searchall.domain.SmartNamedSearchComparator
 import com.feko.generictabletoprpg.common.data.local.IGetAllDao
 import com.feko.generictabletoprpg.common.domain.model.IIdentifiable
 import com.feko.generictabletoprpg.common.domain.model.INamed
-import com.feko.generictabletoprpg.features.filters.Filter
+import com.feko.generictabletoprpg.features.filter.Filter
+import com.feko.generictabletoprpg.features.searchall.domain.SmartNamedSearchComparator
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow

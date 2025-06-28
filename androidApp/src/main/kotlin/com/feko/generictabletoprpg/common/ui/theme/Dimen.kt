@@ -7,7 +7,8 @@ data class Dimens(
     val paddingSmall: Dp,
     val paddingMedium: Dp,
     val visualLarge: Dp,
-    val gapSmall: Dp
+    val gapSmall: Dp,
+    val gapMedium: Dp,
 )
 
 fun scaledDimens(factor: Float): Dimens =
@@ -15,7 +16,8 @@ fun scaledDimens(factor: Float): Dimens =
         paddingSmall = (8 * factor).dp,
         paddingMedium = (16 * factor).dp,
         visualLarge = (100 * factor).dp,
-        gapSmall = (8 * factor).dp
+        gapSmall = (8 * factor).dp,
+        gapMedium = (16 * factor).dp,
     )
 
 val compactDimens = scaledDimens(1f)

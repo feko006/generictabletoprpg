@@ -1,4 +1,4 @@
-package com.feko.generictabletoprpg.features.filters
+package com.feko.generictabletoprpg.features.filter
 
 fun Filter.index(): Int =
     when (this) {

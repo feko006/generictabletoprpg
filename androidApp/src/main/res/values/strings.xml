@@ -41,6 +41,15 @@
     <string name="cantrips">Cantrips</string>
     <string name="delete_dialog_title">Delete?</string>
     <string name="reset_dialog_title">Reset?</string>
+    <string name="common">Common</string>
+    <string name="any">Any</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="verbal">Verbal</string>
+    <string name="somatic">Somatic</string>
+    <string name="material">Material</string>
+    <string name="clear_all">Clear all</string>
+    <string name="apply">Apply</string>
     <!--Action-->
     <string name="action">Action</string>
     <string name="action_details_title">Action Details</string>
@@ -85,6 +94,8 @@
     <string name="confirm_spell_removal_from_list_dialog_title">Remove spell?</string>
     <string name="select_slot_level_for_casting_spell">Cast at which level?</string>
     <string name="spell_cast_with_slot_level">Spell cast at level %s</string>
+    <string name="text">Text</string>
+    <string name="hit_dice">Hit dice</string>
     <!--Spell-->
     <string name="spell">Spell</string>
     <string name="spell_details_title">Spell Details</string>
@@ -101,10 +112,9 @@
     <string name="file_import_hint">Select a .json or .orcbrew file</string>
     <string name="export_location_hint">Select a directory where the export will be generated</string>
     <!--Filter-->
+    <string name="filter">Filter</string>
     <string name="filter_type_placeholder">Type</string>
     <string name="class_filter_disclaimer">* Not all imported spells have classes set, so results may not be accurate</string>
-    <string name="text">Text</string>
-    <string name="hit_dice">Hit dice</string>
     <!--Stats-->
     <string name="five_e_stats">5e Stats</string>
     <string name="strength">Strength</string>

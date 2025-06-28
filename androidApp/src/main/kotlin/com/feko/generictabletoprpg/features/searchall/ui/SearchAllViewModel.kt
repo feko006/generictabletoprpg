@@ -1,45 +1,34 @@
 package com.feko.generictabletoprpg.features.searchall.ui
 
-import androidx.lifecycle.viewModelScope
-import com.feko.generictabletoprpg.common.ui.viewmodel.FilterSubViewModel
-import com.feko.generictabletoprpg.common.ui.viewmodel.IFilterSubViewModel
+import com.feko.generictabletoprpg.common.ui.viewmodel.FilterViewModel
+import com.feko.generictabletoprpg.common.ui.viewmodel.IFilterViewModel
 import com.feko.generictabletoprpg.common.ui.viewmodel.OverviewViewModel
-import com.feko.generictabletoprpg.features.filters.Filter
+import com.feko.generictabletoprpg.features.filter.Filter
 import com.feko.generictabletoprpg.features.searchall.domain.usecase.ISearchAllUseCase
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 
 class SearchAllViewModel(
     defaultFilter: Filter? = null,
-    private val searchAllUseCase: ISearchAllUseCase
-) : OverviewViewModel<Any>(null) {
+    private val searchAllUseCase: ISearchAllUseCase,
+    private val filterViewModel: FilterViewModel = FilterViewModel(defaultFilter)
+) : OverviewViewModel<Any>(null),
+    IFilterViewModel by filterViewModel {
 
-    private val _filter = FilterSubViewModel(viewModelScope, defaultFilter)
-    val filter: IFilterSubViewModel = _filter
-
-    private val _isBottomSheetVisible = MutableStateFlow(false)
-    val isBottomSheetVisible: Flow<Boolean> = _isBottomSheetVisible
-
-    init {
-        viewModelScope.launch {
-            _items.collect {
-                _filter._isButtonVisible.emit(it.any())
-            }
-        }
-    }
+    private val _isFilterBottomSheetVisible = MutableStateFlow(false)
+    val isFilterBottomSheetVisible: Flow<Boolean> = _isFilterBottomSheetVisible
 
     fun filterRequested() {
-        _isBottomSheetVisible.update { true }
+        _isFilterBottomSheetVisible.update { true }
     }
 
     override fun getAllItems(): List<Any> = searchAllUseCase.getAllItems()
 
-    override fun getFilterFlow(): StateFlow<Filter?> = filter.activeFilter
+    override fun getFilterFlow(): StateFlow<Filter?> = activeFilter
 
     fun bottomSheetHidden() {
-        _isBottomSheetVisible.update { false }
+        _isFilterBottomSheetVisible.update { false }
     }
 }

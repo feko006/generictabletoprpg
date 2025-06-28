@@ -33,6 +33,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.feko.generictabletoprpg.R
 import com.feko.generictabletoprpg.common.domain.asSignedString
+import com.feko.generictabletoprpg.common.domain.model.IText.StringResourceText.Companion.asText
 import com.feko.generictabletoprpg.common.ui.components.AlertDialogBase
 import com.feko.generictabletoprpg.common.ui.components.BoxWithScrollIndicator
 import com.feko.generictabletoprpg.common.ui.components.CheckboxWithText
@@ -596,7 +597,9 @@ fun StatsEditDialog(
                         statsContainer,
                         onValueUpdate = {
                             onValueUpdate(
-                                (editedStats.copy() as StatsTrackedThing).apply { serializedItem = it }
+                                (editedStats.copy() as StatsTrackedThing).apply {
+                                    serializedItem = it
+                                }
                             )
                         },
                         onFormSubmit = {
@@ -678,7 +681,7 @@ private fun StatsStatEntry(
     }
     CheckboxWithText(
         statEntry.isProficientInSavingThrow,
-        R.string.saving_throw_proficiency
+        R.string.saving_throw_proficiency.asText()
     ) { checked ->
         val newStatEntry =
             statsContainer.stats[statIndex].copy(isProficientInSavingThrow = checked)
@@ -691,7 +694,7 @@ private fun StatsStatEntry(
     }
     CheckboxWithText(
         statEntry.isSpellcastingModifier,
-        R.string.spellcasting_modifier
+        R.string.spellcasting_modifier.asText()
     ) { checked ->
         val newStatEntry =
             statsContainer.stats[statIndex].copy(isSpellcastingModifier = checked)
@@ -782,7 +785,7 @@ private fun StatsStatEntrySkill(
     }
     CheckboxWithText(
         skill.isProficient,
-        R.string.proficiency
+        R.string.proficiency.asText()
     ) { checked ->
         val newStatEntry =
             statsContainer.stats[statIndex].let {
