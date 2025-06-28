@@ -71,7 +71,7 @@ fun SearchAllScreen(
     ) { paddingValues ->
         SearchableLazyList(
             viewModel,
-            listItem = { item, _, _ ->
+            listItem = { item ->
                 OverviewListItem(
                     item,
                     Modifier

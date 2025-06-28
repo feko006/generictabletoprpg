@@ -59,7 +59,7 @@ fun TrackerGroupsScreen(
     ) { paddingValues ->
         SearchableLazyList(
             viewModel = viewModel,
-            listItem = { item, _, _ ->
+            listItem = { item ->
                 TrackerGroupListItem(
                     item = item,
                     viewModel = viewModel,

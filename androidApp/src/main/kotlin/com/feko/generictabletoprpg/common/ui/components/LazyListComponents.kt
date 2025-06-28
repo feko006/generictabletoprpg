@@ -45,14 +45,13 @@ import com.feko.generictabletoprpg.common.ui.viewmodel.OverviewViewModel
 import com.feko.generictabletoprpg.features.spell.Spell
 import sh.calvin.reorderable.ReorderableCollectionItemScope
 import sh.calvin.reorderable.ReorderableItem
-import sh.calvin.reorderable.ReorderableLazyListState
 import sh.calvin.reorderable.rememberReorderableLazyListState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun <TViewModel, T> SearchableLazyList(
     viewModel: TViewModel,
-    listItem: @Composable LazyItemScope.(T, Boolean, ReorderableLazyListState?) -> Unit,
+    listItem: @Composable LazyItemScope.(T) -> Unit,
     modifier: Modifier = Modifier,
     addFabButtonSpacerToList: Boolean = false,
     uniqueListItemKey: (Any) -> Any = { (it as IIdentifiable).id },
@@ -77,7 +76,7 @@ fun <TViewModel, T> SearchableLazyList(
                     listItems,
                     key = uniqueListItemKey
                 ) { item ->
-                    listItem(item, false, null)
+                    listItem(item)
                     HorizontalDivider()
                 }
             }
