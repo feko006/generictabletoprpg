@@ -1,6 +1,8 @@
 package com.feko.generictabletoprpg.common.domain.model
 
-@DoNotObfuscate
+import androidx.annotation.Keep
+
+@Keep
 data class Damage(
     val damageType: String,
     val damageDie: Int,

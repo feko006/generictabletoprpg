@@ -1,11 +1,11 @@
 package com.feko.generictabletoprpg.features.tracker.domain.model
 
-import com.feko.generictabletoprpg.common.domain.model.DoNotObfuscate
+import androidx.annotation.Keep
 import com.feko.generictabletoprpg.common.domain.model.IIdentifiable
 import com.feko.generictabletoprpg.common.domain.model.INamed
 import com.feko.generictabletoprpg.features.tracker.TrackedThingGroupEntity
 
-@DoNotObfuscate
+@Keep
 data class TrackedThingGroup(
     @Transient
     override var id: Long = 0L,

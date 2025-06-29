@@ -2,12 +2,12 @@
 
 package com.feko.generictabletoprpg.features.tracker.domain.model
 
-import com.feko.generictabletoprpg.common.domain.model.DoNotObfuscate
+import androidx.annotation.Keep
 import com.feko.generictabletoprpg.common.domain.IJson
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-@DoNotObfuscate
+@Keep
 abstract class JsonTrackedThing<T>(
     id: Long, name: String,
     value: String,

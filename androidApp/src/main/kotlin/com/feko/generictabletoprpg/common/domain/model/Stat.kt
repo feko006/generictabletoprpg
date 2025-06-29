@@ -1,6 +1,8 @@
 package com.feko.generictabletoprpg.common.domain.model
 
-@DoNotObfuscate
+import androidx.annotation.Keep
+
+@Keep
 enum class Stat {
     Str,
     Dex,

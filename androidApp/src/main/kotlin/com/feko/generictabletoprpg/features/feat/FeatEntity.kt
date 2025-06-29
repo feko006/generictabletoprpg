@@ -1,15 +1,15 @@
 package com.feko.generictabletoprpg.features.feat
 
+import androidx.annotation.Keep
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.feko.generictabletoprpg.common.domain.model.DoNotObfuscate
 import com.feko.generictabletoprpg.common.domain.model.ICoreConvertible
 import com.feko.generictabletoprpg.common.domain.model.IFromSource
 import com.feko.generictabletoprpg.common.domain.model.IMutableIdentifiable
 import com.feko.generictabletoprpg.common.domain.model.INamed
 import com.feko.generictabletoprpg.common.domain.model.Stat
 
-@DoNotObfuscate
+@Keep
 @Entity(tableName = "feats")
 data class FeatEntity(
     @PrimaryKey(autoGenerate = true)

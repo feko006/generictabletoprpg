@@ -1,14 +1,14 @@
 package com.feko.generictabletoprpg.features.encounter
 
+import androidx.annotation.Keep
 import androidx.compose.runtime.Immutable
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.feko.generictabletoprpg.common.domain.model.DoNotObfuscate
 import com.feko.generictabletoprpg.common.domain.model.IMutableIdentifiable
 import com.feko.generictabletoprpg.common.domain.model.INamed
 
 @Immutable
-@DoNotObfuscate
+@Keep
 @Entity(tableName = "initiative_entries")
 data class InitiativeEntryEntity(
     @PrimaryKey(autoGenerate = true)

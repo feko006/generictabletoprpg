@@ -1,10 +1,10 @@
 package com.feko.generictabletoprpg.features.tracker
 
+import androidx.annotation.Keep
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
-import com.feko.generictabletoprpg.common.domain.model.DoNotObfuscate
 import com.feko.generictabletoprpg.common.domain.model.ICoreConvertible
 import com.feko.generictabletoprpg.common.domain.model.IMutableIdentifiable
 import com.feko.generictabletoprpg.common.domain.model.INamed
@@ -19,7 +19,7 @@ import com.feko.generictabletoprpg.features.tracker.domain.model.StatsTrackedThi
 import com.feko.generictabletoprpg.features.tracker.domain.model.TextTrackedThing
 import com.feko.generictabletoprpg.features.tracker.domain.model.TrackedThing
 
-@DoNotObfuscate
+@Keep
 @Entity(
     tableName = "tracked_things",
     foreignKeys = [

@@ -1,9 +1,9 @@
 package com.feko.generictabletoprpg.features.tracker.domain.model
 
-import com.feko.generictabletoprpg.common.domain.model.DoNotObfuscate
+import androidx.annotation.Keep
 import java.util.Locale
 
-@DoNotObfuscate
+@Keep
 class PercentageTrackedThing(
     id: Long = 0L,
     name: String,

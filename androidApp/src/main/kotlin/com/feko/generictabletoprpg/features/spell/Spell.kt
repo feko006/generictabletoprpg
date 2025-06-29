@@ -1,13 +1,13 @@
 package com.feko.generictabletoprpg.features.spell
 
-import com.feko.generictabletoprpg.common.domain.model.DoNotObfuscate
+import androidx.annotation.Keep
+import com.feko.generictabletoprpg.common.domain.IProcessEdnMap
 import com.feko.generictabletoprpg.common.domain.model.IFromSource
 import com.feko.generictabletoprpg.common.domain.model.IIdentifiable
 import com.feko.generictabletoprpg.common.domain.model.INamed
-import com.feko.generictabletoprpg.common.domain.IProcessEdnMap
 import kotlinx.serialization.Serializable
 
-@DoNotObfuscate
+@Keep
 @Serializable
 data class Spell(
     override val id: Long = 0,
@@ -83,7 +83,7 @@ data class Spell(
         }
     }
 
-    @DoNotObfuscate
+    @Keep
     @Serializable
     data class SpellComponents(
         val verbal: Boolean,

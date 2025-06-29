@@ -1,8 +1,9 @@
 package com.feko.generictabletoprpg.common.domain.model
 
+import androidx.annotation.Keep
 import com.feko.generictabletoprpg.common.domain.IProcessEdnMap
 
-@DoNotObfuscate
+@Keep
 data class Cost(
     val number: Long,
     val type: String

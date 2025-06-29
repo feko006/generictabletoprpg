@@ -1,9 +1,9 @@
 package com.feko.generictabletoprpg.features.tracker.domain.model
 
-import com.feko.generictabletoprpg.common.domain.model.DoNotObfuscate
+import androidx.annotation.Keep
 import com.squareup.moshi.Types
 
-@DoNotObfuscate
+@Keep
 class SpellListTrackedThing(
     id: Long = 0L,
     name: String,

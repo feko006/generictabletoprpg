@@ -1,10 +1,10 @@
 package com.feko.generictabletoprpg.common.data.local.entities
 
+import androidx.annotation.Keep
 import com.feko.generictabletoprpg.common.domain.model.Cost
-import com.feko.generictabletoprpg.common.domain.model.DoNotObfuscate
 import com.feko.generictabletoprpg.common.domain.model.ICoreConvertible
 
-@DoNotObfuscate
+@Keep
 data class CostEmbeddedEntity(
     val number: Long,
     val type: String

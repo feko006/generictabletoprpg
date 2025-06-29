@@ -1,13 +1,13 @@
 package com.feko.generictabletoprpg.features.feat
 
-import com.feko.generictabletoprpg.common.domain.model.DoNotObfuscate
+import androidx.annotation.Keep
+import com.feko.generictabletoprpg.common.domain.IProcessEdnMap
 import com.feko.generictabletoprpg.common.domain.model.IFromSource
 import com.feko.generictabletoprpg.common.domain.model.IIdentifiable
 import com.feko.generictabletoprpg.common.domain.model.INamed
 import com.feko.generictabletoprpg.common.domain.model.Stat
-import com.feko.generictabletoprpg.common.domain.IProcessEdnMap
 
-@DoNotObfuscate
+@Keep
 data class Feat(
     override val id: Long = 0,
     override val name: String,

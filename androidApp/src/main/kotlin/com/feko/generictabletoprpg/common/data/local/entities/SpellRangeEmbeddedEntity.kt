@@ -1,9 +1,9 @@
 package com.feko.generictabletoprpg.common.data.local.entities
 
-import com.feko.generictabletoprpg.common.domain.model.DoNotObfuscate
+import androidx.annotation.Keep
 import com.feko.generictabletoprpg.features.spell.SpellRange
 
-@DoNotObfuscate
+@Keep
 data class SpellRangeEmbeddedEntity(
     val isSelf: Boolean,
     val isTouch: Boolean,

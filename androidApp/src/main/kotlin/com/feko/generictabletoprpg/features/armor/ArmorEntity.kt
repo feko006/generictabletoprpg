@@ -1,14 +1,14 @@
 package com.feko.generictabletoprpg.features.armor
 
+import androidx.annotation.Keep
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.feko.generictabletoprpg.common.domain.model.DoNotObfuscate
 import com.feko.generictabletoprpg.common.domain.model.ICoreConvertible
 import com.feko.generictabletoprpg.common.domain.model.IFromSource
 import com.feko.generictabletoprpg.common.domain.model.IMutableIdentifiable
 import com.feko.generictabletoprpg.common.domain.model.INamed
 
-@DoNotObfuscate
+@Keep
 @Entity(
     tableName = "armors"
 )

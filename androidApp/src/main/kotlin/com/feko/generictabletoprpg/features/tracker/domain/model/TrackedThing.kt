@@ -1,12 +1,12 @@
 package com.feko.generictabletoprpg.features.tracker.domain.model
 
+import androidx.annotation.Keep
 import androidx.annotation.StringRes
 import com.feko.generictabletoprpg.R
-import com.feko.generictabletoprpg.common.domain.model.DoNotObfuscate
 import com.feko.generictabletoprpg.common.domain.model.IMutableIdentifiable
 import com.feko.generictabletoprpg.common.domain.model.INamed
 
-@DoNotObfuscate
+@Keep
 sealed class TrackedThing(
     @Transient
     override var id: Long = 0L,
@@ -18,7 +18,7 @@ sealed class TrackedThing(
     var groupId: Long = 0L
 ) : IMutableIdentifiable,
     INamed {
-    @DoNotObfuscate
+    @Keep
     enum class Type(@StringRes val nameResource: Int) {
         None(0),
         Percentage(R.string.percentage),
@@ -51,7 +51,7 @@ sealed class TrackedThing(
                 Type.FiveEStats -> StatsTrackedThing(0, "", "[]", index, groupId)
             }
 
-        @DoNotObfuscate
+        @Keep
         object Empty : TrackedThing(name = "", type = Type.None) {
             override fun setNewValue(value: String) {}
             override fun getPrintableValue(): String = ""

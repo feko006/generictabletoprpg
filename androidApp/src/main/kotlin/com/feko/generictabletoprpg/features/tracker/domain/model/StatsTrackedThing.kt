@@ -1,10 +1,10 @@
 package com.feko.generictabletoprpg.features.tracker.domain.model
 
 import android.content.Context
+import androidx.annotation.Keep
 import com.feko.generictabletoprpg.R
-import com.feko.generictabletoprpg.common.domain.model.DoNotObfuscate
 
-@DoNotObfuscate
+@Keep
 class StatsTrackedThing(
     id: Long = 0L,
     name: String,

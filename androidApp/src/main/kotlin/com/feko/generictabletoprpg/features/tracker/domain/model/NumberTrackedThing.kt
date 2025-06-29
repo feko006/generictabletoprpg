@@ -1,8 +1,8 @@
 package com.feko.generictabletoprpg.features.tracker.domain.model
 
-import com.feko.generictabletoprpg.common.domain.model.DoNotObfuscate
+import androidx.annotation.Keep
 
-@DoNotObfuscate
+@Keep
 class NumberTrackedThing(
     id: Long = 0L,
     name: String,

@@ -1,13 +1,13 @@
 package com.feko.generictabletoprpg.features.tracker.domain.model
 
-import com.feko.generictabletoprpg.common.domain.model.DoNotObfuscate
+import androidx.annotation.Keep
 import com.feko.generictabletoprpg.common.domain.model.IFromSource
 import com.feko.generictabletoprpg.common.domain.model.IIdentifiable
 import com.feko.generictabletoprpg.common.domain.model.INamed
 import com.feko.generictabletoprpg.features.spell.Spell
 import com.feko.generictabletoprpg.features.spell.SpellRange
 
-@DoNotObfuscate
+@Keep
 data class SpellListEntry(
     override val id: Long = 0,
     override val name: String,

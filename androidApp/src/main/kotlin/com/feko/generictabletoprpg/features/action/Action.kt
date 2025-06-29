@@ -1,11 +1,11 @@
 package com.feko.generictabletoprpg.features.action
 
-import com.feko.generictabletoprpg.common.domain.model.DoNotObfuscate
+import androidx.annotation.Keep
 import com.feko.generictabletoprpg.common.domain.model.IFromSource
 import com.feko.generictabletoprpg.common.domain.model.IIdentifiable
 import com.feko.generictabletoprpg.common.domain.model.INamed
 
-@DoNotObfuscate
+@Keep
 data class Action(
     override val id: Long = 0,
     override val name: String,

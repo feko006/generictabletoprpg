@@ -1,16 +1,16 @@
 package com.feko.generictabletoprpg.features.ammunition
 
+import androidx.annotation.Keep
 import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.feko.generictabletoprpg.common.data.local.entities.CostEmbeddedEntity
-import com.feko.generictabletoprpg.common.domain.model.DoNotObfuscate
 import com.feko.generictabletoprpg.common.domain.model.ICoreConvertible
 import com.feko.generictabletoprpg.common.domain.model.IFromSource
 import com.feko.generictabletoprpg.common.domain.model.IMutableIdentifiable
 import com.feko.generictabletoprpg.common.domain.model.INamed
 
-@DoNotObfuscate
+@Keep
 @Entity(tableName = "ammunitions")
 data class AmmunitionEntity(
     @PrimaryKey(autoGenerate = true)

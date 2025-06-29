@@ -1,9 +1,9 @@
 package com.feko.generictabletoprpg.features.spell
 
-import com.feko.generictabletoprpg.common.domain.model.DoNotObfuscate
+import androidx.annotation.Keep
 import kotlinx.serialization.Serializable
 
-@DoNotObfuscate
+@Keep
 @Serializable
 data class SpellRange(
     val isSelf: Boolean,
