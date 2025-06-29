@@ -35,7 +35,6 @@ import com.feko.generictabletoprpg.common.ui.viewmodel.ResultViewModel
 import com.feko.generictabletoprpg.features.filter.asFilter
 import com.feko.generictabletoprpg.features.filter.ui.FilterChipGroup
 import com.feko.generictabletoprpg.features.filter.ui.FilterScreen
-import kotlinx.coroutines.flow.map
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -59,13 +58,8 @@ fun SearchAllScreen(
     Scaffold(
         topBar = {
             GttrpgTopAppBar(R.string.search_all_title.asText(), onNavigationIconClick) {
-                val isFilterButtonVisible by viewModel.items
-                    .map { it.isNotEmpty() }
-                    .collectAsState(false)
-                if (isFilterButtonVisible) {
-                    IconButton(onClick = { viewModel.filterRequested() }) {
-                        Icon(Icons.Default.FilterList, "")
-                    }
+                IconButton(onClick = { viewModel.filterRequested() }) {
+                    Icon(Icons.Default.FilterList, "")
                 }
             }
         }
