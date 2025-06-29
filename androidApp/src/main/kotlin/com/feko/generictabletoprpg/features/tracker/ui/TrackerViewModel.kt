@@ -5,14 +5,13 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.lifecycle.viewModelScope
 import com.feko.generictabletoprpg.R
 import com.feko.generictabletoprpg.common.domain.IJson
-import com.feko.generictabletoprpg.common.domain.model.INamed
+import com.feko.generictabletoprpg.common.domain.createNewComparator
 import com.feko.generictabletoprpg.common.domain.model.IText
 import com.feko.generictabletoprpg.common.ui.viewmodel.FabDropdownSubViewModel
 import com.feko.generictabletoprpg.common.ui.viewmodel.IFabDropdownSubViewModel
 import com.feko.generictabletoprpg.common.ui.viewmodel.IToastSubViewModel
 import com.feko.generictabletoprpg.common.ui.viewmodel.OverviewViewModel
 import com.feko.generictabletoprpg.common.ui.viewmodel.ToastSubViewModel
-import com.feko.generictabletoprpg.features.searchall.domain.SmartNamedSearchComparator
 import com.feko.generictabletoprpg.features.searchall.domain.usecase.ISearchAllUseCase
 import com.feko.generictabletoprpg.features.spell.SpellDao
 import com.feko.generictabletoprpg.features.tracker.TrackedThingDao
@@ -22,13 +21,13 @@ import com.feko.generictabletoprpg.features.tracker.domain.model.HitDiceTrackedT
 import com.feko.generictabletoprpg.features.tracker.domain.model.JsonTrackedThing
 import com.feko.generictabletoprpg.features.tracker.domain.model.NumberTrackedThing
 import com.feko.generictabletoprpg.features.tracker.domain.model.PercentageTrackedThing
-import com.feko.generictabletoprpg.features.tracker.domain.model.SpellListTrackedThing
 import com.feko.generictabletoprpg.features.tracker.domain.model.SpellListEntry
+import com.feko.generictabletoprpg.features.tracker.domain.model.SpellListTrackedThing
 import com.feko.generictabletoprpg.features.tracker.domain.model.SpellSlotTrackedThing
 import com.feko.generictabletoprpg.features.tracker.domain.model.StatEntry
 import com.feko.generictabletoprpg.features.tracker.domain.model.StatSkillEntry
-import com.feko.generictabletoprpg.features.tracker.domain.model.StatsTrackedThing
 import com.feko.generictabletoprpg.features.tracker.domain.model.StatsContainer
+import com.feko.generictabletoprpg.features.tracker.domain.model.StatsTrackedThing
 import com.feko.generictabletoprpg.features.tracker.domain.model.TrackedThing
 import com.feko.generictabletoprpg.features.tracker.domain.model.createDefault5EStatEntries
 import kotlinx.coroutines.Dispatchers
@@ -45,7 +44,7 @@ class TrackerViewModel(
     private val trackedThingDao: TrackedThingDao,
     private val spellDao: SpellDao,
     private val json: IJson,
-    searchAllUseCase: ISearchAllUseCase
+    searchAllUseCase: ISearchAllUseCase,
 ) : OverviewViewModel<Any>(trackedThingDao) {
 
     private val _fabDropdown = FabDropdownSubViewModel(viewModelScope)
@@ -70,12 +69,13 @@ class TrackerViewModel(
             if (searchString.isBlank()) {
                 items
             } else {
-                (items + allItems)
-                    .filter { item ->
-                        item is INamed
-                                && item.name.lowercase().contains(searchString.lowercase())
+                _isLoadingShown.emit(true)
+                val sortedItems =
+                    withContext(Dispatchers.Default) {
+                        (items + allItems).sortedWith(createNewComparator(searchString))
                     }
-                    .sortedWith(SmartNamedSearchComparator(searchString))
+                _isLoadingShown.emit(false)
+                sortedItems
             }
         }
 
@@ -108,7 +108,7 @@ class TrackerViewModel(
                 fiveEDefaultStats = fiveEDefaultStats ?: createDefault5EStatEntries(context)
                 val defaultStats = requireNotNull(fiveEDefaultStats)
                 val newStats =
-                    TrackedThing.Companion.emptyOfType(type, _items.value.size, groupId) as StatsTrackedThing
+                    TrackedThing.emptyOfType(type, _items.value.size, groupId) as StatsTrackedThing
                 val defaultStatsContainer =
                     newStats.serializedItem.copy(stats = defaultStats)
                 newStats.setItem(defaultStatsContainer, json)

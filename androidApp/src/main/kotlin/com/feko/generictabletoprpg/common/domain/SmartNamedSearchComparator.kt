@@ -1,4 +1,4 @@
-package com.feko.generictabletoprpg.features.searchall.domain
+package com.feko.generictabletoprpg.common.domain
 
 import com.feko.generictabletoprpg.common.domain.model.INamed
 import com.feko.generictabletoprpg.features.tracker.domain.model.TrackedThing
