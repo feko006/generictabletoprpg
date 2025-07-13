@@ -1,6 +1,6 @@
 package com.feko.generictabletoprpg.features.filter.ui
 
-import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -56,134 +56,166 @@ fun SpellFilters(
         }
     }
 
-    AnimatedVisibility(selectedTab == tabTitles.indexOf(R.string.common)) {
-        Column(
-            verticalArrangement = Arrangement.spacedBy(LocalDimens.current.gapMedium)
-        ) {
-            GttrpgTriStateBooleanFilterField(
-                R.string.concentration.asText(),
-                filter.concentration,
-                Modifier.fillMaxWidth()
-            ) { onFilterUpdate(filter.copyWithNewConcentration(it)) }
-            GttrpgTriStateBooleanFilterField(
-                R.string.ritual.asText(),
-                filter.isRitual,
-                Modifier.fillMaxWidth()
-            ) { onFilterUpdate(filter.copyWithNewRitual(it)) }
+    Crossfade(selectedTab) { selectedTab ->
+        when (selectedTab) {
+            tabTitles.indexOf(R.string.common) -> CommonSpellFilterSection(filter, onFilterUpdate)
 
-            Text(stringResource(R.string.components))
+            tabTitles.indexOf(R.string.school) ->
+                SchoolSpellFilterSection(spellFilterViewModel, filter, onFilterUpdate)
 
-            GttrpgTriStateBooleanFilterField(
-                R.string.verbal.asText(),
-                filter.spellComponents?.verbal,
-                Modifier.fillMaxWidth()
-            ) {
-                onFilterUpdate(
-                    filter.copyWithNewSpellComponents(
-                        filter.spellComponents?.copy(verbal = it)
-                            ?: SpellComponentsFilter(verbal = it)
-                    )
-                )
-            }
+            tabTitles.indexOf(R.string.level) ->
+                LevelSpellFilterSection(spellFilterViewModel, filter, onFilterUpdate)
 
-            GttrpgTriStateBooleanFilterField(
-                R.string.somatic.asText(),
-                filter.spellComponents?.somatic,
-                Modifier.fillMaxWidth()
-            ) {
-                onFilterUpdate(
-                    filter.copyWithNewSpellComponents(
-                        filter.spellComponents?.copy(somatic = it)
-                            ?: SpellComponentsFilter(somatic = it)
-                    )
-                )
-            }
-
-            GttrpgTriStateBooleanFilterField(
-                R.string.material.asText(),
-                filter.spellComponents?.material,
-                Modifier.fillMaxWidth()
-            ) {
-                onFilterUpdate(
-                    filter.copyWithNewSpellComponents(
-                        filter.spellComponents?.copy(material = it)
-                            ?: SpellComponentsFilter(material = it)
-                    )
-                )
-            }
+            tabTitles.indexOf(R.string.class_term) ->
+                ClassSpellFilterSection(classes, filter, onFilterUpdate)
         }
     }
+}
 
-    AnimatedVisibility(selectedTab == tabTitles.indexOf(R.string.school)) {
-        val schools by spellFilterViewModel.schools.collectAsState(listOf())
-        Column {
-            schools.forEach { school ->
-                CheckboxWithText(
-                    filter.schools.contains(school),
-                    school.asText()
-                ) { isChecked ->
-                    onFilterUpdate(
-                        filter.copy(
-                            schools =
-                                if (isChecked) {
-                                    filter.schools.plus(school)
-                                } else {
-                                    filter.schools.minus(school)
-                                }
-                        )
-                    )
-                }
-            }
-        }
-    }
-
-    AnimatedVisibility(selectedTab == tabTitles.indexOf(R.string.level)) {
-        val levels by spellFilterViewModel.levels.collectAsState(listOf())
-        Column {
-            levels.forEach { level ->
-                CheckboxWithText(
-                    filter.levels.contains(level),
-                    level.toString().asText()
-                ) { isChecked ->
-                    onFilterUpdate(
-                        filter.copy(
-                            levels = if (isChecked) {
-                                filter.levels.plus(level.toInt())
-                            } else {
-                                filter.levels.minus(level.toInt())
-                            }
-                        )
-                    )
-                }
-            }
-        }
-    }
-
-    AnimatedVisibility(
-        classes.isNotEmpty() && selectedTab == tabTitles.indexOf(R.string.class_term)
+@Composable
+private fun CommonSpellFilterSection(
+    filter: SpellFilter,
+    onFilterUpdate: (Filter) -> Unit
+) {
+    Column(
+        verticalArrangement = Arrangement.spacedBy(LocalDimens.current.gapMedium)
     ) {
-        Column {
-            Text(
-                stringResource(R.string.class_filter_disclaimer),
-                Modifier.padding(horizontal = LocalDimens.current.paddingMedium),
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f),
-                style = MaterialTheme.typography.labelMedium
+        GttrpgTriStateBooleanFilterField(
+            R.string.concentration.asText(),
+            filter.concentration,
+            Modifier.fillMaxWidth()
+        ) { onFilterUpdate(filter.copyWithNewConcentration(it)) }
+        GttrpgTriStateBooleanFilterField(
+            R.string.ritual.asText(),
+            filter.isRitual,
+            Modifier.fillMaxWidth()
+        ) { onFilterUpdate(filter.copyWithNewRitual(it)) }
+
+        Text(stringResource(R.string.components))
+
+        GttrpgTriStateBooleanFilterField(
+            R.string.verbal.asText(),
+            filter.spellComponents?.verbal,
+            Modifier.fillMaxWidth()
+        ) {
+            onFilterUpdate(
+                filter.copyWithNewSpellComponents(
+                    filter.spellComponents?.copy(verbal = it)
+                        ?: SpellComponentsFilter(verbal = it)
+                )
             )
-            classes.forEach { clazz ->
-                CheckboxWithText(
-                    filter.classes.contains(clazz),
-                    clazz.toString().asText()
-                ) { isChecked ->
-                    onFilterUpdate(
-                        filter.copy(
-                            classes = if (isChecked) {
-                                filter.classes.plus(clazz)
+        }
+
+        GttrpgTriStateBooleanFilterField(
+            R.string.somatic.asText(),
+            filter.spellComponents?.somatic,
+            Modifier.fillMaxWidth()
+        ) {
+            onFilterUpdate(
+                filter.copyWithNewSpellComponents(
+                    filter.spellComponents?.copy(somatic = it)
+                        ?: SpellComponentsFilter(somatic = it)
+                )
+            )
+        }
+
+        GttrpgTriStateBooleanFilterField(
+            R.string.material.asText(),
+            filter.spellComponents?.material,
+            Modifier.fillMaxWidth()
+        ) {
+            onFilterUpdate(
+                filter.copyWithNewSpellComponents(
+                    filter.spellComponents?.copy(material = it)
+                        ?: SpellComponentsFilter(material = it)
+                )
+            )
+        }
+    }
+}
+
+@Composable
+private fun SchoolSpellFilterSection(
+    spellFilterViewModel: SpellFilterViewModel,
+    filter: SpellFilter,
+    onFilterUpdate: (Filter) -> Unit
+) {
+    val schools by spellFilterViewModel.schools.collectAsState(listOf())
+    Column {
+        schools.forEach { school ->
+            CheckboxWithText(
+                filter.schools.contains(school),
+                school.asText()
+            ) { isChecked ->
+                onFilterUpdate(
+                    filter.copy(
+                        schools =
+                            if (isChecked) {
+                                filter.schools.plus(school)
                             } else {
-                                filter.classes.minus(clazz)
+                                filter.schools.minus(school)
                             }
-                        )
                     )
-                }
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun LevelSpellFilterSection(
+    spellFilterViewModel: SpellFilterViewModel,
+    filter: SpellFilter,
+    onFilterUpdate: (Filter) -> Unit
+) {
+    val levels by spellFilterViewModel.levels.collectAsState(listOf())
+    Column {
+        levels.forEach { level ->
+            CheckboxWithText(
+                filter.levels.contains(level),
+                level.toString().asText()
+            ) { isChecked ->
+                onFilterUpdate(
+                    filter.copy(
+                        levels = if (isChecked) {
+                            filter.levels.plus(level.toInt())
+                        } else {
+                            filter.levels.minus(level.toInt())
+                        }
+                    )
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun ClassSpellFilterSection(
+    classes: List<String>,
+    filter: SpellFilter,
+    onFilterUpdate: (Filter) -> Unit
+) {
+    Column {
+        Text(
+            stringResource(R.string.class_filter_disclaimer),
+            Modifier.padding(horizontal = LocalDimens.current.paddingMedium),
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f),
+            style = MaterialTheme.typography.labelMedium
+        )
+        classes.forEach { clazz ->
+            CheckboxWithText(
+                filter.classes.contains(clazz),
+                clazz.toString().asText()
+            ) { isChecked ->
+                onFilterUpdate(
+                    filter.copy(
+                        classes = if (isChecked) {
+                            filter.classes.plus(clazz)
+                        } else {
+                            filter.classes.minus(clazz)
+                        }
+                    )
+                )
             }
         }
     }
