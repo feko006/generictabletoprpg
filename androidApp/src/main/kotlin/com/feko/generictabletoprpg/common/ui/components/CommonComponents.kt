@@ -2,6 +2,10 @@ package com.feko.generictabletoprpg.common.ui.components
 
 import android.widget.Toast
 import androidx.annotation.StringRes
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.ScrollableState
@@ -71,7 +75,6 @@ import com.feko.generictabletoprpg.features.disease.Disease
 import com.feko.generictabletoprpg.features.feat.Feat
 import com.feko.generictabletoprpg.features.spell.Spell
 import com.feko.generictabletoprpg.features.weapon.Weapon
-
 
 @Composable
 fun TextWithLabel(
@@ -354,4 +357,17 @@ fun BoxWithScrollIndicator(
             )
         }
     }
+}
+
+@Composable
+fun StableAnimatedVisibility(
+    visible: Boolean,
+    content: @Composable AnimatedVisibilityScope.() -> Unit
+) {
+    AnimatedVisibility(
+        visible,
+        enter = fadeIn(),
+        exit = fadeOut(),
+        content = content
+    )
 }

@@ -1,6 +1,5 @@
 package com.feko.generictabletoprpg.common.ui.components
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -207,24 +206,24 @@ private fun <TViewModel, T> SearchableLazyListLayout(
 ) where TViewModel : OverviewViewModel<T>,
         T : Any {
     val searchString by viewModel.searchString.collectAsState("")
-    Box {
-        val dimens = LocalDimens.current
-        Column(
-            modifier = modifier.padding(horizontal = dimens.paddingMedium),
-            verticalArrangement = Arrangement.spacedBy(dimens.gapSmall)
-        ) {
-            SearchTextField(
-                searchString,
-                onValueChange = {
-                    viewModel.searchStringUpdated(it)
-                },
-                searchFieldHint
-            )
+    val dimens = LocalDimens.current
+    Column(
+        modifier = modifier.padding(horizontal = dimens.paddingMedium),
+        verticalArrangement = Arrangement.spacedBy(dimens.gapSmall)
+    ) {
+        SearchTextField(
+            searchString,
+            onValueChange = {
+                viewModel.searchStringUpdated(it)
+            },
+            searchFieldHint
+        )
+        Box {
             listContent(searchString)
-        }
-        val isLoadingShown by viewModel.isLoadingShown.collectAsState()
-        AnimatedVisibility(isLoadingShown) {
-            FillingLoadingIndicator()
+            val isLoadingShown by viewModel.isLoadingShown.collectAsState()
+            StableAnimatedVisibility(isLoadingShown) {
+                FillingLoadingIndicator()
+            }
         }
     }
 }

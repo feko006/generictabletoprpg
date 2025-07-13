@@ -1,6 +1,5 @@
 package com.feko.generictabletoprpg.features.searchall.ui
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -96,7 +95,7 @@ fun SearchAllScreen(
         }
     }
     val isBottomSheetVisible by viewModel.isFilterBottomSheetVisible.collectAsState(false)
-    AnimatedVisibility(isBottomSheetVisible) {
+    if (isBottomSheetVisible) {
         ModalBottomSheet(
             onDismissRequest = { viewModel.bottomSheetHidden() },
             sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
