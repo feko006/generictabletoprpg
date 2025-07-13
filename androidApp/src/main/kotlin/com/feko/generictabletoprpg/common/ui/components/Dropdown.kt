@@ -12,7 +12,7 @@ import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -41,12 +41,12 @@ fun <T> GttrpgDropdownField(
         modifier = Modifier.fillMaxWidth()
     ) {
         var textFieldSize by remember { mutableStateOf(Size.Zero) }
-        OutlinedTextField(
+        GttrpgOutlinedTextField(
             textFieldValue,
             onValueChange = {},
             Modifier
                 .fillMaxWidth()
-                .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable, true)
+                .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable, enabled = true)
                 .onGloballyPositioned { textFieldSize = it.size.toSize() },
             readOnly = true,
             trailingIcon = {
@@ -58,7 +58,8 @@ fun <T> GttrpgDropdownField(
         ExposedDropdownMenu(
             expanded = expanded,
             onDismissRequest = { onDropdownExpandedStateChanged(false) },
-            modifier = Modifier.width(with(LocalDensity.current) { textFieldSize.width.toDp() })
+            modifier = Modifier.width(with(LocalDensity.current) { textFieldSize.width.toDp() }),
+            shape = MaterialTheme.shapes.extraLarge
         ) {
             options.forEach { option ->
                 DropdownMenuItem(
@@ -91,6 +92,7 @@ fun GttrpgContextMenu(
             expanded,
             onDismissRequest = { onDropdownExpandedStateChanged(false) },
             matchAnchorWidth = false,
+            shape = MaterialTheme.shapes.extraLarge,
             content = dropdownMenuContent
         )
     }

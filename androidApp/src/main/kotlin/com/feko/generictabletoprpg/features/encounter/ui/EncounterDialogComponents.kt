@@ -23,11 +23,11 @@ import com.feko.generictabletoprpg.R
 import com.feko.generictabletoprpg.common.ui.components.AlertDialogBase
 import com.feko.generictabletoprpg.common.ui.components.BoxWithScrollIndicator
 import com.feko.generictabletoprpg.common.ui.components.ConfirmationDialog
+import com.feko.generictabletoprpg.common.ui.components.DialogInputField
 import com.feko.generictabletoprpg.common.ui.components.DialogTitle
 import com.feko.generictabletoprpg.common.ui.components.EnterValueDialog
 import com.feko.generictabletoprpg.common.ui.components.IInputFieldValueConverter
-import com.feko.generictabletoprpg.common.ui.components.InputField
-import com.feko.generictabletoprpg.common.ui.components.NumberInputField
+import com.feko.generictabletoprpg.common.ui.components.NumberDialogInputField
 import com.feko.generictabletoprpg.common.ui.components.SelectFromListDialog
 import com.feko.generictabletoprpg.features.encounter.InitiativeEntryEntity
 
@@ -198,7 +198,7 @@ fun EditDialog(
                 Arrangement.spacedBy(8.dp)
             ) {
                 val name = initiativeEntry.name
-                InputField(
+                DialogInputField(
                     value = name,
                     label = stringResource(R.string.name),
                     onValueChange = {
@@ -208,7 +208,7 @@ fun EditDialog(
                     autoFocus = !initiativeEntry.isSavedInDatabase
                 )
 
-                NumberInputField(
+                NumberDialogInputField(
                     value = initiativeEntry.initiative,
                     label = stringResource(R.string.initiative),
                     convertInputValue = IInputFieldValueConverter.IntInputFieldValueConverter,
@@ -219,7 +219,7 @@ fun EditDialog(
                     )
                 )
 
-                NumberInputField(
+                NumberDialogInputField(
                     value = initiativeEntry.health,
                     label = stringResource(R.string.health),
                     convertInputValue = IInputFieldValueConverter.IntInputFieldValueConverter,
@@ -230,7 +230,7 @@ fun EditDialog(
                     )
                 )
 
-                NumberInputField(
+                NumberDialogInputField(
                     value = initiativeEntry.armorClass,
                     label = stringResource(R.string.armor_class),
                     convertInputValue = IInputFieldValueConverter.IntInputFieldValueConverter,
@@ -241,7 +241,7 @@ fun EditDialog(
                     )
                 )
 
-                NumberInputField(
+                NumberDialogInputField(
                     value = initiativeEntry.legendaryActions,
                     label = stringResource(R.string.legendary_actions),
                     convertInputValue = IInputFieldValueConverter.IntInputFieldValueConverter,
@@ -259,7 +259,7 @@ fun EditDialog(
                     )
                 )
 
-                NumberInputField(
+                NumberDialogInputField(
                     value = initiativeEntry.spellSaveDc,
                     label = stringResource(R.string.spell_save_dc),
                     convertInputValue = IInputFieldValueConverter.IntInputFieldValueConverter,
@@ -270,7 +270,7 @@ fun EditDialog(
                     )
                 )
 
-                NumberInputField(
+                NumberDialogInputField(
                     value = initiativeEntry.spellAttackModifier,
                     label = stringResource(R.string.spell_attack_modifier),
                     convertInputValue = IInputFieldValueConverter.IntInputFieldValueConverter,

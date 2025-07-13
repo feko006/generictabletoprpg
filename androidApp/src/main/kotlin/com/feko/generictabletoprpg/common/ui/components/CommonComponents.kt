@@ -9,6 +9,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.ScrollableState
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
@@ -17,49 +18,41 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.Checkbox
-import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuAnchorType
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldColors
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusDirection
-import androidx.compose.ui.focus.FocusManager
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -91,120 +84,10 @@ fun TextWithLabel(
     )
 }
 
-sealed interface IInputFieldValueConverter<T : Number> : (String) -> T {
-    data object IntInputFieldValueConverter : IInputFieldValueConverter<Int> {
-        override fun invoke(inputValue: String): Int = inputValue.toIntOrNull() ?: 0
-    }
-
-    data object FloatInputFieldValueConverter : IInputFieldValueConverter<Float> {
-        override fun invoke(inputValue: String): Float = inputValue.toFloatOrNull() ?: 0f
-    }
-}
-
-@Composable
-fun <T : Number> NumberInputField(
-    value: T,
-    label: String,
-    convertInputValue: IInputFieldValueConverter<T>,
-    onValueChange: (T) -> Unit,
-    modifier: Modifier = Modifier,
-    onFormSubmit: () -> Unit = {},
-    canSubmitForm: (T) -> Boolean = { true },
-    isInputFieldValid: (Number) -> Boolean = { true },
-    focusRequester: FocusRequester = remember { FocusRequester() },
-    focusManager: FocusManager = LocalFocusManager.current,
-    keyboardOptions: KeyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
-    focusDirection: FocusDirection = FocusDirection.Down,
-    autoFocus: Boolean = false,
-    maxLines: Int = 1,
-    suffix: @Composable (() -> Unit) = {},
-    colors: TextFieldColors = TextFieldDefaults.colors()
-) {
-    var inputValue by remember { mutableStateOf(if (value == 0) "" else value.toString()) }
-    @Suppress("KotlinConstantConditions")
-    if (value != 0 && value != convertInputValue(inputValue)) {
-        inputValue = value.toString()
-    }
-    InputField(
-        inputValue,
-        label,
-        onValueChange = {
-            inputValue = it
-            onValueChange(convertInputValue(it))
-        },
-        modifier,
-        onFormSubmit,
-        canSubmitForm = { canSubmitForm(convertInputValue(it)) },
-        isInputFieldValid = { isInputFieldValid(convertInputValue(it)) },
-        focusRequester,
-        focusManager,
-        keyboardOptions,
-        focusDirection,
-        autoFocus,
-        maxLines,
-        suffix,
-        colors
-    )
-}
-
-@Composable
-fun InputField(
-    value: String,
-    label: String,
-    onValueChange: (String) -> Unit,
-    modifier: Modifier = Modifier,
-    onFormSubmit: () -> Unit = {},
-    canSubmitForm: (String) -> Boolean = { true },
-    isInputFieldValid: (String) -> Boolean = { true },
-    focusRequester: FocusRequester = remember { FocusRequester() },
-    focusManager: FocusManager = LocalFocusManager.current,
-    keyboardOptions: KeyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
-    focusDirection: FocusDirection = FocusDirection.Down,
-    autoFocus: Boolean = false,
-    maxLines: Int = 1,
-    suffix: @Composable (() -> Unit) = {},
-    colors: TextFieldColors = TextFieldDefaults.colors()
-) {
-    TextField(
-        value = value,
-        onValueChange = onValueChange,
-        maxLines = maxLines,
-        isError = !isInputFieldValid(value),
-        suffix = suffix,
-        label = {
-            Text(label, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
-        },
-        trailingIcon = {
-            IconButton(onClick = { onValueChange("") })
-            { Icon(Icons.Default.Clear, "") }
-        },
-        modifier = Modifier
-            .fillMaxWidth()
-            .focusRequester(focusRequester)
-            .then(modifier),
-        keyboardOptions = keyboardOptions,
-        keyboardActions = KeyboardActions(
-            onNext = { focusManager.moveFocus(focusDirection) },
-            onDone = {
-                if (canSubmitForm(value)) {
-                    onFormSubmit()
-                }
-            }
-        ),
-        colors = colors
-    )
-    if (autoFocus) {
-        LaunchedEffect(Unit) {
-            focusRequester.requestFocus()
-        }
-    }
-}
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddFABButtonWithDropdown(
     expanded: Boolean,
-    modifier: Modifier,
     onDismissRequest: () -> Unit,
     onFabClicked: () -> Unit,
     dropdownMenuContent: @Composable () -> Unit
@@ -212,20 +95,18 @@ fun AddFABButtonWithDropdown(
     ExposedDropdownMenuBox(
         expanded = expanded,
         onExpandedChange = {},
-        modifier = Modifier
-            .wrapContentSize()
-            .then(modifier)
     ) {
-        DropdownMenu(
+        AddFABButton(
+            Modifier.menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable, enabled = true)
+        ) { onFabClicked() }
+        ExposedDropdownMenu(
             expanded = expanded,
             onDismissRequest = onDismissRequest,
-            content = {
-                dropdownMenuContent()
-            }
-        )
-        AddFABButton(
-            Modifier.menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable, true)
-        ) { onFabClicked() }
+            matchAnchorWidth = false,
+            shape = MaterialTheme.shapes.extraLarge
+        ) {
+            dropdownMenuContent()
+        }
     }
 }
 
@@ -369,5 +250,117 @@ fun StableAnimatedVisibility(
         enter = fadeIn(),
         exit = fadeOut(),
         content = content
+    )
+}
+
+@Composable
+@OptIn(ExperimentalMaterial3Api::class)
+fun GttrpgTextField(
+    value: String,
+    onValueChange: (String) -> Unit,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    readOnly: Boolean = false,
+    textStyle: TextStyle = LocalTextStyle.current,
+    label: @Composable (() -> Unit)? = null,
+    placeholder: @Composable (() -> Unit)? = null,
+    leadingIcon: @Composable (() -> Unit)? = null,
+    trailingIcon: @Composable (() -> Unit)? = null,
+    prefix: @Composable (() -> Unit)? = null,
+    suffix: @Composable (() -> Unit)? = null,
+    supportingText: @Composable (() -> Unit)? = null,
+    isError: Boolean = false,
+    visualTransformation: VisualTransformation = VisualTransformation.None,
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
+    keyboardActions: KeyboardActions = KeyboardActions.Default,
+    singleLine: Boolean = false,
+    maxLines: Int = if (singleLine) 1 else Int.MAX_VALUE,
+    minLines: Int = 1,
+    interactionSource: MutableInteractionSource? = null,
+    colors: TextFieldColors = TextFieldDefaults.colors(),
+) {
+    TextField(
+        value,
+        onValueChange,
+        modifier,
+        enabled,
+        readOnly,
+        textStyle,
+        label,
+        placeholder,
+        leadingIcon,
+        trailingIcon,
+        prefix,
+        suffix,
+        supportingText,
+        isError,
+        visualTransformation,
+        keyboardOptions,
+        keyboardActions,
+        singleLine,
+        maxLines,
+        minLines,
+        interactionSource,
+        MaterialTheme.shapes.extraLarge.copy(
+            bottomStart = CornerSize(0.dp),
+            bottomEnd = CornerSize(0.dp)
+        ),
+        colors
+    )
+}
+
+@Composable
+@OptIn(ExperimentalMaterial3Api::class)
+fun GttrpgOutlinedTextField(
+    value: String,
+    onValueChange: (String) -> Unit,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    readOnly: Boolean = false,
+    textStyle: TextStyle = LocalTextStyle.current,
+    label: @Composable (() -> Unit)? = null,
+    placeholder: @Composable (() -> Unit)? = null,
+    leadingIcon: @Composable (() -> Unit)? = null,
+    trailingIcon: @Composable (() -> Unit)? = null,
+    prefix: @Composable (() -> Unit)? = null,
+    suffix: @Composable (() -> Unit)? = null,
+    supportingText: @Composable (() -> Unit)? = null,
+    isError: Boolean = false,
+    visualTransformation: VisualTransformation = VisualTransformation.None,
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
+    keyboardActions: KeyboardActions = KeyboardActions.Default,
+    singleLine: Boolean = false,
+    maxLines: Int = if (singleLine) 1 else Int.MAX_VALUE,
+    minLines: Int = 1,
+    interactionSource: MutableInteractionSource? = null,
+    colors: TextFieldColors = OutlinedTextFieldDefaults.colors(),
+) {
+    OutlinedTextField(
+        value,
+        onValueChange,
+        modifier,
+        enabled,
+        readOnly,
+        textStyle,
+        label,
+        placeholder,
+        leadingIcon,
+        trailingIcon,
+        prefix,
+        suffix,
+        supportingText,
+        isError,
+        visualTransformation,
+        keyboardOptions,
+        keyboardActions,
+        singleLine,
+        maxLines,
+        minLines,
+        interactionSource,
+        MaterialTheme.shapes.extraLarge.copy(
+            bottomStart = CornerSize(0.dp),
+            bottomEnd = CornerSize(0.dp)
+        ),
+        colors
     )
 }

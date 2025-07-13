@@ -69,7 +69,6 @@ fun TrackerScreen(
             val expanded by viewModel.fabDropdown.isMenuExpanded.collectAsState(false)
             AddFABButtonWithDropdown(
                 expanded = expanded,
-                modifier = Modifier,
                 onDismissRequest = { viewModel.fabDropdown.dismiss() },
                 onFabClicked = { viewModel.fabDropdown.toggleFabDropdownRequested() }
             ) { DropdownMenuContent { type, context -> viewModel.showCreateDialog(type, context) } }

@@ -28,9 +28,9 @@ import com.feko.generictabletoprpg.common.domain.model.INamed
 import com.feko.generictabletoprpg.common.domain.model.IText
 import com.feko.generictabletoprpg.common.ui.components.AlertDialogBase
 import com.feko.generictabletoprpg.common.ui.components.ConfirmationDialog
+import com.feko.generictabletoprpg.common.ui.components.DialogInputField
 import com.feko.generictabletoprpg.common.ui.components.DialogTitle
 import com.feko.generictabletoprpg.common.ui.components.GttrpgContextMenu
-import com.feko.generictabletoprpg.common.ui.components.InputField
 import com.feko.generictabletoprpg.features.tracker.domain.model.TrackedThingGroup
 
 @Composable
@@ -145,7 +145,7 @@ fun EditDialog(
             }
         }
     ) {
-        InputField(
+        DialogInputField(
             dialogState.trackedThingGroup.name,
             stringResource(R.string.name),
             onValueChange = { onValueUpdate(dialogState.trackedThingGroup.copy(name = it)) },

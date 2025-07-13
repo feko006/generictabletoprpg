@@ -38,11 +38,11 @@ import com.feko.generictabletoprpg.common.ui.components.AlertDialogBase
 import com.feko.generictabletoprpg.common.ui.components.BoxWithScrollIndicator
 import com.feko.generictabletoprpg.common.ui.components.CheckboxWithText
 import com.feko.generictabletoprpg.common.ui.components.ConfirmationDialog
+import com.feko.generictabletoprpg.common.ui.components.DialogInputField
 import com.feko.generictabletoprpg.common.ui.components.DialogTitle
 import com.feko.generictabletoprpg.common.ui.components.EnterValueDialog
 import com.feko.generictabletoprpg.common.ui.components.IInputFieldValueConverter
-import com.feko.generictabletoprpg.common.ui.components.InputField
-import com.feko.generictabletoprpg.common.ui.components.NumberInputField
+import com.feko.generictabletoprpg.common.ui.components.NumberDialogInputField
 import com.feko.generictabletoprpg.common.ui.theme.Typography
 import com.feko.generictabletoprpg.features.spell.Spell
 import com.feko.generictabletoprpg.features.tracker.domain.model.HealthTrackedThing
@@ -370,7 +370,7 @@ private fun EditDialog(
                 onDismiss()
             }
         }
-        InputField(
+        DialogInputField(
             editedTrackedThing.name,
             "${stringResource(R.string.name)} ($defaultName)",
             onValueChange = {
@@ -384,7 +384,7 @@ private fun EditDialog(
         )
         val spellSlot = editedTrackedThing as? SpellSlotTrackedThing
         if (spellSlot != null) {
-            NumberInputField(
+            NumberDialogInputField(
                 value = spellSlot.level,
                 label = stringResource(R.string.level),
                 convertInputValue = IInputFieldValueConverter.IntInputFieldValueConverter,
@@ -426,7 +426,7 @@ private fun EditDialogValueInputField(
     if (isSpellList) return
 
     if (editedTrackedThing is TextTrackedThing) {
-        InputField(
+        DialogInputField(
             value = editedTrackedThing.value,
             label = stringResource(id = R.string.text),
             onValueChange = onValueChange,
@@ -442,7 +442,7 @@ private fun EditDialogValueInputField(
 
     val percentage = editedTrackedThing as? PercentageTrackedThing
     if (percentage != null) {
-        NumberInputField(
+        NumberDialogInputField(
             percentage.amount,
             label = stringResource(R.string.amount),
             convertInputValue = IInputFieldValueConverter.FloatInputFieldValueConverter,
@@ -460,7 +460,7 @@ private fun EditDialogValueInputField(
 
     val intTrackedThing = editedTrackedThing as? IntTrackedThing
     if (intTrackedThing != null) {
-        NumberInputField(
+        NumberDialogInputField(
             intTrackedThing.amount,
             label = stringResource(R.string.amount),
             convertInputValue = IInputFieldValueConverter.IntInputFieldValueConverter,
@@ -519,14 +519,14 @@ fun StatsEditDialog(
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
                     style = Typography.bodySmall
                 )
-                InputField(
+                DialogInputField(
                     value = editedStats.name,
                     label = "${stringResource(R.string.name)} ($defaultName)",
                     onValueChange = {
                         onValueUpdate((editedStats.copy() as StatsTrackedThing).apply { name = it })
                     }
                 )
-                NumberInputField(
+                NumberDialogInputField(
                     value = statsContainer.proficiencyBonus,
                     label = stringResource(R.string.proficiency_bonus),
                     convertInputValue = IInputFieldValueConverter.IntInputFieldValueConverter,
@@ -542,7 +542,7 @@ fun StatsEditDialog(
                         imeAction = ImeAction.Next
                     )
                 )
-                NumberInputField(
+                NumberDialogInputField(
                     value = statsContainer.initiativeAdditionalBonus,
                     label = stringResource(R.string.initiative_additional_bonus),
                     convertInputValue = IInputFieldValueConverter.IntInputFieldValueConverter,
@@ -557,7 +557,7 @@ fun StatsEditDialog(
                         imeAction = ImeAction.Next
                     )
                 )
-                NumberInputField(
+                NumberDialogInputField(
                     value = statsContainer.spellSaveDcAdditionalBonus,
                     label = stringResource(R.string.spell_save_dc_additional_bonus),
                     convertInputValue = IInputFieldValueConverter.IntInputFieldValueConverter,
@@ -573,7 +573,7 @@ fun StatsEditDialog(
                         imeAction = ImeAction.Next
                     )
                 )
-                NumberInputField(
+                NumberDialogInputField(
                     value = statsContainer.spellAttackAdditionalBonus,
                     label = stringResource(R.string.spell_attack_additional_bonus),
                     convertInputValue = IInputFieldValueConverter.IntInputFieldValueConverter,
@@ -641,7 +641,7 @@ private fun StatsStatEntry(
     HeaderWithDividers("${statEntry.name} (${statEntry.shortName})")
     key("editStatEntry-$statIndex") {
         val bonusText = "(${statEntry.bonus.asSignedString()})"
-        NumberInputField(
+        NumberDialogInputField(
             value = statEntry.score,
             label = "${stringResource(R.string.score)}$bonusText",
             convertInputValue = IInputFieldValueConverter.IntInputFieldValueConverter,
@@ -659,7 +659,7 @@ private fun StatsStatEntry(
                 imeAction = ImeAction.Next
             )
         )
-        NumberInputField(
+        NumberDialogInputField(
             value = statEntry.savingThrowAdditionalBonus,
             label = stringResource(R.string.saving_throw_additional_bonus),
             convertInputValue = IInputFieldValueConverter.IntInputFieldValueConverter,
@@ -749,7 +749,7 @@ private fun StatsStatEntrySkill(
             } else {
                 ImeAction.Next
             }
-        NumberInputField(
+        NumberDialogInputField(
             value = skill.additionalBonus,
             label = stringResource(R.string.skill_additional_bonus),
             convertInputValue = IInputFieldValueConverter.IntInputFieldValueConverter,
