@@ -112,7 +112,7 @@ class SpellFilter(
                 add(
                     FilterChipData(
                         R.string.level.asText(),
-                        it.asText(),
+                        it.toString().asText(),
                         copy(levels = levels.minus(it))
                     )
                 )
