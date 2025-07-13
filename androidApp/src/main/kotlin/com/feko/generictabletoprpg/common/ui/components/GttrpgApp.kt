@@ -73,7 +73,8 @@ fun GttrpgApp() {
                     }
                 },
                 Modifier.safeDrawingPadding(),
-                drawerState
+                drawerState,
+                gesturesEnabled = false
             ) { NavigationHost(scope, drawerState, backStack, appViewModel) }
         }
     }
