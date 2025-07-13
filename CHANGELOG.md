@@ -15,6 +15,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
+## [1.4.0]
+
+### Added
+
+### Fixed
+
+- New trackable dropdown menu items not being localized
+- Filter button disappearing when the list is empty
+
+### Changed
+
+- File structure
+- Material 3 to Material 3 Expressive
+- Navigation logic from Compose Destinations to Jetpack Navigation 3
+- Reorderable list library
+- Loading indicator to new Material 3 Expressive shapes
+- Spell filters redesigned
+- Added experimental fuzzy search capabilities
+- Trackable groups now have a context menu instead of a row of icon buttons
+- Most UI elements now have rounded corners
+
+### Removed
+
 ## [1.3.0]
 
 ### Added
