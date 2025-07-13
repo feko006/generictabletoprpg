@@ -50,6 +50,8 @@
     <string name="material">Material</string>
     <string name="clear_all">Clear all</string>
     <string name="apply">Apply</string>
+    <string name="export">Export</string>
+    <string name="delete">Delete</string>
     <!--Action-->
     <string name="action">Action</string>
     <string name="action_details_title">Action Details</string>
