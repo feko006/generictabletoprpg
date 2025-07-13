@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.NavigationDrawerItem
@@ -45,7 +46,9 @@ fun GttrpgApp() {
             val backStack = rememberNavBackStack(INavigationDestination.startDestination)
             ModalNavigationDrawer(
                 drawerContent = {
-                    ModalDrawerSheet {
+                    ModalDrawerSheet(
+                        drawerShape = MaterialTheme.shapes.extraLarge
+                    ) {
                         Column(
                             Modifier.padding(LocalDimens.current.paddingSmall)
                         ) {
@@ -74,7 +77,7 @@ fun GttrpgApp() {
                 },
                 Modifier.safeDrawingPadding(),
                 drawerState,
-                gesturesEnabled = false
+                gesturesEnabled = !drawerState.isAnimationRunning
             ) { NavigationHost(scope, drawerState, backStack, appViewModel) }
         }
     }
