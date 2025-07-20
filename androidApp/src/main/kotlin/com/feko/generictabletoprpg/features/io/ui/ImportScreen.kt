@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -29,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import com.feko.generictabletoprpg.R
 import com.feko.generictabletoprpg.common.domain.model.IText.StringResourceText.Companion.asText
 import com.feko.generictabletoprpg.common.ui.RootDestinations
+import com.feko.generictabletoprpg.common.ui.components.GttrpgFloatingActionButton
 import com.feko.generictabletoprpg.common.ui.components.GttrpgTopAppBar
 import com.feko.generictabletoprpg.common.ui.theme.LocalDimens
 import com.feko.generictabletoprpg.common.ui.viewmodel.AppViewModel
@@ -84,7 +84,7 @@ fun ImportScreen(
                         verticalArrangement = Arrangement.spacedBy(8.dp),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        FloatingActionButton(
+                        GttrpgFloatingActionButton(
                             onClick = {
                                 pickFileLauncher.launch("*/*")
                             }
