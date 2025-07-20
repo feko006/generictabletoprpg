@@ -8,6 +8,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -16,6 +17,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.feko.generictabletoprpg.R
@@ -43,7 +45,8 @@ fun EncounterScreen(onNavigationIconClick: () -> Unit) {
                 LazyColumn(
                     Modifier
                         .weight(1f)
-                        .padding(8.dp),
+                        .padding(8.dp)
+                        .clip(MaterialTheme.shapes.extraLarge),
                     listState,
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
@@ -56,7 +59,8 @@ fun EncounterScreen(onNavigationIconClick: () -> Unit) {
                             onDamageButtonClicked = { viewModel.showDamageDialog(item) },
                             onDuplicateButtonClicked = { viewModel.duplicateEntry(item) },
                             onEditButtonClicked = { viewModel.showEditDialog(item) },
-                            onDeleteButtonClicked = { viewModel.showDeleteDialog(item) }
+                            onDeleteButtonClicked = { viewModel.showDeleteDialog(item) },
+                            modifier = Modifier.animateItem()
                         )
                     }
                 }

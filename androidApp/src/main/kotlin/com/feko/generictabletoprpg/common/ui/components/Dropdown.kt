@@ -46,7 +46,7 @@ fun <T> GttrpgDropdownField(
             onValueChange = {},
             Modifier
                 .fillMaxWidth()
-                .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable, enabled = true)
+                .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable)
                 .onGloballyPositioned { textFieldSize = it.size.toSize() },
             readOnly = true,
             trailingIcon = {
@@ -84,7 +84,7 @@ fun GttrpgContextMenu(
         onExpandedChange = { onDropdownExpandedStateChanged(!expanded) }) {
         IconButton(
             onClick = { onDropdownExpandedStateChanged(!expanded) },
-            Modifier.menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable, enabled = true)
+            Modifier.menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable)
         ) {
             Icon(Icons.Default.MoreVert, "")
         }

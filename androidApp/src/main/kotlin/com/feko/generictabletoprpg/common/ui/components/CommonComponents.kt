@@ -97,7 +97,7 @@ fun AddFABButtonWithDropdown(
         onExpandedChange = {},
     ) {
         AddFABButton(
-            Modifier.menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable, enabled = true)
+            Modifier.menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable)
         ) { onFabClicked() }
         ExposedDropdownMenu(
             expanded = expanded,

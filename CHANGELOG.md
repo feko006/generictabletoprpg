@@ -35,6 +35,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added experimental fuzzy search capabilities
 - Trackable groups now have a context menu instead of a row of icon buttons
 - Most UI elements now have rounded corners
+- Encounter screen visual adjustments
 
 ### Removed
 

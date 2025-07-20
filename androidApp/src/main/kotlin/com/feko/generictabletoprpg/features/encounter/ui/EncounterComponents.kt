@@ -17,18 +17,19 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberBasicTooltipState
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.filled.SkipNext
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Card
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.HorizontalFloatingToolbar
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconToggleButton
@@ -47,45 +48,49 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.feko.generictabletoprpg.R
+import com.feko.generictabletoprpg.common.ui.theme.LocalDimens
 import com.feko.generictabletoprpg.features.encounter.InitiativeEntryEntity
 import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun ActionButtons(viewModel: EncounterViewModel) {
     val encounterState by viewModel.encounterState.collectAsState(EncounterState.Empty)
-    Box(Modifier.fillMaxWidth()) {
-        Row(
-            Modifier.align(Alignment.Center),
-            Arrangement.spacedBy(8.dp)
-        ) {
+    Row(
+        Modifier.fillMaxWidth(),
+        Arrangement.spacedBy(LocalDimens.current.paddingSmall, Alignment.CenterHorizontally)
+    ) {
+        HorizontalFloatingToolbar(expanded = true) {
             if (encounterState.isAddButtonVisible) {
-                FloatingActionButton(onClick = viewModel::showCreateNewDialog) {
+                IconButton(onClick = viewModel::showCreateNewDialog) {
                     Icon(Icons.Default.Add, "")
                 }
             }
             if (encounterState.isResetButtonVisible) {
-                FloatingActionButton(onClick = viewModel::showResetDialog) {
+                IconButton(onClick = viewModel::showResetDialog) {
                     Icon(Icons.Default.Refresh, "")
                 }
             }
+        }
+        HorizontalFloatingToolbar(expanded = true) {
             if (encounterState.isStartEncounterButtonVisible) {
-                FloatingActionButton(onClick = viewModel::startInitiative) {
+                IconButton(onClick = viewModel::startInitiative) {
                     Icon(Icons.Default.PlayArrow, "")
                 }
             }
             if (encounterState.isCompleteTurnButtonVisible) {
-                FloatingActionButton(onClick = viewModel::concludeTurnOfCurrentEntry) {
+                IconButton(onClick = viewModel::concludeTurnOfCurrentEntry) {
                     Icon(Icons.Default.Check, "")
                 }
             }
             if (encounterState.isLegendaryActionButtonVisible) {
-                FloatingActionButton(onClick = viewModel::progressInitiativeWithLegendaryAction) {
+                IconButton(onClick = viewModel::progressInitiativeWithLegendaryAction) {
                     Icon(painterResource(R.drawable.bolt), "")
                 }
             }
             if (encounterState.isNextTurnButtonVisible) {
-                FloatingActionButton(onClick = viewModel::progressInitiative) {
-                    Icon(Icons.AutoMirrored.Filled.ArrowForward, "")
+                IconButton(onClick = viewModel::progressInitiative) {
+                    Icon(Icons.Default.SkipNext, "")
                 }
             }
         }
@@ -101,7 +106,8 @@ fun InitiativeListItem(
     onDuplicateButtonClicked: () -> Unit,
     onDamageButtonClicked: () -> Unit,
     onEditButtonClicked: () -> Unit,
-    onDeleteButtonClicked: () -> Unit
+    onDeleteButtonClicked: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     val isHighlighted = initiativeEntry.hasTurn
     val isLairAction = initiativeEntry.isLairAction
@@ -112,7 +118,9 @@ fun InitiativeListItem(
     Card(
         Modifier
             .fillMaxWidth()
-            .height(IntrinsicSize.Min),
+            .height(IntrinsicSize.Min)
+            .then(modifier),
+        MaterialTheme.shapes.extraLarge,
         border = BorderStroke(2.dp, outlineColor).takeIf { isHighlighted }
     ) {
         Box(Modifier.fillMaxSize()) {
