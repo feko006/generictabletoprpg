@@ -1,11 +1,11 @@
 package com.feko.generictabletoprpg.features.tracker.ui
 
-import com.feko.generictabletoprpg.features.io.domain.model.AppModel
-import com.feko.generictabletoprpg.common.data.local.IGetAllDao
+import com.feko.generictabletoprpg.common.data.json
 import com.feko.generictabletoprpg.common.data.local.IGetAllByParentSortedByIndexDao
+import com.feko.generictabletoprpg.common.data.local.IGetAllDao
 import com.feko.generictabletoprpg.common.ui.viewmodel.ExportState
 import com.feko.generictabletoprpg.common.ui.viewmodel.ExportSubViewModel
-import com.feko.generictabletoprpg.common.domain.IJson
+import com.feko.generictabletoprpg.features.io.domain.model.AppModel
 import com.feko.generictabletoprpg.features.tracker.domain.model.TrackedThing
 import com.feko.generictabletoprpg.features.tracker.domain.model.TrackedThingGroup
 import java.io.OutputStream
@@ -15,8 +15,7 @@ import java.util.Locale
 
 class TrackerGroupExportSubViewModel(
     private val getAllTrackedThingGroups: IGetAllDao<TrackedThingGroup>,
-    private val getAllTrackedThings: IGetAllByParentSortedByIndexDao<TrackedThing>,
-    private val json: IJson
+    private val getAllTrackedThings: IGetAllByParentSortedByIndexDao<TrackedThing>
 ) : ExportSubViewModel<TrackedThingGroup>() {
 
     override fun getExportedFileData(): Pair<String, String> {
@@ -53,9 +52,9 @@ class TrackerGroupExportSubViewModel(
                 allTrackedThingGroups.forEach {
                     it.trackedThings = getAllTrackedThings.getAllSortedByIndex(it.id)
                 }
-                json.to(
-                    AppModel(trackedGroups = allTrackedThingGroups),
-                    AppModel::class.java
+                json.encodeToString(
+                    AppModel.serializer(),
+                    AppModel(trackedGroups = allTrackedThingGroups)
                 )
             }
 
@@ -65,9 +64,9 @@ class TrackerGroupExportSubViewModel(
                         .apply {
                             trackedThings = getAllTrackedThings.getAllSortedByIndex(id)
                         }
-                json.to(
-                    AppModel(trackedGroups = listOf(trackedThingGroup)),
-                    AppModel::class.java
+                json.encodeToString(
+                    AppModel.serializer(),
+                    AppModel(trackedGroups = listOf(trackedThingGroup))
                 )
             }
 

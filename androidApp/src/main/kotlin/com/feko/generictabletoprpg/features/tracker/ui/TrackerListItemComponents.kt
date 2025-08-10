@@ -48,17 +48,12 @@ import com.feko.generictabletoprpg.common.domain.asSignedString
 import com.feko.generictabletoprpg.common.ui.components.draggableHandle
 import com.feko.generictabletoprpg.common.ui.components.longPressDraggableHandle
 import com.feko.generictabletoprpg.common.ui.theme.Typography
-import com.feko.generictabletoprpg.features.tracker.domain.model.AbilityTrackedThing
-import com.feko.generictabletoprpg.features.tracker.domain.model.HealthTrackedThing
-import com.feko.generictabletoprpg.features.tracker.domain.model.HitDiceTrackedThing
-import com.feko.generictabletoprpg.features.tracker.domain.model.NumberTrackedThing
-import com.feko.generictabletoprpg.features.tracker.domain.model.PercentageTrackedThing
-import com.feko.generictabletoprpg.features.tracker.domain.model.SpellListTrackedThing
-import com.feko.generictabletoprpg.features.tracker.domain.model.SpellSlotTrackedThing
+import com.feko.generictabletoprpg.features.tracker.domain.model.SpellListEntry
 import com.feko.generictabletoprpg.features.tracker.domain.model.StatsContainer
-import com.feko.generictabletoprpg.features.tracker.domain.model.StatsTrackedThing
-import com.feko.generictabletoprpg.features.tracker.domain.model.TextTrackedThing
-import com.feko.generictabletoprpg.features.tracker.domain.model.createDefault5EStatEntries
+import com.feko.generictabletoprpg.features.tracker.domain.model.TrackedThing
+import com.feko.generictabletoprpg.features.tracker.domain.model.canAdd
+import com.feko.generictabletoprpg.features.tracker.domain.model.canSubtract
+import com.feko.generictabletoprpg.features.tracker.domain.model.printableValue
 import sh.calvin.reorderable.DragGestureDetector
 import sh.calvin.reorderable.ReorderableCollectionItemScope
 
@@ -149,7 +144,7 @@ private fun DefaultTrackableLayout(
 @Composable
 fun AbilityListItem(
     isDragged: Boolean,
-    ability: AbilityTrackedThing,
+    ability: TrackedThing,
     scope: ReorderableCollectionItemScope,
     viewModel: TrackerViewModel,
 ) {
@@ -160,13 +155,13 @@ fun AbilityListItem(
             scope,
             interactionSource,
             valuePreview = {
-                Text(ability.getPrintableValue())
+                Text(ability.printableValue)
                 Text(ability.type.name, style = Typography.bodySmall)
             }) {
             AbilityActions(
-                canSubtract = ability.canSubtract(),
-                onSubtractClicked = { viewModel.useAbility(ability) },
-                canRefresh = ability.canAdd(),
+                canSubtract = ability.canSubtract,
+                onSubtractClicked = { viewModel.reduceByOne(ability) },
+                canRefresh = ability.canAdd,
                 onRefreshClicked = { viewModel.resetValueToDefault(ability) },
                 onEditButtonClicked = { viewModel.showEditDialog(ability) },
                 onDeleteButtonClicked = { viewModel.deleteItemRequested(ability) }
@@ -178,7 +173,7 @@ fun AbilityListItem(
 @Composable
 fun HitDiceListItem(
     isDragged: Boolean,
-    hitDice: HitDiceTrackedThing,
+    hitDice: TrackedThing,
     scope: ReorderableCollectionItemScope,
     viewModel: TrackerViewModel
 ) {
@@ -189,13 +184,13 @@ fun HitDiceListItem(
             scope,
             interactionSource,
             valuePreview = {
-                Text(hitDice.getPrintableValue())
+                Text(hitDice.printableValue)
                 Text(hitDice.type.name, style = Typography.bodySmall)
             }) {
             HitDiceActions(
-                canSubtract = hitDice.canSubtract(),
-                onSubtractClicked = { viewModel.useHitDie(hitDice) },
-                canAdd = hitDice.canAdd(),
+                canSubtract = hitDice.canSubtract,
+                onSubtractClicked = { viewModel.reduceByOne(hitDice) },
+                canAdd = hitDice.canAdd,
                 onAddClicked = { viewModel.restoreHitDie(hitDice) },
                 onEditButtonClicked = { viewModel.showEditDialog(hitDice) },
                 onDeleteButtonClicked = { viewModel.deleteItemRequested(hitDice) }
@@ -207,7 +202,7 @@ fun HitDiceListItem(
 @Composable
 fun PercentageListItem(
     isDragged: Boolean,
-    percentage: PercentageTrackedThing,
+    percentage: TrackedThing,
     scope: ReorderableCollectionItemScope,
     viewModel: TrackerViewModel
 ) {
@@ -218,7 +213,7 @@ fun PercentageListItem(
             scope,
             interactionSource,
             valuePreview = {
-                Text(percentage.getPrintableValue())
+                Text(percentage.printableValue)
             }) {
             PercentageActions(
                 percentage,
@@ -234,7 +229,7 @@ fun PercentageListItem(
 @Composable
 fun NumberListItem(
     isDragged: Boolean,
-    number: NumberTrackedThing,
+    number: TrackedThing,
     scope: ReorderableCollectionItemScope,
     viewModel: TrackerViewModel
 ) {
@@ -245,7 +240,7 @@ fun NumberListItem(
             scope,
             interactionSource,
             valuePreview = {
-                Text(number.getPrintableValue())
+                Text(number.printableValue)
                 Text(number.type.name, style = Typography.bodySmall)
             }) {
             NumberActions(
@@ -262,7 +257,7 @@ fun NumberListItem(
 @Composable
 fun HealthListItem(
     isDragged: Boolean,
-    health: HealthTrackedThing,
+    health: TrackedThing,
     scope: ReorderableCollectionItemScope,
     viewModel: TrackerViewModel
 ) {
@@ -273,7 +268,7 @@ fun HealthListItem(
             scope,
             interactionSource,
             valuePreview = {
-                Text(health.getPrintableValue())
+                Text(health.printableValue)
                 if (health.temporaryHp > 0) {
                     Row(
                         horizontalArrangement = Arrangement.spacedBy(4.dp),
@@ -308,7 +303,7 @@ fun HealthListItem(
 @Composable
 fun SpellListItem(
     isDragged: Boolean,
-    spellList: SpellListTrackedThing,
+    spellList: TrackedThing,
     scope: ReorderableCollectionItemScope,
     viewModel: TrackerViewModel,
     onSelectSpellRequest: () -> Unit
@@ -340,7 +335,7 @@ fun SpellListItem(
 
 @Composable
 fun SpellListItemContent(
-    spellList: SpellListTrackedThing,
+    spellList: TrackedThing,
     scope: ReorderableCollectionItemScope,
     onListButtonClicked: () -> Unit,
     onAddButtonClicked: () -> Unit,
@@ -351,11 +346,12 @@ fun SpellListItemContent(
         spellList.name,
         scope,
         valuePreview = {
-            Text(spellList.getPrintableValue())
+            Text(spellList.printableValue)
             Text(spellList.type.name, style = Typography.bodySmall)
         }) {
+        @Suppress("UNCHECKED_CAST")
         SpellListActions(
-            isListButtonEnabled = spellList.serializedItem.any(),
+            isListButtonEnabled = (spellList.serializedItem as List<SpellListEntry>).any(),
             onListButtonClicked = onListButtonClicked,
             onAddButtonClicked = onAddButtonClicked,
             onEditButtonClicked = onEditButtonClicked,
@@ -367,7 +363,7 @@ fun SpellListItemContent(
 @Composable
 fun SpellSlotListItem(
     isDragged: Boolean,
-    spellSlot: SpellSlotTrackedThing,
+    spellSlot: TrackedThing,
     scope: ReorderableCollectionItemScope,
     viewModel: TrackerViewModel
 ) {
@@ -378,16 +374,16 @@ fun SpellSlotListItem(
             scope,
             interactionSource,
             valuePreview = {
-                Text(spellSlot.getPrintableValue())
+                Text(spellSlot.printableValue)
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) row@{
                     Text(spellSlot.type.name, style = Typography.bodySmall)
                     Text("Lv ${spellSlot.level}", style = Typography.bodySmall)
                 }
             }) {
             SpellSlotActions(
-                canSubtract = spellSlot.canSubtract(),
-                onSubtractClicked = { viewModel.useSpell(spellSlot) },
-                canRefresh = spellSlot.canAdd(),
+                canSubtract = spellSlot.canSubtract,
+                onSubtractClicked = { viewModel.reduceByOne(spellSlot) },
+                canRefresh = spellSlot.canAdd,
                 onRefreshClicked = { viewModel.resetValueToDefault(spellSlot) },
                 onEditButtonClicked = { viewModel.showEditDialog(spellSlot) },
                 onDeleteButtonClicked = { viewModel.deleteItemRequested(spellSlot) }
@@ -399,7 +395,7 @@ fun SpellSlotListItem(
 @Composable
 fun StatsListItem(
     isDragged: Boolean,
-    stats: StatsTrackedThing,
+    stats: TrackedThing,
     scope: ReorderableCollectionItemScope,
     viewModel: TrackerViewModel
 ) {
@@ -450,7 +446,7 @@ fun StatsListItem(
 @Composable
 fun TextListItem(
     isDragged: Boolean,
-    text: TextTrackedThing,
+    text: TrackedThing,
     scope: ReorderableCollectionItemScope,
     viewModel: TrackerViewModel
 ) {
@@ -465,7 +461,7 @@ fun TextListItem(
             var expanded by remember { mutableStateOf(false) }
             val linesShownByDefault = 3
             Text(
-                text.getPrintableValue(),
+                text.printableValue,
                 Modifier.clickable(enabled = canTextBeExpanded) {
                     expanded = !expanded
                 },
@@ -519,8 +515,8 @@ private fun ReorderHandle(
 }
 
 @Composable
-fun StatsOverview(stats: StatsTrackedThing) {
-    val statValue = requireNotNull(stats.serializedItem)
+fun StatsOverview(stats: TrackedThing) {
+    val statValue = requireNotNull(stats.serializedItem) as StatsContainer
     Column(Modifier.padding(vertical = 8.dp)) {
         Row(Modifier.fillMaxWidth()) {
             CompactStat(
@@ -578,7 +574,7 @@ fun StatsOverview(stats: StatsTrackedThing) {
 fun StatsOverviewPreview() {
     Card {
         StatsOverview(
-            StatsTrackedThing(name = "Stats", value = "[]").also {
+            TrackedThing(name = "Stats", type = TrackedThing.Type.FiveEStats, value = "[]").also {
                 it.serializedItem = StatsContainer(
                     proficiencyBonus = 1,
                     spellSaveDc = 3,
@@ -587,7 +583,7 @@ fun StatsOverviewPreview() {
                     spellAttackAdditionalBonus = 0,
                     initiative = 2,
                     initiativeAdditionalBonus = 0,
-                    stats = createDefault5EStatEntries(LocalContext.current),
+                    stats = StatsContainer.createDefault5EStatEntries(LocalContext.current),
                     use5eCalculations = true
                 )
             }
@@ -678,7 +674,7 @@ private fun SpellListTrackedThingPreview() {
         onItemClicked = { },
         {
             SpellListItemContent(
-                SpellListTrackedThing(0, "Spell List", "", 0, 0),
+                TrackedThing(0, "Spell List", "", TrackedThing.Type.SpellList, 0),
                 scope,
                 onListButtonClicked = {},
                 onAddButtonClicked = {},

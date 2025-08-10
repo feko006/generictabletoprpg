@@ -12,8 +12,7 @@ val trackerGroupsModule = module {
     single {
         TrackerGroupExportSubViewModel(
             get<TrackedThingGroupDao>(),
-            get<TrackedThingDao>(),
-            get()
+            get<TrackedThingDao>()
         )
     }
     viewModel { TrackerGroupViewModel(get(), get<TrackerGroupExportSubViewModel>()) }
@@ -21,5 +20,5 @@ val trackerGroupsModule = module {
 
 val trackerModule = module {
     single { get<GenericTabletopRpgDatabase>().trackedThingDao() }
-    viewModel { params -> TrackerViewModel(params.get(), params.get(), get(), get(), get(), get()) }
+    viewModel { params -> TrackerViewModel(params.get(), params.get(), get(), get(), get()) }
 }

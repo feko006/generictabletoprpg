@@ -8,15 +8,6 @@ import androidx.room.PrimaryKey
 import com.feko.generictabletoprpg.common.domain.model.ICoreConvertible
 import com.feko.generictabletoprpg.common.domain.model.IMutableIdentifiable
 import com.feko.generictabletoprpg.common.domain.model.INamed
-import com.feko.generictabletoprpg.features.tracker.domain.model.AbilityTrackedThing
-import com.feko.generictabletoprpg.features.tracker.domain.model.HealthTrackedThing
-import com.feko.generictabletoprpg.features.tracker.domain.model.HitDiceTrackedThing
-import com.feko.generictabletoprpg.features.tracker.domain.model.NumberTrackedThing
-import com.feko.generictabletoprpg.features.tracker.domain.model.PercentageTrackedThing
-import com.feko.generictabletoprpg.features.tracker.domain.model.SpellListTrackedThing
-import com.feko.generictabletoprpg.features.tracker.domain.model.SpellSlotTrackedThing
-import com.feko.generictabletoprpg.features.tracker.domain.model.StatsTrackedThing
-import com.feko.generictabletoprpg.features.tracker.domain.model.TextTrackedThing
 import com.feko.generictabletoprpg.features.tracker.domain.model.TrackedThing
 
 @Keep
@@ -54,38 +45,17 @@ data class TrackedThingEntity(
     ICoreConvertible<TrackedThing> {
 
     override fun toCoreModel(): TrackedThing {
+        val type = TrackedThing.Type.entries[type]
+        if (type == TrackedThing.Type.None) {
+            throw Exception("Tracked thing not supported.")
+        }
         val trackedThing =
-            when (TrackedThing.Type.entries[type]) {
-                TrackedThing.Type.Percentage ->
-                    PercentageTrackedThing(id, name, value.toFloat(), idx, groupId)
-
-                TrackedThing.Type.Health ->
-                    HealthTrackedThing(temporaryHp, id, name, value.toInt(), idx, groupId)
-
-                TrackedThing.Type.Ability ->
-                    AbilityTrackedThing(id, name, value.toInt(), idx, groupId)
-
-                TrackedThing.Type.SpellSlot ->
-                    SpellSlotTrackedThing(level, id, name, value.toInt(), idx, groupId)
-
-                TrackedThing.Type.Number ->
-                    NumberTrackedThing(id, name, value.toInt(), idx, groupId)
-
-                TrackedThing.Type.SpellList ->
-                    SpellListTrackedThing(id, name, value, idx, groupId)
-
-                TrackedThing.Type.Text ->
-                    TextTrackedThing(id, name, value, idx, groupId)
-
-                TrackedThing.Type.HitDice ->
-                    HitDiceTrackedThing(id, name, value.toInt(), idx, groupId)
-
-                TrackedThing.Type.FiveEStats ->
-                    StatsTrackedThing(id, name, value, idx, groupId)
-
-                TrackedThing.Type.None -> throw Exception("Tracked thing not supported.")
-            }
-        trackedThing.defaultValue = defaultValue
+            TrackedThing(id, name, value, type, idx, groupId = groupId, defaultValue = defaultValue)
+        if (type == TrackedThing.Type.Health) {
+            trackedThing.temporaryHp = temporaryHp
+        } else if (type == TrackedThing.Type.SpellSlot) {
+            trackedThing.level = level
+        }
         return trackedThing
     }
 }

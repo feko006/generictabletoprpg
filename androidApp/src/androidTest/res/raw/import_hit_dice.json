@@ -6,6 +6,7 @@
       "trackedThings": [
         {
           "name": "hit_dice",
+          "value": "3",
           "amount": 3,
           "type": "HitDice",
           "defaultValue": "4",

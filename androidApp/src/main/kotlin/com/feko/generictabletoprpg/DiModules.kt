@@ -1,12 +1,10 @@
 package com.feko.generictabletoprpg
 
 import androidx.room.Room
-import com.feko.generictabletoprpg.common.data.MoshiJson
 import com.feko.generictabletoprpg.common.data.ParseEdnAsMapEdnJava
 import com.feko.generictabletoprpg.common.data.ProcessEdnMapEdnJava
 import com.feko.generictabletoprpg.common.data.UserPreferences
 import com.feko.generictabletoprpg.common.data.local.GenericTabletopRpgDatabase
-import com.feko.generictabletoprpg.common.domain.IJson
 import com.feko.generictabletoprpg.common.domain.IParseEdnAsMap
 import com.feko.generictabletoprpg.common.domain.IProcessEdnMap
 import com.feko.generictabletoprpg.common.domain.IUserPreferences
@@ -44,7 +42,6 @@ val commonModule = module {
     singleOf(::ParseEdnAsMapEdnJava) bind IParseEdnAsMap::class
     singleOf(::ProcessEdnMapEdnJava) bind IProcessEdnMap::class
     singleOf(::UserPreferences) bind IUserPreferences::class
-    singleOf(::MoshiJson) bind IJson::class
 
     // VMs
     viewModelOf(::AppViewModel)

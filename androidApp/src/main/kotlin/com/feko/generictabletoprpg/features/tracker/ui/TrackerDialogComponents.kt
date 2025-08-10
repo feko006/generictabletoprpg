@@ -45,18 +45,16 @@ import com.feko.generictabletoprpg.common.ui.components.IInputFieldValueConverte
 import com.feko.generictabletoprpg.common.ui.components.NumberDialogInputField
 import com.feko.generictabletoprpg.common.ui.theme.Typography
 import com.feko.generictabletoprpg.features.spell.Spell
-import com.feko.generictabletoprpg.features.tracker.domain.model.HealthTrackedThing
-import com.feko.generictabletoprpg.features.tracker.domain.model.IntTrackedThing
-import com.feko.generictabletoprpg.features.tracker.domain.model.NumberTrackedThing
-import com.feko.generictabletoprpg.features.tracker.domain.model.PercentageTrackedThing
-import com.feko.generictabletoprpg.features.tracker.domain.model.SpellListTrackedThing
-import com.feko.generictabletoprpg.features.tracker.domain.model.SpellSlotTrackedThing
 import com.feko.generictabletoprpg.features.tracker.domain.model.StatEntry
 import com.feko.generictabletoprpg.features.tracker.domain.model.StatSkillEntry
 import com.feko.generictabletoprpg.features.tracker.domain.model.StatsContainer
-import com.feko.generictabletoprpg.features.tracker.domain.model.StatsTrackedThing
-import com.feko.generictabletoprpg.features.tracker.domain.model.TextTrackedThing
 import com.feko.generictabletoprpg.features.tracker.domain.model.TrackedThing
+import com.feko.generictabletoprpg.features.tracker.domain.model.amount
+import com.feko.generictabletoprpg.features.tracker.domain.model.isIntBased
+import com.feko.generictabletoprpg.features.tracker.domain.model.isLevelValid
+import com.feko.generictabletoprpg.features.tracker.domain.model.isValueValid
+import com.feko.generictabletoprpg.features.tracker.domain.model.setNewValue
+import com.feko.generictabletoprpg.features.tracker.domain.model.validate
 
 @Composable
 fun TrackerAlertDialog(viewModel: TrackerViewModel, onSpellClick: (Spell) -> Unit) {
@@ -81,30 +79,42 @@ private fun TrackerAlertDialog(
             RefreshAllDialog(dialog, viewModel::refreshAll, viewModel::dismissDialog)
 
         is ITrackerDialog.AddToPercentageDialog ->
-            AddToPercentageDialog(dialog, viewModel::addToPercentage, viewModel::dismissDialog)
+            AddToPercentageDialog(dialog, { percentage, amount ->
+                viewModel.addToTrackedThing(percentage, amount)
+            }, viewModel::dismissDialog)
 
         is ITrackerDialog.SubtractFromPercentageDialog ->
             SubtractFromPercentageDialog(
                 dialog,
-                viewModel::subtractFromPercentage,
+                { percentage, amount ->
+                    viewModel.subtractFromTrackedThing(percentage, amount)
+                },
                 viewModel::dismissDialog
             )
 
         is ITrackerDialog.AddToNumberDialog ->
-            AddToNumberDialog(dialog, viewModel::addToNumber, viewModel::dismissDialog)
+            AddToNumberDialog(dialog, { number, amount ->
+                viewModel.addToTrackedThing(number, amount)
+            }, viewModel::dismissDialog)
 
         is ITrackerDialog.SubtractFromNumberDialog ->
             SubtractFromNumberDialog(
                 dialog,
-                viewModel::subtractFromNumber,
+                { number, amount ->
+                    viewModel.subtractFromTrackedThing(number, amount)
+                },
                 viewModel::dismissDialog
             )
 
         is ITrackerDialog.DamageHealthDialog ->
-            DamageHealthDialog(dialog, viewModel::damageHealth, viewModel::dismissDialog)
+            DamageHealthDialog(dialog, { health, amount ->
+                viewModel.subtractFromTrackedThing(health, amount)
+            }, viewModel::dismissDialog)
 
         is ITrackerDialog.HealHealthDialog ->
-            HealHealthDialog(dialog, viewModel::healHealth, viewModel::dismissDialog)
+            HealHealthDialog(dialog, { health, amount ->
+                viewModel.addToTrackedThing(health, amount)
+            }, viewModel::dismissDialog)
 
         is ITrackerDialog.AddTemporaryHpDialog ->
             AddTemporaryHpDialog(dialog, viewModel::addTemporaryHp, viewModel::dismissDialog)
@@ -159,7 +169,7 @@ fun RefreshAllDialog(
 @Composable
 fun AddToPercentageDialog(
     dialog: ITrackerDialog.AddToPercentageDialog,
-    onConfirm: (PercentageTrackedThing, String) -> Unit,
+    onConfirm: (TrackedThing, String) -> Unit,
     onDismiss: () -> Unit
 ) {
     EnterValueDialog(
@@ -177,7 +187,7 @@ fun AddToPercentageDialog(
 @Composable
 fun SubtractFromPercentageDialog(
     dialog: ITrackerDialog.SubtractFromPercentageDialog,
-    onConfirm: (PercentageTrackedThing, String) -> Unit,
+    onConfirm: (TrackedThing, String) -> Unit,
     onDismiss: () -> Unit
 ) {
     EnterValueDialog(
@@ -195,7 +205,7 @@ fun SubtractFromPercentageDialog(
 @Composable
 fun AddToNumberDialog(
     dialog: ITrackerDialog.AddToNumberDialog,
-    onConfirm: (NumberTrackedThing, String) -> Unit,
+    onConfirm: (TrackedThing, String) -> Unit,
     onDismiss: () -> Unit
 ) {
     EnterValueDialog(
@@ -212,7 +222,7 @@ fun AddToNumberDialog(
 @Composable
 fun SubtractFromNumberDialog(
     dialog: ITrackerDialog.SubtractFromNumberDialog,
-    onConfirm: (NumberTrackedThing, String) -> Unit,
+    onConfirm: (TrackedThing, String) -> Unit,
     onDismiss: () -> Unit
 ) {
     EnterValueDialog(
@@ -229,7 +239,7 @@ fun SubtractFromNumberDialog(
 @Composable
 fun HealHealthDialog(
     dialog: ITrackerDialog.HealHealthDialog,
-    onConfirm: (HealthTrackedThing, String) -> Unit,
+    onConfirm: (TrackedThing, String) -> Unit,
     onDismiss: () -> Unit
 ) {
     EnterValueDialog(
@@ -246,7 +256,7 @@ fun HealHealthDialog(
 @Composable
 fun DamageHealthDialog(
     dialog: ITrackerDialog.DamageHealthDialog,
-    onConfirm: (HealthTrackedThing, String) -> Unit,
+    onConfirm: (TrackedThing, String) -> Unit,
     onDismiss: () -> Unit
 ) {
     EnterValueDialog(
@@ -263,7 +273,7 @@ fun DamageHealthDialog(
 @Composable
 fun AddTemporaryHpDialog(
     dialog: ITrackerDialog.AddTemporaryHpDialog,
-    onConfirm: (HealthTrackedThing, String) -> Unit,
+    onConfirm: (TrackedThing, String) -> Unit,
     onDismiss: () -> Unit
 ) {
     EnterValueDialog(
@@ -363,7 +373,7 @@ private fun EditDialog(
             }
         }
     ) {
-        val isSpellList = editedTrackedThing is SpellListTrackedThing
+        val isSpellList = editedTrackedThing.type == TrackedThing.Type.SpellList
         val onFormSubmit = {
             if (canConfirmEditOperation) {
                 onConfirm(dialog.editedItem)
@@ -382,16 +392,16 @@ private fun EditDialog(
             ),
             autoFocus = true
         )
-        val spellSlot = editedTrackedThing as? SpellSlotTrackedThing
-        if (spellSlot != null) {
+        val isSpellSlot = editedTrackedThing.type == TrackedThing.Type.SpellSlot
+        if (isSpellSlot) {
             NumberDialogInputField(
-                value = spellSlot.level,
+                value = editedTrackedThing.level,
                 label = stringResource(R.string.level),
                 convertInputValue = IInputFieldValueConverter.IntInputFieldValueConverter,
                 onValueChange = {
-                    onValueUpdate(spellSlot.apply { level = it }.copy())
+                    onValueUpdate(editedTrackedThing.apply { level = it }.copy())
                 },
-                isInputFieldValid = { spellSlot.isLevelValid() },
+                isInputFieldValid = { editedTrackedThing.isLevelValid },
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Number,
                     imeAction = ImeAction.Next
@@ -404,10 +414,9 @@ private fun EditDialog(
             {
                 onValueUpdate(
                     editedTrackedThing
-                        .copy()
                         .apply {
                             setNewValue(it)
-                            defaultValue = it
+                            managedDefaultValue = it
                         }
                 )
             },
@@ -425,7 +434,7 @@ private fun EditDialogValueInputField(
 ) {
     if (isSpellList) return
 
-    if (editedTrackedThing is TextTrackedThing) {
+    if (editedTrackedThing.type == TrackedThing.Type.Text) {
         DialogInputField(
             value = editedTrackedThing.value,
             label = stringResource(id = R.string.text),
@@ -440,16 +449,16 @@ private fun EditDialogValueInputField(
         )
     }
 
-    val percentage = editedTrackedThing as? PercentageTrackedThing
-    if (percentage != null) {
+    val isPercentage = editedTrackedThing.type == TrackedThing.Type.Percentage
+    if (isPercentage) {
         NumberDialogInputField(
-            percentage.amount,
+            editedTrackedThing.amount.toFloat(),
             label = stringResource(R.string.amount),
             convertInputValue = IInputFieldValueConverter.FloatInputFieldValueConverter,
             onValueChange = { onValueChange(it.toString()) },
-            canSubmitForm = { percentage.isValueValid() },
+            canSubmitForm = { editedTrackedThing.isValueValid() },
             onFormSubmit = onFormSubmit,
-            isInputFieldValid = { percentage.isValueValid() },
+            isInputFieldValid = { editedTrackedThing.isValueValid() },
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Decimal,
                 imeAction = ImeAction.Done
@@ -458,16 +467,16 @@ private fun EditDialogValueInputField(
         )
     }
 
-    val intTrackedThing = editedTrackedThing as? IntTrackedThing
-    if (intTrackedThing != null) {
+    val isIntTrackedThing = editedTrackedThing.isIntBased
+    if (isIntTrackedThing) {
         NumberDialogInputField(
-            intTrackedThing.amount,
+            editedTrackedThing.amount.toInt(),
             label = stringResource(R.string.amount),
             convertInputValue = IInputFieldValueConverter.IntInputFieldValueConverter,
             onValueChange = { onValueChange(it.toString()) },
-            canSubmitForm = { intTrackedThing.isValueValid() },
+            canSubmitForm = { editedTrackedThing.isValueValid() },
             onFormSubmit = onFormSubmit,
-            isInputFieldValid = { intTrackedThing.isValueValid() },
+            isInputFieldValid = { editedTrackedThing.isValueValid() },
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Number,
                 imeAction = ImeAction.Done
@@ -480,12 +489,12 @@ private fun EditDialogValueInputField(
 fun StatsEditDialog(
     dialog: ITrackerDialog.StatsEditDialog,
     defaultName: String,
-    onFormSubmit: (StatsTrackedThing) -> Unit,
-    onValueUpdate: (StatsTrackedThing) -> Unit,
+    onFormSubmit: (TrackedThing) -> Unit,
+    onValueUpdate: (TrackedThing) -> Unit,
     onDismiss: () -> Unit
 ) {
     val editedStats = dialog.stats
-    val statsContainer = requireNotNull(editedStats.serializedItem)
+    val statsContainer = requireNotNull(editedStats.serializedItem) as StatsContainer
     AlertDialogBase(
         onDialogDismiss = onDismiss,
         screenHeight = 0.6f,
@@ -522,9 +531,7 @@ fun StatsEditDialog(
                 DialogInputField(
                     value = editedStats.name,
                     label = "${stringResource(R.string.name)} ($defaultName)",
-                    onValueChange = {
-                        onValueUpdate((editedStats.copy() as StatsTrackedThing).apply { name = it })
-                    }
+                    onValueChange = { onValueUpdate(editedStats.copy(name = it)) }
                 )
                 NumberDialogInputField(
                     value = statsContainer.proficiencyBonus,
@@ -532,9 +539,7 @@ fun StatsEditDialog(
                     convertInputValue = IInputFieldValueConverter.IntInputFieldValueConverter,
                     onValueChange = {
                         onValueUpdate(
-                            (editedStats.copy() as StatsTrackedThing).apply {
-                                serializedItem = serializedItem.copy(proficiencyBonus = it)
-                            }
+                            editedStats.copy(serializedItem = statsContainer.copy(proficiencyBonus = it))
                         )
                     },
                     keyboardOptions = KeyboardOptions(
@@ -548,9 +553,10 @@ fun StatsEditDialog(
                     convertInputValue = IInputFieldValueConverter.IntInputFieldValueConverter,
                     onValueChange = {
                         onValueUpdate(
-                            (editedStats.copy() as StatsTrackedThing).apply {
-                                serializedItem = serializedItem.copy(initiativeAdditionalBonus = it)
-                            })
+                            editedStats.copy(
+                                serializedItem = statsContainer.copy(initiativeAdditionalBonus = it)
+                            )
+                        )
                     },
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Number,
@@ -563,10 +569,10 @@ fun StatsEditDialog(
                     convertInputValue = IInputFieldValueConverter.IntInputFieldValueConverter,
                     onValueChange = {
                         onValueUpdate(
-                            (editedStats.copy() as StatsTrackedThing).apply {
-                                serializedItem =
-                                    serializedItem.copy(spellSaveDcAdditionalBonus = it)
-                            })
+                            editedStats.copy(
+                                serializedItem = statsContainer.copy(spellSaveDcAdditionalBonus = it)
+                            )
+                        )
                     },
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Number,
@@ -579,10 +585,10 @@ fun StatsEditDialog(
                     convertInputValue = IInputFieldValueConverter.IntInputFieldValueConverter,
                     onValueChange = {
                         onValueUpdate(
-                            (editedStats.copy() as StatsTrackedThing).apply {
-                                serializedItem =
-                                    serializedItem.copy(spellAttackAdditionalBonus = it)
-                            })
+                            editedStats.copy(
+                                serializedItem = statsContainer.copy(spellAttackAdditionalBonus = it)
+                            )
+                        )
                     },
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Number,
@@ -596,11 +602,7 @@ fun StatsEditDialog(
                         statIndex,
                         statsContainer,
                         onValueUpdate = {
-                            onValueUpdate(
-                                (editedStats.copy() as StatsTrackedThing).apply {
-                                    serializedItem = it
-                                }
-                            )
+                            onValueUpdate(editedStats.copy(serializedItem = it))
                         },
                         onFormSubmit = {
                             onFormSubmit(editedStats)

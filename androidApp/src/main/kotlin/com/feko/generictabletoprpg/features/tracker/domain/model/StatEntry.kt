@@ -1,8 +1,10 @@
 package com.feko.generictabletoprpg.features.tracker.domain.model
 
 import androidx.annotation.Keep
+import kotlinx.serialization.Serializable
 
 @Keep
+@Serializable
 data class StatEntry(
     val name: String,
     val shortName: String,

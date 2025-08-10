@@ -4,7 +4,7 @@ pluginManagement {
         google()
         mavenCentral()
         maven {
-            url = uri("https://androidx.dev/snapshots/builds/13678365/artifacts/repository")
+            url = uri("https://androidx.dev/snapshots/builds/13909284/artifacts/repository")
         }
     }
 }
@@ -15,7 +15,7 @@ dependencyResolutionManagement {
         google()
         mavenCentral()
         maven {
-            url = uri("https://androidx.dev/snapshots/builds/13678365/artifacts/repository")
+            url = uri("https://androidx.dev/snapshots/builds/13909284/artifacts/repository")
         }
     }
 }

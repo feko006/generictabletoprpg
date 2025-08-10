@@ -6,6 +6,7 @@
       "trackedThings": [
         {
           "name": "percentage",
+          "value": "55.5",
           "amount": 55.5,
           "type": "Percentage",
           "defaultValue": "30",

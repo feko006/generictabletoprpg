@@ -6,6 +6,7 @@
       "trackedThings": [
         {
           "name": "health",
+          "value": "5",
           "amount": 5,
           "type": "Health",
           "defaultValue": "10",

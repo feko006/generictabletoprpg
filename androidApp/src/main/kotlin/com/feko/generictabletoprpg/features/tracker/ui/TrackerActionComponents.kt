@@ -11,14 +11,14 @@ import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.painterResource
 import com.feko.generictabletoprpg.R
-import com.feko.generictabletoprpg.features.tracker.domain.model.HealthTrackedThing
-import com.feko.generictabletoprpg.features.tracker.domain.model.PercentageTrackedThing
-import com.feko.generictabletoprpg.features.tracker.domain.model.StatsTrackedThing
+import com.feko.generictabletoprpg.features.tracker.domain.model.StatsContainer
 import com.feko.generictabletoprpg.features.tracker.domain.model.TrackedThing
+import com.feko.generictabletoprpg.features.tracker.domain.model.canAdd
+import com.feko.generictabletoprpg.features.tracker.domain.model.canSubtract
 
 @Composable
 fun PercentageActions(
-    item: PercentageTrackedThing,
+    item: TrackedThing,
     onAddButtonClicked: () -> Unit,
     onSubtractButtonClicked: () -> Unit,
     onEditButtonClicked: () -> Unit,
@@ -27,13 +27,13 @@ fun PercentageActions(
     ItemActionsBase(onEditButtonClicked, onDeleteButtonClicked) {
         IconButton(
             onClick = onAddButtonClicked,
-            enabled = item.canAdd()
+            enabled = item.canAdd
         ) {
             Icon(Icons.Default.Add, "")
         }
         IconButton(
             onClick = onSubtractButtonClicked,
-            enabled = item.canSubtract()
+            enabled = item.canSubtract
         ) {
             Icon(painterResource(R.drawable.subtract), "")
         }
@@ -51,13 +51,13 @@ fun NumberActions(
     ItemActionsBase(onEditButtonClicked, onDeleteButtonClicked) {
         IconButton(
             onClick = onAddButtonClicked,
-            enabled = item.canAdd()
+            enabled = item.canAdd
         ) {
             Icon(Icons.Default.Add, "")
         }
         IconButton(
             onClick = onSubtractButtonClicked,
-            enabled = item.canSubtract()
+            enabled = item.canSubtract
         ) {
             Icon(painterResource(R.drawable.subtract), "")
         }
@@ -66,7 +66,7 @@ fun NumberActions(
 
 @Composable
 fun HealthActions(
-    health: HealthTrackedThing,
+    health: TrackedThing,
     onHealButtonClicked: () -> Unit,
     onDamageButtonClicked: () -> Unit,
     onAddTemporaryHpButtonClicked: () -> Unit,
@@ -77,13 +77,13 @@ fun HealthActions(
     ItemActionsBase(onEditButtonClicked, onDeleteButtonClicked) {
         IconButton(
             onClick = onHealButtonClicked,
-            enabled = health.canAdd()
+            enabled = health.canAdd
         ) {
             Icon(painterResource(R.drawable.heart_plus), "")
         }
         IconButton(
             onClick = onDamageButtonClicked,
-            enabled = health.canSubtract()
+            enabled = health.canSubtract
         ) {
             Icon(painterResource(R.drawable.heart_minus), "")
         }
@@ -95,7 +95,7 @@ fun HealthActions(
         }
         IconButton(
             onClick = onResetButtonClicked,
-            enabled = health.canAdd() || health.temporaryHp > 0
+            enabled = health.canAdd || health.temporaryHp > 0
         ) {
             Icon(Icons.Default.Refresh, "")
         }
@@ -175,7 +175,7 @@ fun SpellListActions(
 
 @Composable
 fun StatsActions(
-    stats: StatsTrackedThing,
+    stats: TrackedThing,
     onPreviewButtonClicked: () -> Unit,
     onEditButtonClicked: () -> Unit,
     onDeleteButtonClicked: () -> Unit
@@ -186,7 +186,7 @@ fun StatsActions(
     ) {
         IconButton(
             onClick = onPreviewButtonClicked,
-            enabled = stats.serializedItem.stats.any()
+            enabled = (stats.serializedItem as StatsContainer).stats.any()
         ) {
             Icon(Icons.AutoMirrored.Filled.List, "")
         }

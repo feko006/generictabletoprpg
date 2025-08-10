@@ -4,7 +4,6 @@ import android.content.Context
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.lifecycle.viewModelScope
 import com.feko.generictabletoprpg.R
-import com.feko.generictabletoprpg.common.domain.IJson
 import com.feko.generictabletoprpg.common.domain.createNewComparator
 import com.feko.generictabletoprpg.common.domain.model.IText
 import com.feko.generictabletoprpg.common.ui.viewmodel.FabDropdownSubViewModel
@@ -15,21 +14,18 @@ import com.feko.generictabletoprpg.common.ui.viewmodel.ToastSubViewModel
 import com.feko.generictabletoprpg.features.searchall.domain.usecase.ISearchAllUseCase
 import com.feko.generictabletoprpg.features.spell.SpellDao
 import com.feko.generictabletoprpg.features.tracker.TrackedThingDao
-import com.feko.generictabletoprpg.features.tracker.domain.model.AbilityTrackedThing
-import com.feko.generictabletoprpg.features.tracker.domain.model.HealthTrackedThing
-import com.feko.generictabletoprpg.features.tracker.domain.model.HitDiceTrackedThing
-import com.feko.generictabletoprpg.features.tracker.domain.model.JsonTrackedThing
-import com.feko.generictabletoprpg.features.tracker.domain.model.NumberTrackedThing
-import com.feko.generictabletoprpg.features.tracker.domain.model.PercentageTrackedThing
 import com.feko.generictabletoprpg.features.tracker.domain.model.SpellListEntry
-import com.feko.generictabletoprpg.features.tracker.domain.model.SpellListTrackedThing
-import com.feko.generictabletoprpg.features.tracker.domain.model.SpellSlotTrackedThing
 import com.feko.generictabletoprpg.features.tracker.domain.model.StatEntry
 import com.feko.generictabletoprpg.features.tracker.domain.model.StatSkillEntry
 import com.feko.generictabletoprpg.features.tracker.domain.model.StatsContainer
-import com.feko.generictabletoprpg.features.tracker.domain.model.StatsTrackedThing
 import com.feko.generictabletoprpg.features.tracker.domain.model.TrackedThing
-import com.feko.generictabletoprpg.features.tracker.domain.model.createDefault5EStatEntries
+import com.feko.generictabletoprpg.features.tracker.domain.model.add
+import com.feko.generictabletoprpg.features.tracker.domain.model.addTemporaryHp
+import com.feko.generictabletoprpg.features.tracker.domain.model.amount
+import com.feko.generictabletoprpg.features.tracker.domain.model.getItem
+import com.feko.generictabletoprpg.features.tracker.domain.model.resetValueToDefault
+import com.feko.generictabletoprpg.features.tracker.domain.model.setItem
+import com.feko.generictabletoprpg.features.tracker.domain.model.subtract
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -43,7 +39,6 @@ class TrackerViewModel(
     val groupName: String,
     private val trackedThingDao: TrackedThingDao,
     private val spellDao: SpellDao,
-    private val json: IJson,
     searchAllUseCase: ISearchAllUseCase,
 ) : OverviewViewModel<Any>(trackedThingDao) {
 
@@ -58,7 +53,7 @@ class TrackerViewModel(
 
     private lateinit var allItems: List<Any>
 
-    private var spellListBeingAddedTo: SpellListTrackedThing? = null
+    private var spellListBeingAddedTo: TrackedThing? = null
     private var fiveEDefaultStats: List<StatEntry>? = null
 
     lateinit var spellListState: LazyListState
@@ -95,23 +90,17 @@ class TrackerViewModel(
 
     override fun getAllItems(): List<TrackedThing> {
         return trackedThingDao.getAllSortedByIndex(groupId)
-            .onEach {
-                if (it is JsonTrackedThing<*>) {
-                    it.setItemFromValue(json)
-                }
-            }
+            .onEach { it.serializedItem = it.getItem() }
     }
 
     fun showCreateDialog(type: TrackedThing.Type, context: Context) {
         viewModelScope.launch {
             if (type == TrackedThing.Type.FiveEStats) {
-                fiveEDefaultStats = fiveEDefaultStats ?: createDefault5EStatEntries(context)
+                fiveEDefaultStats = fiveEDefaultStats
+                    ?: StatsContainer.createDefault5EStatEntries(context)
                 val defaultStats = requireNotNull(fiveEDefaultStats)
-                val newStats =
-                    TrackedThing.emptyOfType(type, _items.value.size, groupId) as StatsTrackedThing
-                val defaultStatsContainer =
-                    newStats.serializedItem.copy(stats = defaultStats)
-                newStats.setItem(defaultStatsContainer, json)
+                val newStats = TrackedThing.emptyOfType(type, _items.value.size, groupId)
+                newStats.setItem(StatsContainer.Empty.copy(stats = defaultStats))
                 _dialog.emit(
                     ITrackerDialog.StatsEditDialog(
                         newStats,
@@ -137,10 +126,7 @@ class TrackerViewModel(
             val copy = item.copy()
             if (item.type == TrackedThing.Type.FiveEStats) {
                 _dialog.emit(
-                    ITrackerDialog.StatsEditDialog(
-                        copy as StatsTrackedThing,
-                        IText.StringResourceText(R.string.edit)
-                    )
+                    ITrackerDialog.StatsEditDialog(copy, IText.StringResourceText(R.string.edit))
                 )
             } else {
                 _dialog.emit(
@@ -165,7 +151,7 @@ class TrackerViewModel(
                     else Int.MAX_VALUE
                 }
             } else {
-                if (trackedThing is HealthTrackedThing) {
+                if (trackedThing.type == TrackedThing.Type.Health) {
                     trackedThing.temporaryHp = 0
                 }
                 withContext(Dispatchers.IO) {
@@ -192,31 +178,7 @@ class TrackerViewModel(
         }
     }
 
-    fun addToPercentage(percentage: PercentageTrackedThing, amount: String) {
-        addToTrackedThing(percentage, amount)
-    }
-
-    fun subtractFromPercentage(percentage: PercentageTrackedThing, amount: String) {
-        subtractFromTrackedThing(percentage, amount)
-    }
-
-    fun addToNumber(number: NumberTrackedThing, amount: String) {
-        addToTrackedThing(number, amount)
-    }
-
-    fun subtractFromNumber(number: NumberTrackedThing, amount: String) {
-        subtractFromTrackedThing(number, amount)
-    }
-
-    fun healHealth(health: HealthTrackedThing, amount: String) {
-        addToTrackedThing(health, amount)
-    }
-
-    fun damageHealth(health: HealthTrackedThing, amount: String) {
-        subtractFromTrackedThing(health, amount)
-    }
-
-    private fun addToTrackedThing(trackedThing: TrackedThing, amount: String) {
+    fun addToTrackedThing(trackedThing: TrackedThing, amount: String) {
         viewModelScope.launch {
             trackedThing.add(amount)
             withContext(Dispatchers.IO) {
@@ -226,7 +188,7 @@ class TrackerViewModel(
         }
     }
 
-    private fun subtractFromTrackedThing(trackedThing: TrackedThing, amount: String) {
+    fun subtractFromTrackedThing(trackedThing: TrackedThing, amount: String) {
         viewModelScope.launch {
             trackedThing.subtract(amount)
             withContext(Dispatchers.IO) {
@@ -236,7 +198,7 @@ class TrackerViewModel(
         }
     }
 
-    fun addTemporaryHp(health: HealthTrackedThing, amount: String) {
+    fun addTemporaryHp(health: TrackedThing, amount: String) {
         viewModelScope.launch {
             health.addTemporaryHp(amount)
             withContext(Dispatchers.IO) {
@@ -256,10 +218,11 @@ class TrackerViewModel(
         }
     }
 
-    fun insertOrUpdateStats(stats: StatsTrackedThing) {
+    fun insertOrUpdateStats(stats: TrackedThing) {
         viewModelScope.launch {
-            val updatedStatsContainer = stats.serializedItem.let(::finalizeStats)
-            stats.setItem(updatedStatsContainer, json)
+            val updatedStatsContainer =
+                (stats.serializedItem as StatsContainer).finalizeStats()
+            stats.setItem(updatedStatsContainer)
             val isNewItem = stats.id <= 0
             withContext(Dispatchers.IO) {
                 ensureNonEmptyName(stats)
@@ -278,41 +241,40 @@ class TrackerViewModel(
         }
     }
 
-    fun editStatsDialogValueUpdated(stats: StatsTrackedThing) {
+    fun editStatsDialogValueUpdated(stats: TrackedThing) {
         viewModelScope.launch {
             _dialog.update {
                 if (it !is ITrackerDialog.StatsEditDialog) return@launch
-                stats.setItem(stats.serializedItem, json)
+                stats.setItem(stats.serializedItem)
                 it.copy(stats = stats)
             }
         }
     }
 
-    private fun finalizeStats(statsContainer: StatsContainer): StatsContainer {
-        val stats =
-            statsContainer.stats
-                .map { stat ->
-                    val skills = stat.skills.map { skill ->
-                        val bonus =
-                            getBonus(statsContainer.proficiencyBonus, stat, skill)
-                        val passiveScore =
-                            getPassiveScore(bonus, stat, skill)
-                        skill.copy(
-                            bonus = bonus,
-                            passiveScore = passiveScore
-                        )
-                    }
-                    val savingThrowBonus =
-                        getSavingThrowBonus(statsContainer.proficiencyBonus, stat)
-                    stat.copy(
-                        savingThrowBonus = savingThrowBonus,
-                        skills = skills
+    private fun StatsContainer.finalizeStats(): StatsContainer {
+        val stats = stats
+            .map { stat ->
+                val skills = stat.skills.map { skill ->
+                    val bonus =
+                        getBonus(proficiencyBonus, stat, skill)
+                    val passiveScore =
+                        getPassiveScore(bonus, stat, skill)
+                    skill.copy(
+                        bonus = bonus,
+                        passiveScore = passiveScore
                     )
                 }
-        val initiative = getInitiative(statsContainer, stats)
-        val spellSaveDc = getSpellSaveDc(statsContainer, stats)
-        val spellAttackBonus = getSpellAttackBonus(statsContainer, stats)
-        return statsContainer.copy(
+                val savingThrowBonus =
+                    getSavingThrowBonus(proficiencyBonus, stat)
+                stat.copy(
+                    savingThrowBonus = savingThrowBonus,
+                    skills = skills
+                )
+            }
+        val initiative = getInitiative(stats)
+        val spellSaveDc = getSpellSaveDc(stats)
+        val spellAttackBonus = getSpellAttackBonus(stats)
+        return copy(
             spellSaveDc = spellSaveDc,
             spellAttackBonus = spellAttackBonus,
             initiative = initiative,
@@ -320,12 +282,11 @@ class TrackerViewModel(
         )
     }
 
-    private fun getInitiative(statsContainer: StatsContainer, stats: List<StatEntry>): Int {
-        var initiative = statsContainer.initiative
-        if (statsContainer.use5eCalculations) {
+    private fun StatsContainer.getInitiative(stats: List<StatEntry>): Int {
+        var initiative = initiative
+        if (use5eCalculations) {
             val dexterityStat = stats.first { it.shortName.lowercase() == "dex" }
-            initiative = dexterityStat.bonus +
-                    statsContainer.initiativeAdditionalBonus
+            initiative = dexterityStat.bonus + initiativeAdditionalBonus
         }
         return initiative
     }
@@ -366,34 +327,25 @@ class TrackerViewModel(
         return passiveScore
     }
 
-    private fun getSpellSaveDc(
-        statsContainer: StatsContainer,
-        stats: List<StatEntry>
-    ): Int {
-        var spellSaveDc = statsContainer.spellSaveDc
-        if (statsContainer.use5eCalculations) {
+    private fun StatsContainer.getSpellSaveDc(stats: List<StatEntry>): Int {
+        var spellSaveDc = spellSaveDc
+        if (use5eCalculations) {
             val spellcastingModifierStat =
                 stats.firstOrNull { stat -> stat.isSpellcastingModifier }
             spellSaveDc =
-                8 + (spellcastingModifierStat?.bonus ?: 0) +
-                        statsContainer.spellSaveDcAdditionalBonus +
-                        statsContainer.proficiencyBonus
+                8 + (spellcastingModifierStat?.bonus
+                    ?: 0) + spellSaveDcAdditionalBonus + proficiencyBonus
         }
         return spellSaveDc
     }
 
-    private fun getSpellAttackBonus(
-        statsContainer: StatsContainer,
-        stats: List<StatEntry>
-    ): Int {
-        var spellAttackBonus = statsContainer.spellAttackBonus
-        if (statsContainer.use5eCalculations) {
+    private fun StatsContainer.getSpellAttackBonus(stats: List<StatEntry>): Int {
+        var spellAttackBonus = spellAttackBonus
+        if (use5eCalculations) {
             val spellcastingModifierStat =
                 stats.firstOrNull { stat -> stat.isSpellcastingModifier }
-            spellAttackBonus =
-                (spellcastingModifierStat?.bonus ?: 0) +
-                        statsContainer.spellAttackAdditionalBonus +
-                        statsContainer.proficiencyBonus
+            spellAttackBonus = (spellcastingModifierStat?.bonus ?: 0) +
+                    spellAttackAdditionalBonus + proficiencyBonus
         }
         return spellAttackBonus
     }
@@ -402,7 +354,7 @@ class TrackerViewModel(
         viewModelScope.launch {
             val itemCopy = item.copy()
             itemCopy.resetValueToDefault()
-            if (itemCopy is HealthTrackedThing) {
+            if (itemCopy.type == TrackedThing.Type.Health) {
                 itemCopy.temporaryHp = 0
             }
             withContext(Dispatchers.IO) {
@@ -412,13 +364,7 @@ class TrackerViewModel(
         }
     }
 
-    fun useAbility(item: AbilityTrackedThing) = reduceByOne(item)
-
-    fun useSpell(item: SpellSlotTrackedThing) = reduceByOne(item)
-
-    private suspend fun useSpellSuspending(item: TrackedThing) = reduceByOneSuspending(item)
-
-    private fun reduceByOne(item: TrackedThing) {
+    fun reduceByOne(item: TrackedThing) {
         viewModelScope.launch {
             reduceByOneSuspending(item)
         }
@@ -444,25 +390,25 @@ class TrackerViewModel(
         }
     }
 
-    fun addToPercentageRequested(percentage: PercentageTrackedThing) =
+    fun addToPercentageRequested(percentage: TrackedThing) =
         _dialog.update { ITrackerDialog.AddToPercentageDialog(percentage) }
 
-    fun subtractFromPercentageRequested(percentage: PercentageTrackedThing) =
+    fun subtractFromPercentageRequested(percentage: TrackedThing) =
         _dialog.update { ITrackerDialog.SubtractFromPercentageDialog(percentage) }
 
-    fun addToNumberRequested(number: NumberTrackedThing) =
+    fun addToNumberRequested(number: TrackedThing) =
         _dialog.update { ITrackerDialog.AddToNumberDialog(number) }
 
-    fun subtractFromNumberRequested(number: NumberTrackedThing) =
+    fun subtractFromNumberRequested(number: TrackedThing) =
         _dialog.update { ITrackerDialog.SubtractFromNumberDialog(number) }
 
-    fun takeDamageRequested(health: HealthTrackedThing) =
+    fun takeDamageRequested(health: TrackedThing) =
         _dialog.update { ITrackerDialog.DamageHealthDialog(health) }
 
-    fun healRequested(health: HealthTrackedThing) =
+    fun healRequested(health: TrackedThing) =
         _dialog.update { ITrackerDialog.HealHealthDialog(health) }
 
-    fun addTemporaryHpRequested(health: HealthTrackedThing) =
+    fun addTemporaryHpRequested(health: TrackedThing) =
         _dialog.update { ITrackerDialog.AddTemporaryHpDialog(health) }
 
     fun deleteItemRequested(item: TrackedThing) =
@@ -500,8 +446,9 @@ class TrackerViewModel(
         }
     }
 
-    fun showPreviewSpellListDialog(spellList: SpellListTrackedThing, resetListState: Boolean) {
-        if (spellList.serializedItem.isEmpty()) {
+    fun showPreviewSpellListDialog(spellList: TrackedThing, resetListState: Boolean) {
+        @Suppress("UNCHECKED_CAST")
+        if ((spellList.serializedItem as List<SpellListEntry>).isEmpty()) {
             return
         }
         if (resetListState) {
@@ -518,16 +465,17 @@ class TrackerViewModel(
                 spellDao.getById(spellId)
             }
             val spellList = requireNotNull(spellListBeingAddedTo)
+
+            @Suppress("UNCHECKED_CAST")
+            val serializedItem = spellList.serializedItem as List<SpellListEntry>
             val spellAlreadyInList =
-                spellList.serializedItem.any {
-                    it.id == spellId && it.name == spellToAdd.name
-                }
+                serializedItem.any { it.id == spellId && it.name == spellToAdd.name }
             if (spellAlreadyInList) {
                 _toast.showMessage(R.string.spell_already_in_list)
             } else {
-                spellList.serializedItem.add(SpellListEntry.Companion.fromSpell(spellToAdd))
                 val sortedSpells =
-                    spellList.serializedItem
+                    serializedItem
+                        .plus(SpellListEntry.Companion.fromSpell(spellToAdd))
                         .sortedWith { spell1, spell2 ->
                             requireNotNull(spell1)
                             requireNotNull(spell2)
@@ -536,8 +484,8 @@ class TrackerViewModel(
                                 comparisonByLevel != 0 -> comparisonByLevel
                                 else -> spell1.name.compareTo(spell2.name)
                             }
-                        }.toMutableList()
-                spellList.setItem(sortedSpells, json)
+                        }
+                spellList.setItem(sortedSpells)
                 withContext(Dispatchers.IO) {
                     trackedThingDao.insertOrUpdate(spellList)
                 }
@@ -548,7 +496,7 @@ class TrackerViewModel(
         }
     }
 
-    fun addingSpellToList(spellList: SpellListTrackedThing) {
+    fun addingSpellToList(spellList: TrackedThing) {
         spellListBeingAddedTo = spellList
     }
 
@@ -558,14 +506,14 @@ class TrackerViewModel(
             it.copy(secondaryDialog = ISpellListDialogDialogs.ConfirmSpellRemovalDialog(spell))
         }
 
-    fun removeSpellFromSpellList(spellList: SpellListTrackedThing, spellListEntry: SpellListEntry) {
+    fun removeSpellFromSpellList(spellList: TrackedThing, spellListEntry: SpellListEntry) {
         viewModelScope.launch {
-            spellList.serializedItem.remove(spellListEntry)
-            spellList.setItem(spellList.serializedItem, json)
-            withContext(Dispatchers.IO) {
-                trackedThingDao.insertOrUpdate(spellList)
-            }
-            val spellListCopy = spellList.copy() as SpellListTrackedThing
+            @Suppress("UNCHECKED_CAST")
+            val serializedItem =
+                (spellList.serializedItem as List<SpellListEntry>).minus(spellListEntry)
+            spellList.setItem(serializedItem)
+            withContext(Dispatchers.IO) { trackedThingDao.insertOrUpdate(spellList) }
+            val spellListCopy = spellList.copy()
             replaceItem(spellListCopy)
             _dialog.update {
                 if (it !is ITrackerDialog.SpellListDialog) return@launch
@@ -578,8 +526,12 @@ class TrackerViewModel(
         viewModelScope.launch {
             val availableSpellSlots =
                 _items.value
-                    .filterIsInstance<SpellSlotTrackedThing>()
-                    .filter { it.level >= level && it.amount > 0 }
+                    .filterIsInstance<TrackedThing>()
+                    .filter {
+                        it.type == TrackedThing.Type.SpellSlot
+                                && it.level >= level
+                                && it.amount.toInt() > 0
+                    }
                     .map { it.level }
                     .distinct()
             require(availableSpellSlots.isNotEmpty())
@@ -601,9 +553,13 @@ class TrackerViewModel(
         viewModelScope.launch {
             val spellSlot =
                 _items.value
-                    .filterIsInstance<SpellSlotTrackedThing>()
-                    .first { it.level == withSlotLevel && it.amount > 0 }
-            useSpellSuspending(spellSlot)
+                    .filterIsInstance<TrackedThing>()
+                    .first {
+                        it.type == TrackedThing.Type.SpellSlot
+                                && it.level == withSlotLevel
+                                && it.amount.toInt() > 0
+                    }
+            reduceByOneSuspending(spellSlot)
             _toast.showMessage(
                 R.string.spell_cast_with_slot_level,
                 withSlotLevel.toString()
@@ -615,9 +571,13 @@ class TrackerViewModel(
         viewModelScope.launch {
             val spellSlot =
                 _items.value
-                    .filterIsInstance<SpellSlotTrackedThing>()
-                    .first { it.level == withSlotLevel && it.amount > 0 }
-            useSpellSuspending(spellSlot)
+                    .filterIsInstance<TrackedThing>()
+                    .first {
+                        it.type == TrackedThing.Type.SpellSlot
+                                && it.level == withSlotLevel
+                                && it.amount.toInt() > 0
+                    }
+            reduceByOneSuspending(spellSlot)
             _toast.showMessage(
                 R.string.spell_cast_with_slot_level,
                 withSlotLevel.toString()
@@ -625,26 +585,32 @@ class TrackerViewModel(
         }
     }
 
-    fun showStatsDialog(stats: StatsTrackedThing) =
-        _dialog.update { ITrackerDialog.PreviewStatSkillsDialog(stats.serializedItem) }
+    fun showStatsDialog(stats: TrackedThing) =
+        _dialog.update {
+            ITrackerDialog.PreviewStatSkillsDialog(stats.serializedItem as StatsContainer)
+        }
 
     fun canCastSpell(level: Int): Boolean =
         _items.value
-            .filterIsInstance<SpellSlotTrackedThing>()
-            .any { it.level >= level && it.amount > 0 }
+            .filterIsInstance<TrackedThing>()
+            .any {
+                it.type == TrackedThing.Type.SpellSlot
+                        && it.level >= level
+                        && it.amount.toInt() > 0
+            }
 
     fun changeSpellListEntryPreparedState(
-        spellList: SpellListTrackedThing,
+        spellList: TrackedThing,
         spellListEntry: SpellListEntry,
         isPrepared: Boolean
     ) {
         viewModelScope.launch {
             spellListEntry.isPrepared = isPrepared
-            spellList.setItem(spellList.serializedItem, json)
+            spellList.setItem(spellList.serializedItem)
             withContext(Dispatchers.IO) {
                 trackedThingDao.insertOrUpdate(spellList)
             }
-            val spellListCopy = spellList.copy() as SpellListTrackedThing
+            val spellListCopy = spellList.copy()
             replaceItem(spellListCopy)
             _dialog.update {
                 if (it !is ITrackerDialog.SpellListDialog) return@launch
@@ -655,9 +621,7 @@ class TrackerViewModel(
 
     fun setShowingPreparedSpells(value: Boolean) = isShowingPreparedSpells.update { value }
 
-    fun useHitDie(item: HitDiceTrackedThing) = reduceByOne(item)
-
-    fun restoreHitDie(item: HitDiceTrackedThing) = addOne(item)
+    fun restoreHitDie(item: TrackedThing) = addOne(item)
 
     fun dismissDialog() = _dialog.update { ITrackerDialog.None }
 

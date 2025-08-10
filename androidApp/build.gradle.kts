@@ -1,3 +1,6 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
@@ -16,7 +19,7 @@ android {
 
     defaultConfig {
         applicationId = "com.feko.generictabletoprpg"
-        minSdk = 21
+        minSdk = 23
         targetSdk = 36
         versionCode = 8
         versionName = "1.3.0"
@@ -51,9 +54,6 @@ android {
         sourceCompatibility = JavaVersion.VERSION_19
         targetCompatibility = JavaVersion.VERSION_19
     }
-    kotlinOptions {
-        jvmTarget = "19"
-    }
     buildFeatures {
         compose = true
     }
@@ -61,6 +61,13 @@ android {
         resources {
             excludes.add("/META-INF/{AL2.0,LGPL2.1}")
         }
+    }
+}
+
+tasks.withType<KotlinJvmCompile>().configureEach {
+    compilerOptions {
+        jvmTarget.set(JvmTarget.JVM_19)
+        freeCompilerArgs.add("-opt-in=kotlin.RequiresOptIn")
     }
 }
 
@@ -83,9 +90,6 @@ dependencies {
     implementation(libs.insert.koin)
     implementation(libs.jakewharton.timber)
     implementation(libs.jetbrains.kotlinx.serialization.json)
-    implementation(libs.squareup.moshi)
-    implementation(libs.squareup.moshi.adapters)
-    implementation(libs.squareup.moshi.kotlin)
     implementation(libs.bundles.androidx.navigation3)
 
     androidTestImplementation(libs.junit)

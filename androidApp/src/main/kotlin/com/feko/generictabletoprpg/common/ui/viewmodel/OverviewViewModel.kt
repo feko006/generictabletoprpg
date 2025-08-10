@@ -75,9 +75,7 @@ open class OverviewViewModel<T : Any>(
     fun refreshItems() {
         viewModelScope.launch {
             val allItems =
-                withContext(Dispatchers.Default) {
-                    getAllItems()
-                }
+                withContext(Dispatchers.Default) { getAllItems() }
             _items.emit(allItems)
         }
     }

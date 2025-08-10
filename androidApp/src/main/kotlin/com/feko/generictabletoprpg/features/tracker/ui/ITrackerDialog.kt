@@ -3,12 +3,7 @@ package com.feko.generictabletoprpg.features.tracker.ui
 import androidx.compose.runtime.Immutable
 import com.feko.generictabletoprpg.R
 import com.feko.generictabletoprpg.common.domain.model.IText
-import com.feko.generictabletoprpg.features.tracker.domain.model.HealthTrackedThing
-import com.feko.generictabletoprpg.features.tracker.domain.model.PercentageTrackedThing
-import com.feko.generictabletoprpg.features.tracker.domain.model.SpellListTrackedThing
-import com.feko.generictabletoprpg.features.tracker.domain.model.StatsTrackedThing
 import com.feko.generictabletoprpg.features.tracker.domain.model.StatsContainer
-import com.feko.generictabletoprpg.features.tracker.domain.model.NumberTrackedThing
 import com.feko.generictabletoprpg.features.tracker.domain.model.TrackedThing
 
 sealed interface ITrackerDialog {
@@ -17,7 +12,7 @@ sealed interface ITrackerDialog {
 
     @Immutable
     data class SpellListDialog(
-        val spellList: SpellListTrackedThing,
+        val spellList: TrackedThing,
         val isFilteringByPreparedSpells: Boolean,
         val title: IText = IText.StringResourceText(R.string.spell_list),
         val secondaryDialog: ISpellListDialogDialogs = ISpellListDialogDialogs.None
@@ -36,43 +31,43 @@ sealed interface ITrackerDialog {
 
     @Immutable
     data class AddToPercentageDialog(
-        val percentage: PercentageTrackedThing,
+        val percentage: TrackedThing,
         val title: IText = IText.StringResourceText(R.string.increase_percentage_dialog_title)
     ) : ITrackerDialog
 
     @Immutable
     data class SubtractFromPercentageDialog(
-        val percentage: PercentageTrackedThing,
+        val percentage: TrackedThing,
         val title: IText = IText.StringResourceText(R.string.reduce_percentage_dialog_title)
     ) : ITrackerDialog
 
     @Immutable
     data class AddToNumberDialog(
-        val number: NumberTrackedThing,
+        val number: TrackedThing,
         val title: IText = IText.StringResourceText(R.string.add)
     ) : ITrackerDialog
 
     @Immutable
     data class SubtractFromNumberDialog(
-        val number: NumberTrackedThing,
+        val number: TrackedThing,
         val title: IText = IText.StringResourceText(R.string.subtract)
     ) : ITrackerDialog
 
     @Immutable
     data class DamageHealthDialog(
-        val health: HealthTrackedThing,
+        val health: TrackedThing,
         val title: IText = IText.StringResourceText(R.string.take_damage_dialog_title)
     ) : ITrackerDialog
 
     @Immutable
     data class HealHealthDialog(
-        val health: HealthTrackedThing,
+        val health: TrackedThing,
         val title: IText = IText.StringResourceText(R.string.heal_dialog_title)
     ) : ITrackerDialog
 
     @Immutable
     data class AddTemporaryHpDialog(
-        val health: HealthTrackedThing,
+        val health: TrackedThing,
         val title: IText = IText.StringResourceText(R.string.add_temporary_hp_dialog_title)
     ) : ITrackerDialog
 
@@ -90,7 +85,7 @@ sealed interface ITrackerDialog {
 
     @Immutable
     data class StatsEditDialog(
-        val stats: StatsTrackedThing,
+        val stats: TrackedThing,
         val title: IText
     ) : ITrackerDialog
 }

@@ -22,17 +22,6 @@ import com.feko.generictabletoprpg.common.ui.components.ToastMessage
 import com.feko.generictabletoprpg.common.ui.viewmodel.ResultViewModel
 import com.feko.generictabletoprpg.features.searchall.ui.getUniqueListItemKey
 import com.feko.generictabletoprpg.features.spell.Spell
-import com.feko.generictabletoprpg.features.tracker.domain.model.AbilityTrackedThing
-import com.feko.generictabletoprpg.features.tracker.domain.model.GenericTrackedThing
-import com.feko.generictabletoprpg.features.tracker.domain.model.HealthTrackedThing
-import com.feko.generictabletoprpg.features.tracker.domain.model.HitDiceTrackedThing
-import com.feko.generictabletoprpg.features.tracker.domain.model.JsonTrackedThing
-import com.feko.generictabletoprpg.features.tracker.domain.model.NumberTrackedThing
-import com.feko.generictabletoprpg.features.tracker.domain.model.PercentageTrackedThing
-import com.feko.generictabletoprpg.features.tracker.domain.model.SpellListTrackedThing
-import com.feko.generictabletoprpg.features.tracker.domain.model.SpellSlotTrackedThing
-import com.feko.generictabletoprpg.features.tracker.domain.model.StatsTrackedThing
-import com.feko.generictabletoprpg.features.tracker.domain.model.TextTrackedThing
 import com.feko.generictabletoprpg.features.tracker.domain.model.TrackedThing
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parameterSetOf
@@ -108,37 +97,19 @@ fun LazyItemScope.TrackerListItem(
     onSelectSpellRequest: () -> Unit
 ) {
     if (item is TrackedThing) {
-        when (item) {
-            is AbilityTrackedThing ->
-                AbilityListItem(isDragged, item, scope, viewModel)
-
-            is HealthTrackedThing ->
-                HealthListItem(isDragged, item, scope, viewModel)
-
-            is HitDiceTrackedThing ->
-                HitDiceListItem(isDragged, item, scope, viewModel)
-
-            is NumberTrackedThing ->
-                NumberListItem(isDragged, item, scope, viewModel)
-
-            is PercentageTrackedThing ->
-                PercentageListItem(isDragged, item, scope, viewModel)
-
-            is SpellListTrackedThing ->
+        when (item.type) {
+            TrackedThing.Type.None -> Unit
+            TrackedThing.Type.Percentage -> PercentageListItem(isDragged, item, scope, viewModel)
+            TrackedThing.Type.Health -> HealthListItem(isDragged, item, scope, viewModel)
+            TrackedThing.Type.Ability -> AbilityListItem(isDragged, item, scope, viewModel)
+            TrackedThing.Type.SpellSlot -> SpellSlotListItem(isDragged, item, scope, viewModel)
+            TrackedThing.Type.Number -> NumberListItem(isDragged, item, scope, viewModel)
+            TrackedThing.Type.SpellList ->
                 SpellListItem(isDragged, item, scope, viewModel, onSelectSpellRequest)
 
-            is SpellSlotTrackedThing ->
-                SpellSlotListItem(isDragged, item, scope, viewModel)
-
-            is StatsTrackedThing ->
-                StatsListItem(isDragged, item, scope, viewModel)
-
-            is TextTrackedThing ->
-                TextListItem(isDragged, item, scope, viewModel)
-
-            TrackedThing.Companion.Empty,
-            is GenericTrackedThing<*>,
-            is JsonTrackedThing<*> -> Unit
+            TrackedThing.Type.Text -> TextListItem(isDragged, item, scope, viewModel)
+            TrackedThing.Type.HitDice -> HitDiceListItem(isDragged, item, scope, viewModel)
+            TrackedThing.Type.FiveEStats -> StatsListItem(isDragged, item, scope, viewModel)
         }
     } else {
         OverviewListItem(item, Modifier.clickable(onClick = { onOpenDetails(item) }))

@@ -5,9 +5,13 @@ import androidx.annotation.StringRes
 import com.feko.generictabletoprpg.R
 import com.feko.generictabletoprpg.common.domain.model.IMutableIdentifiable
 import com.feko.generictabletoprpg.common.domain.model.INamed
+import kotlinx.serialization.Contextual
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 
 @Keep
-sealed class TrackedThing(
+@Serializable
+data class TrackedThing(
     @Transient
     override var id: Long = 0L,
     override var name: String,
@@ -15,9 +19,22 @@ sealed class TrackedThing(
     val type: Type,
     var index: Int = 0,
     @Transient
-    var groupId: Long = 0L
+    var groupId: Long = 0L,
+    var temporaryHp: Int = 0,
+    var level: Int = 0,
+    private var defaultValue: String = type.initialDefaultValue,
+    @Transient
+    @Contextual
+    var serializedItem: Any = 0
 ) : IMutableIdentifiable,
     INamed {
+
+    var managedDefaultValue: String
+        get() = defaultValue
+        set(value) {
+            defaultValue = type.normalize(value)
+        }
+
     @Keep
     enum class Type(@StringRes val nameResource: Int) {
         None(0),
@@ -32,49 +49,19 @@ sealed class TrackedThing(
         FiveEStats(R.string.five_e_stats)
     }
 
-    open var defaultValue: String = ""
-
     companion object {
-        fun emptyOfType(type: Type, index: Int, groupId: Long): TrackedThing =
-            when (type) {
-                Type.None -> throw Exception("Cannot create tracked thing of type None.")
-                Type.Percentage -> PercentageTrackedThing(0, "", 0f, index, groupId)
-                Type.Health -> HealthTrackedThing(0, 0, "", 0, index, groupId)
-                Type.Ability -> AbilityTrackedThing(0, "", 0, index, groupId)
-                Type.SpellSlot -> SpellSlotTrackedThing(1, 0, "", 0, index, groupId)
-                Type.Number -> NumberTrackedThing(0, "", 0, index, groupId)
-                    .apply { defaultValue = Int.MAX_VALUE.toString() }
-
-                Type.SpellList -> SpellListTrackedThing(0, "", "[]", index, groupId)
-                Type.Text -> TextTrackedThing(0, "", "", index, groupId)
-                Type.HitDice -> HitDiceTrackedThing(0, "", 0, index, groupId)
-                Type.FiveEStats -> StatsTrackedThing(0, "", "[]", index, groupId)
+        fun emptyOfType(type: Type, index: Int, groupId: Long): TrackedThing {
+            val empty = TrackedThing(name = "", type = type, index = index, groupId = groupId)
+            if (type == Type.Number) {
+                empty.managedDefaultValue = Int.MAX_VALUE.toString()
             }
-
-        @Keep
-        object Empty : TrackedThing(name = "", type = Type.None) {
-            override fun setNewValue(value: String) {}
-            override fun getPrintableValue(): String = ""
-            override fun add(delta: String) {}
-            override fun subtract(delta: String) {}
-            override fun copy(): TrackedThing = this
-            override fun canAdd(): Boolean = false
-            override fun canSubtract(): Boolean = false
+            if (type == Type.SpellSlot) {
+                empty.level = 1
+            }
+            if (type == Type.SpellList || type == Type.FiveEStats) {
+                empty.value = "[]"
+            }
+            return empty
         }
     }
-
-    abstract fun setNewValue(value: String)
-
-    open fun isValueValid(): Boolean = value.isNotBlank()
-
-    open fun validate(): Boolean = isValueValid()
-
-    open fun resetValueToDefault() = setNewValue(defaultValue)
-
-    abstract fun getPrintableValue(): String
-    abstract fun add(delta: String)
-    abstract fun subtract(delta: String)
-    abstract fun copy(): TrackedThing
-    abstract fun canAdd(): Boolean
-    abstract fun canSubtract(): Boolean
 }

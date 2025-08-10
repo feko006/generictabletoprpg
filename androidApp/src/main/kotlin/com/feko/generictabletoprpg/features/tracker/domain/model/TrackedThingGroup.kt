@@ -4,8 +4,11 @@ import androidx.annotation.Keep
 import com.feko.generictabletoprpg.common.domain.model.IIdentifiable
 import com.feko.generictabletoprpg.common.domain.model.INamed
 import com.feko.generictabletoprpg.features.tracker.TrackedThingGroupEntity
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 
 @Keep
+@Serializable
 data class TrackedThingGroup(
     @Transient
     override var id: Long = 0L,

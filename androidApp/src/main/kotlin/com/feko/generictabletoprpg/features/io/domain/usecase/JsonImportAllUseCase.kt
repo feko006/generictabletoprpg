@@ -1,18 +1,17 @@
 package com.feko.generictabletoprpg.features.io.domain.usecase
 
-import com.feko.generictabletoprpg.features.action.Action
-import com.feko.generictabletoprpg.features.io.domain.model.AppModel
+import com.feko.generictabletoprpg.common.data.json
 import com.feko.generictabletoprpg.common.data.local.IInsertAllDao
 import com.feko.generictabletoprpg.common.data.local.IInsertOrUpdateDao
+import com.feko.generictabletoprpg.features.action.Action
 import com.feko.generictabletoprpg.features.condition.Condition
 import com.feko.generictabletoprpg.features.disease.Disease
-import com.feko.generictabletoprpg.common.domain.IJson
+import com.feko.generictabletoprpg.features.io.domain.model.AppModel
 import com.feko.generictabletoprpg.features.tracker.domain.model.TrackedThing
 import com.feko.generictabletoprpg.features.tracker.domain.model.TrackedThingGroup
 import timber.log.Timber
 
 class JsonImportAllUseCase(
-    private val json: IJson,
     private val insertActions: IInsertAllDao<Action>,
     private val insertConditions: IInsertAllDao<Condition>,
     private val insertDiseases: IInsertAllDao<Disease>,
@@ -21,7 +20,7 @@ class JsonImportAllUseCase(
 ) : IJsonImportAllUseCase {
     override fun import(content: String): Result<Boolean> {
         try {
-            val appModel = json.from<AppModel>(content, AppModel::class.java)
+            val appModel = json.decodeFromString(AppModel.serializer(), content)
             val results = mutableListOf<Result<Boolean>>()
 
             val actionsImported = importActions(appModel)

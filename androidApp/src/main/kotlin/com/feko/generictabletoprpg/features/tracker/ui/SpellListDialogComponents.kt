@@ -49,7 +49,7 @@ import com.feko.generictabletoprpg.features.searchall.ui.getUniqueListItemKey
 import com.feko.generictabletoprpg.features.spell.Spell
 import com.feko.generictabletoprpg.features.spell.SpellRange
 import com.feko.generictabletoprpg.features.tracker.domain.model.SpellListEntry
-import com.feko.generictabletoprpg.features.tracker.domain.model.SpellListTrackedThing
+import com.feko.generictabletoprpg.features.tracker.domain.model.TrackedThing
 import com.feko.generictabletoprpg.features.tracker.domain.model.cantripSpellsCount
 import com.feko.generictabletoprpg.features.tracker.domain.model.filterPreparedAndCantrips
 import com.feko.generictabletoprpg.features.tracker.domain.model.preparedSpellsCount
@@ -135,7 +135,8 @@ private fun SpellListDialog(
                     IconButton(
                         onClick = {
                             coroutineScope.launch {
-                                spellListState.animateScrollToItem(dialog.spellList.serializedItem.size - 1)
+                                @Suppress("UNCHECKED_CAST")
+                                spellListState.animateScrollToItem((dialog.spellList.serializedItem as List<SpellListEntry>).size - 1)
                             }
                         },
                         enabled = spellListState.canScrollForward
@@ -148,8 +149,10 @@ private fun SpellListDialog(
             }
         }
     ) {
-        val numberOfPreparedSpells = dialog.spellList.serializedItem.preparedSpellsCount()
-        val numberOfCantripSpells = dialog.spellList.serializedItem.cantripSpellsCount()
+        @Suppress("UNCHECKED_CAST")
+        val entries = dialog.spellList.serializedItem as List<SpellListEntry>
+        val numberOfPreparedSpells = entries.preparedSpellsCount()
+        val numberOfCantripSpells = entries.cantripSpellsCount()
         Row(
             Modifier.padding(bottom = 8.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -159,7 +162,7 @@ private fun SpellListDialog(
                 buildString {
                     append(stringResource(R.string.known))
                     append(": ")
-                    append(dialog.spellList.serializedItem.size)
+                    append(entries.size)
                     if (numberOfPreparedSpells > 0) {
                         append(", ")
                         append(stringResource(R.string.prepared))
@@ -219,7 +222,7 @@ private fun SpellListDialog(
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 items(
-                    dialog.spellList.serializedItem.filterPreparedAndCantrips(dialog.isFilteringByPreparedSpells),
+                    entries.filterPreparedAndCantrips(dialog.isFilteringByPreparedSpells),
                     key = { getUniqueListItemKey(it.toSpell()) }) { spellListEntry ->
                     SpellListEntryListItem(
                         spellListEntry,
@@ -344,7 +347,7 @@ private fun ConfirmSpellRemovalFromListDialog(
 fun SpellListDialogPreview() {
     SpellListDialog(
         ITrackerDialog.SpellListDialog(
-            spellList = SpellListTrackedThing(0, "Spell List", "", 0, 0)
+            spellList = TrackedThing(0, "Spell List", "", TrackedThing.Type.SpellList, 0)
                 .apply {
                     serializedItem = mutableListOf(
                         getSpellListEntry1(),

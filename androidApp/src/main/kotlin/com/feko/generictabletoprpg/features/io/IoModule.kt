@@ -24,9 +24,9 @@ import com.feko.generictabletoprpg.features.io.domain.usecase.OrcbrewImportSpell
 import com.feko.generictabletoprpg.features.io.domain.usecase.OrcbrewImportWeaponsUseCase
 import com.feko.generictabletoprpg.features.io.ui.ImportViewModel
 import com.feko.generictabletoprpg.features.spell.SpellDao
-import com.feko.generictabletoprpg.features.weapon.WeaponDao
 import com.feko.generictabletoprpg.features.tracker.TrackedThingDao
 import com.feko.generictabletoprpg.features.tracker.TrackedThingGroupDao
+import com.feko.generictabletoprpg.features.weapon.WeaponDao
 import org.koin.core.module.dsl.singleOf
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.bind
@@ -66,7 +66,6 @@ val ioModule = module {
     singleOf(::OrcbrewImportAllUseCase) bind IOrcbrewImportAllUseCase::class
     single<IJsonImportAllUseCase> {
         JsonImportAllUseCase(
-            get(),
             get<ActionDao>(),
             get<ConditionDao>(),
             get<DiseaseDao>(),

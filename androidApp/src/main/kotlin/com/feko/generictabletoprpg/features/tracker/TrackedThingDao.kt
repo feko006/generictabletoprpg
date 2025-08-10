@@ -5,8 +5,6 @@ import androidx.room.Query
 import com.feko.generictabletoprpg.common.data.local.BaseDao
 import com.feko.generictabletoprpg.common.data.local.IGetAllByParentSortedByIndexDao
 import com.feko.generictabletoprpg.common.data.local.IInsertOrUpdateDao
-import com.feko.generictabletoprpg.features.tracker.domain.model.HealthTrackedThing
-import com.feko.generictabletoprpg.features.tracker.domain.model.SpellSlotTrackedThing
 import com.feko.generictabletoprpg.features.tracker.domain.model.TrackedThing
 
 @Dao
@@ -16,11 +14,11 @@ abstract class TrackedThingDao :
     IInsertOrUpdateDao<TrackedThing> {
     override fun getEntityFromCoreModel(item: TrackedThing): TrackedThingEntity {
         var level = 0
-        if (item is SpellSlotTrackedThing) {
+        if (item.type == TrackedThing.Type.SpellSlot) {
             level = item.level
         }
         var temporaryHp = 0
-        if (item is HealthTrackedThing) {
+        if (item.type == TrackedThing.Type.Health) {
             temporaryHp = item.temporaryHp
         }
         val type = item.type.ordinal
@@ -30,7 +28,7 @@ abstract class TrackedThingDao :
             level,
             temporaryHp,
             item.value,
-            item.defaultValue,
+            item.managedDefaultValue,
             type,
             item.index,
             item.groupId

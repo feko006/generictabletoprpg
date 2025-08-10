@@ -9,8 +9,10 @@ import com.feko.generictabletoprpg.features.disease.Disease
 import com.feko.generictabletoprpg.features.feat.Feat
 import com.feko.generictabletoprpg.features.spell.Spell
 import com.feko.generictabletoprpg.features.weapon.Weapon
+import kotlinx.serialization.Serializable
 
 @Keep
+@Serializable
 data class Source(
     val name: String,
     val actions: List<Action> = mutableListOf(),

@@ -6,8 +6,10 @@ import com.feko.generictabletoprpg.common.domain.model.IIdentifiable
 import com.feko.generictabletoprpg.common.domain.model.INamed
 import com.feko.generictabletoprpg.features.spell.Spell
 import com.feko.generictabletoprpg.features.spell.SpellRange
+import kotlinx.serialization.Serializable
 
 @Keep
+@Serializable
 data class SpellListEntry(
     override val id: Long = 0,
     override val name: String,

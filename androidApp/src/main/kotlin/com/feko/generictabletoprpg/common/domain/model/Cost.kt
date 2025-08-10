@@ -2,8 +2,10 @@ package com.feko.generictabletoprpg.common.domain.model
 
 import androidx.annotation.Keep
 import com.feko.generictabletoprpg.common.domain.IProcessEdnMap
+import kotlinx.serialization.Serializable
 
 @Keep
+@Serializable
 data class Cost(
     val number: Long,
     val type: String

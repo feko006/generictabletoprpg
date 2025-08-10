@@ -6,8 +6,10 @@ import com.feko.generictabletoprpg.common.domain.model.Cost
 import com.feko.generictabletoprpg.common.domain.model.IFromSource
 import com.feko.generictabletoprpg.common.domain.model.IIdentifiable
 import com.feko.generictabletoprpg.common.domain.model.INamed
+import kotlinx.serialization.Serializable
 
 @Keep
+@Serializable
 data class Ammunition(
     override val id: Long = 0,
     override val name: String,
