@@ -32,6 +32,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -215,7 +216,10 @@ private fun SpellListDialog(
         BoxWithScrollIndicator(
             spellListState,
             CardDefaults.cardColors().containerColor,
-            Modifier.heightIn(0.dp, (LocalWindowInfo.current.containerSize.height * 0.7f).dp)
+            Modifier.heightIn(
+                0.dp,
+                with(LocalDensity.current) { (LocalWindowInfo.current.containerSize.height * 0.7f).toDp() }
+            )
         ) {
             LazyColumn(
                 state = spellListState,
