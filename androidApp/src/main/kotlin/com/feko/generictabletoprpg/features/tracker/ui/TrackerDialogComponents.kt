@@ -384,7 +384,7 @@ private fun EditDialog(
             editedTrackedThing.name,
             "${stringResource(R.string.name)} ($defaultName)",
             onValueChange = {
-                onValueUpdate(editedTrackedThing.copy().apply { name = it })
+                onValueUpdate(editedTrackedThing.copy(name = it))
             },
             onFormSubmit = onFormSubmit,
             keyboardOptions = KeyboardOptions(
@@ -399,7 +399,7 @@ private fun EditDialog(
                 label = stringResource(R.string.level),
                 convertInputValue = IInputFieldValueConverter.IntInputFieldValueConverter,
                 onValueChange = {
-                    onValueUpdate(editedTrackedThing.apply { level = it }.copy())
+                    onValueUpdate(editedTrackedThing.copy(level = it))
                 },
                 isInputFieldValid = { editedTrackedThing.isLevelValid },
                 keyboardOptions = KeyboardOptions(
@@ -414,6 +414,7 @@ private fun EditDialog(
             {
                 onValueUpdate(
                     editedTrackedThing
+                        .copy()
                         .apply {
                             setNewValue(it)
                             managedDefaultValue = it

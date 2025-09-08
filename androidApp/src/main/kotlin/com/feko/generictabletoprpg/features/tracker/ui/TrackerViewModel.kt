@@ -180,31 +180,34 @@ class TrackerViewModel(
 
     fun addToTrackedThing(trackedThing: TrackedThing, amount: String) {
         viewModelScope.launch {
-            trackedThing.add(amount)
+            val copy = trackedThing.copy()
+            copy.add(amount)
             withContext(Dispatchers.IO) {
-                trackedThingDao.insertOrUpdate(trackedThing)
+                trackedThingDao.insertOrUpdate(copy)
             }
-            replaceItem(trackedThing.copy())
+            replaceItem(copy)
         }
     }
 
     fun subtractFromTrackedThing(trackedThing: TrackedThing, amount: String) {
         viewModelScope.launch {
-            trackedThing.subtract(amount)
+            val copy = trackedThing.copy()
+            copy.subtract(amount)
             withContext(Dispatchers.IO) {
-                trackedThingDao.insertOrUpdate(trackedThing)
+                trackedThingDao.insertOrUpdate(copy)
             }
-            replaceItem(trackedThing.copy())
+            replaceItem(copy)
         }
     }
 
     fun addTemporaryHp(health: TrackedThing, amount: String) {
         viewModelScope.launch {
-            health.addTemporaryHp(amount)
+            val copy = health.copy()
+            copy.addTemporaryHp(amount)
             withContext(Dispatchers.IO) {
-                trackedThingDao.insertOrUpdate(health)
+                trackedThingDao.insertOrUpdate(copy)
             }
-            replaceItem(health.copy())
+            replaceItem(copy)
         }
     }
 
@@ -464,7 +467,7 @@ class TrackerViewModel(
             val spellToAdd = withContext(Dispatchers.IO) {
                 spellDao.getById(spellId)
             }
-            val spellList = requireNotNull(spellListBeingAddedTo)
+            val spellList = requireNotNull(spellListBeingAddedTo).copy()
 
             @Suppress("UNCHECKED_CAST")
             val serializedItem = spellList.serializedItem as List<SpellListEntry>
@@ -489,7 +492,7 @@ class TrackerViewModel(
                 withContext(Dispatchers.IO) {
                     trackedThingDao.insertOrUpdate(spellList)
                 }
-                replaceItem(spellList.copy())
+                replaceItem(spellList)
                 _toast.showMessage(R.string.spell_successfully_added_to_list)
             }
             spellListBeingAddedTo = null
@@ -511,9 +514,9 @@ class TrackerViewModel(
             @Suppress("UNCHECKED_CAST")
             val serializedItem =
                 (spellList.serializedItem as List<SpellListEntry>).minus(spellListEntry)
-            spellList.setItem(serializedItem)
-            withContext(Dispatchers.IO) { trackedThingDao.insertOrUpdate(spellList) }
             val spellListCopy = spellList.copy()
+            spellListCopy.setItem(serializedItem)
+            withContext(Dispatchers.IO) { trackedThingDao.insertOrUpdate(spellListCopy) }
             replaceItem(spellListCopy)
             _dialog.update {
                 if (it !is ITrackerDialog.SpellListDialog) return@launch
