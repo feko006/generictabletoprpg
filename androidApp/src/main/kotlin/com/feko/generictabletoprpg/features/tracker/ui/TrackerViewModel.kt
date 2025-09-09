@@ -608,12 +608,12 @@ class TrackerViewModel(
         isPrepared: Boolean
     ) {
         viewModelScope.launch {
-            spellListEntry.isPrepared = isPrepared
-            spellList.setItem(spellList.serializedItem)
-            withContext(Dispatchers.IO) {
-                trackedThingDao.insertOrUpdate(spellList)
-            }
             val spellListCopy = spellList.copy()
+            spellListEntry.isPrepared = isPrepared
+            spellListCopy.setItem(spellListCopy.serializedItem)
+            withContext(Dispatchers.IO) {
+                trackedThingDao.insertOrUpdate(spellListCopy)
+            }
             replaceItem(spellListCopy)
             _dialog.update {
                 if (it !is ITrackerDialog.SpellListDialog) return@launch
