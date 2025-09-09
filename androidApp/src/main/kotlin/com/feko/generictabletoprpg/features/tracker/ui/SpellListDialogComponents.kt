@@ -125,23 +125,25 @@ private fun SpellListDialog(
             ) {
                 val coroutineScope = rememberCoroutineScope()
                 Row {
+                    if (spellListState.canScrollBackward) {
                     IconButton(
                         onClick = {
                             coroutineScope.launch {
                                 spellListState.animateScrollToItem(0)
                             }
-                        },
-                        enabled = spellListState.canScrollBackward
+                        }
                     ) { Icon(painterResource(R.drawable.vertical_align_top), "") }
-                    IconButton(
-                        onClick = {
-                            coroutineScope.launch {
-                                @Suppress("UNCHECKED_CAST")
-                                spellListState.animateScrollToItem((dialog.spellList.serializedItem as List<SpellListEntry>).size - 1)
+                    }
+                    if (spellListState.canScrollForward) {
+                        IconButton(
+                            onClick = {
+                                coroutineScope.launch {
+                                    @Suppress("UNCHECKED_CAST")
+                                    spellListState.animateScrollToItem((dialog.spellList.serializedItem as List<SpellListEntry>).size - 1)
+                                }
                             }
-                        },
-                        enabled = spellListState.canScrollForward
-                    ) { Icon(painterResource(R.drawable.vertical_align_bottom), "") }
+                        ) { Icon(painterResource(R.drawable.vertical_align_bottom), "") }
+                    }
                 }
                 TextButton(
                     onClick = onDialogDismissed,

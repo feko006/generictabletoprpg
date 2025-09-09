@@ -518,9 +518,13 @@ class TrackerViewModel(
             spellListCopy.setItem(serializedItem)
             withContext(Dispatchers.IO) { trackedThingDao.insertOrUpdate(spellListCopy) }
             replaceItem(spellListCopy)
-            _dialog.update {
-                if (it !is ITrackerDialog.SpellListDialog) return@launch
-                it.copy(spellList = spellListCopy)
+            if (serializedItem.isEmpty()) {
+                dismissDialog()
+            } else {
+                _dialog.update {
+                    if (it !is ITrackerDialog.SpellListDialog) return@launch
+                    it.copy(spellList = spellListCopy)
+                }
             }
         }
     }
