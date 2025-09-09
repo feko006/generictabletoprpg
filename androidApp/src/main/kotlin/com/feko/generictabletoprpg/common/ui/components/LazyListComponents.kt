@@ -90,7 +90,7 @@ fun <TViewModel, T> SearchableLazyList(
                     viewModel.consumeScrollToEndOfListEvent()
                 }
             }
-            LaunchedEffect(key1 = searchString) {
+            LaunchedEffect(key1 = listItems) {
                 listState.scrollToItem(0)
             }
         } else {
