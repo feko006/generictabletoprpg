@@ -58,8 +58,12 @@ data class TrackedThing(
             if (type == Type.SpellSlot) {
                 empty.level = 1
             }
-            if (type == Type.SpellList || type == Type.FiveEStats) {
+            if (type == Type.SpellList) {
                 empty.value = "[]"
+                empty.serializedItem = empty.getItem()
+            }
+            if (type == Type.FiveEStats) {
+                empty.setItem(StatsContainer.Empty)
             }
             return empty
         }
