@@ -14,6 +14,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import com.feko.generictabletoprpg.R
 import com.feko.generictabletoprpg.common.domain.model.IText.StringResourceText.Companion.asText
+import com.feko.generictabletoprpg.common.domain.model.IText.StringText.Companion.asText
 import com.feko.generictabletoprpg.common.ui.components.AddFABButtonWithDropdown
 import com.feko.generictabletoprpg.common.ui.components.GttrpgTopAppBar
 import com.feko.generictabletoprpg.common.ui.components.OverviewListItem
@@ -46,7 +47,7 @@ fun TrackerScreen(
     Scaffold(
         topBar = {
             GttrpgTopAppBar(
-                R.string.tracker_title.asText(),
+                groupName.asText(),
                 onNavigationIconClick
             ) {
                 IconButton(onClick = { viewModel.refreshAllRequested() }) {
