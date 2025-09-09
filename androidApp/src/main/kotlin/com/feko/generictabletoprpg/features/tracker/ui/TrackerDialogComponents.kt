@@ -444,7 +444,7 @@ private fun EditDialogValueInputField(
             isInputFieldValid = { editedTrackedThing.isValueValid() },
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Text,
-                imeAction = ImeAction.Done
+                imeAction = ImeAction.None
             ),
             maxLines = 5
         )
