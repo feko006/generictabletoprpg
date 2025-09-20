@@ -36,7 +36,7 @@ data class TrackedThing(
         }
 
     @Keep
-    enum class Type(@StringRes val nameResource: Int) {
+    enum class Type(@get:StringRes val nameResource: Int) {
         None(0),
         Percentage(R.string.percentage),
         Health(R.string.health),

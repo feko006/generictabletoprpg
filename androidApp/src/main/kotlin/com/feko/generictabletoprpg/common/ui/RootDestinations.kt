@@ -5,7 +5,7 @@ import com.feko.generictabletoprpg.R
 import com.feko.generictabletoprpg.common.ui.components.INavigationDestination
 
 enum class RootDestinations(
-    @StringRes
+    @get:StringRes
     val title: Int,
     val destination: INavigationDestination
 ) {

@@ -1,5 +1,6 @@
 package com.feko.generictabletoprpg.common.domain.model
 
+import androidx.annotation.StringRes
 import androidx.compose.runtime.Composable
 
 sealed interface IText {
@@ -7,7 +8,7 @@ sealed interface IText {
     fun text(): String
 
     data class StringResourceText(
-        @androidx.annotation.StringRes private val stringResource: Int,
+        @get:StringRes private val stringResource: Int,
         @Suppress("ArrayInDataClass")
         private val formatArgs: Array<String> = emptyArray()
     ) : IText {
