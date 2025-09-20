@@ -311,9 +311,12 @@ class TrackerViewModel(
     ): Int {
         var bonus = skill.bonus
         if (stat.use5ESkillBonusCalculation) {
-            bonus = stat.bonus +
-                    skill.additionalBonus +
-                    if (skill.isProficient) proficiencyBonus else 0
+            bonus = stat.bonus + skill.additionalBonus
+            if (skill.hasExpertise) {
+                bonus += proficiencyBonus * 2
+            } else if (skill.isProficient) {
+                bonus += proficiencyBonus
+            }
         }
         return bonus
     }

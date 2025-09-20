@@ -43,6 +43,7 @@ import com.feko.generictabletoprpg.common.ui.components.DialogTitle
 import com.feko.generictabletoprpg.common.ui.components.EnterValueDialog
 import com.feko.generictabletoprpg.common.ui.components.IInputFieldValueConverter
 import com.feko.generictabletoprpg.common.ui.components.NumberDialogInputField
+import com.feko.generictabletoprpg.common.ui.theme.LocalDimens
 import com.feko.generictabletoprpg.common.ui.theme.Typography
 import com.feko.generictabletoprpg.features.spell.Spell
 import com.feko.generictabletoprpg.features.tracker.domain.model.StatEntry
@@ -710,12 +711,8 @@ private fun StatsStatEntry(
     }
     if (statEntry.skills.isNotEmpty()) {
         Column(
-            Modifier
-                .background(
-                    CardDefaults.elevatedCardColors().containerColor,
-                    shape = RoundedCornerShape(8.dp)
-                )
-                .padding(8.dp)
+            Modifier.padding(8.dp),
+            Arrangement.spacedBy(LocalDimens.current.gapSmall)
         ) {
             for ((skillIndex, skill) in statEntry.skills.withIndex()) {
                 StatsStatEntrySkill(
@@ -742,69 +739,101 @@ private fun StatsStatEntrySkill(
     onValueUpdate: (StatsContainer) -> Unit,
     onFormSubmit: () -> Unit
 ) {
-    HeaderWithDividers(skill.name, Modifier.padding(bottom = 8.dp))
-    key("editStatEntry-$statIndex-$skillIndex") {
-        val imeAction =
-            if (statIndex == statsContainer.stats.size - 1
-                && skillIndex == statEntry.skills.size - 1
-            ) {
-                ImeAction.Done
-            } else {
-                ImeAction.Next
-            }
-        NumberDialogInputField(
-            value = skill.additionalBonus,
-            label = stringResource(R.string.skill_additional_bonus),
-            convertInputValue = IInputFieldValueConverter.IntInputFieldValueConverter,
-            onValueChange = { bonus ->
-                val newStatEntry =
-                    statsContainer.stats[statIndex].let {
-                        val newSkill = it.skills[skillIndex].copy(additionalBonus = bonus)
-                        it.copy(
-                            skills = it.skills.mapIndexed { index, skill ->
-                                if (index == skillIndex) newSkill else skill
-                            }
-                        )
-                    }
-                onValueUpdate(
-                    statsContainer.copy(
-                        stats = statsContainer.stats.mapIndexed { index, statEntry ->
-                            if (index == statIndex) newStatEntry else statEntry
-                        })
-                )
-            },
-            keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Number,
-                imeAction = imeAction
-            ),
-            onFormSubmit = onFormSubmit,
-            colors = TextFieldDefaults.colors(
-                focusedContainerColor = Color.Transparent,
-                unfocusedContainerColor = Color.Transparent,
-                disabledContainerColor = Color.Transparent,
-                errorContainerColor = Color.Transparent
+    Column(
+        Modifier
+            .background(
+                CardDefaults.elevatedCardColors().containerColor,
+                shape = RoundedCornerShape(8.dp)
             )
-        )
-    }
-    CheckboxWithText(
-        skill.isProficient,
-        R.string.proficiency.asText()
-    ) { checked ->
-        val newStatEntry =
-            statsContainer.stats[statIndex].let {
-                val newSkill = it.skills[skillIndex].copy(isProficient = checked)
-                it.copy(
-                    skills = it.skills.mapIndexed { index, skill ->
-                        if (index == skillIndex) newSkill else skill
-                    }
+    ) {
+        HeaderWithDividers(skill.name, Modifier.padding(bottom = 8.dp))
+        key("editStatEntry-$statIndex-$skillIndex") {
+            val imeAction =
+                if (statIndex == statsContainer.stats.size - 1
+                    && skillIndex == statEntry.skills.size - 1
+                ) {
+                    ImeAction.Done
+                } else {
+                    ImeAction.Next
+                }
+            NumberDialogInputField(
+                value = skill.additionalBonus,
+                label = stringResource(R.string.skill_additional_bonus),
+                convertInputValue = IInputFieldValueConverter.IntInputFieldValueConverter,
+                onValueChange = { bonus ->
+                    val newStatEntry =
+                        statsContainer.stats[statIndex].let {
+                            val newSkill = it.skills[skillIndex].copy(additionalBonus = bonus)
+                            it.copy(
+                                skills = it.skills.mapIndexed { index, skill ->
+                                    if (index == skillIndex) newSkill else skill
+                                }
+                            )
+                        }
+                    onValueUpdate(
+                        statsContainer.copy(
+                            stats = statsContainer.stats.mapIndexed { index, statEntry ->
+                                if (index == statIndex) newStatEntry else statEntry
+                            })
+                    )
+                },
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Number,
+                    imeAction = imeAction
+                ),
+                onFormSubmit = onFormSubmit,
+                colors = TextFieldDefaults.colors(
+                    focusedContainerColor = Color.Transparent,
+                    unfocusedContainerColor = Color.Transparent,
+                    disabledContainerColor = Color.Transparent,
+                    errorContainerColor = Color.Transparent
                 )
-            }
-        onValueUpdate(
-            statsContainer.copy(
-                stats = statsContainer.stats.mapIndexed { index, statEntry ->
-                    if (index == statIndex) newStatEntry else statEntry
-                })
-        )
+            )
+        }
+        CheckboxWithText(
+            skill.isProficient,
+            R.string.proficiency.asText()
+        ) { checked ->
+            val newStatEntry =
+                statsContainer.stats[statIndex].let {
+                    val newSkill = it.skills[skillIndex].run {
+                        copy(isProficient = checked, hasExpertise = checked && hasExpertise)
+                    }
+                    it.copy(
+                        skills = it.skills.mapIndexed { index, skill ->
+                            if (index == skillIndex) newSkill else skill
+                        }
+                    )
+                }
+            onValueUpdate(
+                statsContainer.copy(
+                    stats = statsContainer.stats.mapIndexed { index, statEntry ->
+                        if (index == statIndex) newStatEntry else statEntry
+                    })
+            )
+        }
+        CheckboxWithText(
+            skill.hasExpertise,
+            R.string.expertise.asText()
+        ) { checked ->
+            val newStatEntry =
+                statsContainer.stats[statIndex].let {
+                    val newSkill = it.skills[skillIndex].run {
+                        copy(isProficient = checked || isProficient, hasExpertise = checked)
+                    }
+                    it.copy(
+                        skills = it.skills.mapIndexed { index, skill ->
+                            if (index == skillIndex) newSkill else skill
+                        }
+                    )
+                }
+            onValueUpdate(
+                statsContainer.copy(
+                    stats = statsContainer.stats.mapIndexed { index, statEntry ->
+                        if (index == statIndex) newStatEntry else statEntry
+                    })
+            )
+        }
     }
 }
 
@@ -825,4 +854,3 @@ private fun HeaderWithDividers(
         HorizontalDivider(Modifier.weight(1f))
     }
 }
-

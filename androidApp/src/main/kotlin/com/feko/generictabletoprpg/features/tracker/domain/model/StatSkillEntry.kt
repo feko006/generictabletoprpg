@@ -11,5 +11,6 @@ data class StatSkillEntry(
     val passiveScore: Int,
     val additionalBonus: Int,
     val isProficient: Boolean,
+    val hasExpertise: Boolean = false,
     val showPassive: Boolean = false
 )
