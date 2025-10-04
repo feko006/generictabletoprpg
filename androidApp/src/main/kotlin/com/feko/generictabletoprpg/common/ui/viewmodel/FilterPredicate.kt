@@ -1,6 +1,6 @@
 package com.feko.generictabletoprpg.common.ui.viewmodel
 
-import com.feko.generictabletoprpg.features.filter.Filter
+import com.feko.generictabletoprpg.shared.features.filter.Filter
 
 class FilterPredicate(val filter: Filter?) : (Any) -> Boolean {
     override fun invoke(item: Any): Boolean {

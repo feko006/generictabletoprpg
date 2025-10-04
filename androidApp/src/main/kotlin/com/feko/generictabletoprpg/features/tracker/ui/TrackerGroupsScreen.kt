@@ -16,13 +16,15 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.documentfile.provider.DocumentFile
 import com.feko.generictabletoprpg.R
-import com.feko.generictabletoprpg.common.domain.model.IText.StringResourceText.Companion.asText
+import com.feko.generictabletoprpg.Res
 import com.feko.generictabletoprpg.common.ui.RootDestinations
 import com.feko.generictabletoprpg.common.ui.components.AddFABButton
 import com.feko.generictabletoprpg.common.ui.components.GttrpgTopAppBar
 import com.feko.generictabletoprpg.common.ui.components.SearchableLazyList
 import com.feko.generictabletoprpg.common.ui.components.ToastMessage
 import com.feko.generictabletoprpg.common.ui.viewmodel.AppViewModel
+import com.feko.generictabletoprpg.shared.common.domain.model.IText.StringResourceText.Companion.asText
+import com.feko.generictabletoprpg.tracker_title
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -45,7 +47,7 @@ fun TrackerGroupsScreen(
     appViewModel.updateActiveDrawerItem(RootDestinations.Tracker.destination)
     Scaffold(
         topBar = {
-            GttrpgTopAppBar(R.string.tracker_title.asText(), onNavigationIconClick) {
+            GttrpgTopAppBar(Res.string.tracker_title.asText(), onNavigationIconClick) {
                 val exportButtonVisible by viewModel.exportButtonVisible.collectAsState(false)
                 if (exportButtonVisible) {
                     IconButton(onClick = {

@@ -62,6 +62,7 @@ android {
             excludes.add("/META-INF/{AL2.0,LGPL2.1}")
         }
     }
+    sourceSets["main"].res.srcDirs("../shared/src/commonMain/composeResources")
 }
 
 tasks.withType<KotlinJvmCompile>().configureEach {
@@ -82,8 +83,6 @@ dependencies {
     implementation(libs.androidx.material.icons.extended)
     implementation(libs.androidx.material3)
     implementation(libs.androidx.material3.adaptive)
-    implementation(libs.androidx.room.ktx)
-    implementation(libs.androidx.room.runtime)
     implementation(libs.bpsm.edn.java)
     implementation(libs.fuzzywuzzy.kotlin)
     implementation(libs.reorderable)
@@ -100,12 +99,4 @@ dependencies {
 
     debugImplementation(libs.androidx.compose.ui.test.manifest)
     debugImplementation(libs.androidx.compose.ui.tooling)
-
-    ksp(libs.androidx.room.compiler)
-}
-
-ksp {
-    arg("room.schemaLocation", "$projectDir/schemas")
-    arg("room.incremental", "true")
-    arg("room.expandProjection", "true")
 }

@@ -9,11 +9,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.tooling.preview.PreviewScreenSizes
-import com.feko.generictabletoprpg.common.domain.model.IText.StringText.Companion.asText
 import com.feko.generictabletoprpg.common.ui.components.FillingLoadingIndicator
 import com.feko.generictabletoprpg.common.ui.components.GttrpgTopAppBar
 import com.feko.generictabletoprpg.common.ui.components.SearchTextField
 import com.feko.generictabletoprpg.common.ui.theme.GttrpgTheme
+import com.feko.generictabletoprpg.shared.common.domain.model.IText.StringText.Companion.asText
 
 @PreviewScreenSizes
 @Preview

@@ -21,9 +21,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import com.feko.generictabletoprpg.R
-import com.feko.generictabletoprpg.shared.common.domain.model.IIdentifiable
-import com.feko.generictabletoprpg.common.domain.model.IText.StringResourceText.Companion.asText
+import com.feko.generictabletoprpg.Res
 import com.feko.generictabletoprpg.common.ui.RootDestinations
 import com.feko.generictabletoprpg.common.ui.components.GttrpgTopAppBar
 import com.feko.generictabletoprpg.common.ui.components.OverviewListItem
@@ -31,9 +29,13 @@ import com.feko.generictabletoprpg.common.ui.components.SearchableLazyList
 import com.feko.generictabletoprpg.common.ui.theme.LocalDimens
 import com.feko.generictabletoprpg.common.ui.viewmodel.AppViewModel
 import com.feko.generictabletoprpg.common.ui.viewmodel.ResultViewModel
-import com.feko.generictabletoprpg.features.filter.asFilter
 import com.feko.generictabletoprpg.features.filter.ui.FilterChipGroup
 import com.feko.generictabletoprpg.features.filter.ui.FilterScreen
+import com.feko.generictabletoprpg.search_all_title
+import com.feko.generictabletoprpg.search_everywhere
+import com.feko.generictabletoprpg.shared.common.domain.model.IIdentifiable
+import com.feko.generictabletoprpg.shared.common.domain.model.IText.StringResourceText.Companion.asText
+import com.feko.generictabletoprpg.shared.features.filter.asFilter
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -56,7 +58,7 @@ fun SearchAllScreen(
     val dimens = LocalDimens.current
     Scaffold(
         topBar = {
-            GttrpgTopAppBar(R.string.search_all_title.asText(), onNavigationIconClick) {
+            GttrpgTopAppBar(Res.string.search_all_title.asText(), onNavigationIconClick) {
                 IconButton(onClick = { viewModel.filterRequested() }) {
                     Icon(Icons.Default.FilterList, "")
                 }
@@ -90,7 +92,7 @@ fun SearchAllScreen(
                             })
                 },
                 uniqueListItemKey = { getUniqueListItemKey(it) },
-                searchFieldHint = R.string.search_everywhere.asText()
+                searchFieldHint = Res.string.search_everywhere.asText()
             )
         }
     }

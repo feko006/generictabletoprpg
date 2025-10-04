@@ -25,6 +25,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -35,7 +36,6 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -44,16 +44,17 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.feko.generictabletoprpg.R
-import com.feko.generictabletoprpg.common.domain.asSignedString
 import com.feko.generictabletoprpg.common.ui.components.draggableHandle
 import com.feko.generictabletoprpg.common.ui.components.longPressDraggableHandle
 import com.feko.generictabletoprpg.common.ui.theme.Typography
-import com.feko.generictabletoprpg.features.tracker.domain.model.SpellListEntry
-import com.feko.generictabletoprpg.features.tracker.domain.model.StatsContainer
-import com.feko.generictabletoprpg.features.tracker.domain.model.TrackedThing
-import com.feko.generictabletoprpg.features.tracker.domain.model.canAdd
-import com.feko.generictabletoprpg.features.tracker.domain.model.canSubtract
-import com.feko.generictabletoprpg.features.tracker.domain.model.printableValue
+import com.feko.generictabletoprpg.shared.common.domain.asSignedString
+import com.feko.generictabletoprpg.shared.features.tracker.model.SpellListEntry
+import com.feko.generictabletoprpg.shared.features.tracker.model.StatEntry
+import com.feko.generictabletoprpg.shared.features.tracker.model.StatsContainer
+import com.feko.generictabletoprpg.shared.features.tracker.model.TrackedThing
+import com.feko.generictabletoprpg.shared.features.tracker.model.canAdd
+import com.feko.generictabletoprpg.shared.features.tracker.model.canSubtract
+import com.feko.generictabletoprpg.shared.features.tracker.model.printableValue
 import sh.calvin.reorderable.DragGestureDetector
 import sh.calvin.reorderable.ReorderableCollectionItemScope
 
@@ -573,6 +574,10 @@ fun StatsOverview(stats: TrackedThing) {
 @Composable
 fun StatsOverviewPreview() {
     Card {
+        var stats by remember { mutableStateOf<List<StatEntry>>(listOf()) }
+        LaunchedEffect(Unit) {
+            stats = StatsContainer.createDefault5EStatEntries()
+        }
         StatsOverview(
             TrackedThing(name = "Stats", type = TrackedThing.Type.FiveEStats, value = "[]").also {
                 it.serializedItem = StatsContainer(
@@ -583,7 +588,7 @@ fun StatsOverviewPreview() {
                     spellAttackAdditionalBonus = 0,
                     initiative = 2,
                     initiativeAdditionalBonus = 0,
-                    stats = StatsContainer.createDefault5EStatEntries(LocalContext.current),
+                    stats = stats,
                     use5eCalculations = true
                 )
             }

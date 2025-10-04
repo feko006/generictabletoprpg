@@ -21,10 +21,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.feko.generictabletoprpg.R
-import com.feko.generictabletoprpg.common.domain.model.IText.StringResourceText.Companion.asText
+import com.feko.generictabletoprpg.Res
 import com.feko.generictabletoprpg.common.ui.components.EmptyList
 import com.feko.generictabletoprpg.common.ui.components.GttrpgTopAppBar
 import com.feko.generictabletoprpg.common.ui.components.ToastMessage
+import com.feko.generictabletoprpg.encounters
+import com.feko.generictabletoprpg.shared.common.domain.model.IText.StringResourceText.Companion.asText
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -32,7 +34,7 @@ fun EncounterScreen(onNavigationIconClick: () -> Unit) {
     val viewModel: EncounterViewModel = koinViewModel()
     val entries by viewModel.entries.collectAsState(listOf())
     Scaffold(
-        topBar = { GttrpgTopAppBar(R.string.encounters.asText(), onNavigationIconClick) },
+        topBar = { GttrpgTopAppBar(Res.string.encounters.asText(), onNavigationIconClick) },
         bottomBar = { ActionButtons(viewModel) }
     ) { paddingValues ->
         Column(Modifier.padding(paddingValues)) {

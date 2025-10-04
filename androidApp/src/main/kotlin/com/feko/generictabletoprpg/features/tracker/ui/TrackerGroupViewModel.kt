@@ -1,12 +1,15 @@
 package com.feko.generictabletoprpg.features.tracker.ui
 
 import androidx.lifecycle.viewModelScope
-import com.feko.generictabletoprpg.R
-import com.feko.generictabletoprpg.common.domain.model.IText
-import com.feko.generictabletoprpg.common.ui.viewmodel.OverviewViewModel
+import com.feko.generictabletoprpg.Res
 import com.feko.generictabletoprpg.common.ui.viewmodel.IExportSubViewModel
-import com.feko.generictabletoprpg.features.tracker.TrackedThingGroupDao
-import com.feko.generictabletoprpg.features.tracker.domain.model.TrackedThingGroup
+import com.feko.generictabletoprpg.common.ui.viewmodel.OverviewViewModel
+import com.feko.generictabletoprpg.create_new_tracked_group_dialog_title
+import com.feko.generictabletoprpg.delete_tracked_group_dialog_title
+import com.feko.generictabletoprpg.edit_tracked_group_dialog_title
+import com.feko.generictabletoprpg.shared.common.domain.model.IText
+import com.feko.generictabletoprpg.shared.features.tracker.TrackedThingGroupDao
+import com.feko.generictabletoprpg.shared.features.tracker.model.TrackedThingGroup
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -30,7 +33,7 @@ class TrackerGroupViewModel(
         _dialog.update {
             ITrackerGroupDialog.EditDialog(
                 TrackedThingGroup.Empty,
-                IText.StringResourceText(R.string.create_new_tracked_group_dialog_title)
+                IText.StringResourceText(Res.string.create_new_tracked_group_dialog_title)
             )
         }
     }
@@ -39,7 +42,7 @@ class TrackerGroupViewModel(
         _dialog.update {
             ITrackerGroupDialog.EditDialog(
                 item,
-                IText.StringResourceText(R.string.edit_tracked_group_dialog_title)
+                IText.StringResourceText(Res.string.edit_tracked_group_dialog_title)
             )
         }
     }
@@ -48,7 +51,7 @@ class TrackerGroupViewModel(
         _dialog.update {
             ITrackerGroupDialog.DeleteDialog(
                 item,
-                IText.StringResourceText(R.string.delete_tracked_group_dialog_title)
+                IText.StringResourceText(Res.string.delete_tracked_group_dialog_title)
             )
         }
     }

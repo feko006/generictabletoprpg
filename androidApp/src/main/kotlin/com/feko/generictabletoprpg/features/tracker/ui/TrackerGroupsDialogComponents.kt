@@ -24,14 +24,14 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import com.feko.generictabletoprpg.R
-import com.feko.generictabletoprpg.shared.common.domain.model.INamed
-import com.feko.generictabletoprpg.common.domain.model.IText
 import com.feko.generictabletoprpg.common.ui.components.AlertDialogBase
 import com.feko.generictabletoprpg.common.ui.components.ConfirmationDialog
 import com.feko.generictabletoprpg.common.ui.components.DialogInputField
 import com.feko.generictabletoprpg.common.ui.components.DialogTitle
 import com.feko.generictabletoprpg.common.ui.components.GttrpgContextMenu
-import com.feko.generictabletoprpg.features.tracker.domain.model.TrackedThingGroup
+import com.feko.generictabletoprpg.shared.common.domain.model.INamed
+import com.feko.generictabletoprpg.shared.common.domain.model.IText
+import com.feko.generictabletoprpg.shared.features.tracker.model.TrackedThingGroup
 
 @Composable
 fun TrackerGroupsAlertDialog(

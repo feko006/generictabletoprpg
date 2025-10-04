@@ -1,31 +1,34 @@
 package com.feko.generictabletoprpg.features.tracker.ui
 
-import android.content.Context
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.lifecycle.viewModelScope
 import com.feko.generictabletoprpg.R
+import com.feko.generictabletoprpg.Res
 import com.feko.generictabletoprpg.common.domain.createNewComparator
-import com.feko.generictabletoprpg.common.domain.model.IText
 import com.feko.generictabletoprpg.common.ui.viewmodel.FabDropdownSubViewModel
 import com.feko.generictabletoprpg.common.ui.viewmodel.IFabDropdownSubViewModel
 import com.feko.generictabletoprpg.common.ui.viewmodel.IToastSubViewModel
 import com.feko.generictabletoprpg.common.ui.viewmodel.OverviewViewModel
 import com.feko.generictabletoprpg.common.ui.viewmodel.ToastSubViewModel
-import com.feko.generictabletoprpg.features.searchall.domain.usecase.ISearchAllUseCase
-import com.feko.generictabletoprpg.features.spell.SpellDao
-import com.feko.generictabletoprpg.features.tracker.TrackedThingDao
-import com.feko.generictabletoprpg.features.tracker.domain.model.SpellListEntry
-import com.feko.generictabletoprpg.features.tracker.domain.model.StatEntry
-import com.feko.generictabletoprpg.features.tracker.domain.model.StatSkillEntry
-import com.feko.generictabletoprpg.features.tracker.domain.model.StatsContainer
-import com.feko.generictabletoprpg.features.tracker.domain.model.TrackedThing
-import com.feko.generictabletoprpg.features.tracker.domain.model.add
-import com.feko.generictabletoprpg.features.tracker.domain.model.addTemporaryHp
-import com.feko.generictabletoprpg.features.tracker.domain.model.amount
-import com.feko.generictabletoprpg.features.tracker.domain.model.getItem
-import com.feko.generictabletoprpg.features.tracker.domain.model.resetValueToDefault
-import com.feko.generictabletoprpg.features.tracker.domain.model.setItem
-import com.feko.generictabletoprpg.features.tracker.domain.model.subtract
+import com.feko.generictabletoprpg.edit
+import com.feko.generictabletoprpg.five_e_stats
+import com.feko.generictabletoprpg.shared.common.domain.model.IText
+import com.feko.generictabletoprpg.shared.common.domain.model.IText.StringResourceText.Companion.asText
+import com.feko.generictabletoprpg.shared.features.searchall.usecase.ISearchAllUseCase
+import com.feko.generictabletoprpg.shared.features.spell.SpellDao
+import com.feko.generictabletoprpg.shared.features.tracker.TrackedThingDao
+import com.feko.generictabletoprpg.shared.features.tracker.model.SpellListEntry
+import com.feko.generictabletoprpg.shared.features.tracker.model.StatEntry
+import com.feko.generictabletoprpg.shared.features.tracker.model.StatSkillEntry
+import com.feko.generictabletoprpg.shared.features.tracker.model.StatsContainer
+import com.feko.generictabletoprpg.shared.features.tracker.model.TrackedThing
+import com.feko.generictabletoprpg.shared.features.tracker.model.add
+import com.feko.generictabletoprpg.shared.features.tracker.model.addTemporaryHp
+import com.feko.generictabletoprpg.shared.features.tracker.model.amount
+import com.feko.generictabletoprpg.shared.features.tracker.model.getItem
+import com.feko.generictabletoprpg.shared.features.tracker.model.resetValueToDefault
+import com.feko.generictabletoprpg.shared.features.tracker.model.setItem
+import com.feko.generictabletoprpg.shared.features.tracker.model.subtract
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -93,28 +96,22 @@ class TrackerViewModel(
             .onEach { it.serializedItem = it.getItem() }
     }
 
-    fun showCreateDialog(type: TrackedThing.Type, context: Context) {
+    fun showCreateDialog(type: TrackedThing.Type) {
         viewModelScope.launch {
             if (type == TrackedThing.Type.FiveEStats) {
                 fiveEDefaultStats = fiveEDefaultStats
-                    ?: StatsContainer.createDefault5EStatEntries(context)
+                    ?: StatsContainer.createDefault5EStatEntries()
                 val defaultStats = requireNotNull(fiveEDefaultStats)
                 val newStats = TrackedThing.emptyOfType(type, _items.value.size, groupId)
                 newStats.setItem(StatsContainer.Empty.copy(stats = defaultStats))
                 _dialog.emit(
-                    ITrackerDialog.StatsEditDialog(
-                        newStats,
-                        IText.StringResourceText(R.string.five_e_stats)
-                    )
+                    ITrackerDialog.StatsEditDialog(newStats, Res.string.five_e_stats.asText())
                 )
             } else {
                 val newTrackedThing =
                     TrackedThing.Companion.emptyOfType(type, _items.value.size, groupId)
                 _dialog.emit(
-                    ITrackerDialog.EditDialog(
-                        newTrackedThing,
-                        IText.StringResourceText(type.nameResource)
-                    )
+                    ITrackerDialog.EditDialog(newTrackedThing, type.nameResource!!.asText())
                 )
             }
             _fabDropdown.collapse()
@@ -126,11 +123,11 @@ class TrackerViewModel(
             val copy = item.copy()
             if (item.type == TrackedThing.Type.FiveEStats) {
                 _dialog.emit(
-                    ITrackerDialog.StatsEditDialog(copy, IText.StringResourceText(R.string.edit))
+                    ITrackerDialog.StatsEditDialog(copy, IText.StringResourceText(Res.string.edit))
                 )
             } else {
                 _dialog.emit(
-                    ITrackerDialog.EditDialog(copy, IText.StringResourceText(R.string.edit))
+                    ITrackerDialog.EditDialog(copy, IText.StringResourceText(Res.string.edit))
                 )
             }
             _fabDropdown.collapse()

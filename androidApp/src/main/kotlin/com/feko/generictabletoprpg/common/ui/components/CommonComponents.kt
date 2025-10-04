@@ -59,18 +59,11 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.feko.generictabletoprpg.R
-import com.feko.generictabletoprpg.common.domain.model.IText
 import com.feko.generictabletoprpg.common.ui.theme.LocalDimens
 import com.feko.generictabletoprpg.common.ui.viewmodel.IToastSubViewModel
-import com.feko.generictabletoprpg.features.action.Action
-import com.feko.generictabletoprpg.features.ammunition.Ammunition
-import com.feko.generictabletoprpg.features.armor.Armor
-import com.feko.generictabletoprpg.features.condition.Condition
-import com.feko.generictabletoprpg.features.disease.Disease
-import com.feko.generictabletoprpg.features.feat.Feat
-import com.feko.generictabletoprpg.features.spell.Spell
-import com.feko.generictabletoprpg.features.weapon.Weapon
+import com.feko.generictabletoprpg.shared.common.appNamesByType
+import com.feko.generictabletoprpg.shared.common.domain.model.IText
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun TextWithLabel(
@@ -128,18 +121,6 @@ fun AddFABButton(
     }
 }
 
-val appNamesByType = mapOf(
-    Action::class.java to R.string.action,
-    Ammunition::class.java to R.string.ammunition,
-    Armor::class.java to R.string.armor,
-    Condition::class.java to R.string.condition,
-    Disease::class.java to R.string.disease,
-    Feat::class.java to R.string.feat,
-    Spell::class.java to R.string.spell,
-    Weapon::class.java to R.string.weapon
-)
-
-val appTypes = appNamesByType.keys
 
 @Composable
 fun <T> getTypeName(type: Class<T>): String = stringResource(appNamesByType[type]!!)

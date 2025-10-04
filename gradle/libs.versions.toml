@@ -25,6 +25,7 @@ navigation3 = "1.0.0-alpha10"
 navigation3-viewmodel = "1.0.0-alpha04"
 reorderable = "3.0.0"
 room = "2.8.1"
+sqlite = "2.6.1"
 timber = "5.0.1"
 kotlin-stdlib = "2.2.20"
 kotlin-test = "2.2.20"
@@ -49,6 +50,7 @@ androidx-material3-adaptive = { group = "androidx.compose.material3.adaptive", n
 androidx-material3-adaptive-navigation3 = { group = "androidx.compose.material3.adaptive", name = "adaptive-navigation3", version.ref = "material3-adaptive-navigation" }
 androidx-navigation3-runtime = { group = "androidx.navigation3", name = "navigation3-runtime", version.ref = "navigation3" }
 androidx-navigation3-ui = { group = "androidx.navigation3", name = "navigation3-ui", version.ref = "navigation3" }
+androidx-sqlite-bundled = { module = "androidx.sqlite:sqlite-bundled", version.ref = "sqlite" }
 androidx-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
 androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
 androidx-room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
@@ -82,3 +84,4 @@ jetbrains-kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serializati
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 android-kotlin-multiplatform-library = { id = "com.android.kotlin.multiplatform.library", version.ref = "agp" }
 android-lint = { id = "com.android.lint", version.ref = "agp" }
+androidx-room = { id = "androidx.room", version.ref = "room" }

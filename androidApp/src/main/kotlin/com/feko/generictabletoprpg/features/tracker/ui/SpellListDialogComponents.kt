@@ -47,13 +47,13 @@ import com.feko.generictabletoprpg.common.ui.components.DialogTitle
 import com.feko.generictabletoprpg.common.ui.components.SelectFromListDialog
 import com.feko.generictabletoprpg.common.ui.theme.Typography
 import com.feko.generictabletoprpg.features.searchall.ui.getUniqueListItemKey
-import com.feko.generictabletoprpg.features.spell.Spell
-import com.feko.generictabletoprpg.features.spell.SpellRange
-import com.feko.generictabletoprpg.features.tracker.domain.model.SpellListEntry
-import com.feko.generictabletoprpg.features.tracker.domain.model.TrackedThing
-import com.feko.generictabletoprpg.features.tracker.domain.model.cantripSpellsCount
-import com.feko.generictabletoprpg.features.tracker.domain.model.filterPreparedAndCantrips
-import com.feko.generictabletoprpg.features.tracker.domain.model.preparedSpellsCount
+import com.feko.generictabletoprpg.shared.features.spell.Spell
+import com.feko.generictabletoprpg.shared.features.spell.SpellRange
+import com.feko.generictabletoprpg.shared.features.tracker.model.SpellListEntry
+import com.feko.generictabletoprpg.shared.features.tracker.model.TrackedThing
+import com.feko.generictabletoprpg.shared.features.tracker.model.cantripSpellsCount
+import com.feko.generictabletoprpg.shared.features.tracker.model.filterPreparedAndCantrips
+import com.feko.generictabletoprpg.shared.features.tracker.model.preparedSpellsCount
 import kotlinx.coroutines.launch
 
 @Composable

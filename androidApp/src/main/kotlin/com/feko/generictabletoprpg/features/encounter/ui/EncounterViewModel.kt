@@ -3,11 +3,14 @@ package com.feko.generictabletoprpg.features.encounter.ui
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.feko.generictabletoprpg.R
-import com.feko.generictabletoprpg.common.domain.model.IText
+import com.feko.generictabletoprpg.Res
+import com.feko.generictabletoprpg.add
 import com.feko.generictabletoprpg.common.ui.viewmodel.IToastSubViewModel
 import com.feko.generictabletoprpg.common.ui.viewmodel.ToastSubViewModel
-import com.feko.generictabletoprpg.features.encounter.InitiativeEntryDao
-import com.feko.generictabletoprpg.features.encounter.InitiativeEntryEntity
+import com.feko.generictabletoprpg.edit
+import com.feko.generictabletoprpg.shared.common.domain.model.IText
+import com.feko.generictabletoprpg.shared.features.encounter.InitiativeEntryDao
+import com.feko.generictabletoprpg.shared.features.encounter.InitiativeEntryEntity
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -85,7 +88,7 @@ class EncounterViewModel(private val dao: InitiativeEntryDao) : ViewModel() {
             IEncounterDialog.EditDialog(
                 InitiativeEntryEntity.Companion.Empty,
                 isLairActionsButtonVisible = !areLairActionsAdded,
-                IText.StringResourceText(R.string.add)
+                IText.StringResourceText(Res.string.add)
             )
         }
 
@@ -103,7 +106,7 @@ class EncounterViewModel(private val dao: InitiativeEntryDao) : ViewModel() {
             IEncounterDialog.EditDialog(
                 initiativeEntry.copy(id = 0L, hasTurn = false, isTurnCompleted = false),
                 isLairActionsButtonVisible = !areLairActionsAdded,
-                IText.StringResourceText(R.string.add)
+                IText.StringResourceText(Res.string.add)
             )
         }
 
@@ -112,7 +115,7 @@ class EncounterViewModel(private val dao: InitiativeEntryDao) : ViewModel() {
             IEncounterDialog.EditDialog(
                 initiativeEntry,
                 isLairActionsButtonVisible = !areLairActionsAdded,
-                IText.StringResourceText(R.string.edit)
+                IText.StringResourceText(Res.string.edit)
             )
         }
 

@@ -32,8 +32,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.feko.generictabletoprpg.R
-import com.feko.generictabletoprpg.common.domain.asSignedString
-import com.feko.generictabletoprpg.common.domain.model.IText.StringResourceText.Companion.asText
+import com.feko.generictabletoprpg.Res
 import com.feko.generictabletoprpg.common.ui.components.AlertDialogBase
 import com.feko.generictabletoprpg.common.ui.components.BoxWithScrollIndicator
 import com.feko.generictabletoprpg.common.ui.components.CheckboxWithText
@@ -45,17 +44,23 @@ import com.feko.generictabletoprpg.common.ui.components.IInputFieldValueConverte
 import com.feko.generictabletoprpg.common.ui.components.NumberDialogInputField
 import com.feko.generictabletoprpg.common.ui.theme.LocalDimens
 import com.feko.generictabletoprpg.common.ui.theme.Typography
-import com.feko.generictabletoprpg.features.spell.Spell
-import com.feko.generictabletoprpg.features.tracker.domain.model.StatEntry
-import com.feko.generictabletoprpg.features.tracker.domain.model.StatSkillEntry
-import com.feko.generictabletoprpg.features.tracker.domain.model.StatsContainer
-import com.feko.generictabletoprpg.features.tracker.domain.model.TrackedThing
-import com.feko.generictabletoprpg.features.tracker.domain.model.amount
-import com.feko.generictabletoprpg.features.tracker.domain.model.isIntBased
-import com.feko.generictabletoprpg.features.tracker.domain.model.isLevelValid
-import com.feko.generictabletoprpg.features.tracker.domain.model.isValueValid
-import com.feko.generictabletoprpg.features.tracker.domain.model.setNewValue
-import com.feko.generictabletoprpg.features.tracker.domain.model.validate
+import com.feko.generictabletoprpg.expertise
+import com.feko.generictabletoprpg.proficiency
+import com.feko.generictabletoprpg.saving_throw_proficiency
+import com.feko.generictabletoprpg.shared.common.domain.asSignedString
+import com.feko.generictabletoprpg.shared.common.domain.model.IText.StringResourceText.Companion.asText
+import com.feko.generictabletoprpg.shared.features.spell.Spell
+import com.feko.generictabletoprpg.shared.features.tracker.model.StatEntry
+import com.feko.generictabletoprpg.shared.features.tracker.model.StatSkillEntry
+import com.feko.generictabletoprpg.shared.features.tracker.model.StatsContainer
+import com.feko.generictabletoprpg.shared.features.tracker.model.TrackedThing
+import com.feko.generictabletoprpg.shared.features.tracker.model.amount
+import com.feko.generictabletoprpg.shared.features.tracker.model.isIntBased
+import com.feko.generictabletoprpg.shared.features.tracker.model.isLevelValid
+import com.feko.generictabletoprpg.shared.features.tracker.model.isValueValid
+import com.feko.generictabletoprpg.shared.features.tracker.model.setNewValue
+import com.feko.generictabletoprpg.shared.features.tracker.model.validate
+import com.feko.generictabletoprpg.spellcasting_modifier
 
 @Composable
 fun TrackerAlertDialog(viewModel: TrackerViewModel, onSpellClick: (Spell) -> Unit) {
@@ -685,7 +690,7 @@ private fun StatsStatEntry(
     }
     CheckboxWithText(
         statEntry.isProficientInSavingThrow,
-        R.string.saving_throw_proficiency.asText()
+        Res.string.saving_throw_proficiency.asText()
     ) { checked ->
         val newStatEntry =
             statsContainer.stats[statIndex].copy(isProficientInSavingThrow = checked)
@@ -698,7 +703,7 @@ private fun StatsStatEntry(
     }
     CheckboxWithText(
         statEntry.isSpellcastingModifier,
-        R.string.spellcasting_modifier.asText()
+        Res.string.spellcasting_modifier.asText()
     ) { checked ->
         val newStatEntry =
             statsContainer.stats[statIndex].copy(isSpellcastingModifier = checked)
@@ -792,7 +797,7 @@ private fun StatsStatEntrySkill(
         }
         CheckboxWithText(
             skill.isProficient,
-            R.string.proficiency.asText()
+            Res.string.proficiency.asText()
         ) { checked ->
             val newStatEntry =
                 statsContainer.stats[statIndex].let {
@@ -814,7 +819,7 @@ private fun StatsStatEntrySkill(
         }
         CheckboxWithText(
             skill.hasExpertise,
-            R.string.expertise.asText()
+            Res.string.expertise.asText()
         ) { checked ->
             val newStatEntry =
                 statsContainer.stats[statIndex].let {

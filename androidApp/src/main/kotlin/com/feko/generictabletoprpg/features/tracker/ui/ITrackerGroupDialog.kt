@@ -1,7 +1,7 @@
 package com.feko.generictabletoprpg.features.tracker.ui
 
-import com.feko.generictabletoprpg.common.domain.model.IText
-import com.feko.generictabletoprpg.features.tracker.domain.model.TrackedThingGroup
+import com.feko.generictabletoprpg.shared.common.domain.model.IText
+import com.feko.generictabletoprpg.shared.features.tracker.model.TrackedThingGroup
 
 sealed interface ITrackerGroupDialog {
 

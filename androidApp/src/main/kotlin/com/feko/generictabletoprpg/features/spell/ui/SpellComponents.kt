@@ -6,7 +6,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import com.feko.generictabletoprpg.R
 import com.feko.generictabletoprpg.common.ui.components.TextWithLabel
-import com.feko.generictabletoprpg.features.spell.Spell
+import com.feko.generictabletoprpg.shared.features.spell.Spell
 
 @Composable
 fun ColumnScope.SpellDetailsContent(item: Spell) {

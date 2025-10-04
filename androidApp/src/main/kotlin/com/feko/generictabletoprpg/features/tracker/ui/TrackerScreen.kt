@@ -12,9 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import com.feko.generictabletoprpg.R
-import com.feko.generictabletoprpg.common.domain.model.IText.StringResourceText.Companion.asText
-import com.feko.generictabletoprpg.common.domain.model.IText.StringText.Companion.asText
+import com.feko.generictabletoprpg.Res
 import com.feko.generictabletoprpg.common.ui.components.AddFABButtonWithDropdown
 import com.feko.generictabletoprpg.common.ui.components.GttrpgTopAppBar
 import com.feko.generictabletoprpg.common.ui.components.OverviewListItem
@@ -22,8 +20,11 @@ import com.feko.generictabletoprpg.common.ui.components.SearchableReorderableLaz
 import com.feko.generictabletoprpg.common.ui.components.ToastMessage
 import com.feko.generictabletoprpg.common.ui.viewmodel.ResultViewModel
 import com.feko.generictabletoprpg.features.searchall.ui.getUniqueListItemKey
-import com.feko.generictabletoprpg.features.spell.Spell
-import com.feko.generictabletoprpg.features.tracker.domain.model.TrackedThing
+import com.feko.generictabletoprpg.search_everywhere
+import com.feko.generictabletoprpg.shared.common.domain.model.IText.StringResourceText.Companion.asText
+import com.feko.generictabletoprpg.shared.common.domain.model.IText.StringText.Companion.asText
+import com.feko.generictabletoprpg.shared.features.spell.Spell
+import com.feko.generictabletoprpg.shared.features.tracker.model.TrackedThing
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parameterSetOf
 import sh.calvin.reorderable.ReorderableCollectionItemScope
@@ -61,7 +62,7 @@ fun TrackerScreen(
                 expanded = expanded,
                 onDismissRequest = { viewModel.fabDropdown.dismiss() },
                 onFabClicked = { viewModel.fabDropdown.toggleFabDropdownRequested() }
-            ) { DropdownMenuContent { type, context -> viewModel.showCreateDialog(type, context) } }
+            ) { DropdownMenuContent { type, context -> viewModel.showCreateDialog(type) } }
         }
     ) { paddingValues ->
         SearchableReorderableLazyList(
@@ -80,7 +81,7 @@ fun TrackerScreen(
             addFabButtonSpacerToList = true,
             uniqueListItemKey = { getUniqueListItemKey(it) },
             onItemReordered = { from, to -> viewModel.itemReordered(from.index, to.index) },
-            searchFieldHint = R.string.search_everywhere.asText(),
+            searchFieldHint = Res.string.search_everywhere.asText(),
             addHorizontalDivider = false
         )
     }

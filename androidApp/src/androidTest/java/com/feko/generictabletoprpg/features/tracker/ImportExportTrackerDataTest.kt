@@ -5,11 +5,13 @@ import androidx.annotation.RawRes
 import androidx.room.Room
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
-import com.feko.generictabletoprpg.common.data.local.GenericTabletopRpgDatabase
-import com.feko.generictabletoprpg.features.io.domain.usecase.JsonImportAllUseCase
-import com.feko.generictabletoprpg.features.tracker.domain.model.TrackedThing
-import com.feko.generictabletoprpg.features.tracker.domain.model.TrackedThingGroup
 import com.feko.generictabletoprpg.features.tracker.ui.TrackerGroupExportSubViewModel
+import com.feko.generictabletoprpg.shared.common.data.local.GenericTabletopRpgDatabase
+import com.feko.generictabletoprpg.shared.features.io.domain.usecase.JsonImportAllUseCase
+import com.feko.generictabletoprpg.shared.features.tracker.TrackedThingDao
+import com.feko.generictabletoprpg.shared.features.tracker.TrackedThingGroupDao
+import com.feko.generictabletoprpg.shared.features.tracker.model.TrackedThing
+import com.feko.generictabletoprpg.shared.features.tracker.model.TrackedThingGroup
 import com.feko.generictabletoprpg.test.R
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.test.runTest

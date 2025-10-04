@@ -3,6 +3,7 @@ package com.feko.generictabletoprpg.features.basecontent.domain
 import android.content.Context
 import android.content.res.Resources
 import com.feko.generictabletoprpg.R
+import com.feko.generictabletoprpg.shared.features.basecontent.domain.ILoadBaseContent
 
 class LoadBaseContentAdapter(context: Context) : ILoadBaseContent {
     private var resources: Resources = context.resources

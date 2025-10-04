@@ -2,10 +2,12 @@ package com.feko.generictabletoprpg.features.weapon.ui
 
 import androidx.compose.runtime.Composable
 import com.feko.generictabletoprpg.R
-import com.feko.generictabletoprpg.common.domain.model.IText.StringResourceText.Companion.asText
+import com.feko.generictabletoprpg.Res
 import com.feko.generictabletoprpg.common.ui.components.DetailsScreen
 import com.feko.generictabletoprpg.common.ui.components.TextWithLabel
-import com.feko.generictabletoprpg.features.weapon.Weapon
+import com.feko.generictabletoprpg.shared.common.domain.model.IText.StringResourceText.Companion.asText
+import com.feko.generictabletoprpg.shared.features.weapon.Weapon
+import com.feko.generictabletoprpg.weapon_details_title
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -16,7 +18,7 @@ fun WeaponDetailsScreen(
     DetailsScreen<WeaponDetailsViewModel, Weapon>(
         id,
         koinViewModel(),
-        R.string.weapon_details_title.asText(),
+        Res.string.weapon_details_title.asText(),
         onNavigationIconClick
     ) {
         TextWithLabel(R.string.name, it.name)

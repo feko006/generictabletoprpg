@@ -29,7 +29,7 @@ import com.feko.generictabletoprpg.common.ui.components.EnterValueDialog
 import com.feko.generictabletoprpg.common.ui.components.IInputFieldValueConverter
 import com.feko.generictabletoprpg.common.ui.components.NumberDialogInputField
 import com.feko.generictabletoprpg.common.ui.components.SelectFromListDialog
-import com.feko.generictabletoprpg.features.encounter.InitiativeEntryEntity
+import com.feko.generictabletoprpg.shared.features.encounter.InitiativeEntryEntity
 
 
 @Composable

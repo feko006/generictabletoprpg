@@ -3,8 +3,8 @@ package com.feko.generictabletoprpg.features.searchall.ui
 import com.feko.generictabletoprpg.common.ui.viewmodel.FilterViewModel
 import com.feko.generictabletoprpg.common.ui.viewmodel.IFilterViewModel
 import com.feko.generictabletoprpg.common.ui.viewmodel.OverviewViewModel
-import com.feko.generictabletoprpg.features.filter.Filter
-import com.feko.generictabletoprpg.features.searchall.domain.usecase.ISearchAllUseCase
+import com.feko.generictabletoprpg.shared.features.filter.Filter
+import com.feko.generictabletoprpg.shared.features.searchall.usecase.ISearchAllUseCase
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

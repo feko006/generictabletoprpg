@@ -2,10 +2,12 @@ package com.feko.generictabletoprpg.features.armor.ui
 
 import androidx.compose.runtime.Composable
 import com.feko.generictabletoprpg.R
-import com.feko.generictabletoprpg.common.domain.model.IText.StringResourceText.Companion.asText
+import com.feko.generictabletoprpg.Res
+import com.feko.generictabletoprpg.armor_details_title
 import com.feko.generictabletoprpg.common.ui.components.DetailsScreen
 import com.feko.generictabletoprpg.common.ui.components.TextWithLabel
-import com.feko.generictabletoprpg.features.armor.Armor
+import com.feko.generictabletoprpg.shared.common.domain.model.IText.StringResourceText.Companion.asText
+import com.feko.generictabletoprpg.shared.features.armor.Armor
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -16,7 +18,7 @@ fun ArmorDetailsScreen(
     DetailsScreen<ArmorDetailsViewModel, Armor>(
         id,
         koinViewModel(),
-        R.string.armor_details_title.asText(),
+        Res.string.armor_details_title.asText(),
         onNavigationIconClick
     ) {
 

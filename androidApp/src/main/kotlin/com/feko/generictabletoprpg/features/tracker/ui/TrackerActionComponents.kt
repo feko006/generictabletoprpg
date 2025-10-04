@@ -11,10 +11,10 @@ import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.painterResource
 import com.feko.generictabletoprpg.R
-import com.feko.generictabletoprpg.features.tracker.domain.model.StatsContainer
-import com.feko.generictabletoprpg.features.tracker.domain.model.TrackedThing
-import com.feko.generictabletoprpg.features.tracker.domain.model.canAdd
-import com.feko.generictabletoprpg.features.tracker.domain.model.canSubtract
+import com.feko.generictabletoprpg.shared.features.tracker.model.StatsContainer
+import com.feko.generictabletoprpg.shared.features.tracker.model.TrackedThing
+import com.feko.generictabletoprpg.shared.features.tracker.model.canAdd
+import com.feko.generictabletoprpg.shared.features.tracker.model.canSubtract
 
 @Composable
 fun PercentageActions(

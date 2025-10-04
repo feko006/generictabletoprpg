@@ -18,13 +18,18 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.feko.generictabletoprpg.R
-import com.feko.generictabletoprpg.common.domain.model.IText.StringResourceText.Companion.asText
-import com.feko.generictabletoprpg.common.domain.model.IText.StringText.Companion.asText
+import com.feko.generictabletoprpg.Res
 import com.feko.generictabletoprpg.common.ui.components.CheckboxWithText
 import com.feko.generictabletoprpg.common.ui.theme.LocalDimens
-import com.feko.generictabletoprpg.features.filter.Filter
-import com.feko.generictabletoprpg.features.filter.SpellComponentsFilter
-import com.feko.generictabletoprpg.features.filter.SpellFilter
+import com.feko.generictabletoprpg.concentration
+import com.feko.generictabletoprpg.material
+import com.feko.generictabletoprpg.ritual
+import com.feko.generictabletoprpg.shared.common.domain.model.IText.StringResourceText.Companion.asText
+import com.feko.generictabletoprpg.shared.common.domain.model.IText.StringText.Companion.asText
+import com.feko.generictabletoprpg.shared.features.filter.Filter
+import com.feko.generictabletoprpg.shared.features.filter.SpellFilter
+import com.feko.generictabletoprpg.somatic
+import com.feko.generictabletoprpg.verbal
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -81,12 +86,12 @@ private fun CommonSpellFilterSection(
         verticalArrangement = Arrangement.spacedBy(LocalDimens.current.gapMedium)
     ) {
         GttrpgTriStateBooleanFilterField(
-            R.string.concentration.asText(),
+            Res.string.concentration.asText(),
             filter.concentration,
             Modifier.fillMaxWidth()
         ) { onFilterUpdate(filter.copyWithNewConcentration(it)) }
         GttrpgTriStateBooleanFilterField(
-            R.string.ritual.asText(),
+            Res.string.ritual.asText(),
             filter.isRitual,
             Modifier.fillMaxWidth()
         ) { onFilterUpdate(filter.copyWithNewRitual(it)) }
@@ -94,40 +99,37 @@ private fun CommonSpellFilterSection(
         Text(stringResource(R.string.components))
 
         GttrpgTriStateBooleanFilterField(
-            R.string.verbal.asText(),
-            filter.spellComponents?.verbal,
+            Res.string.verbal.asText(),
+            filter.spellComponents.verbal,
             Modifier.fillMaxWidth()
         ) {
             onFilterUpdate(
                 filter.copyWithNewSpellComponents(
-                    filter.spellComponents?.copy(verbal = it)
-                        ?: SpellComponentsFilter(verbal = it)
+                    filter.spellComponents.copy(verbal = it)
                 )
             )
         }
 
         GttrpgTriStateBooleanFilterField(
-            R.string.somatic.asText(),
-            filter.spellComponents?.somatic,
+            Res.string.somatic.asText(),
+            filter.spellComponents.somatic,
             Modifier.fillMaxWidth()
         ) {
             onFilterUpdate(
                 filter.copyWithNewSpellComponents(
-                    filter.spellComponents?.copy(somatic = it)
-                        ?: SpellComponentsFilter(somatic = it)
+                    filter.spellComponents.copy(somatic = it)
                 )
             )
         }
 
         GttrpgTriStateBooleanFilterField(
-            R.string.material.asText(),
-            filter.spellComponents?.material,
+            Res.string.material.asText(),
+            filter.spellComponents.material,
             Modifier.fillMaxWidth()
         ) {
             onFilterUpdate(
                 filter.copyWithNewSpellComponents(
-                    filter.spellComponents?.copy(material = it)
-                        ?: SpellComponentsFilter(material = it)
+                    filter.spellComponents.copy(material = it)
                 )
             )
         }
@@ -178,9 +180,9 @@ private fun LevelSpellFilterSection(
                 onFilterUpdate(
                     filter.copy(
                         levels = if (isChecked) {
-                            filter.levels.plus(level.toInt())
+                            filter.levels.plus(level)
                         } else {
-                            filter.levels.minus(level.toInt())
+                            filter.levels.minus(level)
                         }
                     )
                 )
@@ -205,7 +207,7 @@ private fun ClassSpellFilterSection(
         classes.forEach { clazz ->
             CheckboxWithText(
                 filter.classes.contains(clazz),
-                clazz.toString().asText()
+                clazz.asText()
             ) { isChecked ->
                 onFilterUpdate(
                     filter.copy(

@@ -19,16 +19,17 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
-import com.feko.generictabletoprpg.R
-import com.feko.generictabletoprpg.common.domain.model.IText
-import com.feko.generictabletoprpg.common.domain.model.IText.StringResourceText.Companion.asText
+import com.feko.generictabletoprpg.Res
+import com.feko.generictabletoprpg.search
+import com.feko.generictabletoprpg.shared.common.domain.model.IText
+import com.feko.generictabletoprpg.shared.common.domain.model.IText.StringResourceText.Companion.asText
 import kotlinx.coroutines.delay
 
 @Composable
 fun SearchTextField(
     initialSearchString: String,
     onValueChange: (String) -> Unit,
-    hint: IText = R.string.search.asText(),
+    hint: IText = Res.string.search.asText(),
     debounceMs: Long = 500
 ) {
     var searchString by remember(initialSearchString) { mutableStateOf(initialSearchString) }

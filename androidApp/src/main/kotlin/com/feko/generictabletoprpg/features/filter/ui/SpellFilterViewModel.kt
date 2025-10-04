@@ -2,7 +2,7 @@ package com.feko.generictabletoprpg.features.filter.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.feko.generictabletoprpg.features.spell.ISpellFilterDao
+import com.feko.generictabletoprpg.shared.features.spell.ISpellFilterDao
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map

@@ -50,7 +50,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.feko.generictabletoprpg.R
 import com.feko.generictabletoprpg.common.ui.theme.LocalDimens
-import com.feko.generictabletoprpg.features.encounter.InitiativeEntryEntity
+import com.feko.generictabletoprpg.shared.features.encounter.InitiativeEntryEntity
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalMaterial3Api::class)

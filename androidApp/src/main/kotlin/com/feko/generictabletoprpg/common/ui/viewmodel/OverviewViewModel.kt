@@ -2,10 +2,10 @@ package com.feko.generictabletoprpg.common.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.feko.generictabletoprpg.shared.common.data.local.IGetAllDao
 import com.feko.generictabletoprpg.common.domain.createNewComparator
+import com.feko.generictabletoprpg.shared.common.data.local.IGetAllDao
 import com.feko.generictabletoprpg.shared.common.domain.model.IIdentifiable
-import com.feko.generictabletoprpg.features.filter.Filter
+import com.feko.generictabletoprpg.shared.features.filter.Filter
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow

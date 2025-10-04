@@ -26,12 +26,14 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.feko.generictabletoprpg.R
-import com.feko.generictabletoprpg.common.domain.model.IText.StringResourceText.Companion.asText
+import com.feko.generictabletoprpg.Res
 import com.feko.generictabletoprpg.common.ui.RootDestinations
 import com.feko.generictabletoprpg.common.ui.components.GttrpgFloatingActionButton
 import com.feko.generictabletoprpg.common.ui.components.GttrpgTopAppBar
 import com.feko.generictabletoprpg.common.ui.theme.LocalDimens
 import com.feko.generictabletoprpg.common.ui.viewmodel.AppViewModel
+import com.feko.generictabletoprpg.import_title
+import com.feko.generictabletoprpg.shared.common.domain.model.IText.StringResourceText.Companion.asText
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -42,7 +44,7 @@ fun ImportScreen(
     val viewModel: ImportViewModel = koinViewModel()
     appViewModel.updateActiveDrawerItem(RootDestinations.Import.destination)
     Scaffold(
-        topBar = { GttrpgTopAppBar(R.string.import_title.asText(), onNavigationIconClick) }
+        topBar = { GttrpgTopAppBar(Res.string.import_title.asText(), onNavigationIconClick) }
     ) { paddingValues ->
         Box(
             Modifier

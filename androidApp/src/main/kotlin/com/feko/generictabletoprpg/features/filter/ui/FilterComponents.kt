@@ -20,10 +20,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.feko.generictabletoprpg.R
-import com.feko.generictabletoprpg.common.domain.model.IText
 import com.feko.generictabletoprpg.common.ui.theme.LocalDimens
-import com.feko.generictabletoprpg.features.filter.Filter
-import com.feko.generictabletoprpg.features.filter.FilterChipData
+import com.feko.generictabletoprpg.shared.common.domain.model.IText
+import com.feko.generictabletoprpg.shared.features.filter.Filter
+import com.feko.generictabletoprpg.shared.features.filter.FilterChipData
 
 @Composable
 fun FilterChipGroup(

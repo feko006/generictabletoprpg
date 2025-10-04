@@ -1,7 +1,8 @@
 package com.feko.generictabletoprpg.features.encounter
 
-import com.feko.generictabletoprpg.common.data.local.GenericTabletopRpgDatabase
 import com.feko.generictabletoprpg.features.encounter.ui.EncounterViewModel
+import com.feko.generictabletoprpg.shared.common.data.local.GenericTabletopRpgDatabase
+import com.feko.generictabletoprpg.shared.features.encounter.InitiativeEntryDao
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 

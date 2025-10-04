@@ -4,6 +4,14 @@ plugins {
     alias(libs.plugins.android.lint)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.compose)
+    alias(libs.plugins.google.ksp)
+    alias(libs.plugins.androidx.room)
+    alias(libs.plugins.jetbrains.kotlin.serialization)
+}
+
+room {
+    println("$projectDir/schemas")
+    schemaDirectory("$projectDir/schemas")
 }
 
 kotlin {
@@ -14,6 +22,7 @@ kotlin {
         namespace = "com.feko.generictabletoprpg.shared"
         compileSdk = 36
         minSdk = 24
+        androidResources.enable = true
 
         withHostTestBuilder {
         }
@@ -25,11 +34,11 @@ kotlin {
         }
     }
 
-    linuxX64 {
-        binaries.executable {
-            entryPoint = "main"
-        }
-    }
+//    linuxX64 {
+//        binaries.executable {
+//            entryPoint = "main"
+//        }
+//    }
 
     // For iOS targets, this is also where you should
     // configure native binary output. For more information, see:
@@ -46,6 +55,9 @@ kotlin {
                 implementation(libs.kotlin.stdlib)
                 api(libs.jetbrains.kotlinx.serialization.json)
                 implementation(compose.runtime)
+                api(compose.components.resources)
+                api(libs.androidx.room.runtime)
+                api(libs.androidx.sqlite.bundled)
             }
         }
 
@@ -57,17 +69,15 @@ kotlin {
 
         androidMain {
             dependencies {
-                // Add Android-specific dependencies here. Note that this source set depends on
-                // commonMain by default and will correctly pull the Android artifacts of any KMP
-                // dependencies declared in commonMain.
+                implementation(libs.androidx.room.ktx)
             }
         }
 
-        linuxMain {
-            dependencies {
+//        linuxMain {
+//            dependencies {
 //                implementation(compose.desktop.currentOs)
-            }
-        }
+//            }
+//        }
 
         getByName("androidDeviceTest") {
             dependencies {
@@ -81,8 +91,12 @@ kotlin {
 }
 
 compose.resources {
-    publicResClass = false
+    publicResClass = true
     packageOfResClass = "com.feko.generictabletoprpg"
     generateResClass = auto
 }
 
+dependencies {
+    add("kspAndroid", libs.androidx.room.compiler)
+//    add("kspLinuxX64", libs.androidx.room.compiler)
+}

@@ -1,6 +1,5 @@
 package com.feko.generictabletoprpg.features.filter.ui
 
-import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -20,15 +19,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.feko.generictabletoprpg.R
+import com.feko.generictabletoprpg.Res
 import com.feko.generictabletoprpg.common.ui.components.GttrpgDropdownField
-import com.feko.generictabletoprpg.common.ui.components.appNamesByType
-import com.feko.generictabletoprpg.common.ui.components.appTypes
 import com.feko.generictabletoprpg.common.ui.components.getTypeName
 import com.feko.generictabletoprpg.common.ui.theme.LocalDimens
-import com.feko.generictabletoprpg.features.filter.Filter
-import com.feko.generictabletoprpg.features.filter.GenericFilter
-import com.feko.generictabletoprpg.features.filter.SpellFilter
-import com.feko.generictabletoprpg.features.spell.Spell
+import com.feko.generictabletoprpg.filter_type_placeholder
+import com.feko.generictabletoprpg.shared.common.appNamesByType
+import com.feko.generictabletoprpg.shared.common.appTypes
+import com.feko.generictabletoprpg.shared.features.filter.Filter
+import com.feko.generictabletoprpg.shared.features.filter.GenericFilter
+import com.feko.generictabletoprpg.shared.features.filter.SpellFilter
+import com.feko.generictabletoprpg.shared.features.spell.Spell
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun FilterScreen(
@@ -39,12 +41,11 @@ fun FilterScreen(
 ) {
     var filter by remember { mutableStateOf(initialFilter) }
 
-    @StringRes
     val textFieldInitialValue by remember {
         derivedStateOf {
             filter?.let {
                 appNamesByType[it.type]
-            } ?: R.string.filter_type_placeholder
+            } ?: Res.string.filter_type_placeholder
         }
     }
 

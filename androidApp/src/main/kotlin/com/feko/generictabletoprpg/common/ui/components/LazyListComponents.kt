@@ -38,14 +38,16 @@ import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.feko.generictabletoprpg.R
-import com.feko.generictabletoprpg.shared.common.domain.model.IIdentifiable
-import com.feko.generictabletoprpg.shared.common.domain.model.INamed
-import com.feko.generictabletoprpg.common.domain.model.IText
-import com.feko.generictabletoprpg.common.domain.model.IText.StringResourceText.Companion.asText
+import com.feko.generictabletoprpg.Res
 import com.feko.generictabletoprpg.common.ui.theme.LocalDimens
 import com.feko.generictabletoprpg.common.ui.theme.Typography
 import com.feko.generictabletoprpg.common.ui.viewmodel.OverviewViewModel
-import com.feko.generictabletoprpg.features.spell.Spell
+import com.feko.generictabletoprpg.search
+import com.feko.generictabletoprpg.shared.common.domain.model.IIdentifiable
+import com.feko.generictabletoprpg.shared.common.domain.model.INamed
+import com.feko.generictabletoprpg.shared.common.domain.model.IText
+import com.feko.generictabletoprpg.shared.common.domain.model.IText.StringResourceText.Companion.asText
+import com.feko.generictabletoprpg.shared.features.spell.Spell
 import sh.calvin.reorderable.ReorderableCollectionItemScope
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
@@ -58,7 +60,7 @@ fun <TViewModel, T> SearchableLazyList(
     modifier: Modifier = Modifier,
     addFabButtonSpacerToList: Boolean = false,
     uniqueListItemKey: (Any) -> Any = { (it as IIdentifiable).id },
-    searchFieldHint: IText = R.string.search.asText(),
+    searchFieldHint: IText = Res.string.search.asText(),
 ) where TViewModel : OverviewViewModel<T>,
         T : Any {
     SearchableLazyListLayout(
@@ -108,7 +110,7 @@ fun <TViewModel, T> SearchableReorderableLazyList(
     addFabButtonSpacerToList: Boolean = false,
     uniqueListItemKey: (Any) -> Any = { (it as IIdentifiable).id },
     onItemReordered: (LazyListItemInfo, LazyListItemInfo) -> Unit = { _, _ -> },
-    searchFieldHint: IText = R.string.search.asText(),
+    searchFieldHint: IText = Res.string.search.asText(),
     addHorizontalDivider: Boolean = true,
 ) where TViewModel : OverviewViewModel<T>,
         T : Any {
@@ -204,7 +206,7 @@ fun Modifier.longPressDraggableHandle(
 private fun <TViewModel, T> SearchableLazyListLayout(
     viewModel: TViewModel,
     modifier: Modifier = Modifier,
-    searchFieldHint: IText = R.string.search.asText(),
+    searchFieldHint: IText = Res.string.search.asText(),
     listContent: @Composable (String) -> Unit
 ) where TViewModel : OverviewViewModel<T>,
         T : Any {

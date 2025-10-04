@@ -16,9 +16,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.feko.generictabletoprpg.features.tracker.domain.model.TrackedThing
+import com.feko.generictabletoprpg.shared.features.tracker.model.TrackedThing
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun ItemActionsBase(
@@ -46,7 +46,7 @@ fun DropdownMenuContent(onTrackedThingClicked: (TrackedThing.Type, Context) -> U
     TrackedThing.Type
         .entries
         .drop(1) // None is dropped
-        .map { Pair(it, stringResource(it.nameResource)) }
+        .map { Pair(it, stringResource(it.nameResource!!)) }
         .sortedBy { it.second }
         .forEach { type ->
             DropdownMenuItem(

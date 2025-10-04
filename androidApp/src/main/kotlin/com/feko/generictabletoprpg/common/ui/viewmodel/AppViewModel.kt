@@ -3,7 +3,7 @@ package com.feko.generictabletoprpg.common.ui.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.feko.generictabletoprpg.common.ui.components.INavigationDestination
-import com.feko.generictabletoprpg.features.basecontent.domain.usecase.ILoadBaseContentUseCase
+import com.feko.generictabletoprpg.shared.features.basecontent.domain.usecase.ILoadBaseContentUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
