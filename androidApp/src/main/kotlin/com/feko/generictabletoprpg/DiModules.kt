@@ -5,9 +5,9 @@ import com.feko.generictabletoprpg.common.data.ParseEdnAsMapEdnJava
 import com.feko.generictabletoprpg.common.data.ProcessEdnMapEdnJava
 import com.feko.generictabletoprpg.common.data.UserPreferences
 import com.feko.generictabletoprpg.common.data.local.GenericTabletopRpgDatabase
-import com.feko.generictabletoprpg.common.domain.IParseEdnAsMap
-import com.feko.generictabletoprpg.common.domain.IProcessEdnMap
-import com.feko.generictabletoprpg.common.domain.IUserPreferences
+import com.feko.generictabletoprpg.shared.common.domain.IParseEdnAsMap
+import com.feko.generictabletoprpg.shared.common.domain.IProcessEdnMap
+import com.feko.generictabletoprpg.shared.common.domain.IUserPreferences
 import com.feko.generictabletoprpg.common.ui.viewmodel.AppViewModel
 import com.feko.generictabletoprpg.features.action.actionModule
 import com.feko.generictabletoprpg.features.ammunition.ammunitionModule

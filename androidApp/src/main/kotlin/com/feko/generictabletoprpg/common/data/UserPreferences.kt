@@ -3,7 +3,7 @@ package com.feko.generictabletoprpg.common.data
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.core.content.edit
-import com.feko.generictabletoprpg.common.domain.IUserPreferences
+import com.feko.generictabletoprpg.shared.common.domain.IUserPreferences
 
 class UserPreferences(context: Context) : IUserPreferences {
     private var sharedPreferences: SharedPreferences =

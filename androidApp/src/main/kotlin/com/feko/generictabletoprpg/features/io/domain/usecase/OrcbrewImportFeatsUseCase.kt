@@ -1,8 +1,8 @@
 package com.feko.generictabletoprpg.features.io.domain.usecase
 
-import com.feko.generictabletoprpg.common.data.local.IInsertAllDao
+import com.feko.generictabletoprpg.shared.common.data.local.IInsertAllDao
 import com.feko.generictabletoprpg.features.feat.Feat
-import com.feko.generictabletoprpg.common.domain.IProcessEdnMap
+import com.feko.generictabletoprpg.shared.common.domain.IProcessEdnMap
 import timber.log.Timber
 
 @Suppress("UNCHECKED_CAST")

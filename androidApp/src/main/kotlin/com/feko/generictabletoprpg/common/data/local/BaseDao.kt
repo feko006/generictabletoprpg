@@ -2,9 +2,14 @@ package com.feko.generictabletoprpg.common.data.local
 
 import androidx.room.Insert
 import androidx.room.Update
-import com.feko.generictabletoprpg.common.domain.model.ICoreConvertible
-import com.feko.generictabletoprpg.common.domain.model.IMutableIdentifiable
-import com.feko.generictabletoprpg.common.domain.model.INamed
+import com.feko.generictabletoprpg.shared.common.domain.model.ICoreConvertible
+import com.feko.generictabletoprpg.shared.common.domain.model.IMutableIdentifiable
+import com.feko.generictabletoprpg.shared.common.domain.model.INamed
+import com.feko.generictabletoprpg.shared.common.data.local.IGetAllByParentDao
+import com.feko.generictabletoprpg.shared.common.data.local.IGetAllDao
+import com.feko.generictabletoprpg.shared.common.data.local.IGetByIdDao
+import com.feko.generictabletoprpg.shared.common.data.local.IInsertAllDao
+import com.feko.generictabletoprpg.shared.common.data.local.IInsertOrUpdateDao
 import timber.log.Timber
 
 abstract class BaseDao<TEntity, TCore> :

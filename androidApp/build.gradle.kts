@@ -19,7 +19,7 @@ android {
 
     defaultConfig {
         applicationId = "com.feko.generictabletoprpg"
-        minSdk = 23
+        minSdk = 24
         targetSdk = 36
         versionCode = 8
         versionName = "1.3.0"
@@ -89,8 +89,8 @@ dependencies {
     implementation(libs.reorderable)
     implementation(libs.insert.koin)
     implementation(libs.jakewharton.timber)
-    implementation(libs.jetbrains.kotlinx.serialization.json)
     implementation(libs.bundles.androidx.navigation3)
+    implementation(project(":shared"))
 
     androidTestImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.runner)

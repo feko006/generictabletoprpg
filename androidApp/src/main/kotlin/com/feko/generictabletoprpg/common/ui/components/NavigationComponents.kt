@@ -16,7 +16,7 @@ import androidx.navigation3.runtime.rememberSavedStateNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import androidx.navigation3.ui.rememberSceneSetupNavEntryDecorator
 import androidx.window.core.layout.WindowSizeClass
-import com.feko.generictabletoprpg.common.domain.model.IIdentifiable
+import com.feko.generictabletoprpg.shared.common.domain.model.IIdentifiable
 import com.feko.generictabletoprpg.common.ui.viewmodel.AppViewModel
 import com.feko.generictabletoprpg.common.ui.viewmodel.ResultViewModel
 import com.feko.generictabletoprpg.features.action.Action

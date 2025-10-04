@@ -2,7 +2,7 @@ package com.feko.generictabletoprpg.common.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.feko.generictabletoprpg.common.data.local.IGetByIdDao
+import com.feko.generictabletoprpg.shared.common.data.local.IGetByIdDao
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow

@@ -1,6 +1,6 @@
 package com.feko.generictabletoprpg.common.domain
 
-import com.feko.generictabletoprpg.common.domain.model.INamed
+import com.feko.generictabletoprpg.shared.common.domain.model.INamed
 import com.feko.generictabletoprpg.features.tracker.domain.model.TrackedThing
 
 class SmartNamedSearchComparator<T>(private val searchString: String) : Comparator<T> {

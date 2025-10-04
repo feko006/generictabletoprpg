@@ -1,7 +1,7 @@
 package com.feko.generictabletoprpg.features.filter
 
 import com.feko.generictabletoprpg.R
-import com.feko.generictabletoprpg.common.domain.model.INamed
+import com.feko.generictabletoprpg.shared.common.domain.model.INamed
 import com.feko.generictabletoprpg.common.domain.model.IText.StringResourceText.Companion.asText
 import com.feko.generictabletoprpg.common.ui.components.appNamesByType
 

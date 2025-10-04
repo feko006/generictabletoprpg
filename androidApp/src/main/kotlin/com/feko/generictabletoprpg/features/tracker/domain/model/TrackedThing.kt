@@ -3,8 +3,8 @@ package com.feko.generictabletoprpg.features.tracker.domain.model
 import androidx.annotation.Keep
 import androidx.annotation.StringRes
 import com.feko.generictabletoprpg.R
-import com.feko.generictabletoprpg.common.domain.model.IMutableIdentifiable
-import com.feko.generictabletoprpg.common.domain.model.INamed
+import com.feko.generictabletoprpg.shared.common.domain.model.IMutableIdentifiable
+import com.feko.generictabletoprpg.shared.common.domain.model.INamed
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient

@@ -24,7 +24,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import com.feko.generictabletoprpg.R
-import com.feko.generictabletoprpg.common.domain.model.INamed
+import com.feko.generictabletoprpg.shared.common.domain.model.INamed
 import com.feko.generictabletoprpg.common.domain.model.IText
 import com.feko.generictabletoprpg.common.ui.components.AlertDialogBase
 import com.feko.generictabletoprpg.common.ui.components.ConfirmationDialog

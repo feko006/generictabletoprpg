@@ -1,11 +1,11 @@
 package com.feko.generictabletoprpg.features.ammunition
 
 import androidx.annotation.Keep
-import com.feko.generictabletoprpg.common.domain.IProcessEdnMap
+import com.feko.generictabletoprpg.shared.common.domain.IProcessEdnMap
 import com.feko.generictabletoprpg.common.domain.model.Cost
-import com.feko.generictabletoprpg.common.domain.model.IFromSource
-import com.feko.generictabletoprpg.common.domain.model.IIdentifiable
-import com.feko.generictabletoprpg.common.domain.model.INamed
+import com.feko.generictabletoprpg.shared.common.domain.model.IFromSource
+import com.feko.generictabletoprpg.shared.common.domain.model.IIdentifiable
+import com.feko.generictabletoprpg.shared.common.domain.model.INamed
 import kotlinx.serialization.Serializable
 
 @Keep

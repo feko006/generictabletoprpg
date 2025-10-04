@@ -1,7 +1,7 @@
 package com.feko.generictabletoprpg.features.searchall.domain.usecase
 
-import com.feko.generictabletoprpg.common.data.local.IGetAllDao
-import com.feko.generictabletoprpg.common.domain.model.INamed
+import com.feko.generictabletoprpg.shared.common.data.local.IGetAllDao
+import com.feko.generictabletoprpg.shared.common.domain.model.INamed
 
 class SearchAllUseCase(
     private val getAllDaos: List<IGetAllDao<*>>

@@ -38,8 +38,8 @@ import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.feko.generictabletoprpg.R
-import com.feko.generictabletoprpg.common.domain.model.IIdentifiable
-import com.feko.generictabletoprpg.common.domain.model.INamed
+import com.feko.generictabletoprpg.shared.common.domain.model.IIdentifiable
+import com.feko.generictabletoprpg.shared.common.domain.model.INamed
 import com.feko.generictabletoprpg.common.domain.model.IText
 import com.feko.generictabletoprpg.common.domain.model.IText.StringResourceText.Companion.asText
 import com.feko.generictabletoprpg.common.ui.theme.LocalDimens

@@ -1,6 +1,6 @@
 package com.feko.generictabletoprpg.common.data
 
-import com.feko.generictabletoprpg.common.domain.IProcessEdnMap
+import com.feko.generictabletoprpg.shared.common.domain.IProcessEdnMap
 import us.bpsm.edn.Keyword
 
 class ProcessEdnMapEdnJava : IProcessEdnMap {

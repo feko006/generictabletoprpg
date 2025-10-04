@@ -1,6 +1,6 @@
 package com.feko.generictabletoprpg.common.data
 
-import com.feko.generictabletoprpg.common.domain.IParseEdnAsMap
+import com.feko.generictabletoprpg.shared.common.domain.IParseEdnAsMap
 import us.bpsm.edn.parser.Parsers
 
 class ParseEdnAsMapEdnJava : IParseEdnAsMap {

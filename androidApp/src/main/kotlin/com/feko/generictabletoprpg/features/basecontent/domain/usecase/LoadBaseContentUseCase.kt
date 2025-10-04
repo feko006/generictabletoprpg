@@ -1,7 +1,7 @@
 package com.feko.generictabletoprpg.features.basecontent.domain.usecase
 
 import com.feko.generictabletoprpg.features.basecontent.domain.ILoadBaseContent
-import com.feko.generictabletoprpg.common.domain.IUserPreferences
+import com.feko.generictabletoprpg.shared.common.domain.IUserPreferences
 import com.feko.generictabletoprpg.features.io.domain.usecase.IJsonImportAllUseCase
 import com.feko.generictabletoprpg.features.io.domain.usecase.IOrcbrewImportAllUseCase
 

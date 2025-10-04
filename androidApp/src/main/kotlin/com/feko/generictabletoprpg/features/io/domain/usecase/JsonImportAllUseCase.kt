@@ -1,8 +1,8 @@
 package com.feko.generictabletoprpg.features.io.domain.usecase
 
-import com.feko.generictabletoprpg.common.data.json
-import com.feko.generictabletoprpg.common.data.local.IInsertAllDao
-import com.feko.generictabletoprpg.common.data.local.IInsertOrUpdateDao
+import com.feko.generictabletoprpg.shared.common.data.json
+import com.feko.generictabletoprpg.shared.common.data.local.IInsertAllDao
+import com.feko.generictabletoprpg.shared.common.data.local.IInsertOrUpdateDao
 import com.feko.generictabletoprpg.features.action.Action
 import com.feko.generictabletoprpg.features.condition.Condition
 import com.feko.generictabletoprpg.features.disease.Disease

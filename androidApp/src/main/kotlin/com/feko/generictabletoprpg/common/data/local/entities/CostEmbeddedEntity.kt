@@ -2,7 +2,7 @@ package com.feko.generictabletoprpg.common.data.local.entities
 
 import androidx.annotation.Keep
 import com.feko.generictabletoprpg.common.domain.model.Cost
-import com.feko.generictabletoprpg.common.domain.model.ICoreConvertible
+import com.feko.generictabletoprpg.shared.common.domain.model.ICoreConvertible
 
 @Keep
 data class CostEmbeddedEntity(

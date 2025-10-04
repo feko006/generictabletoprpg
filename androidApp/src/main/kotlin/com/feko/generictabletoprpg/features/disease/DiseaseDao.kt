@@ -3,9 +3,9 @@ package com.feko.generictabletoprpg.features.disease
 import androidx.room.Dao
 import androidx.room.Query
 import com.feko.generictabletoprpg.common.data.local.BaseDao
-import com.feko.generictabletoprpg.common.data.local.IGetAllDao
-import com.feko.generictabletoprpg.common.data.local.IGetByIdDao
-import com.feko.generictabletoprpg.common.data.local.IInsertAllDao
+import com.feko.generictabletoprpg.shared.common.data.local.IGetAllDao
+import com.feko.generictabletoprpg.shared.common.data.local.IGetByIdDao
+import com.feko.generictabletoprpg.shared.common.data.local.IInsertAllDao
 
 @Dao
 abstract class DiseaseDao

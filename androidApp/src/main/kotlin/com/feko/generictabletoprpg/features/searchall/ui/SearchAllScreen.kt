@@ -22,7 +22,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import com.feko.generictabletoprpg.R
-import com.feko.generictabletoprpg.common.domain.model.IIdentifiable
+import com.feko.generictabletoprpg.shared.common.domain.model.IIdentifiable
 import com.feko.generictabletoprpg.common.domain.model.IText.StringResourceText.Companion.asText
 import com.feko.generictabletoprpg.common.ui.RootDestinations
 import com.feko.generictabletoprpg.common.ui.components.GttrpgTopAppBar

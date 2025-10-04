@@ -1,20 +1,21 @@
 package com.feko.generictabletoprpg.common.domain.model
 
-import androidx.annotation.StringRes
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.stringResource
+import kotlin.invoke
 
 sealed interface IText {
     @Composable
     fun text(): String
 
     data class StringResourceText(
-        @get:StringRes private val stringResource: Int,
+        private val stringResource: Int,
         @Suppress("ArrayInDataClass")
         private val formatArgs: Array<String> = emptyArray()
     ) : IText {
         @Composable
         override fun text(): String =
-            androidx.compose.ui.res.stringResource(stringResource, formatArgs)
+            stringResource(stringResource, formatArgs)
 
         companion object {
             fun Int.asText(): IText = StringResourceText(this)
@@ -30,4 +31,3 @@ sealed interface IText {
         }
     }
 }
-

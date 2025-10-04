@@ -1,6 +1,6 @@
 package com.feko.generictabletoprpg.features.tracker.domain.model
 
-import com.feko.generictabletoprpg.common.data.json
+import com.feko.generictabletoprpg.shared.common.data.json
 import com.feko.generictabletoprpg.features.tracker.domain.model.TrackedThing.Type
 import kotlinx.serialization.builtins.ListSerializer
 import java.util.Locale

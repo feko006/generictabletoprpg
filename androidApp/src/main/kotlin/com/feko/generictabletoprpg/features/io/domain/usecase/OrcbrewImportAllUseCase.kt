@@ -1,6 +1,6 @@
 package com.feko.generictabletoprpg.features.io.domain.usecase
 
-import com.feko.generictabletoprpg.common.domain.IParseEdnAsMap
+import com.feko.generictabletoprpg.shared.common.domain.IParseEdnAsMap
 import timber.log.Timber
 
 class OrcbrewImportAllUseCase(
