@@ -19,7 +19,7 @@ class JsonImportAllUseCase(
     private val insertTrackedGroup: IInsertOrUpdateDao<TrackedThingGroup>,
     private val insertTrackedThings: IInsertAllDao<TrackedThing>
 ) : IJsonImportAllUseCase {
-    override fun import(content: String): Result<Boolean> {
+    override suspend fun import(content: String): Result<Boolean> {
         try {
             val appModel = json.decodeFromString(AppModel.serializer(), content)
             val results = mutableListOf<Result<Boolean>>()
@@ -48,7 +48,7 @@ class JsonImportAllUseCase(
         }
     }
 
-    private fun importTrackedGroups(trackedGroups: List<TrackedThingGroup>): Result<Boolean> {
+    private suspend fun importTrackedGroups(trackedGroups: List<TrackedThingGroup>): Result<Boolean> {
         return if (trackedGroups.isEmpty()) {
             Result.success(true)
         } else {
@@ -70,7 +70,7 @@ class JsonImportAllUseCase(
         }
     }
 
-    private fun importActions(appModel: AppModel): Result<Boolean> {
+    private suspend fun importActions(appModel: AppModel): Result<Boolean> {
         val actions = appModel.sources.flatMap { source ->
             source.actions.map {
                 it.source = source.name
@@ -84,7 +84,7 @@ class JsonImportAllUseCase(
         }
     }
 
-    private fun importConditions(appModel: AppModel): Result<Boolean> {
+    private suspend fun importConditions(appModel: AppModel): Result<Boolean> {
         val conditions = appModel.sources.flatMap { source ->
             source.conditions.map {
                 it.source = source.name
@@ -98,7 +98,7 @@ class JsonImportAllUseCase(
         }
     }
 
-    private fun importDiseases(appModel: AppModel): Result<Boolean> {
+    private suspend fun importDiseases(appModel: AppModel): Result<Boolean> {
         val diseases = appModel.sources.flatMap { source ->
             source.diseases.map {
                 it.source = source.name

@@ -17,11 +17,11 @@ abstract class ConditionDao
         ConditionEntity.fromCoreModel(item)
 
     @Query("select id from conditions where name = :name")
-    abstract override fun getEntityIdByName(name: String): Long?
+    abstract override suspend fun getEntityIdByName(name: String): Long?
 
     @Query("select * from conditions order by name")
-    abstract override fun getAllSortedByNameInternal(): List<ConditionEntity>
+    abstract override suspend fun getAllSortedByNameInternal(): List<ConditionEntity>
 
     @Query("select * from conditions where id = :id")
-    abstract override fun getByIdInternal(id: Long): ConditionEntity
+    abstract override suspend fun getByIdInternal(id: Long): ConditionEntity
 }

@@ -17,11 +17,11 @@ abstract class FeatDao
         FeatEntity.fromCoreModel(item)
 
     @Query("select id from feats where name = :name")
-    abstract override fun getEntityIdByName(name: String): Long?
+    abstract override suspend fun getEntityIdByName(name: String): Long?
 
     @Query("select * from feats order by name")
-    abstract override fun getAllSortedByNameInternal(): List<FeatEntity>
+    abstract override suspend fun getAllSortedByNameInternal(): List<FeatEntity>
 
     @Query("select * from feats where id = :id")
-    abstract override fun getByIdInternal(id: Long): FeatEntity
+    abstract override suspend fun getByIdInternal(id: Long): FeatEntity
 }

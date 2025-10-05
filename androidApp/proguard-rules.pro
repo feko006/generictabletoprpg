@@ -21,3 +21,4 @@
 #-renamesourcefileattribute SourceFile
 
 -keep @com.feko.generictabletoprpg.shared.common.domain.model.DoNotObfuscate public class * { *; }
+-keep class * extends androidx.room.RoomDatabase { <init>(); }

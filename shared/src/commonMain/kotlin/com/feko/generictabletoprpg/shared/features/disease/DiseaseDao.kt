@@ -17,11 +17,11 @@ abstract class DiseaseDao
         DiseaseEntity.fromCoreModel(item)
 
     @Query("select id from diseases where name = :name")
-    abstract override fun getEntityIdByName(name: String): Long?
+    abstract override suspend fun getEntityIdByName(name: String): Long?
 
     @Query("select * from diseases order by name")
-    abstract override fun getAllSortedByNameInternal(): List<DiseaseEntity>
+    abstract override suspend fun getAllSortedByNameInternal(): List<DiseaseEntity>
 
     @Query("select * from diseases where id = :id")
-    abstract override fun getByIdInternal(id: Long): DiseaseEntity
+    abstract override suspend fun getByIdInternal(id: Long): DiseaseEntity
 }

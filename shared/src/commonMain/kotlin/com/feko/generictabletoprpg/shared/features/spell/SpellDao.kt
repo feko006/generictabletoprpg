@@ -19,13 +19,13 @@ abstract class SpellDao
         SpellEntity.fromCoreModel(item)
 
     @Query("select id from spells where name = :name")
-    abstract override fun getEntityIdByName(name: String): Long?
+    abstract override suspend fun getEntityIdByName(name: String): Long?
 
     @Query("select * from spells order by name")
-    abstract override fun getAllSortedByNameInternal(): List<SpellEntity>
+    abstract override suspend fun getAllSortedByNameInternal(): List<SpellEntity>
 
     @Query("select * from spells where id = :id")
-    abstract override fun getByIdInternal(id: Long): SpellEntity
+    abstract override suspend fun getByIdInternal(id: Long): SpellEntity
 
     @Query("select distinct school from spells order by school asc")
     abstract override fun getAllSchools(): Flow<List<String>>

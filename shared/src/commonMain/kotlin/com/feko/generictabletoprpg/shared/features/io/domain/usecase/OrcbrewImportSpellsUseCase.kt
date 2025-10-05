@@ -11,9 +11,7 @@ class OrcbrewImportSpellsUseCase(
     private val processEdnMapPort: IProcessEdnMap,
     private val insertSpellsPort: IInsertAllDao<Spell>
 ) : IOrcbrewImportSpellsUseCase {
-    override fun import(
-        sources: Map<Any, Any>
-    ): Result<Boolean> {
+    override suspend fun import(sources: Map<Any, Any>): Result<Boolean> {
         val spellsToAdd = mutableListOf<Spell>()
         val exceptions = mutableListOf<Exception>()
         sources.forEach { source ->

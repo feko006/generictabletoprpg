@@ -6,7 +6,7 @@ import com.feko.generictabletoprpg.shared.common.domain.model.INamed
 class SearchAllUseCase(
     private val getAllDaos: List<IGetAllDao<*>>
 ) : ISearchAllUseCase {
-    override fun getAllItems(): List<Any> =
+    override suspend fun getAllItems(): List<Any> =
         getAllDaos
             .flatMap {
                 it.getAllSortedByName().filterNotNull()

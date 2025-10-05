@@ -18,12 +18,12 @@ abstract class BaseDao<TEntity, TCore> :
               TEntity : ICoreConvertible<TCore> {
 
     @Insert
-    abstract fun insert(entity: TEntity): Long
+    abstract suspend fun insert(entity: TEntity): Long
 
     @Update
-    abstract fun update(entity: TEntity)
+    abstract suspend fun update(entity: TEntity)
 
-    override fun insertAll(list: List<TCore>): Result<Boolean> {
+    override suspend fun insertAll(list: List<TCore>): Result<Boolean> {
         val errors = mutableListOf<Exception>()
         list.forEach { item ->
             try {
@@ -37,7 +37,7 @@ abstract class BaseDao<TEntity, TCore> :
         return Result.success(errors.isEmpty())
     }
 
-    override fun insertOrUpdate(item: TCore): Long {
+    override suspend fun insertOrUpdate(item: TCore): Long {
         val entity = getEntityFromCoreModel(item)
         val existingEntityId = getEntityId(entity)
         return if (existingEntityId == null) {
@@ -53,28 +53,30 @@ abstract class BaseDao<TEntity, TCore> :
 
     protected abstract fun getEntityFromCoreModel(item: TCore): TEntity
 
-    protected open fun getEntityId(entity: TEntity): Long? = getEntityIdByName(entity.name)
+    protected open suspend fun getEntityId(entity: TEntity): Long? = getEntityIdByName(entity.name)
 
-    protected open fun getEntityIdByName(name: String): Long? = throw NotImplementedError()
+    protected open suspend fun getEntityIdByName(name: String): Long? = throw NotImplementedError()
 
     private fun setEntityId(entity: TEntity, existingEntityId: Long) {
         entity.id = existingEntityId
     }
 
-    final override fun getAllSortedByName(): List<TCore> =
+    final override suspend fun getAllSortedByName(): List<TCore> =
         getAllSortedByNameInternal()
             .map { it.toCoreModel() }
 
-    final override fun getAllSortedByName(parentId: Long): List<TCore> =
+    final override suspend fun getAllSortedByName(parentId: Long): List<TCore> =
         getAllSortedByNameInternal(parentId)
             .map { it.toCoreModel() }
 
-    protected open fun getAllSortedByNameInternal(): List<TEntity> = throw NotImplementedError()
-    protected open fun getAllSortedByNameInternal(parentId: Long): List<TEntity> =
+    protected open suspend fun getAllSortedByNameInternal(): List<TEntity> =
         throw NotImplementedError()
 
-    final override fun getById(id: Long): TCore =
+    protected open suspend fun getAllSortedByNameInternal(parentId: Long): List<TEntity> =
+        throw NotImplementedError()
+
+    final override suspend fun getById(id: Long): TCore =
         getByIdInternal(id).toCoreModel()
 
-    protected open fun getByIdInternal(id: Long): TEntity = throw NotImplementedError()
+    protected open suspend fun getByIdInternal(id: Long): TEntity = throw NotImplementedError()
 }

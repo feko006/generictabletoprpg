@@ -1,8 +1,10 @@
 package com.feko.generictabletoprpg.shared.common.data.local
 
 import androidx.room.AutoMigration
+import androidx.room.ConstructedBy
 import androidx.room.Database
 import androidx.room.RoomDatabase
+import androidx.room.RoomDatabaseConstructor
 import androidx.room.TypeConverters
 import com.feko.generictabletoprpg.shared.features.action.ActionDao
 import com.feko.generictabletoprpg.shared.features.action.ActionEntity
@@ -63,6 +65,7 @@ import com.feko.generictabletoprpg.shared.features.weapon.WeaponEntity
         AutoMigration(from = 14, to = 15)
     ]
 )
+@ConstructedBy(AppDatabaseConstructor::class)
 abstract class GenericTabletopRpgDatabase : RoomDatabase() {
     abstract fun spellDao(): SpellDao
     abstract fun featDao(): FeatDao
@@ -75,4 +78,9 @@ abstract class GenericTabletopRpgDatabase : RoomDatabase() {
     abstract fun trackedThingDao(): TrackedThingDao
     abstract fun trackedThingGroupDao(): TrackedThingGroupDao
     abstract fun initiativeEntryDao(): InitiativeEntryDao
+}
+
+@Suppress("KotlinNoActualForExpect")
+expect object AppDatabaseConstructor : RoomDatabaseConstructor<GenericTabletopRpgDatabase> {
+    override fun initialize(): GenericTabletopRpgDatabase
 }

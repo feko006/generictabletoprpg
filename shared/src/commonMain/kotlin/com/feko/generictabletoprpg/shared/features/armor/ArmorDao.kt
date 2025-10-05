@@ -17,11 +17,11 @@ abstract class ArmorDao
         ArmorEntity.fromCoreModel(item)
 
     @Query("select id from armors where name = :name")
-    abstract override fun getEntityIdByName(name: String): Long?
+    abstract override suspend fun getEntityIdByName(name: String): Long?
 
     @Query("select * from armors order by name")
-    abstract override fun getAllSortedByNameInternal(): List<ArmorEntity>
+    abstract override suspend fun getAllSortedByNameInternal(): List<ArmorEntity>
 
     @Query("select * from armors where id = :id")
-    abstract override fun getByIdInternal(id: Long): ArmorEntity
+    abstract override suspend fun getByIdInternal(id: Long): ArmorEntity
 }

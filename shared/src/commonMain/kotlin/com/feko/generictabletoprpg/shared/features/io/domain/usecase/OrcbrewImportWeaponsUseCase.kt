@@ -11,9 +11,7 @@ class OrcbrewImportWeaponsUseCase(
     private val processEdnMapPort: IProcessEdnMap,
     private val insertWeaponsPort: IInsertAllDao<Weapon>
 ) : IOrcbrewImportWeaponsUseCase {
-    override fun import(
-        sources: Map<Any, Any>
-    ): Result<Boolean> {
+    override suspend fun import(sources: Map<Any, Any>): Result<Boolean> {
         val weaponsToAdd = mutableListOf<Weapon>()
         val exceptions = mutableListOf<Exception>()
         sources.forEach { source ->

@@ -1,6 +1,5 @@
 package com.feko.generictabletoprpg
 
-import androidx.room.Room
 import com.feko.generictabletoprpg.common.data.ParseEdnAsMapEdnJava
 import com.feko.generictabletoprpg.common.data.ProcessEdnMapEdnJava
 import com.feko.generictabletoprpg.common.data.UserPreferences
@@ -20,10 +19,11 @@ import com.feko.generictabletoprpg.features.spell.spellModule
 import com.feko.generictabletoprpg.features.tracker.trackerGroupsModule
 import com.feko.generictabletoprpg.features.tracker.trackerModule
 import com.feko.generictabletoprpg.features.weapon.weaponModule
-import com.feko.generictabletoprpg.shared.common.data.local.GenericTabletopRpgDatabase
 import com.feko.generictabletoprpg.shared.common.domain.IParseEdnAsMap
 import com.feko.generictabletoprpg.shared.common.domain.IProcessEdnMap
 import com.feko.generictabletoprpg.shared.common.domain.IUserPreferences
+import com.feko.generictabletoprpg.shared.getDatabaseBuilder
+import com.feko.generictabletoprpg.shared.getRoomDatabase
 import org.koin.core.module.dsl.singleOf
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.bind
@@ -31,13 +31,7 @@ import org.koin.dsl.module
 
 val commonModule = module {
     // Services
-    single {
-        Room.databaseBuilder(
-            get(),
-            GenericTabletopRpgDatabase::class.java,
-            "generic-tabletop-rpg.db"
-        ).build()
-    }
+    single { getRoomDatabase(getDatabaseBuilder(get())) }
 
     singleOf(::ParseEdnAsMapEdnJava) bind IParseEdnAsMap::class
     singleOf(::ProcessEdnMapEdnJava) bind IProcessEdnMap::class

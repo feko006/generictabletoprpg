@@ -5,13 +5,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.feko.generictabletoprpg.R
 import com.feko.generictabletoprpg.shared.features.io.domain.usecase.IImportAllUseCase
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class ImportViewModel(
     private val importAllUseCase: IImportAllUseCase
@@ -31,10 +29,7 @@ class ImportViewModel(
                 showToastAndResetScreen(R.string.error_reading_file_toast)
                 return@launch
             }
-            val result: Result<Boolean> =
-                withContext(Dispatchers.Default) {
-                    importAllUseCase.import(contents)
-                }
+            val result: Result<Boolean> = importAllUseCase.import(contents)
             if (result.isFailure) {
                 showToastAndResetScreen(R.string.failed_to_import_data_toast)
             } else {

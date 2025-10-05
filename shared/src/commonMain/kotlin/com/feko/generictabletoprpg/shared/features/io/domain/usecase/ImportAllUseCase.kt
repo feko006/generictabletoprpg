@@ -4,7 +4,7 @@ class ImportAllUseCase(
     private val orcbrewImportAllUseCase: IOrcbrewImportAllUseCase,
     private val jsonImportAllUseCase: IJsonImportAllUseCase
 ) : IImportAllUseCase {
-    override fun import(content: String): Result<Boolean> {
+    override suspend fun import(content: String): Result<Boolean> {
         val orcbrewImportResult = orcbrewImportAllUseCase.import(content)
         if (orcbrewImportResult.isSuccess) {
             return orcbrewImportResult

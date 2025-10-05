@@ -17,11 +17,11 @@ abstract class WeaponDao
         WeaponEntity.fromCoreModel(item)
 
     @Query("select id from weapons where name = :name")
-    abstract override fun getEntityIdByName(name: String): Long?
+    abstract override suspend fun getEntityIdByName(name: String): Long?
 
     @Query("select * from weapons order by name")
-    abstract override fun getAllSortedByNameInternal(): List<WeaponEntity>
+    abstract override suspend fun getAllSortedByNameInternal(): List<WeaponEntity>
 
     @Query("select * from weapons where id = :id")
-    abstract override fun getByIdInternal(id: Long): WeaponEntity
+    abstract override suspend fun getByIdInternal(id: Long): WeaponEntity
 }

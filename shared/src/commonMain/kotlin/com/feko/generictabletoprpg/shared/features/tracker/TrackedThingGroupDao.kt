@@ -17,15 +17,15 @@ abstract class TrackedThingGroupDao :
         item.toEntity()
 
     @Query("select * from tracked_thing_groups order by name")
-    abstract override fun getAllSortedByNameInternal(): List<TrackedThingGroupEntity>
+    abstract override suspend fun getAllSortedByNameInternal(): List<TrackedThingGroupEntity>
 
     @Query("select * from tracked_thing_groups where id = :id")
-    abstract override fun getByIdInternal(id: Long): TrackedThingGroupEntity
+    abstract override suspend fun getByIdInternal(id: Long): TrackedThingGroupEntity
 
     @Query("delete from tracked_thing_groups where id = :id")
-    abstract fun delete(id: Long)
+    abstract suspend fun delete(id: Long)
 
-    override fun getEntityId(entity: TrackedThingGroupEntity): Long? =
+    override suspend fun getEntityId(entity: TrackedThingGroupEntity): Long? =
         if (entity.id > 0) entity.id else null
 }
 

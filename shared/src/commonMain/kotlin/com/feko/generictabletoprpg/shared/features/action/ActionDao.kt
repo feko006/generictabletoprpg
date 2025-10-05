@@ -17,11 +17,11 @@ abstract class ActionDao
         ActionEntity.fromCoreModel(item)
 
     @Query("select id from actions where name = :name")
-    abstract override fun getEntityIdByName(name: String): Long?
+    abstract override suspend fun getEntityIdByName(name: String): Long?
 
     @Query("select * from actions order by name")
-    abstract override fun getAllSortedByNameInternal(): List<ActionEntity>
+    abstract override suspend fun getAllSortedByNameInternal(): List<ActionEntity>
 
     @Query("select * from actions where id = :id")
-    abstract override fun getByIdInternal(id: Long): ActionEntity
+    abstract override suspend fun getByIdInternal(id: Long): ActionEntity
 }

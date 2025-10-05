@@ -10,9 +10,8 @@ import com.feko.generictabletoprpg.shared.features.ammunition.Ammunition
 class OrcbrewImportAmmunitionsUseCase(
     private val processEdnMapPort: IProcessEdnMap,
     private val insertAmmunitionsPort: IInsertAllDao<Ammunition>
-
 ) : IOrcbrewImportAmmunitionsUseCase {
-    override fun import(sources: Map<Any, Any>): Result<Boolean> {
+    override suspend fun import(sources: Map<Any, Any>): Result<Boolean> {
         val ammunitionsToAdd = mutableListOf<Ammunition>()
         val exceptions = mutableListOf<Exception>()
         sources.forEach { source ->

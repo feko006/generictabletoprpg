@@ -80,7 +80,7 @@ open class OverviewViewModel<T : Any>(
         }
     }
 
-    open fun getAllItems(): List<T> = getAll!!.getAllSortedByName()
+    open suspend fun getAllItems(): List<T> = getAll!!.getAllSortedByName()
 
     fun searchStringUpdated(searchString: String) {
         _searchString.update { searchString }

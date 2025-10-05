@@ -79,22 +79,19 @@ class TrackerViewModel(
 
     init {
         viewModelScope.launch {
-            withContext(Dispatchers.IO) {
-                allItems = searchAllUseCase.getAllItems()
-                isShowingPreparedSpells.collect {
-                    _dialog.update {
-                        if (it !is ITrackerDialog.SpellListDialog) return@collect
-                        it.copy(isFilteringByPreparedSpells = isShowingPreparedSpells.value)
-                    }
+            allItems = searchAllUseCase.getAllItems()
+            isShowingPreparedSpells.collect {
+                _dialog.update {
+                    if (it !is ITrackerDialog.SpellListDialog) return@collect
+                    it.copy(isFilteringByPreparedSpells = isShowingPreparedSpells.value)
                 }
             }
         }
     }
 
-    override fun getAllItems(): List<TrackedThing> {
-        return trackedThingDao.getAllSortedByIndex(groupId)
+    override suspend fun getAllItems(): List<TrackedThing> =
+        trackedThingDao.getAllSortedByIndex(groupId)
             .onEach { it.serializedItem = it.getItem() }
-    }
 
     fun showCreateDialog(type: TrackedThing.Type) {
         viewModelScope.launch {
@@ -138,10 +135,8 @@ class TrackerViewModel(
         viewModelScope.launch {
             ensureNonEmptyName(trackedThing)
             if (trackedThing.id == 0L) {
-                withContext(Dispatchers.IO) {
-                    val id = trackedThingDao.insertOrUpdate(trackedThing)
-                    trackedThing.id = id
-                }
+                val id = trackedThingDao.insertOrUpdate(trackedThing)
+                trackedThing.id = id
                 addItem(trackedThing) {
                     if (it is TrackedThing)
                         it.index
@@ -151,9 +146,7 @@ class TrackerViewModel(
                 if (trackedThing.type == TrackedThing.Type.Health) {
                     trackedThing.temporaryHp = 0
                 }
-                withContext(Dispatchers.IO) {
-                    trackedThingDao.insertOrUpdate(trackedThing)
-                }
+                trackedThingDao.insertOrUpdate(trackedThing)
                 replaceItem(trackedThing)
             }
         }
@@ -167,9 +160,7 @@ class TrackerViewModel(
 
     fun deleteTrackedThing(trackedThing: TrackedThing) {
         viewModelScope.launch {
-            withContext(Dispatchers.IO) {
-                trackedThingDao.delete(trackedThing.id)
-            }
+            trackedThingDao.delete(trackedThing.id)
             removeItem(trackedThing)
             updateItemOrder()
         }
@@ -179,9 +170,7 @@ class TrackerViewModel(
         viewModelScope.launch {
             val copy = trackedThing.copy()
             copy.add(amount)
-            withContext(Dispatchers.IO) {
-                trackedThingDao.insertOrUpdate(copy)
-            }
+            trackedThingDao.insertOrUpdate(copy)
             replaceItem(copy)
         }
     }
@@ -190,9 +179,7 @@ class TrackerViewModel(
         viewModelScope.launch {
             val copy = trackedThing.copy()
             copy.subtract(amount)
-            withContext(Dispatchers.IO) {
-                trackedThingDao.insertOrUpdate(copy)
-            }
+            trackedThingDao.insertOrUpdate(copy)
             replaceItem(copy)
         }
     }
@@ -201,9 +188,7 @@ class TrackerViewModel(
         viewModelScope.launch {
             val copy = health.copy()
             copy.addTemporaryHp(amount)
-            withContext(Dispatchers.IO) {
-                trackedThingDao.insertOrUpdate(copy)
-            }
+            trackedThingDao.insertOrUpdate(copy)
             replaceItem(copy)
         }
     }
@@ -224,11 +209,9 @@ class TrackerViewModel(
                 (stats.serializedItem as StatsContainer).finalizeStats()
             stats.setItem(updatedStatsContainer)
             val isNewItem = stats.id <= 0
-            withContext(Dispatchers.IO) {
-                ensureNonEmptyName(stats)
-                val id = trackedThingDao.insertOrUpdate(stats)
-                stats.id = id
-            }
+            ensureNonEmptyName(stats)
+            val id = trackedThingDao.insertOrUpdate(stats)
+            stats.id = id
             if (isNewItem) {
                 addItem(stats) {
                     if (it is TrackedThing)
@@ -360,9 +343,7 @@ class TrackerViewModel(
             if (itemCopy.type == TrackedThing.Type.Health) {
                 itemCopy.temporaryHp = 0
             }
-            withContext(Dispatchers.IO) {
-                trackedThingDao.insertOrUpdate(itemCopy)
-            }
+            trackedThingDao.insertOrUpdate(itemCopy)
             replaceItem(itemCopy)
         }
     }
@@ -376,9 +357,7 @@ class TrackerViewModel(
     private suspend fun reduceByOneSuspending(item: TrackedThing) {
         val itemCopy = item.copy()
         itemCopy.subtract("1")
-        withContext(Dispatchers.IO) {
-            trackedThingDao.insertOrUpdate(itemCopy)
-        }
+        trackedThingDao.insertOrUpdate(itemCopy)
         replaceItem(itemCopy)
     }
 
@@ -386,9 +365,7 @@ class TrackerViewModel(
         viewModelScope.launch {
             val itemCopy = item.copy()
             itemCopy.add("1")
-            withContext(Dispatchers.IO) {
-                trackedThingDao.insertOrUpdate(itemCopy)
-            }
+            trackedThingDao.insertOrUpdate(itemCopy)
             replaceItem(itemCopy)
         }
     }
@@ -441,10 +418,8 @@ class TrackerViewModel(
                         }
                     }
             _items.emit(newList)
-            withContext(Dispatchers.IO) {
-                newList.forEach {
-                    trackedThingDao.insertOrUpdate(it)
-                }
+            newList.forEach {
+                trackedThingDao.insertOrUpdate(it)
             }
         }
     }
@@ -464,9 +439,7 @@ class TrackerViewModel(
 
     fun addSpellToList(spellId: Long) {
         viewModelScope.launch {
-            val spellToAdd = withContext(Dispatchers.IO) {
-                spellDao.getById(spellId)
-            }
+            val spellToAdd = spellDao.getById(spellId)
             val spellList = requireNotNull(spellListBeingAddedTo).copy()
 
             @Suppress("UNCHECKED_CAST")
@@ -489,9 +462,7 @@ class TrackerViewModel(
                             }
                         }
                 spellList.setItem(sortedSpells)
-                withContext(Dispatchers.IO) {
-                    trackedThingDao.insertOrUpdate(spellList)
-                }
+                trackedThingDao.insertOrUpdate(spellList)
                 replaceItem(spellList)
                 _toast.showMessage(R.string.spell_successfully_added_to_list)
             }
@@ -516,7 +487,7 @@ class TrackerViewModel(
                 (spellList.serializedItem as List<SpellListEntry>).minus(spellListEntry)
             val spellListCopy = spellList.copy()
             spellListCopy.setItem(serializedItem)
-            withContext(Dispatchers.IO) { trackedThingDao.insertOrUpdate(spellListCopy) }
+            trackedThingDao.insertOrUpdate(spellListCopy)
             replaceItem(spellListCopy)
             if (serializedItem.isEmpty()) {
                 dismissDialog()
@@ -615,9 +586,7 @@ class TrackerViewModel(
             val spellListCopy = spellList.copy()
             spellListEntry.isPrepared = isPrepared
             spellListCopy.setItem(spellListCopy.serializedItem)
-            withContext(Dispatchers.IO) {
-                trackedThingDao.insertOrUpdate(spellListCopy)
-            }
+            trackedThingDao.insertOrUpdate(spellListCopy)
             replaceItem(spellListCopy)
             _dialog.update {
                 if (it !is ITrackerDialog.SpellListDialog) return@launch

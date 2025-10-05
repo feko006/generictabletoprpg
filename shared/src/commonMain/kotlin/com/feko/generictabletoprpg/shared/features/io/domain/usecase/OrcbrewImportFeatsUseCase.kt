@@ -11,9 +11,7 @@ class OrcbrewImportFeatsUseCase(
     private val processEdnMapPort: IProcessEdnMap,
     private val insertFeatsPort: IInsertAllDao<Feat>
 ) : IOrcbrewImportFeatsUseCase {
-    override fun import(
-        sources: Map<Any, Any>
-    ): Result<Boolean> {
+    override suspend fun import(sources: Map<Any, Any>): Result<Boolean> {
         val featsToAdd = mutableListOf<Feat>()
         val exceptions = mutableListOf<Exception>()
         sources.forEach { source ->

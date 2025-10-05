@@ -11,7 +11,7 @@ class LoadBaseContentUseCase(
     private val orcbrewImportAllUseCase: IOrcbrewImportAllUseCase,
     private val jsonImportAllUseCase: IJsonImportAllUseCase
 ) : ILoadBaseContentUseCase {
-    override fun invoke() {
+    override suspend fun invoke() {
         val latestBaseContentLoaded =
             userPreferences.getIntOrDefault(
                 LOADED_BASE_CONTENT_VERSION_KEY,

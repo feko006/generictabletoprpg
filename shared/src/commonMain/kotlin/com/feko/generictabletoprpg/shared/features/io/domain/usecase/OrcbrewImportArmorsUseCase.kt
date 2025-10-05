@@ -10,9 +10,8 @@ import com.feko.generictabletoprpg.shared.features.armor.Armor
 class OrcbrewImportArmorsUseCase(
     private val processEdnMapPort: IProcessEdnMap,
     private val insertArmorsPort: IInsertAllDao<Armor>
-
 ) : IOrcbrewImportArmorsUseCase {
-    override fun import(sources: Map<Any, Any>): Result<Boolean> {
+    override suspend fun import(sources: Map<Any, Any>): Result<Boolean> {
         val armorsToAdd = mutableListOf<Armor>()
         val exceptions = mutableListOf<Exception>()
         sources.forEach { source ->

@@ -12,7 +12,7 @@ class OrcbrewImportAllUseCase(
     private val orcbrewImportAmmunitionsUseCase: IOrcbrewImportAmmunitionsUseCase,
     private val orcbrewImportArmorsUseCase: IOrcbrewImportArmorsUseCase
 ) : IOrcbrewImportAllUseCase {
-    override fun import(content: String): Result<Boolean> {
+    override suspend fun import(content: String): Result<Boolean> {
         try {
             val safeFileContents =
                 if (content[0] != '\ufeff') {

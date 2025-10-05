@@ -38,7 +38,7 @@ abstract class DetailsViewModel<T>(
         }
     }
 
-    open fun getItemById(id: Long): T = getById.getById(id)
+    open suspend fun getItemById(id: Long): T = getById.getById(id)
 
     sealed class DetailsScreenState {
         data object Loading : DetailsScreenState()

@@ -9,11 +9,6 @@ plugins {
     alias(libs.plugins.jetbrains.kotlin.serialization)
 }
 
-room {
-    println("$projectDir/schemas")
-    schemaDirectory("$projectDir/schemas")
-}
-
 kotlin {
     // Target declarations - add or remove as needed below. These define
     // which platforms this KMP module supports.
@@ -34,11 +29,7 @@ kotlin {
         }
     }
 
-//    linuxX64 {
-//        binaries.executable {
-//            entryPoint = "main"
-//        }
-//    }
+    jvm("desktop")
 
     // For iOS targets, this is also where you should
     // configure native binary output. For more information, see:
@@ -55,6 +46,8 @@ kotlin {
                 implementation(libs.kotlin.stdlib)
                 api(libs.jetbrains.kotlinx.serialization.json)
                 implementation(compose.runtime)
+                implementation(compose.foundation)
+                implementation(compose.material)
                 api(compose.components.resources)
                 api(libs.androidx.room.runtime)
                 api(libs.androidx.sqlite.bundled)
@@ -73,11 +66,10 @@ kotlin {
             }
         }
 
-//        linuxMain {
-//            dependencies {
-//                implementation(compose.desktop.currentOs)
-//            }
-//        }
+        val desktopMain by getting
+        desktopMain.dependencies {
+            implementation(compose.desktop.common)
+        }
 
         getByName("androidDeviceTest") {
             dependencies {
@@ -90,6 +82,10 @@ kotlin {
 
 }
 
+room {
+    schemaDirectory("$projectDir/schemas")
+}
+
 compose.resources {
     publicResClass = true
     packageOfResClass = "com.feko.generictabletoprpg"
@@ -98,5 +94,5 @@ compose.resources {
 
 dependencies {
     add("kspAndroid", libs.androidx.room.compiler)
-//    add("kspLinuxX64", libs.androidx.room.compiler)
+    add("kspDesktop", libs.androidx.room.compiler)
 }

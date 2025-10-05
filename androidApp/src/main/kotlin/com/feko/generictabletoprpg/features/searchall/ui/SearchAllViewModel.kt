@@ -24,7 +24,7 @@ class SearchAllViewModel(
         _isFilterBottomSheetVisible.update { true }
     }
 
-    override fun getAllItems(): List<Any> = searchAllUseCase.getAllItems()
+    override suspend fun getAllItems(): List<Any> = searchAllUseCase.getAllItems()
 
     override fun getFilterFlow(): StateFlow<Filter?> = activeFilter
 

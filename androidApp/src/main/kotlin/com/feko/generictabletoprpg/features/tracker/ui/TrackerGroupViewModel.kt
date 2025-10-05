@@ -60,15 +60,11 @@ class TrackerGroupViewModel(
         viewModelScope.launch {
             val isNewEntry = item.id == 0L
             if (isNewEntry) {
-                withContext(Dispatchers.IO) {
-                    val trackedThingId = trackedThingGroupDao.insert(item.toEntity())
-                    item.id = trackedThingId
-                }
+                val trackedThingId = trackedThingGroupDao.insert(item.toEntity())
+                item.id = trackedThingId
                 addItem(item) { it.name }
             } else {
-                withContext(Dispatchers.IO) {
-                    trackedThingGroupDao.update(item.toEntity())
-                }
+                trackedThingGroupDao.update(item.toEntity())
                 replaceItem(item)
             }
         }
