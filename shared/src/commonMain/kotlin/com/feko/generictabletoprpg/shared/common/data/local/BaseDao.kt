@@ -5,6 +5,7 @@ import androidx.room.Update
 import com.feko.generictabletoprpg.shared.common.domain.model.ICoreConvertible
 import com.feko.generictabletoprpg.shared.common.domain.model.IMutableIdentifiable
 import com.feko.generictabletoprpg.shared.common.domain.model.INamed
+import com.feko.generictabletoprpg.shared.logger
 
 abstract class BaseDao<TEntity, TCore> :
     IInsertAllDao<TCore>,
@@ -29,8 +30,7 @@ abstract class BaseDao<TEntity, TCore> :
             try {
                 insertOrUpdate(item)
             } catch (e: Exception) {
-                // TODO
-//                Timber.Forest.e(e, "Saving entity with name ${item.name} failed.")
+                logger.error(e) { "Saving entity with name ${item.name} failed." }
                 errors.add(e)
             }
         }

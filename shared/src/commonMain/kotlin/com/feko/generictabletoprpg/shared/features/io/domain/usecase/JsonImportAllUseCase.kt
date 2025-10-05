@@ -9,6 +9,7 @@ import com.feko.generictabletoprpg.shared.features.disease.Disease
 import com.feko.generictabletoprpg.shared.features.io.domain.model.AppModel
 import com.feko.generictabletoprpg.shared.features.tracker.model.TrackedThing
 import com.feko.generictabletoprpg.shared.features.tracker.model.TrackedThingGroup
+import com.feko.generictabletoprpg.shared.logger
 
 //import timber.log.Timber
 
@@ -42,8 +43,7 @@ class JsonImportAllUseCase(
                 Result.success(currentResult && nextResult)
             }
         } catch (e: Exception) {
-            // TODO
-//            Timber.e(e, "Failed to process file")
+            logger.error(e) { "Failed to process file" }
             return Result.failure(e)
         }
     }

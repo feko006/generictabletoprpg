@@ -1,11 +1,11 @@
 package com.feko.generictabletoprpg.common.ui.viewmodel
 
 import com.feko.generictabletoprpg.R
+import com.feko.generictabletoprpg.shared.logger
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import timber.log.Timber
 import java.io.OutputStream
 
 abstract class ExportSubViewModel<T> : IExportSubViewModel<T> {
@@ -25,7 +25,7 @@ abstract class ExportSubViewModel<T> : IExportSubViewModel<T> {
             try {
                 exportDataInternal(outputStream)
                 withContext(Dispatchers.Main) {
-                    Timber.d("Export successful.")
+                    logger.debug { "Export successful." }
                     _toast.showMessage(R.string.export_successful)
                 }
             } catch (e: Exception) {
@@ -39,7 +39,7 @@ abstract class ExportSubViewModel<T> : IExportSubViewModel<T> {
 
     override fun notifyFailed(e: Exception) {
         CoroutineScope(Dispatchers.Main).launch {
-            Timber.e(e, "Export failed.")
+            logger.error(e) { "Export failed." }
             _toast.showMessage(R.string.export_failed)
             exportState = ExportState.None
         }

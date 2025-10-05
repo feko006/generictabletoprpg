@@ -50,7 +50,8 @@ kotlin {
                 implementation(compose.material)
                 api(compose.components.resources)
                 api(libs.androidx.room.runtime)
-                api(libs.androidx.sqlite.bundled)
+                implementation(libs.androidx.sqlite.bundled)
+                api(libs.kotlin.logging)
             }
         }
 

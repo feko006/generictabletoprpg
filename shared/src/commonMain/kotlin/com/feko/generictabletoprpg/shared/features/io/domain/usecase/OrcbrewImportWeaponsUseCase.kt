@@ -3,8 +3,7 @@ package com.feko.generictabletoprpg.shared.features.io.domain.usecase
 import com.feko.generictabletoprpg.shared.common.data.local.IInsertAllDao
 import com.feko.generictabletoprpg.shared.common.domain.IProcessEdnMap
 import com.feko.generictabletoprpg.shared.features.weapon.Weapon
-
-//import timber.log.Timber
+import com.feko.generictabletoprpg.shared.logger
 
 @Suppress("UNCHECKED_CAST")
 class OrcbrewImportWeaponsUseCase(
@@ -30,8 +29,7 @@ class OrcbrewImportWeaponsUseCase(
                         )
                         weaponsToAdd.add(weaponToAdd)
                     } catch (e: Exception) {
-                        // TODO
-//                        Timber.e(e, "Failed to process weapon named '${weapon.key}.")
+                        logger.error(e) { "Failed to process weapon named '${weapon.key}." }
                         exceptions.add(e)
                     }
                 }

@@ -3,8 +3,7 @@ package com.feko.generictabletoprpg.shared.features.io.domain.usecase
 import com.feko.generictabletoprpg.shared.common.data.local.IInsertAllDao
 import com.feko.generictabletoprpg.shared.common.domain.IProcessEdnMap
 import com.feko.generictabletoprpg.shared.features.ammunition.Ammunition
-
-//import timber.log.Timber
+import com.feko.generictabletoprpg.shared.logger
 
 @Suppress("UNCHECKED_CAST")
 class OrcbrewImportAmmunitionsUseCase(
@@ -30,8 +29,7 @@ class OrcbrewImportAmmunitionsUseCase(
                         )
                         ammunitionsToAdd.add(ammunitionToAdd)
                     } catch (e: Exception) {
-                        // TODO
-//                        Timber.e(e, "Failed to process ammunition named '${ammunition.key}.")
+                        logger.error(e) { "Failed to process ammunition named '${ammunition.key}." }
                         exceptions.add(e)
                     }
                 }

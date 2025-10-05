@@ -3,8 +3,7 @@ package com.feko.generictabletoprpg.shared.features.io.domain.usecase
 import com.feko.generictabletoprpg.shared.common.data.local.IInsertAllDao
 import com.feko.generictabletoprpg.shared.common.domain.IProcessEdnMap
 import com.feko.generictabletoprpg.shared.features.armor.Armor
-
-//import timber.log.Timber
+import com.feko.generictabletoprpg.shared.logger
 
 @Suppress("UNCHECKED_CAST")
 class OrcbrewImportArmorsUseCase(
@@ -30,8 +29,7 @@ class OrcbrewImportArmorsUseCase(
                         )
                         armorsToAdd.add(armorToAdd)
                     } catch (e: Exception) {
-                        // TODO
-//                        Timber.e(e, "Failed to process armor named '${armor.key}.")
+                        logger.error(e) { "Failed to process armor named '${armor.key}." }
                         exceptions.add(e)
                     }
                 }

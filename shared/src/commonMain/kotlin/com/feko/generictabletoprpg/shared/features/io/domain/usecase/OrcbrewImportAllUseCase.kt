@@ -1,8 +1,7 @@
 package com.feko.generictabletoprpg.shared.features.io.domain.usecase
 
 import com.feko.generictabletoprpg.shared.common.domain.IParseEdnAsMap
-
-//import timber.log.Timber
+import com.feko.generictabletoprpg.shared.logger
 
 class OrcbrewImportAllUseCase(
     private val parseEdnAsMapPort: IParseEdnAsMap,
@@ -42,8 +41,7 @@ class OrcbrewImportAllUseCase(
                 }
             return Result.success(everythingImported)
         } catch (e: Exception) {
-            // TODO
-//            Timber.e(e, "Failed to process file")
+            logger.error(e) { "Failed to process file" }
             return Result.failure(e)
         }
     }

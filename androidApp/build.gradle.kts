@@ -87,7 +87,6 @@ dependencies {
     implementation(libs.fuzzywuzzy.kotlin)
     implementation(libs.reorderable)
     implementation(libs.insert.koin)
-    implementation(libs.jakewharton.timber)
     implementation(libs.bundles.androidx.navigation3)
     implementation(project(":shared"))
 

@@ -3,8 +3,7 @@ package com.feko.generictabletoprpg.shared.features.io.domain.usecase
 import com.feko.generictabletoprpg.shared.common.data.local.IInsertAllDao
 import com.feko.generictabletoprpg.shared.common.domain.IProcessEdnMap
 import com.feko.generictabletoprpg.shared.features.spell.Spell
-
-//import timber.log.Timber
+import com.feko.generictabletoprpg.shared.logger
 
 @Suppress("UNCHECKED_CAST")
 class OrcbrewImportSpellsUseCase(
@@ -30,8 +29,7 @@ class OrcbrewImportSpellsUseCase(
                         )
                         spellsToAdd.add(spellToAdd)
                     } catch (e: Exception) {
-                        // TODO
-//                        Timber.e(e, "Failed to process spell named '${spell.key}.")
+                        logger.error(e) { "Failed to process spell named '${spell.key}." }
                         exceptions.add(e)
                     }
                 }

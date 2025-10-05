@@ -3,8 +3,7 @@ package com.feko.generictabletoprpg.shared.features.io.domain.usecase
 import com.feko.generictabletoprpg.shared.common.data.local.IInsertAllDao
 import com.feko.generictabletoprpg.shared.common.domain.IProcessEdnMap
 import com.feko.generictabletoprpg.shared.features.feat.Feat
-
-//import timber.log.Timber
+import com.feko.generictabletoprpg.shared.logger
 
 @Suppress("UNCHECKED_CAST")
 class OrcbrewImportFeatsUseCase(
@@ -30,8 +29,7 @@ class OrcbrewImportFeatsUseCase(
                         )
                         featsToAdd.add(featToAdd)
                     } catch (e: Exception) {
-                        // TODO
-//                        Timber.e(e, "Failed to process feat named '${feat.key}.")
+                        logger.error(e) { "Failed to process feat named '${feat.key}." }
                         exceptions.add(e)
                     }
                 }
