@@ -27,7 +27,8 @@ import com.feko.generictabletoprpg.common.ui.components.GttrpgTopAppBar
 import com.feko.generictabletoprpg.common.ui.components.ToastMessage
 import com.feko.generictabletoprpg.encounters
 import com.feko.generictabletoprpg.shared.common.domain.model.IText.StringResourceText.Companion.asText
-import org.koin.androidx.compose.koinViewModel
+import com.feko.generictabletoprpg.shared.features.encounter.ui.EncounterViewModel
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun EncounterScreen(onNavigationIconClick: () -> Unit) {

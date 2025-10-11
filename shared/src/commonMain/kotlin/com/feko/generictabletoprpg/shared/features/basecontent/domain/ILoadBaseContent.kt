@@ -1,6 +1,6 @@
 package com.feko.generictabletoprpg.shared.features.basecontent.domain
 
 interface ILoadBaseContent {
-    fun loadOrcbrewBaseContent(): String
-    fun loadJsonBaseContent(): String
+    suspend fun loadOrcbrewBaseContent(): String
+    suspend fun loadJsonBaseContent(): String
 }

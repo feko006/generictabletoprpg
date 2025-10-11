@@ -8,10 +8,10 @@ import kotlinx.coroutines.IO
 
 const val databaseName = "generic-tabletop-rpg.db"
 
-fun getRoomDatabase(
-    builder: RoomDatabase.Builder<GenericTabletopRpgDatabase>
-): GenericTabletopRpgDatabase {
-    return builder
+expect fun getDatabaseBuilder(): RoomDatabase.Builder<GenericTabletopRpgDatabase>
+
+fun getRoomDatabase(): GenericTabletopRpgDatabase {
+    return getDatabaseBuilder()
         .setDriver(BundledSQLiteDriver())
         .setQueryCoroutineContext(Dispatchers.IO)
         .build()

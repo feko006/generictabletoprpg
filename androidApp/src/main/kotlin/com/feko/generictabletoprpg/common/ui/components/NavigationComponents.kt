@@ -17,7 +17,6 @@ import androidx.navigation3.ui.NavDisplay
 import androidx.navigation3.ui.rememberSceneSetupNavEntryDecorator
 import androidx.window.core.layout.WindowSizeClass
 import com.feko.generictabletoprpg.common.ui.viewmodel.AppViewModel
-import com.feko.generictabletoprpg.common.ui.viewmodel.ResultViewModel
 import com.feko.generictabletoprpg.features.action.ui.ActionDetailsScreen
 import com.feko.generictabletoprpg.features.ammunition.ui.AmmunitionDetailsScreen
 import com.feko.generictabletoprpg.features.armor.ui.ArmorDetailsScreen
@@ -33,6 +32,7 @@ import com.feko.generictabletoprpg.features.tracker.ui.TrackerGroupsScreen
 import com.feko.generictabletoprpg.features.tracker.ui.TrackerScreen
 import com.feko.generictabletoprpg.features.weapon.ui.WeaponDetailsScreen
 import com.feko.generictabletoprpg.shared.common.domain.model.IIdentifiable
+import com.feko.generictabletoprpg.shared.common.ui.viewmodel.ResultViewModel
 import com.feko.generictabletoprpg.shared.features.action.Action
 import com.feko.generictabletoprpg.shared.features.ammunition.Ammunition
 import com.feko.generictabletoprpg.shared.features.armor.Armor

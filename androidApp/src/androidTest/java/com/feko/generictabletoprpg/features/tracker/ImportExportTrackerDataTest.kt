@@ -5,15 +5,16 @@ import androidx.annotation.RawRes
 import androidx.room.Room
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
-import com.feko.generictabletoprpg.features.tracker.ui.TrackerGroupExportSubViewModel
 import com.feko.generictabletoprpg.shared.common.data.local.GenericTabletopRpgDatabase
 import com.feko.generictabletoprpg.shared.features.io.domain.usecase.JsonImportAllUseCase
 import com.feko.generictabletoprpg.shared.features.tracker.TrackedThingDao
 import com.feko.generictabletoprpg.shared.features.tracker.TrackedThingGroupDao
 import com.feko.generictabletoprpg.shared.features.tracker.model.TrackedThing
 import com.feko.generictabletoprpg.shared.features.tracker.model.TrackedThingGroup
+import com.feko.generictabletoprpg.shared.features.tracker.ui.TrackerGroupExportSubViewModel
 import com.feko.generictabletoprpg.test.R
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
@@ -64,7 +65,7 @@ class ImportExportTrackerDataTest {
     }
 
     @Test
-    fun importAbilityFromResource() {
+    fun importAbilityFromResource() = runBlocking {
         // Given
         val data = getRawResourceData(R.raw.import_ability)
         val expected =
@@ -81,7 +82,7 @@ class ImportExportTrackerDataTest {
     }
 
     @Test
-    fun importHealthFromResource() {
+    fun importHealthFromResource() = runBlocking {
         // Given
         val data = getRawResourceData(R.raw.import_health)
         val expected = TrackedThing(
@@ -105,7 +106,7 @@ class ImportExportTrackerDataTest {
     }
 
     @Test
-    fun importNumberFromResource() {
+    fun importNumberFromResource() = runBlocking {
         // Given
         val data = getRawResourceData(R.raw.import_number)
         val expected =
@@ -122,7 +123,7 @@ class ImportExportTrackerDataTest {
     }
 
     @Test
-    fun importPercentageFromResource() {
+    fun importPercentageFromResource() = runBlocking {
         // Given
         val data = getRawResourceData(R.raw.import_percentage)
 
@@ -146,7 +147,7 @@ class ImportExportTrackerDataTest {
     }
 
     @Test
-    fun importSpellSlotFromResource() {
+    fun importSpellSlotFromResource() = runBlocking {
         // Given
         val data = getRawResourceData(R.raw.import_spell_slot)
         val expected = TrackedThing(
@@ -170,7 +171,7 @@ class ImportExportTrackerDataTest {
     }
 
     @Test
-    fun importSpellListFromResource() {
+    fun importSpellListFromResource() = runBlocking {
         // Given
         val data = getRawResourceData(R.raw.import_spell_list)
         val expected = TrackedThing(0L, "spell_list", "value", TrackedThing.Type.SpellList, 6)
@@ -186,7 +187,7 @@ class ImportExportTrackerDataTest {
     }
 
     @Test
-    fun importStatsFromResource() {
+    fun importStatsFromResource() = runBlocking {
         // Given
         val data = getRawResourceData(R.raw.import_stats)
         val expected = TrackedThing(0L, "stats", "value", TrackedThing.Type.FiveEStats, 7)
@@ -202,7 +203,7 @@ class ImportExportTrackerDataTest {
     }
 
     @Test
-    fun importTextFromResource() {
+    fun importTextFromResource() = runBlocking {
         // Given
         val data = getRawResourceData(R.raw.import_text)
         val expected = TrackedThing(0L, "text", "Text value", TrackedThing.Type.Text, 4)
@@ -218,7 +219,7 @@ class ImportExportTrackerDataTest {
     }
 
     @Test
-    fun importHitDiceFromResource() {
+    fun importHitDiceFromResource() = runBlocking {
         // Given
         val data = getRawResourceData(R.raw.import_hit_dice)
         val expected =

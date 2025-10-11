@@ -30,6 +30,8 @@ import com.feko.generictabletoprpg.common.ui.components.IInputFieldValueConverte
 import com.feko.generictabletoprpg.common.ui.components.NumberDialogInputField
 import com.feko.generictabletoprpg.common.ui.components.SelectFromListDialog
 import com.feko.generictabletoprpg.shared.features.encounter.InitiativeEntryEntity
+import com.feko.generictabletoprpg.shared.features.encounter.ui.EncounterViewModel
+import com.feko.generictabletoprpg.shared.features.encounter.ui.IEncounterDialog
 
 
 @Composable

@@ -54,6 +54,9 @@ import com.feko.generictabletoprpg.shared.features.tracker.model.TrackedThing
 import com.feko.generictabletoprpg.shared.features.tracker.model.cantripSpellsCount
 import com.feko.generictabletoprpg.shared.features.tracker.model.filterPreparedAndCantrips
 import com.feko.generictabletoprpg.shared.features.tracker.model.preparedSpellsCount
+import com.feko.generictabletoprpg.shared.features.tracker.ui.ISpellListDialogDialogs
+import com.feko.generictabletoprpg.shared.features.tracker.ui.ITrackerDialog
+import com.feko.generictabletoprpg.shared.features.tracker.ui.TrackerViewModel
 import kotlinx.coroutines.launch
 
 @Composable
@@ -82,18 +85,18 @@ fun SpellListDialogWithViewModel(
     when (dialog.secondaryDialog) {
         is ISpellListDialogDialogs.SelectSpellSlotDialog ->
             SelectSpellSlotLevelToCastDialog(
-                dialog.secondaryDialog,
+                dialog.secondaryDialog as ISpellListDialogDialogs.SelectSpellSlotDialog,
                 viewModel::dismissSpellListSecondaryDialog
             ) { viewModel.castSpell(it) }
 
         is ISpellListDialogDialogs.ConfirmSpellRemovalDialog ->
             ConfirmSpellRemovalFromListDialog(
-                dialog.secondaryDialog,
+                dialog.secondaryDialog as ISpellListDialogDialogs.ConfirmSpellRemovalDialog,
                 viewModel::dismissSpellListSecondaryDialog
             ) {
                 viewModel.removeSpellFromSpellList(
                     dialog.spellList,
-                    dialog.secondaryDialog.spellListEntry
+                    (dialog.secondaryDialog as ISpellListDialogDialogs.ConfirmSpellRemovalDialog).spellListEntry
                 )
             }
 
@@ -126,13 +129,13 @@ private fun SpellListDialog(
                 val coroutineScope = rememberCoroutineScope()
                 Row {
                     if (spellListState.canScrollBackward) {
-                    IconButton(
-                        onClick = {
-                            coroutineScope.launch {
-                                spellListState.animateScrollToItem(0)
+                        IconButton(
+                            onClick = {
+                                coroutineScope.launch {
+                                    spellListState.animateScrollToItem(0)
+                                }
                             }
-                        }
-                    ) { Icon(painterResource(R.drawable.vertical_align_top), "") }
+                        ) { Icon(painterResource(R.drawable.vertical_align_top), "") }
                     }
                     if (spellListState.canScrollForward) {
                         IconButton(

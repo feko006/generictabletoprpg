@@ -34,7 +34,8 @@ import com.feko.generictabletoprpg.common.ui.theme.LocalDimens
 import com.feko.generictabletoprpg.common.ui.viewmodel.AppViewModel
 import com.feko.generictabletoprpg.import_title
 import com.feko.generictabletoprpg.shared.common.domain.model.IText.StringResourceText.Companion.asText
-import org.koin.androidx.compose.koinViewModel
+import com.feko.generictabletoprpg.shared.features.io.ui.ImportViewModel
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun ImportScreen(
@@ -70,12 +71,12 @@ fun ImportScreen(
                     viewModel.fileSelected(contents)
                 }
             val screenState by viewModel.screenState.collectAsState()
-            val toastMessageResource by viewModel.toastMessage.collectAsState(0)
-            if (toastMessageResource != 0) {
+            val toastMessageResource by viewModel.toastMessage.collectAsState(null)
+            if (toastMessageResource != null) {
                 Toast
                     .makeText(
                         LocalContext.current,
-                        toastMessageResource,
+                        org.jetbrains.compose.resources.stringResource(toastMessageResource!!),
                         Toast.LENGTH_SHORT
                     )
                     .show()

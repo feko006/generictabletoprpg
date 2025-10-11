@@ -18,14 +18,15 @@ import com.feko.generictabletoprpg.common.ui.components.GttrpgTopAppBar
 import com.feko.generictabletoprpg.common.ui.components.OverviewListItem
 import com.feko.generictabletoprpg.common.ui.components.SearchableReorderableLazyList
 import com.feko.generictabletoprpg.common.ui.components.ToastMessage
-import com.feko.generictabletoprpg.common.ui.viewmodel.ResultViewModel
 import com.feko.generictabletoprpg.features.searchall.ui.getUniqueListItemKey
 import com.feko.generictabletoprpg.search_everywhere
 import com.feko.generictabletoprpg.shared.common.domain.model.IText.StringResourceText.Companion.asText
 import com.feko.generictabletoprpg.shared.common.domain.model.IText.StringText.Companion.asText
+import com.feko.generictabletoprpg.shared.common.ui.viewmodel.ResultViewModel
 import com.feko.generictabletoprpg.shared.features.spell.Spell
 import com.feko.generictabletoprpg.shared.features.tracker.model.TrackedThing
-import org.koin.androidx.compose.koinViewModel
+import com.feko.generictabletoprpg.shared.features.tracker.ui.TrackerViewModel
+import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parameterSetOf
 import sh.calvin.reorderable.ReorderableCollectionItemScope
 

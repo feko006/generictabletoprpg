@@ -79,13 +79,10 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.document.file)
     implementation(libs.androidx.lifecycle.runtime.ktx)
-    implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.material.icons.extended)
     implementation(libs.androidx.material3)
     implementation(libs.androidx.material3.adaptive)
-    implementation(libs.fuzzywuzzy.kotlin)
     implementation(libs.reorderable)
-    implementation(libs.insert.koin)
     implementation(libs.bundles.androidx.navigation3)
     implementation(project(":shared"))
 

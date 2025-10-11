@@ -10,7 +10,8 @@ import com.feko.generictabletoprpg.common.ui.components.TextWithLabel
 import com.feko.generictabletoprpg.condition_details_title
 import com.feko.generictabletoprpg.shared.common.domain.model.IText.StringResourceText.Companion.asText
 import com.feko.generictabletoprpg.shared.features.condition.Condition
-import org.koin.androidx.compose.koinViewModel
+import com.feko.generictabletoprpg.shared.features.condition.ui.ConditionDetailsViewModel
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun ConditionDetailsScreen(

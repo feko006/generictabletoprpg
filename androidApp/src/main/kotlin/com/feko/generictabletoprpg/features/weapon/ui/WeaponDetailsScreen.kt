@@ -7,8 +7,9 @@ import com.feko.generictabletoprpg.common.ui.components.DetailsScreen
 import com.feko.generictabletoprpg.common.ui.components.TextWithLabel
 import com.feko.generictabletoprpg.shared.common.domain.model.IText.StringResourceText.Companion.asText
 import com.feko.generictabletoprpg.shared.features.weapon.Weapon
+import com.feko.generictabletoprpg.shared.features.weapon.ui.WeaponDetailsViewModel
 import com.feko.generictabletoprpg.weapon_details_title
-import org.koin.androidx.compose.koinViewModel
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun WeaponDetailsScreen(

@@ -32,6 +32,8 @@ import com.feko.generictabletoprpg.common.ui.components.GttrpgContextMenu
 import com.feko.generictabletoprpg.shared.common.domain.model.INamed
 import com.feko.generictabletoprpg.shared.common.domain.model.IText
 import com.feko.generictabletoprpg.shared.features.tracker.model.TrackedThingGroup
+import com.feko.generictabletoprpg.shared.features.tracker.ui.ITrackerGroupDialog
+import com.feko.generictabletoprpg.shared.features.tracker.ui.TrackerGroupViewModel
 
 @Composable
 fun TrackerGroupsAlertDialog(

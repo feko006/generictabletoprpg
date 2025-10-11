@@ -1,13 +1,13 @@
 package com.feko.generictabletoprpg.features.spell.ui
 
 import androidx.compose.runtime.Composable
-import com.feko.generictabletoprpg.R
 import com.feko.generictabletoprpg.Res
-import com.feko.generictabletoprpg.shared.common.domain.model.IText.StringResourceText.Companion.asText
 import com.feko.generictabletoprpg.common.ui.components.DetailsScreen
+import com.feko.generictabletoprpg.shared.common.domain.model.IText.StringResourceText.Companion.asText
 import com.feko.generictabletoprpg.shared.features.spell.Spell
+import com.feko.generictabletoprpg.shared.features.spell.ui.SpellDetailsViewModel
 import com.feko.generictabletoprpg.spell_details_title
-import org.koin.androidx.compose.koinViewModel
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun SpellDetailsScreen(

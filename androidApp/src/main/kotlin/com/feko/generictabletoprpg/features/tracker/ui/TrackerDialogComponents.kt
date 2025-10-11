@@ -60,6 +60,8 @@ import com.feko.generictabletoprpg.shared.features.tracker.model.isLevelValid
 import com.feko.generictabletoprpg.shared.features.tracker.model.isValueValid
 import com.feko.generictabletoprpg.shared.features.tracker.model.setNewValue
 import com.feko.generictabletoprpg.shared.features.tracker.model.validate
+import com.feko.generictabletoprpg.shared.features.tracker.ui.ITrackerDialog
+import com.feko.generictabletoprpg.shared.features.tracker.ui.TrackerViewModel
 import com.feko.generictabletoprpg.spellcasting_modifier
 
 @Composable

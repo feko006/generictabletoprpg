@@ -53,6 +53,10 @@ kotlin {
                 implementation(libs.androidx.sqlite.bundled)
                 api(libs.kotlin.logging)
                 implementation(libs.bpsm.edn.java)
+                implementation(libs.lifecycle.viewmodel.compose)
+                api(libs.koin.compose.viewmodel)
+                implementation(libs.fuzzywuzzy.kotlin)
+                implementation(libs.multiplatform.settings)
             }
         }
 

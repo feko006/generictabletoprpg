@@ -28,9 +28,10 @@ import com.feko.generictabletoprpg.shared.common.domain.model.IText.StringResour
 import com.feko.generictabletoprpg.shared.common.domain.model.IText.StringText.Companion.asText
 import com.feko.generictabletoprpg.shared.features.filter.Filter
 import com.feko.generictabletoprpg.shared.features.filter.SpellFilter
+import com.feko.generictabletoprpg.shared.features.filter.ui.SpellFilterViewModel
 import com.feko.generictabletoprpg.somatic
 import com.feko.generictabletoprpg.verbal
-import org.koin.androidx.compose.koinViewModel
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun SpellFilters(

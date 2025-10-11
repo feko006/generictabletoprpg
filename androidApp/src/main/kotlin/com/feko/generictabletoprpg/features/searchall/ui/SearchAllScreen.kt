@@ -28,15 +28,16 @@ import com.feko.generictabletoprpg.common.ui.components.OverviewListItem
 import com.feko.generictabletoprpg.common.ui.components.SearchableLazyList
 import com.feko.generictabletoprpg.common.ui.theme.LocalDimens
 import com.feko.generictabletoprpg.common.ui.viewmodel.AppViewModel
-import com.feko.generictabletoprpg.common.ui.viewmodel.ResultViewModel
 import com.feko.generictabletoprpg.features.filter.ui.FilterChipGroup
 import com.feko.generictabletoprpg.features.filter.ui.FilterScreen
 import com.feko.generictabletoprpg.search_all_title
 import com.feko.generictabletoprpg.search_everywhere
 import com.feko.generictabletoprpg.shared.common.domain.model.IIdentifiable
 import com.feko.generictabletoprpg.shared.common.domain.model.IText.StringResourceText.Companion.asText
+import com.feko.generictabletoprpg.shared.common.ui.viewmodel.ResultViewModel
 import com.feko.generictabletoprpg.shared.features.filter.asFilter
-import org.koin.androidx.compose.koinViewModel
+import com.feko.generictabletoprpg.shared.features.searchall.ui.SearchAllViewModel
+import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
 @OptIn(ExperimentalMaterial3Api::class)

@@ -8,7 +8,8 @@ import com.feko.generictabletoprpg.common.ui.components.DetailsScreen
 import com.feko.generictabletoprpg.common.ui.components.TextWithLabel
 import com.feko.generictabletoprpg.shared.common.domain.model.IText.StringResourceText.Companion.asText
 import com.feko.generictabletoprpg.shared.features.armor.Armor
-import org.koin.androidx.compose.koinViewModel
+import com.feko.generictabletoprpg.shared.features.armor.ui.ArmorDetailsViewModel
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun ArmorDetailsScreen(

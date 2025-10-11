@@ -10,7 +10,8 @@ import com.feko.generictabletoprpg.common.ui.components.DetailsScreen
 import com.feko.generictabletoprpg.common.ui.components.TextWithLabel
 import com.feko.generictabletoprpg.shared.common.domain.model.IText.StringResourceText.Companion.asText
 import com.feko.generictabletoprpg.shared.features.action.Action
-import org.koin.androidx.compose.koinViewModel
+import com.feko.generictabletoprpg.shared.features.action.ui.ActionDetailsViewModel
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun ActionDetailsScreen(
