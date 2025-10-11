@@ -1,4 +1,4 @@
-package com.feko.generictabletoprpg.common.data
+package com.feko.generictabletoprpg.shared.common.data
 
 import com.feko.generictabletoprpg.shared.common.domain.IParseEdnAsMap
 import us.bpsm.edn.parser.Parsers

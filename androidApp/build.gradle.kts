@@ -83,7 +83,6 @@ dependencies {
     implementation(libs.androidx.material.icons.extended)
     implementation(libs.androidx.material3)
     implementation(libs.androidx.material3.adaptive)
-    implementation(libs.bpsm.edn.java)
     implementation(libs.fuzzywuzzy.kotlin)
     implementation(libs.reorderable)
     implementation(libs.insert.koin)

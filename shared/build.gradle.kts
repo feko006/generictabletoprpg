@@ -52,6 +52,7 @@ kotlin {
                 api(libs.androidx.room.runtime)
                 implementation(libs.androidx.sqlite.bundled)
                 api(libs.kotlin.logging)
+                implementation(libs.bpsm.edn.java)
             }
         }
 
@@ -81,6 +82,9 @@ kotlin {
         }
     }
 
+    compilerOptions {
+        freeCompilerArgs.add("-Xexpect-actual-classes")
+    }
 }
 
 room {

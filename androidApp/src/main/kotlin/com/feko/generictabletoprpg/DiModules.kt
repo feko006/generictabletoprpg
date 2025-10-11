@@ -1,7 +1,5 @@
 package com.feko.generictabletoprpg
 
-import com.feko.generictabletoprpg.common.data.ParseEdnAsMapEdnJava
-import com.feko.generictabletoprpg.common.data.ProcessEdnMapEdnJava
 import com.feko.generictabletoprpg.common.data.UserPreferences
 import com.feko.generictabletoprpg.common.ui.viewmodel.AppViewModel
 import com.feko.generictabletoprpg.features.action.actionModule
@@ -19,6 +17,8 @@ import com.feko.generictabletoprpg.features.spell.spellModule
 import com.feko.generictabletoprpg.features.tracker.trackerGroupsModule
 import com.feko.generictabletoprpg.features.tracker.trackerModule
 import com.feko.generictabletoprpg.features.weapon.weaponModule
+import com.feko.generictabletoprpg.shared.common.data.ParseEdnAsMapEdnJava
+import com.feko.generictabletoprpg.shared.common.data.ProcessEdnMapEdnJava
 import com.feko.generictabletoprpg.shared.common.domain.IParseEdnAsMap
 import com.feko.generictabletoprpg.shared.common.domain.IProcessEdnMap
 import com.feko.generictabletoprpg.shared.common.domain.IUserPreferences
