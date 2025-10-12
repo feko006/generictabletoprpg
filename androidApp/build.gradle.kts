@@ -3,10 +3,10 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
 
 plugins {
     alias(libs.plugins.android.application)
+    alias(libs.plugins.compose.compiler)
+    alias(libs.plugins.google.ksp)
     alias(libs.plugins.jetbrains.kotlin.android)
     alias(libs.plugins.jetbrains.kotlin.serialization)
-    alias(libs.plugins.google.ksp)
-    alias(libs.plugins.compose.compiler)
 }
 
 android {
@@ -27,8 +27,6 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
-
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
     signingConfigs.getByName("release") {
@@ -73,25 +71,10 @@ tasks.withType<KotlinJvmCompile>().configureEach {
 }
 
 dependencies {
-    implementation(libs.androidx.activity.compose)
-    implementation(libs.androidx.compose.ui)
-    implementation(libs.androidx.compose.ui.tooling.preview)
-    implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.document.file)
-    implementation(libs.androidx.lifecycle.runtime.ktx)
-    implementation(libs.androidx.material.icons.extended)
-    implementation(libs.androidx.material3)
-    implementation(libs.androidx.material3.adaptive)
-    implementation(libs.reorderable)
-    implementation(libs.bundles.androidx.navigation3)
     implementation(project(":shared"))
 
-    androidTestImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.runner)
-    androidTestImplementation(libs.androidx.test.rules)
-    androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.jetbrains.kotlinx.coroutines.test)
-
-    debugImplementation(libs.androidx.compose.ui.test.manifest)
-    debugImplementation(libs.androidx.compose.ui.tooling)
+    androidTestImplementation(libs.junit)
 }

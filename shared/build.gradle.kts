@@ -1,12 +1,12 @@
 plugins {
-    alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.android.kotlin.multiplatform.library)
     alias(libs.plugins.android.lint)
-    alias(libs.plugins.compose.compiler)
-    alias(libs.plugins.compose)
-    alias(libs.plugins.google.ksp)
     alias(libs.plugins.androidx.room)
+    alias(libs.plugins.compose)
+    alias(libs.plugins.compose.compiler)
+    alias(libs.plugins.google.ksp)
     alias(libs.plugins.jetbrains.kotlin.serialization)
+    alias(libs.plugins.kotlin.multiplatform)
 }
 
 kotlin {
@@ -49,6 +49,7 @@ kotlin {
                 implementation(compose.foundation)
                 implementation(compose.material)
                 api(compose.components.resources)
+                api(compose.uiTooling)
                 api(libs.androidx.room.runtime)
                 implementation(libs.androidx.sqlite.bundled)
                 api(libs.kotlin.logging)
@@ -57,6 +58,11 @@ kotlin {
                 api(libs.koin.compose.viewmodel)
                 implementation(libs.fuzzywuzzy.kotlin)
                 implementation(libs.multiplatform.settings)
+                api(libs.bundles.androidx.navigation3)
+                api(libs.androidx.material.icons.extended)
+                api(libs.androidx.material3)
+                api(libs.androidx.material3.adaptive)
+                api(libs.reorderable)
             }
         }
 
@@ -79,9 +85,9 @@ kotlin {
 
         getByName("androidDeviceTest") {
             dependencies {
-                implementation(libs.androidx.test.runner)
                 implementation(libs.androidx.core)
                 implementation(libs.androidx.junit)
+                implementation(libs.androidx.test.runner)
             }
         }
     }

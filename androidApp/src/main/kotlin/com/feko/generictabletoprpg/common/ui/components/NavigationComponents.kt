@@ -12,9 +12,7 @@ import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDe
 import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.runtime.NavKey
-import androidx.navigation3.runtime.rememberSavedStateNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
-import androidx.navigation3.ui.rememberSceneSetupNavEntryDecorator
 import androidx.window.core.layout.WindowSizeClass
 import com.feko.generictabletoprpg.common.ui.viewmodel.AppViewModel
 import com.feko.generictabletoprpg.features.action.ui.ActionDetailsScreen
@@ -52,7 +50,7 @@ import kotlinx.serialization.Serializable
 fun NavigationHost(
     scope: CoroutineScope,
     drawerState: DrawerState,
-    backStack: NavBackStack,
+    backStack: NavBackStack<NavKey>,
     appViewModel: AppViewModel
 ) {
     val onNavigationIconClick: () -> Unit = {
@@ -79,8 +77,6 @@ fun NavigationHost(
     NavDisplay(
         backStack,
         entryDecorators = listOf(
-            rememberSceneSetupNavEntryDecorator(),
-            rememberSavedStateNavEntryDecorator(),
             rememberViewModelStoreNavEntryDecorator()
         ),
         sceneStrategy = ListDetailSceneStrategy(

@@ -4,9 +4,6 @@ pluginManagement {
         google()
         mavenCentral()
         maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
-        maven {
-            url = uri("https://androidx.dev/snapshots/builds/13909284/artifacts/repository")
-        }
     }
 }
 @Suppress("UnstableApiUsage")
@@ -15,9 +12,6 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
-        maven {
-            url = uri("https://androidx.dev/snapshots/builds/13909284/artifacts/repository")
-        }
     }
 }
 rootProject.name = "generictabletoprpg"

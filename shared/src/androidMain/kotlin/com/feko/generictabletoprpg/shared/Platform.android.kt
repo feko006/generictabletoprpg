@@ -6,7 +6,7 @@ import com.russhwolf.settings.SharedPreferencesSettings
 
 actual fun platform() = "Android"
 
-lateinit var appContext: Context // initialize this early in your app
+lateinit var appContext: Context
 
 actual suspend fun loadResourceAsBytes(path: String): ByteArray {
     val inputStream = appContext.assets.open(path)
@@ -18,6 +18,9 @@ actual suspend fun loadResourceAsString(path: String): String {
     return inputStream.bufferedReader().use { it.readText() }
 }
 
-private val sharedPreferences =
+private val sharedPreferences by lazy {
     appContext.getSharedPreferences("gttrpg-prefs", Context.MODE_PRIVATE)
-actual val settings: Settings = SharedPreferencesSettings(sharedPreferences, commit = true)
+}
+actual val settings: Settings by lazy {
+    SharedPreferencesSettings(sharedPreferences, commit = true)
+}
