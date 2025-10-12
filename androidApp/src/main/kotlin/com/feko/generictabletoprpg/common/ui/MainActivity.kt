@@ -9,7 +9,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import com.feko.generictabletoprpg.common.ui.components.GttrpgApp
-import com.feko.generictabletoprpg.common.ui.theme.GttrpgTheme
+import com.feko.generictabletoprpg.shared.common.ui.theme.GttrpgTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

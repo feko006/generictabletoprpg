@@ -18,12 +18,13 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.navigation3.runtime.rememberNavBackStack
-import com.feko.generictabletoprpg.common.ui.RootDestinations
-import com.feko.generictabletoprpg.common.ui.theme.LocalDimens
-import com.feko.generictabletoprpg.common.ui.viewmodel.AppViewModel
+import com.feko.generictabletoprpg.shared.common.ui.RootDestinations
+import com.feko.generictabletoprpg.shared.common.ui.components.INavigationDestination
+import com.feko.generictabletoprpg.shared.common.ui.theme.LocalDimens
+import com.feko.generictabletoprpg.shared.common.ui.viewmodel.AppViewModel
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable

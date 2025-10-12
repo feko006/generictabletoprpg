@@ -42,13 +42,13 @@ import com.feko.generictabletoprpg.common.ui.components.DialogTitle
 import com.feko.generictabletoprpg.common.ui.components.EnterValueDialog
 import com.feko.generictabletoprpg.common.ui.components.IInputFieldValueConverter
 import com.feko.generictabletoprpg.common.ui.components.NumberDialogInputField
-import com.feko.generictabletoprpg.common.ui.theme.LocalDimens
-import com.feko.generictabletoprpg.common.ui.theme.Typography
 import com.feko.generictabletoprpg.expertise
 import com.feko.generictabletoprpg.proficiency
 import com.feko.generictabletoprpg.saving_throw_proficiency
 import com.feko.generictabletoprpg.shared.common.domain.asSignedString
 import com.feko.generictabletoprpg.shared.common.domain.model.IText.StringResourceText.Companion.asText
+import com.feko.generictabletoprpg.shared.common.ui.theme.LocalDimens
+import com.feko.generictabletoprpg.shared.common.ui.theme.Typography
 import com.feko.generictabletoprpg.shared.features.spell.Spell
 import com.feko.generictabletoprpg.shared.features.tracker.model.StatEntry
 import com.feko.generictabletoprpg.shared.features.tracker.model.StatSkillEntry

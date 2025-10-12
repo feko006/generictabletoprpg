@@ -19,14 +19,14 @@ import com.feko.generictabletoprpg.spell
 import com.feko.generictabletoprpg.weapon
 
 val appNamesByType = mapOf(
-    Action::class.java to Res.string.action,
-    Ammunition::class.java to Res.string.ammunition,
-    Armor::class.java to Res.string.armor,
-    Condition::class.java to Res.string.condition,
-    Disease::class.java to Res.string.disease,
-    Feat::class.java to Res.string.feat,
-    Spell::class.java to Res.string.spell,
-    Weapon::class.java to Res.string.weapon
+    Action::class to Res.string.action,
+    Ammunition::class to Res.string.ammunition,
+    Armor::class to Res.string.armor,
+    Condition::class to Res.string.condition,
+    Disease::class to Res.string.disease,
+    Feat::class to Res.string.feat,
+    Spell::class to Res.string.spell,
+    Weapon::class to Res.string.weapon
 )
 
 val appTypes = appNamesByType.keys

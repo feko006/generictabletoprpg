@@ -6,15 +6,19 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.res.painterResource
-import com.feko.generictabletoprpg.R
+import com.feko.generictabletoprpg.Res
+import com.feko.generictabletoprpg.heart_minus
+import com.feko.generictabletoprpg.heart_plus
 import com.feko.generictabletoprpg.shared.features.tracker.model.StatsContainer
 import com.feko.generictabletoprpg.shared.features.tracker.model.TrackedThing
 import com.feko.generictabletoprpg.shared.features.tracker.model.canAdd
 import com.feko.generictabletoprpg.shared.features.tracker.model.canSubtract
+import com.feko.generictabletoprpg.shield_with_heart
+import org.jetbrains.compose.resources.painterResource
 
 @Composable
 fun PercentageActions(
@@ -35,7 +39,7 @@ fun PercentageActions(
             onClick = onSubtractButtonClicked,
             enabled = item.canSubtract
         ) {
-            Icon(painterResource(R.drawable.subtract), "")
+            Icon(Icons.Default.Remove, "")
         }
     }
 }
@@ -59,7 +63,7 @@ fun NumberActions(
             onClick = onSubtractButtonClicked,
             enabled = item.canSubtract
         ) {
-            Icon(painterResource(R.drawable.subtract), "")
+            Icon(Icons.Default.Remove, "")
         }
     }
 }
@@ -79,19 +83,19 @@ fun HealthActions(
             onClick = onHealButtonClicked,
             enabled = health.canAdd
         ) {
-            Icon(painterResource(R.drawable.heart_plus), "")
+            Icon(painterResource(Res.drawable.heart_plus), "")
         }
         IconButton(
             onClick = onDamageButtonClicked,
             enabled = health.canSubtract
         ) {
-            Icon(painterResource(R.drawable.heart_minus), "")
+            Icon(painterResource(Res.drawable.heart_minus), "")
         }
         IconButton(
             onClick = onAddTemporaryHpButtonClicked,
             enabled = true
         ) {
-            Icon(painterResource(R.drawable.shield_with_heart), "")
+            Icon(painterResource(Res.drawable.shield_with_heart), "")
         }
         IconButton(
             onClick = onResetButtonClicked,
@@ -116,7 +120,7 @@ fun AbilityActions(
             onClick = onSubtractClicked,
             enabled = canSubtract
         ) {
-            Icon(painterResource(R.drawable.subtract), "")
+            Icon(Icons.Default.Remove, "")
         }
         IconButton(
             onClick = onRefreshClicked,
@@ -141,7 +145,7 @@ fun SpellSlotActions(
             onClick = onSubtractClicked,
             enabled = canSubtract
         ) {
-            Icon(painterResource(R.drawable.subtract), "")
+            Icon(Icons.Default.Remove, "")
         }
         IconButton(
             onClick = onRefreshClicked,
@@ -232,7 +236,7 @@ fun HitDiceActions(
             onClick = onSubtractClicked,
             enabled = canSubtract,
         ) {
-            Icon(painterResource(R.drawable.subtract), "")
+            Icon(Icons.Default.Remove, "")
         }
         IconButton(
             onClick = onAddClicked,

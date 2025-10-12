@@ -1,11 +1,9 @@
-package com.feko.generictabletoprpg
+package com.feko.generictabletoprpg.shared
 
 import android.app.Application
-import com.feko.generictabletoprpg.shared.appContext
-import com.feko.generictabletoprpg.shared.diModules
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
-import org.koin.core.context.GlobalContext.startKoin
+import org.koin.core.context.startKoin
 
 class GenericTabletopRpgApp : Application() {
     override fun onCreate() {

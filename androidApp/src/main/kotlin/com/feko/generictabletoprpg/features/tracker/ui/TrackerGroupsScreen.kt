@@ -5,6 +5,8 @@ import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.SendToMobile
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
@@ -13,17 +15,15 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.documentfile.provider.DocumentFile
-import com.feko.generictabletoprpg.R
 import com.feko.generictabletoprpg.Res
-import com.feko.generictabletoprpg.common.ui.RootDestinations
 import com.feko.generictabletoprpg.common.ui.components.AddFABButton
 import com.feko.generictabletoprpg.common.ui.components.GttrpgTopAppBar
 import com.feko.generictabletoprpg.common.ui.components.SearchableLazyList
 import com.feko.generictabletoprpg.common.ui.components.ToastMessage
-import com.feko.generictabletoprpg.common.ui.viewmodel.AppViewModel
 import com.feko.generictabletoprpg.shared.common.domain.model.IText.StringResourceText.Companion.asText
+import com.feko.generictabletoprpg.shared.common.ui.RootDestinations
+import com.feko.generictabletoprpg.shared.common.ui.viewmodel.AppViewModel
 import com.feko.generictabletoprpg.shared.features.tracker.ui.ITrackerGroupDialog
 import com.feko.generictabletoprpg.shared.features.tracker.ui.TrackerGroupViewModel
 import com.feko.generictabletoprpg.tracker_title
@@ -55,7 +55,7 @@ fun TrackerGroupsScreen(
                     IconButton(onClick = {
                         viewModel.export.exportAllRequested()
                         pickDirectoryLauncher.launch(null)
-                    }) { Icon(painterResource(R.drawable.send_to_mobile), "") }
+                    }) { Icon(Icons.AutoMirrored.Filled.SendToMobile, "") }
                 }
             }
         },

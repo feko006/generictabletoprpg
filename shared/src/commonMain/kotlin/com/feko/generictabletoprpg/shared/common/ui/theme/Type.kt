@@ -1,4 +1,4 @@
-package com.feko.generictabletoprpg.common.ui.theme
+package com.feko.generictabletoprpg.shared.common.ui.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle

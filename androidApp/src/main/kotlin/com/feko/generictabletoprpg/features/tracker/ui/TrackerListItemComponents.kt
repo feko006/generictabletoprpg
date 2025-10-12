@@ -37,17 +37,18 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalHapticFeedback
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.feko.generictabletoprpg.R
+import com.feko.generictabletoprpg.Res
+import com.feko.generictabletoprpg.book_4_spark
 import com.feko.generictabletoprpg.common.ui.components.draggableHandle
 import com.feko.generictabletoprpg.common.ui.components.longPressDraggableHandle
-import com.feko.generictabletoprpg.common.ui.theme.Typography
 import com.feko.generictabletoprpg.shared.common.domain.asSignedString
+import com.feko.generictabletoprpg.shared.common.ui.theme.Typography
 import com.feko.generictabletoprpg.shared.features.tracker.model.SpellListEntry
 import com.feko.generictabletoprpg.shared.features.tracker.model.StatEntry
 import com.feko.generictabletoprpg.shared.features.tracker.model.StatsContainer
@@ -56,6 +57,8 @@ import com.feko.generictabletoprpg.shared.features.tracker.model.canAdd
 import com.feko.generictabletoprpg.shared.features.tracker.model.canSubtract
 import com.feko.generictabletoprpg.shared.features.tracker.model.printableValue
 import com.feko.generictabletoprpg.shared.features.tracker.ui.TrackerViewModel
+import com.feko.generictabletoprpg.shield_with_heart
+import org.jetbrains.compose.resources.painterResource
 import sh.calvin.reorderable.DragGestureDetector
 import sh.calvin.reorderable.ReorderableCollectionItemScope
 
@@ -277,7 +280,7 @@ fun HealthListItem(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Icon(
-                            painterResource(R.drawable.shield_with_heart),
+                            painterResource(Res.drawable.shield_with_heart),
                             "",
                             modifier = Modifier.size(12.dp)
                         )
@@ -629,7 +632,7 @@ fun CompactStat(
             }
             if (isSpellcastingModifier) {
                 Icon(
-                    painterResource(R.drawable.book_4_spark),
+                    painterResource(Res.drawable.book_4_spark),
                     "",
                     Modifier
                         .padding(top = 4.dp)

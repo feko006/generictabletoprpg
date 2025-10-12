@@ -59,11 +59,12 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.feko.generictabletoprpg.common.ui.theme.LocalDimens
 import com.feko.generictabletoprpg.shared.common.appNamesByType
 import com.feko.generictabletoprpg.shared.common.domain.model.IText
+import com.feko.generictabletoprpg.shared.common.ui.theme.LocalDimens
 import com.feko.generictabletoprpg.shared.common.ui.viewmodel.IToastSubViewModel
 import org.jetbrains.compose.resources.stringResource
+import kotlin.reflect.KClass
 
 @Composable
 fun TextWithLabel(
@@ -123,7 +124,7 @@ fun AddFABButton(
 
 
 @Composable
-fun <T> getTypeName(type: Class<T>): String = stringResource(appNamesByType[type]!!)
+fun <T : Any> getTypeName(type: KClass<T>): String = stringResource(appNamesByType[type]!!)
 
 @Composable
 fun ToastMessage(toast: IToastSubViewModel) {

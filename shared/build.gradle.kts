@@ -44,15 +44,15 @@ kotlin {
         commonMain {
             dependencies {
                 implementation(libs.kotlin.stdlib)
-                api(libs.jetbrains.kotlinx.serialization.json)
+                implementation(libs.jetbrains.kotlinx.serialization.json)
                 implementation(compose.runtime)
                 implementation(compose.foundation)
                 implementation(compose.material)
                 api(compose.components.resources)
                 api(compose.uiTooling)
-                api(libs.androidx.room.runtime)
+                implementation(libs.androidx.room.runtime)
                 implementation(libs.androidx.sqlite.bundled)
-                api(libs.kotlin.logging)
+                implementation(libs.kotlin.logging)
                 implementation(libs.bpsm.edn.java)
                 implementation(libs.lifecycle.viewmodel.compose)
                 api(libs.koin.compose.viewmodel)

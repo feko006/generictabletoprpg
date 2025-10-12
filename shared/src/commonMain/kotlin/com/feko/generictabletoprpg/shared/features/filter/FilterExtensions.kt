@@ -8,7 +8,7 @@ fun Filter.index(): Int =
 
 fun Int.asFilter(): Filter =
     when (this) {
-        0 -> GenericFilter(Any::class.java)
+        0 -> GenericFilter(Any::class)
         1 -> SpellFilter()
         else -> throw IllegalStateException()
     }

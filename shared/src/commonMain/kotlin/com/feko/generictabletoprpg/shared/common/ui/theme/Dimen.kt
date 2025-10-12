@@ -1,4 +1,4 @@
-package com.feko.generictabletoprpg.common.ui.theme
+package com.feko.generictabletoprpg.shared.common.ui.theme
 
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp

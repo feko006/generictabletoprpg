@@ -1,8 +1,8 @@
-package com.feko.generictabletoprpg.common.ui.viewmodel
+package com.feko.generictabletoprpg.shared.common.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.feko.generictabletoprpg.common.ui.components.INavigationDestination
+import com.feko.generictabletoprpg.shared.common.ui.components.INavigationDestination
 import com.feko.generictabletoprpg.shared.features.basecontent.domain.usecase.ILoadBaseContentUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow

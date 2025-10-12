@@ -20,12 +20,12 @@ import androidx.compose.ui.res.stringResource
 import com.feko.generictabletoprpg.R
 import com.feko.generictabletoprpg.Res
 import com.feko.generictabletoprpg.common.ui.components.CheckboxWithText
-import com.feko.generictabletoprpg.common.ui.theme.LocalDimens
 import com.feko.generictabletoprpg.concentration
 import com.feko.generictabletoprpg.material
 import com.feko.generictabletoprpg.ritual
 import com.feko.generictabletoprpg.shared.common.domain.model.IText.StringResourceText.Companion.asText
 import com.feko.generictabletoprpg.shared.common.domain.model.IText.StringText.Companion.asText
+import com.feko.generictabletoprpg.shared.common.ui.theme.LocalDimens
 import com.feko.generictabletoprpg.shared.features.filter.Filter
 import com.feko.generictabletoprpg.shared.features.filter.SpellFilter
 import com.feko.generictabletoprpg.shared.features.filter.ui.SpellFilterViewModel

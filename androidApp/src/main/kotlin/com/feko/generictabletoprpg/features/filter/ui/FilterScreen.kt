@@ -22,10 +22,10 @@ import com.feko.generictabletoprpg.R
 import com.feko.generictabletoprpg.Res
 import com.feko.generictabletoprpg.common.ui.components.GttrpgDropdownField
 import com.feko.generictabletoprpg.common.ui.components.getTypeName
-import com.feko.generictabletoprpg.common.ui.theme.LocalDimens
 import com.feko.generictabletoprpg.filter_type_placeholder
 import com.feko.generictabletoprpg.shared.common.appNamesByType
 import com.feko.generictabletoprpg.shared.common.appTypes
+import com.feko.generictabletoprpg.shared.common.ui.theme.LocalDimens
 import com.feko.generictabletoprpg.shared.features.filter.Filter
 import com.feko.generictabletoprpg.shared.features.filter.GenericFilter
 import com.feko.generictabletoprpg.shared.features.filter.SpellFilter
@@ -73,7 +73,7 @@ fun FilterScreen(
                 dropdownExpanded = false
                 val newFilter =
                     when (it) {
-                        Spell::class.java -> SpellFilter()
+                        Spell::class -> SpellFilter()
                         else -> GenericFilter(it)
                     }
                 filter = newFilter

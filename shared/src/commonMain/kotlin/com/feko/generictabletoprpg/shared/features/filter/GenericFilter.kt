@@ -1,3 +1,5 @@
 package com.feko.generictabletoprpg.shared.features.filter
 
-class GenericFilter(type: Class<*>, name: String? = null) : Filter(type, name)
+import kotlin.reflect.KClass
+
+class GenericFilter(type: KClass<*>, name: String? = null) : Filter(type, name)

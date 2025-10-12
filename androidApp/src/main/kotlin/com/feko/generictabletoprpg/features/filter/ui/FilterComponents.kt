@@ -20,8 +20,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.feko.generictabletoprpg.R
-import com.feko.generictabletoprpg.common.ui.theme.LocalDimens
 import com.feko.generictabletoprpg.shared.common.domain.model.IText
+import com.feko.generictabletoprpg.shared.common.ui.theme.LocalDimens
 import com.feko.generictabletoprpg.shared.features.filter.Filter
 import com.feko.generictabletoprpg.shared.features.filter.FilterChipData
 
@@ -84,7 +84,7 @@ fun GttrpgSingleChoiceSegmentedButtons(
         Arrangement.spacedBy(LocalDimens.current.gapSmall)
     ) {
         Text(label.text())
-        var selectedIndex = options.indexOf(selectedOption)
+        val selectedIndex = options.indexOf(selectedOption)
         SingleChoiceSegmentedButtonRow(modifier) {
             options.forEachIndexed { index, option ->
                 SegmentedButton(

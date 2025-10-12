@@ -13,7 +13,10 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CheckBoxOutlineBlank
 import androidx.compose.material.icons.filled.Done
+import androidx.compose.material.icons.filled.VerticalAlignBottom
+import androidx.compose.material.icons.filled.VerticalAlignTop
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ElevatedCard
@@ -34,7 +37,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalWindowInfo
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
@@ -45,8 +47,8 @@ import com.feko.generictabletoprpg.common.ui.components.BoxWithScrollIndicator
 import com.feko.generictabletoprpg.common.ui.components.ConfirmationDialog
 import com.feko.generictabletoprpg.common.ui.components.DialogTitle
 import com.feko.generictabletoprpg.common.ui.components.SelectFromListDialog
-import com.feko.generictabletoprpg.common.ui.theme.Typography
 import com.feko.generictabletoprpg.features.searchall.ui.getUniqueListItemKey
+import com.feko.generictabletoprpg.shared.common.ui.theme.Typography
 import com.feko.generictabletoprpg.shared.features.spell.Spell
 import com.feko.generictabletoprpg.shared.features.spell.SpellRange
 import com.feko.generictabletoprpg.shared.features.tracker.model.SpellListEntry
@@ -135,7 +137,7 @@ private fun SpellListDialog(
                                     spellListState.animateScrollToItem(0)
                                 }
                             }
-                        ) { Icon(painterResource(R.drawable.vertical_align_top), "") }
+                        ) { Icon(Icons.Default.VerticalAlignTop, "") }
                     }
                     if (spellListState.canScrollForward) {
                         IconButton(
@@ -145,7 +147,7 @@ private fun SpellListDialog(
                                     spellListState.animateScrollToItem((dialog.spellList.serializedItem as List<SpellListEntry>).size - 1)
                                 }
                             }
-                        ) { Icon(painterResource(R.drawable.vertical_align_bottom), "") }
+                        ) { Icon(Icons.Default.VerticalAlignBottom, "") }
                     }
                 }
                 TextButton(
@@ -207,7 +209,7 @@ private fun SpellListDialog(
                                 )
                             } else {
                                 Icon(
-                                    painter = painterResource(R.drawable.check_box_outline_blank),
+                                    imageVector = Icons.Default.CheckBoxOutlineBlank,
                                     contentDescription = "Done icon",
                                     modifier = Modifier.size(FilterChipDefaults.IconSize)
                                 )

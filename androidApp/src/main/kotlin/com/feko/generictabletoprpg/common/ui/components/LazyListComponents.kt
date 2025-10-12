@@ -39,13 +39,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.feko.generictabletoprpg.R
 import com.feko.generictabletoprpg.Res
-import com.feko.generictabletoprpg.common.ui.theme.LocalDimens
-import com.feko.generictabletoprpg.common.ui.theme.Typography
 import com.feko.generictabletoprpg.search
 import com.feko.generictabletoprpg.shared.common.domain.model.IIdentifiable
 import com.feko.generictabletoprpg.shared.common.domain.model.INamed
 import com.feko.generictabletoprpg.shared.common.domain.model.IText
 import com.feko.generictabletoprpg.shared.common.domain.model.IText.StringResourceText.Companion.asText
+import com.feko.generictabletoprpg.shared.common.ui.theme.LocalDimens
+import com.feko.generictabletoprpg.shared.common.ui.theme.Typography
 import com.feko.generictabletoprpg.shared.common.ui.viewmodel.OverviewViewModel
 import com.feko.generictabletoprpg.shared.features.spell.Spell
 import sh.calvin.reorderable.ReorderableCollectionItemScope

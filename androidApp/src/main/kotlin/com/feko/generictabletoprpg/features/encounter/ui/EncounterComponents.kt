@@ -1,6 +1,5 @@
 package com.feko.generictabletoprpg.features.encounter.ui
 
-import androidx.annotation.DrawableRes
 import androidx.compose.foundation.BasicTooltipBox
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -18,13 +17,18 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberBasicTooltipState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Bolt
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.filled.Shield
 import androidx.compose.material.icons.filled.SkipNext
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.StarOutline
 import androidx.compose.material3.Card
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -44,16 +48,23 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.feko.generictabletoprpg.R
-import com.feko.generictabletoprpg.common.ui.theme.LocalDimens
+import com.feko.generictabletoprpg.Res
+import com.feko.generictabletoprpg.book_4_spark
+import com.feko.generictabletoprpg.heart_minus
+import com.feko.generictabletoprpg.heart_plus
+import com.feko.generictabletoprpg.shared.common.ui.theme.LocalDimens
 import com.feko.generictabletoprpg.shared.features.encounter.InitiativeEntryEntity
 import com.feko.generictabletoprpg.shared.features.encounter.ui.EncounterState
 import com.feko.generictabletoprpg.shared.features.encounter.ui.EncounterViewModel
+import com.feko.generictabletoprpg.wand_stars
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.vectorResource
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalMaterial3Api::class)
 @Composable
@@ -88,7 +99,7 @@ fun ActionButtons(viewModel: EncounterViewModel) {
             }
             if (encounterState.isLegendaryActionButtonVisible) {
                 IconButton(onClick = viewModel::progressInitiativeWithLegendaryAction) {
-                    Icon(painterResource(R.drawable.bolt), "")
+                    Icon(Icons.Default.Bolt, "")
                 }
             }
             if (encounterState.isNextTurnButtonVisible) {
@@ -163,35 +174,35 @@ fun InitiativeListItem(
                     ) {
                         if (initiativeEntry.hasHealth) {
                             IconAndTextWithTooltip(
-                                R.drawable.heart,
+                                Icons.Default.FavoriteBorder,
                                 initiativeEntry.health.toString(),
                                 stringResource(R.string.health)
                             )
                         }
                         if (initiativeEntry.hasArmorClass) {
                             IconAndTextWithTooltip(
-                                R.drawable.shield,
+                                Icons.Default.Shield,
                                 initiativeEntry.armorClass.toString(),
                                 stringResource(R.string.armor_class)
                             )
                         }
                         if (initiativeEntry.hasLegendaryActions) {
                             IconAndTextWithTooltip(
-                                R.drawable.bolt,
+                                Icons.Default.Bolt,
                                 initiativeEntry.printableLegendaryActions,
                                 stringResource(R.string.legendary_actions)
                             )
                         }
                         if (initiativeEntry.hasSpellSaveDc) {
                             IconAndTextWithTooltip(
-                                R.drawable.book_4_spark,
+                                vectorResource(Res.drawable.book_4_spark),
                                 initiativeEntry.spellSaveDc.toString(),
                                 stringResource(R.string.spell_save_dc)
                             )
                         }
                         if (initiativeEntry.hasSpellAttackModifier) {
                             IconAndTextWithTooltip(
-                                R.drawable.wand_stars,
+                                vectorResource(Res.drawable.wand_stars),
                                 "+" + initiativeEntry.spellAttackModifier,
                                 stringResource(R.string.spell_attack_modifier)
                             )
@@ -209,20 +220,20 @@ fun InitiativeListItem(
                         if (keepOnReset) {
                             Icon(Icons.Default.Star, "")
                         } else {
-                            Icon(painterResource(R.drawable.star), "")
+                            Icon(Icons.Default.StarOutline, "")
                         }
                     }
                     if (initiativeEntry.hasHealth) {
                         IconButton(onClick = onHealButtonClicked) {
-                            Icon(painterResource(R.drawable.heart_plus), "")
+                            Icon(painterResource(Res.drawable.heart_plus), "")
                         }
                         IconButton(onClick = onDamageButtonClicked) {
-                            Icon(painterResource(R.drawable.heart_minus), "")
+                            Icon(painterResource(Res.drawable.heart_minus), "")
                         }
                     }
                     if (!isLairAction) {
                         IconButton(onClick = onDuplicateButtonClicked) {
-                            Icon(painterResource(R.drawable.content_copy), "")
+                            Icon(Icons.Default.ContentCopy, "")
                         }
                         IconButton(onClick = onEditButtonClicked) {
                             Icon(Icons.Filled.Edit, "")
@@ -246,7 +257,7 @@ fun InitiativeListItem(
 
 @Composable
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
-fun IconAndTextWithTooltip(@DrawableRes iconResource: Int, value: String, tooltipText: String) {
+fun IconAndTextWithTooltip(imageVector: ImageVector, value: String, tooltipText: String) {
     val state = rememberBasicTooltipState(isPersistent = false)
     val coroutineScope = rememberCoroutineScope()
     BasicTooltipBox(
@@ -266,17 +277,17 @@ fun IconAndTextWithTooltip(@DrawableRes iconResource: Int, value: String, toolti
                 }
             }
         }) {
-        IconAndText(iconResource, value)
+        IconAndText(imageVector, value)
     }
 }
 
 @Composable
-fun IconAndText(@DrawableRes iconResource: Int, value: String) {
+fun IconAndText(imageVector: ImageVector, value: String) {
     Row(
         horizontalArrangement = Arrangement.spacedBy(4.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Icon(painterResource(iconResource), "")
+        Icon(imageVector, "")
         Text(value)
     }
 }

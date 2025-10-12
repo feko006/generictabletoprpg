@@ -23,7 +23,7 @@ class SpellFilter(
     val classes: List<String> = emptyList(),
     var isRitual: Boolean? = null,
     val spellComponents: SpellComponentsFilter = SpellComponentsFilter()
-) : Filter(Spell::class.java, name) {
+) : Filter(Spell::class, name) {
 
     override fun isAccepted(obj: Any): Boolean {
         var isAccepted = super.isAccepted(obj)

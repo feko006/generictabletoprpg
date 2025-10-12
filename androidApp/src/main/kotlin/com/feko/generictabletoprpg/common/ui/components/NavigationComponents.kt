@@ -14,7 +14,6 @@ import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.ui.NavDisplay
 import androidx.window.core.layout.WindowSizeClass
-import com.feko.generictabletoprpg.common.ui.viewmodel.AppViewModel
 import com.feko.generictabletoprpg.features.action.ui.ActionDetailsScreen
 import com.feko.generictabletoprpg.features.ammunition.ui.AmmunitionDetailsScreen
 import com.feko.generictabletoprpg.features.armor.ui.ArmorDetailsScreen
@@ -30,6 +29,8 @@ import com.feko.generictabletoprpg.features.tracker.ui.TrackerGroupsScreen
 import com.feko.generictabletoprpg.features.tracker.ui.TrackerScreen
 import com.feko.generictabletoprpg.features.weapon.ui.WeaponDetailsScreen
 import com.feko.generictabletoprpg.shared.common.domain.model.IIdentifiable
+import com.feko.generictabletoprpg.shared.common.ui.components.INavigationDestination
+import com.feko.generictabletoprpg.shared.common.ui.viewmodel.AppViewModel
 import com.feko.generictabletoprpg.shared.common.ui.viewmodel.ResultViewModel
 import com.feko.generictabletoprpg.shared.features.action.Action
 import com.feko.generictabletoprpg.shared.features.ammunition.Ammunition
@@ -43,7 +44,6 @@ import com.feko.generictabletoprpg.shared.features.spell.Spell
 import com.feko.generictabletoprpg.shared.features.weapon.Weapon
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import kotlinx.serialization.Serializable
 
 @Composable
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
@@ -206,58 +206,6 @@ fun NavigationHost(
             INavigationDestination.ImportDestination ->
                 NavEntry(key) { ImportScreen(appViewModel, onNavigationIconClick) }
         }
-    }
-}
-
-sealed interface INavigationDestination : NavKey {
-
-    @Serializable
-    data object TrackerGroupsDestination : INavigationDestination
-
-    @Serializable
-    data class TrackerDestination(val id: Long, val name: String) : INavigationDestination
-
-    @Serializable
-    data object EncounterDestination : INavigationDestination
-
-    @Serializable
-    data class SearchAllDestination(
-        val filterIndex: Int?,
-        val isShownForResult: Boolean
-    ) : INavigationDestination
-
-    @Serializable
-    class ActionDetailsDestination(val id: Long) : INavigationDestination
-
-    @Serializable
-    class AmmunitionDetailsDestination(val id: Long) : INavigationDestination
-
-    @Serializable
-    class ArmorDetailsDestination(val id: Long) : INavigationDestination
-
-    @Serializable
-    class ConditionDetailsDestination(val id: Long) : INavigationDestination
-
-    @Serializable
-    class DiseaseDetailsDestination(val id: Long) : INavigationDestination
-
-    @Serializable
-    class FeatDetailsDestination(val id: Long) : INavigationDestination
-
-    @Serializable
-    class SpellDetailsDestination(val id: Long) : INavigationDestination
-
-    @Serializable
-    class WeaponDetailsDestination(val id: Long) : INavigationDestination
-
-    @Serializable
-    data class SimpleSpellDetailsDestination(val spell: Spell) : INavigationDestination
-
-    @Serializable
-    data object ImportDestination : INavigationDestination
-
-    companion object {
-        val startDestination: INavigationDestination = TrackerGroupsDestination
     }
 }
 

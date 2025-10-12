@@ -11,7 +11,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import com.feko.generictabletoprpg.common.ui.theme.LocalDimens
+import com.feko.generictabletoprpg.shared.common.ui.theme.LocalDimens
 
 @Composable
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)

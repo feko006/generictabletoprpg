@@ -5,9 +5,10 @@ import com.feko.generictabletoprpg.shared.common.appNamesByType
 import com.feko.generictabletoprpg.shared.common.domain.model.INamed
 import com.feko.generictabletoprpg.shared.common.domain.model.IText.StringResourceText.Companion.asText
 import com.feko.generictabletoprpg.type
+import kotlin.reflect.KClass
 
 sealed class Filter(
-    val type: Class<*>,
+    val type: KClass<*>,
     val name: String? = null
 ) {
     open val chipData: List<FilterChipData> =
@@ -20,7 +21,7 @@ sealed class Filter(
         )
 
     open fun isAccepted(obj: Any): Boolean {
-        var isAccepted = obj::class.java == type
+        var isAccepted = obj::class == type
         if (name != null) {
             isAccepted = isAccepted
                     && obj is INamed
