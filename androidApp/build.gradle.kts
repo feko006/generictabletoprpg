@@ -71,10 +71,5 @@ tasks.withType<KotlinJvmCompile>().configureEach {
 }
 
 dependencies {
-    implementation(libs.androidx.document.file)
     implementation(project(":shared"))
-
-    androidTestImplementation(libs.androidx.test.runner)
-    androidTestImplementation(libs.jetbrains.kotlinx.coroutines.test)
-    androidTestImplementation(libs.junit)
 }

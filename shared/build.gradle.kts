@@ -43,26 +43,30 @@ kotlin {
     sourceSets {
         commonMain {
             dependencies {
-                implementation(libs.kotlin.stdlib)
-                implementation(libs.jetbrains.kotlinx.serialization.json)
-                implementation(compose.runtime)
+                implementation(compose.components.resources)
                 implementation(compose.foundation)
                 implementation(compose.material)
-                api(compose.components.resources)
-                api(compose.uiTooling)
+                implementation(compose.runtime)
+                implementation(compose.uiTooling)
+                implementation(libs.androidx.material.icons.extended)
+                implementation(libs.androidx.material3)
+                implementation(libs.androidx.material3.adaptive)
                 implementation(libs.androidx.room.runtime)
                 implementation(libs.androidx.sqlite.bundled)
-                implementation(libs.kotlin.logging)
                 implementation(libs.bpsm.edn.java)
-                implementation(libs.lifecycle.viewmodel.compose)
-                api(libs.koin.compose.viewmodel)
+                implementation(libs.bundles.androidx.navigation3)
+                implementation(libs.bundles.file.kit)
+                implementation(libs.compose.ui.tooling.preview)
                 implementation(libs.fuzzywuzzy.kotlin)
+                implementation(libs.jetbrains.kotlinx.serialization.json)
+                implementation(libs.koin.compose.viewmodel)
+                implementation(libs.kotlin.logging)
+                implementation(libs.kotlin.stdlib)
+                implementation(libs.lifecycle.viewmodel.compose)
                 implementation(libs.multiplatform.settings)
-                api(libs.bundles.androidx.navigation3)
-                api(libs.androidx.material.icons.extended)
-                api(libs.androidx.material3)
-                api(libs.androidx.material3.adaptive)
-                api(libs.reorderable)
+                implementation(libs.reorderable)
+                implementation(libs.sonner)
+                implementation(libs.ui.backhandler)
             }
         }
 
@@ -85,9 +89,10 @@ kotlin {
 
         getByName("androidDeviceTest") {
             dependencies {
-                implementation(libs.androidx.core)
                 implementation(libs.androidx.junit)
                 implementation(libs.androidx.test.runner)
+                implementation(libs.jetbrains.kotlinx.coroutines.test)
+                implementation(libs.slf4j.reload4j)
             }
         }
     }
@@ -102,7 +107,7 @@ room {
 }
 
 compose.resources {
-    publicResClass = true
+    publicResClass = false
     packageOfResClass = "com.feko.generictabletoprpg"
     generateResClass = auto
 }

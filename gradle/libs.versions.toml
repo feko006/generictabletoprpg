@@ -1,13 +1,11 @@
 [versions]
 agp = "8.13.0"
 androidx-test-runner = "1.7.0"
-compose-mp = "1.9.0"
-core = "1.7.0"
+compose-mp = "1.10.0-alpha02"
 coroutines-test = "1.10.2"
-document-file = "1.1.0"
 edn-java = "0.7.1"
+file-kit = "0.12.0"
 fuzzy-wuzzy = "0.1.1"
-junit = "4.13.2"
 junit-version = "1.3.0"
 koin = "4.1.1"
 kotlin = "2.2.20"
@@ -26,11 +24,11 @@ navigation3 = "1.0.0-alpha11"
 navigation3-viewmodel = "2.10.0-alpha05"
 reorderable = "3.0.0"
 room = "2.8.2"
+slf4j-reload4j = "2.0.17"
+sonner = "0.3.8"
 sqlite = "2.6.1"
 
 [libraries]
-androidx-core = { group = "androidx.test", name = "core", version.ref = "core" }
-androidx-document-file = { group = "androidx.documentfile", name = "documentfile", version.ref = "document-file" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junit-version" }
 androidx-lifecycle-viewmodel-navigation3 = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-navigation3", version.ref = "navigation3-viewmodel" }
 androidx-material-icons-extended = { group = "androidx.compose.material", name = "material-icons-extended", version.ref = "material-icons" }
@@ -45,10 +43,12 @@ androidx-room-runtime = { group = "androidx.room", name = "room-runtime", versio
 androidx-sqlite-bundled = { module = "androidx.sqlite:sqlite-bundled", version.ref = "sqlite" }
 androidx-test-runner = { group = "androidx.test", name = "runner", version.ref = "androidx-test-runner" }
 bpsm-edn-java = { group = "us.bpsm", name = "edn-java", version.ref = "edn-java" }
+compose-ui-tooling-preview = { group = "org.jetbrains.compose.components", name = "components-ui-tooling-preview", version.ref = "compose-mp" }
+file-kit-core = { group = "io.github.vinceglb", name = "filekit-core", version.ref = "file-kit" }
+file-kit-dialogs-compose = { group = "io.github.vinceglb", name = "filekit-dialogs-compose", version.ref = "file-kit" }
 fuzzywuzzy-kotlin = { group = "eu.codlab", name = "fuzzywuzzy-kotlin", version.ref = "fuzzy-wuzzy" }
 jetbrains-kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "coroutines-test" }
 jetbrains-kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
-junit = { module = "junit:junit", version.ref = "junit" }
 koin-compose-viewmodel = { group = "io.insert-koin", name = "koin-compose-viewmodel", version.ref = "koin" }
 kotlin-logging = { group = "io.github.oshai", name = "kotlin-logging", version.ref = "kotlin-logging" }
 kotlin-stdlib = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib", version.ref = "kotlin-stdlib" }
@@ -56,9 +56,13 @@ kotlin-test = { group = "org.jetbrains.kotlin", name = "kotlin-test", version.re
 lifecycle-viewmodel-compose = { group = "org.jetbrains.androidx.lifecycle", name = "lifecycle-viewmodel-compose", version.ref = "lifecycle-viewmodel-compose" }
 multiplatform-settings = { group = "com.russhwolf", name = "multiplatform-settings", version.ref = "multiplatform-settings" }
 reorderable = { group = "sh.calvin.reorderable", name = "reorderable", version.ref = "reorderable" }
+slf4j-reload4j = { module = "org.slf4j:slf4j-reload4j", version.ref = "slf4j-reload4j" }
+sonner = { group = "io.github.dokar3", name = "sonner", version.ref = "sonner" }
+ui-backhandler = { group = "org.jetbrains.compose.ui", name = "ui-backhandler", version.ref = "compose-mp" }
 
 [bundles]
 androidx-navigation3 = ["androidx-navigation3-runtime", "androidx-navigation3-ui", "androidx-lifecycle-viewmodel-navigation3", "androidx-material3-adaptive-navigation3"]
+file-kit = ["file-kit-core", "file-kit-dialogs-compose"]
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

@@ -8,7 +8,8 @@ import com.feko.generictabletoprpg.shared.common.ui.viewmodel.ExportSubViewModel
 import com.feko.generictabletoprpg.shared.features.io.domain.model.AppModel
 import com.feko.generictabletoprpg.shared.features.tracker.model.TrackedThing
 import com.feko.generictabletoprpg.shared.features.tracker.model.TrackedThingGroup
-import java.io.OutputStream
+import io.github.vinceglb.filekit.PlatformFile
+import io.github.vinceglb.filekit.writeString
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -18,23 +19,19 @@ class TrackerGroupExportSubViewModel(
     private val getAllTrackedThings: IGetAllByParentSortedByIndexDao<TrackedThing>
 ) : ExportSubViewModel<TrackedThingGroup>() {
 
-    override fun getExportedFileData(): Pair<String, String> {
+    override fun getExportedFileData(): String {
         val dereferencedState = exportState
-        val mimeType = "text/json"
         return when (dereferencedState) {
             is ExportState.ExportingAll -> {
                 val date =
                     SimpleDateFormat("yyyy-MM-dd-HH-mm-ss", Locale.getDefault())
                         .format(Date())
-                Pair(mimeType, "tracked-groups-$date.json")
+                "tracked-groups-$date.json"
             }
 
             is ExportState.ExportingSingle -> {
                 val trackedGroupFileName = dereferencedState.item.name.replace(" ", "-")
-                Pair(
-                    mimeType,
-                    "tracked-group-$trackedGroupFileName.json"
-                )
+                "tracked-group-$trackedGroupFileName.json"
             }
 
             else ->
@@ -44,7 +41,7 @@ class TrackerGroupExportSubViewModel(
     }
 
     @Suppress("MoveVariableDeclarationIntoWhen")
-    override suspend fun exportDataInternal(outputStream: OutputStream) {
+    override suspend fun exportDataInternal(file: PlatformFile) {
         val dereferencedState = exportState
         val json = when (dereferencedState) {
             is ExportState.ExportingAll -> {
@@ -73,11 +70,6 @@ class TrackerGroupExportSubViewModel(
             else ->
                 throw IllegalStateException("File data requested without previously specifying whether to export all or a single item.")
         }
-        // TODO KMP
-//        outputStream
-//            .bufferedWriter()
-//            .use {
-//                it.write(json)
-//            }
+        file.writeString(json)
     }
 }

@@ -4,6 +4,7 @@ import androidx.navigation3.runtime.NavKey
 import com.feko.generictabletoprpg.shared.features.spell.Spell
 import kotlinx.serialization.Serializable
 
+@Serializable
 sealed interface INavigationDestination : NavKey {
 
     @Serializable

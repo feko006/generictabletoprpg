@@ -6,6 +6,7 @@ import com.feko.generictabletoprpg.shared.common.data.UserPreferences
 import com.feko.generictabletoprpg.shared.common.domain.IParseEdnAsMap
 import com.feko.generictabletoprpg.shared.common.domain.IProcessEdnMap
 import com.feko.generictabletoprpg.shared.common.domain.IUserPreferences
+import com.feko.generictabletoprpg.shared.common.ui.viewmodel.AppViewModel
 import com.feko.generictabletoprpg.shared.features.action.actionModule
 import com.feko.generictabletoprpg.shared.features.ammunition.ammunitionModule
 import com.feko.generictabletoprpg.shared.features.armor.armorModule
@@ -22,6 +23,7 @@ import com.feko.generictabletoprpg.shared.features.tracker.trackerGroupsModule
 import com.feko.generictabletoprpg.shared.features.tracker.trackerModule
 import com.feko.generictabletoprpg.shared.features.weapon.weaponModule
 import org.koin.core.module.dsl.singleOf
+import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
 
@@ -34,8 +36,7 @@ val commonModule = module {
     singleOf(::UserPreferences) bind IUserPreferences::class
 
     // VMs
-    // TODO KMP
-//    viewModelOf(::AppViewModel)
+    viewModelOf(::AppViewModel)
 }
 
 

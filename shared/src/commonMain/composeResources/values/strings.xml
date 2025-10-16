@@ -72,7 +72,6 @@
     <string name="feat_details_title">Feat Details</string>
     <!--Import-->
     <string name="import_title">Import</string>
-    <string name="error_reading_file_toast">Error reading file</string>
     <string name="failed_to_import_data_toast">Failed to import data</string>
     <string name="successfully_imported_data_toast">Successfully imported data</string>
     <string name="partially_imported_data_toast">Data partially imported</string>

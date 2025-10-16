@@ -5,11 +5,11 @@ import com.feko.generictabletoprpg.export_failed
 import com.feko.generictabletoprpg.export_location_hint
 import com.feko.generictabletoprpg.export_successful
 import com.feko.generictabletoprpg.shared.logger
+import io.github.vinceglb.filekit.PlatformFile
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.io.OutputStream
 
 abstract class ExportSubViewModel<T> : IExportSubViewModel<T> {
     protected var exportState: ExportState<T> = ExportState.None
@@ -21,12 +21,12 @@ abstract class ExportSubViewModel<T> : IExportSubViewModel<T> {
         exportState = ExportState.None
     }
 
-    override suspend fun exportData(outputStream: OutputStream?) {
-        if (outputStream == null) {
+    override suspend fun exportData(file: PlatformFile?) {
+        if (file == null) {
             notifyFailed(NullPointerException("OutputStream is null."))
         } else {
             try {
-                exportDataInternal(outputStream)
+                exportDataInternal(file)
                 withContext(Dispatchers.Main) {
                     logger.debug { "Export successful." }
                     _toast.showMessage(Res.string.export_successful)
@@ -38,7 +38,7 @@ abstract class ExportSubViewModel<T> : IExportSubViewModel<T> {
         }
     }
 
-    abstract suspend fun exportDataInternal(outputStream: OutputStream)
+    abstract suspend fun exportDataInternal(file: PlatformFile)
 
     override fun notifyFailed(e: Exception) {
         CoroutineScope(Dispatchers.Main).launch {

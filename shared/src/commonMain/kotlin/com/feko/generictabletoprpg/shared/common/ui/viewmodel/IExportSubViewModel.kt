@@ -1,12 +1,12 @@
 package com.feko.generictabletoprpg.shared.common.ui.viewmodel
 
-import java.io.OutputStream
+import io.github.vinceglb.filekit.PlatformFile
 
 interface IExportSubViewModel<T> {
     val toast: IToastSubViewModel
     fun notifyCancelled()
-    fun getExportedFileData(): Pair<String, String>
-    suspend fun exportData(outputStream: OutputStream?)
+    fun getExportedFileData(): String
+    suspend fun exportData(file: PlatformFile?)
     fun notifyFailed(e: Exception)
     fun exportAllRequested()
     fun exportSingleRequested(item: T)
