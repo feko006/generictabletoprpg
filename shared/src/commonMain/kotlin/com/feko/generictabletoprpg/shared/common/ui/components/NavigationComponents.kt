@@ -3,6 +3,7 @@ package com.feko.generictabletoprpg.shared.common.ui.components
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
+import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffoldDefaults
 import androidx.compose.material3.adaptive.layout.PaneScaffoldDirective
 import androidx.compose.material3.adaptive.navigation.BackNavigationBehavior
 import androidx.compose.material3.adaptive.navigation3.ListDetailSceneStrategy
@@ -12,6 +13,7 @@ import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDe
 import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.runtime.NavKey
+import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import androidx.window.core.layout.WindowSizeClass
 import com.feko.generictabletoprpg.shared.common.domain.model.IIdentifiable
@@ -76,6 +78,7 @@ fun NavigationHost(
     NavDisplay(
         backStack,
         entryDecorators = listOf(
+            rememberSaveableStateHolderNavEntryDecorator(),
             rememberViewModelStoreNavEntryDecorator()
         ),
         sceneStrategy = ListDetailSceneStrategy(
@@ -83,7 +86,8 @@ fun NavigationHost(
             PaneScaffoldDirective.Companion.Default.copy(
                 maxHorizontalPartitions = panes,
                 maxVerticalPartitions = panes
-            )
+            ),
+            ListDetailPaneScaffoldDefaults.adaptStrategies()
         )
     ) { key ->
         if (key !is INavigationDestination) {

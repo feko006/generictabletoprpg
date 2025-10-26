@@ -55,7 +55,9 @@ fun GttrpgApp() {
                 }
             }
             val backStack = rememberNavBackStack(
-                SavedStateConfiguration {},
+                SavedStateConfiguration {
+                    serializersModule = INavigationDestination.serializersModule
+                },
                 INavigationDestination.startDestination
             )
             ModalNavigationDrawer(
