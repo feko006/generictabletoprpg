@@ -52,7 +52,6 @@ import com.feko.generictabletoprpg.shared.common.ui.components.doneIcon
 import com.feko.generictabletoprpg.shared.common.ui.components.verticalAlignBottomIcon
 import com.feko.generictabletoprpg.shared.common.ui.components.verticalAlignTopIcon
 import com.feko.generictabletoprpg.shared.common.ui.theme.Typography
-import com.feko.generictabletoprpg.shared.features.searchall.ui.getUniqueListItemKey
 import com.feko.generictabletoprpg.shared.features.spell.Spell
 import com.feko.generictabletoprpg.shared.features.tracker.model.SpellListEntry
 import com.feko.generictabletoprpg.shared.features.tracker.model.cantripSpellsCount
@@ -234,7 +233,7 @@ fun SpellListDialog(
             ) {
                 items(
                     entries.filterPreparedAndCantrips(dialog.isFilteringByPreparedSpells),
-                    key = { getUniqueListItemKey(it.toSpell()) }) { spellListEntry ->
+                    key = { "${it.name}${it.id}" }) { spellListEntry ->
                     SpellListEntryListItem(
                         spellListEntry,
                         canSpellBeCast(spellListEntry.level),
