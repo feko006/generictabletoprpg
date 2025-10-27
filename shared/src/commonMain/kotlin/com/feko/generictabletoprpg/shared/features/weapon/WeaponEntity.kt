@@ -11,9 +11,7 @@ import com.feko.generictabletoprpg.shared.common.domain.model.IMutableIdentifiab
 import com.feko.generictabletoprpg.shared.common.domain.model.INamed
 
 @DoNotObfuscate
-@Entity(
-    tableName = "weapons"
-)
+@Entity(tableName = "weapons")
 data class WeaponEntity(
     @PrimaryKey(autoGenerate = true)
     override var id: Long,
@@ -93,6 +91,7 @@ data class WeaponEntity(
         }
     }
 
+    @DoNotObfuscate
     data class RangedWeaponRangeEmbeddedEntity(
         val minimum: Int,
         val maximum: Int
