@@ -48,14 +48,11 @@ kotlin {
                 implementation(compose.material)
                 implementation(compose.runtime)
                 implementation(compose.uiTooling)
-                implementation(libs.androidx.material.icons.extended)
-                implementation(libs.androidx.material3)
-                implementation(libs.androidx.material3.adaptive)
                 implementation(libs.androidx.room.runtime)
                 implementation(libs.androidx.sqlite.bundled)
                 implementation(libs.bpsm.edn.java)
-                implementation(libs.bundles.androidx.navigation3)
                 implementation(libs.bundles.file.kit)
+                implementation(libs.bundles.navigation3)
                 implementation(libs.compose.ui.tooling.preview)
                 implementation(libs.fuzzywuzzy.kotlin)
                 implementation(libs.jetbrains.kotlinx.serialization.json)
@@ -63,6 +60,11 @@ kotlin {
                 implementation(libs.kotlin.logging)
                 implementation(libs.kotlin.stdlib)
                 implementation(libs.lifecycle.viewmodel.compose)
+                implementation(libs.material.icons)
+                implementation(libs.material3)
+                implementation(libs.material3.adaptive)
+                implementation(libs.material3.layout)
+                implementation(libs.material3.navigation)
                 implementation(libs.multiplatform.settings)
                 implementation(libs.reorderable)
                 implementation(libs.sonner)
@@ -85,6 +87,8 @@ kotlin {
         val desktopMain by getting
         desktopMain.dependencies {
             implementation(compose.desktop.common)
+            implementation(compose.desktop.currentOs)
+            implementation(libs.coroutines.swing)
         }
 
         getByName("androidDeviceTest") {

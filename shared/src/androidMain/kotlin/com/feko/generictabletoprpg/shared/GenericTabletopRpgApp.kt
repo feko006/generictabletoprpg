@@ -1,7 +1,6 @@
 package com.feko.generictabletoprpg.shared
 
 import android.app.Application
-import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
 
@@ -13,7 +12,6 @@ class GenericTabletopRpgApp : Application() {
 
         startKoin {
             androidLogger()
-            androidContext(this@GenericTabletopRpgApp)
             modules(diModules)
         }
     }

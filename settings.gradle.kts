@@ -16,4 +16,5 @@ dependencyResolutionManagement {
 }
 rootProject.name = "generictabletoprpg"
 include(":androidApp")
+include(":desktopApp")
 include(":shared")

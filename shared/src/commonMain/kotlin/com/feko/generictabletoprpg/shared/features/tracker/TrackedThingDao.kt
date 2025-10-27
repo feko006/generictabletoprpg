@@ -39,13 +39,13 @@ abstract class TrackedThingDao :
     abstract override suspend fun getByIdInternal(id: Long): TrackedThingEntity
 
     @Query("delete from tracked_things where id = :id")
-    abstract fun delete(id: Long)
+    abstract suspend fun delete(id: Long)
 
     override suspend fun getEntityId(entity: TrackedThingEntity): Long? =
         if (entity.id > 0) entity.id else null
 
     @Query("select * from tracked_things where groupId = :parentId order by idx")
-    abstract fun getAllSortedByIndexInternal(parentId: Long): List<TrackedThingEntity>
+    abstract suspend fun getAllSortedByIndexInternal(parentId: Long): List<TrackedThingEntity>
 
     override suspend fun getAllSortedByIndex(parentId: Long): List<TrackedThing> =
         getAllSortedByIndexInternal(parentId)
