@@ -4,6 +4,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 data class Dimens(
+    val isBigScreen: Boolean,
     val paddingSmall: Dp,
     val paddingMedium: Dp,
     val visualLarge: Dp,
@@ -11,8 +12,9 @@ data class Dimens(
     val gapMedium: Dp,
 )
 
-fun scaledDimens(factor: Float): Dimens =
+fun scaledDimens(factor: Float, isBigScreen: Boolean): Dimens =
     Dimens(
+        isBigScreen = isBigScreen,
         paddingSmall = (8 * factor).dp,
         paddingMedium = (16 * factor).dp,
         visualLarge = (100 * factor).dp,
@@ -20,6 +22,6 @@ fun scaledDimens(factor: Float): Dimens =
         gapMedium = (16 * factor).dp,
     )
 
-val compactDimens = scaledDimens(1f)
-val mediumDimens = scaledDimens(1.25f)
-val expandedDimens = scaledDimens(1.5f)
+val compactDimens = scaledDimens(1f, isBigScreen = false)
+val mediumDimens = scaledDimens(1.25f, isBigScreen = true)
+val expandedDimens = scaledDimens(1.5f, isBigScreen = true)

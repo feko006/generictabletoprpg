@@ -31,3 +31,5 @@ expect val checkBoxOutlineBlankIcon: ImageVector
 expect val diamondIcon: ImageVector
 expect val removeIcon: ImageVector
 expect val sendToMobileIcon: ImageVector
+expect val dashboardIcon: ImageVector
+expect val inputIcon: ImageVector
