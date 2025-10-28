@@ -24,7 +24,8 @@ jetbrains-navigation3 = "1.0.0-alpha03"
 navigation3-viewmodel = "2.10.0-alpha03"
 reorderable = "3.0.0"
 room = "2.8.3"
-slf4j-reload4j = "2.0.17"
+slf4j-simple = "2.0.17"
+slf4j-android = "1.7.36"
 sonner = "0.3.8"
 sqlite = "2.6.1"
 
@@ -57,7 +58,8 @@ material3-navigation = { group = "org.jetbrains.compose.material3.adaptive", nam
 multiplatform-settings = { group = "com.russhwolf", name = "multiplatform-settings", version.ref = "multiplatform-settings" }
 navigation3-ui = { group = "org.jetbrains.androidx.navigation3", name = "navigation3-ui", version.ref = "jetbrains-navigation3" }
 reorderable = { group = "sh.calvin.reorderable", name = "reorderable", version.ref = "reorderable" }
-slf4j-reload4j = { module = "org.slf4j:slf4j-reload4j", version.ref = "slf4j-reload4j" }
+slf4j-simple = { group = "org.slf4j", name = "slf4j-simple", version.ref = "slf4j-simple" }
+slf4j-android = { group = "org.slf4j", name = "slf4j-android", version.ref = "slf4j-android" }
 sonner = { group = "io.github.dokar3", name = "sonner", version.ref = "sonner" }
 ui-backhandler = { group = "org.jetbrains.compose.ui", name = "ui-backhandler", version.ref = "compose-mp" }
 

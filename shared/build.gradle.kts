@@ -81,6 +81,7 @@ kotlin {
         androidMain {
             dependencies {
                 implementation(libs.androidx.room.ktx)
+                implementation(libs.slf4j.android)
             }
         }
 
@@ -89,6 +90,7 @@ kotlin {
             implementation(compose.desktop.common)
             implementation(compose.desktop.currentOs)
             implementation(libs.coroutines.swing)
+            implementation(libs.slf4j.simple)
         }
 
         getByName("androidDeviceTest") {
@@ -96,7 +98,7 @@ kotlin {
                 implementation(libs.androidx.junit)
                 implementation(libs.androidx.test.runner)
                 implementation(libs.jetbrains.kotlinx.coroutines.test)
-                implementation(libs.slf4j.reload4j)
+                implementation(libs.slf4j.android)
             }
         }
     }
