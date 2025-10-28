@@ -20,7 +20,7 @@ compose.desktop {
         mainClass = "com.feko.generictabletoprpg.shared.MainKt"
 
         nativeDistributions {
-            targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
+            targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb, TargetFormat.Rpm)
             packageName = "gttrpg"
             packageVersion = libs.versions.app.get()
 
@@ -40,7 +40,7 @@ compose.desktop {
         }
 
         buildTypes.release.proguard {
-            configurationFiles.from(project.file("rules.pro"))
+            isEnabled = false
         }
     }
 }
