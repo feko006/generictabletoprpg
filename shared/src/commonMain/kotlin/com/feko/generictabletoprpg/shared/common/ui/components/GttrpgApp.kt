@@ -33,6 +33,7 @@ import androidx.navigationevent.compose.rememberNavigationEventState
 import androidx.savedstate.serialization.SavedStateConfiguration
 import com.feko.generictabletoprpg.shared.common.ui.RootDestinations
 import com.feko.generictabletoprpg.shared.common.ui.theme.LocalDimens
+import com.feko.generictabletoprpg.shared.common.ui.theme.ScreenSize
 import com.feko.generictabletoprpg.shared.common.ui.viewmodel.AppViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -52,7 +53,6 @@ fun GttrpgApp() {
     when (appState) {
         is AppViewModel.AppState.ImportingBaseContent -> FillingLoadingIndicator()
 
-
         is AppViewModel.AppState.ShowingScreen -> {
             val activeDrawerItemRoute = appViewModel.activeDrawerItemRoute.collectAsState()
             val scope = rememberCoroutineScope()
@@ -69,7 +69,7 @@ fun GttrpgApp() {
                 },
                 INavigationDestination.startDestination
             )
-            val isBigScreen = LocalDimens.current.isBigScreen
+            val isBigScreen = LocalDimens.current.screenSize != ScreenSize.Compact
             if (isBigScreen) {
                 LargeScreenNavigation(
                     activeDrawerItemRoute,

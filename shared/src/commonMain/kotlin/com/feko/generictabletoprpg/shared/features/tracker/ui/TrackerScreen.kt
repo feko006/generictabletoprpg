@@ -2,7 +2,7 @@ package com.feko.generictabletoprpg.shared.features.tracker.ui
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyItemScope
+import androidx.compose.foundation.lazy.staggeredgrid.LazyStaggeredGridItemScope
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
@@ -16,8 +16,8 @@ import com.feko.generictabletoprpg.shared.common.domain.model.IText.StringResour
 import com.feko.generictabletoprpg.shared.common.domain.model.IText.StringText.Companion.asText
 import com.feko.generictabletoprpg.shared.common.ui.components.AddFABButtonWithDropdown
 import com.feko.generictabletoprpg.shared.common.ui.components.GttrpgTopAppBar
-import com.feko.generictabletoprpg.shared.common.ui.components.OverviewListItem
-import com.feko.generictabletoprpg.shared.common.ui.components.SearchableReorderableLazyList
+import com.feko.generictabletoprpg.shared.common.ui.components.OverviewItem
+import com.feko.generictabletoprpg.shared.common.ui.components.SearchableReorderableLazyItems
 import com.feko.generictabletoprpg.shared.common.ui.components.ToastMessage
 import com.feko.generictabletoprpg.shared.common.ui.components.refreshIcon
 import com.feko.generictabletoprpg.shared.common.ui.viewmodel.ResultViewModel
@@ -64,9 +64,9 @@ fun TrackerScreen(
             ) { DropdownMenuContent { type -> viewModel.showCreateDialog(type) } }
         }
     ) { paddingValues ->
-        SearchableReorderableLazyList(
+        SearchableReorderableLazyItems(
             viewModel = viewModel,
-            listItem = { item, isDragged, scope ->
+            item = { item, isDragged, scope ->
                 TrackerListItem(
                     item,
                     isDragged,
@@ -77,11 +77,10 @@ fun TrackerScreen(
                 )
             },
             Modifier.padding(paddingValues),
-            addFabButtonSpacerToList = true,
-            uniqueListItemKey = { getUniqueListItemKey(it) },
+            addFabButtonSpacer = true,
+            uniqueItemKey = { getUniqueListItemKey(it) },
             onItemReordered = { from, to -> viewModel.itemReordered(from.index, to.index) },
-            searchFieldHint = Res.string.search_everywhere.asText(),
-            addHorizontalDivider = false
+            searchFieldHint = Res.string.search_everywhere.asText()
         )
     }
     ToastMessage(viewModel.toast)
@@ -89,7 +88,7 @@ fun TrackerScreen(
 }
 
 @Composable
-fun LazyItemScope.TrackerListItem(
+fun LazyStaggeredGridItemScope.TrackerListItem(
     item: Any,
     isDragged: Boolean,
     scope: ReorderableCollectionItemScope,
@@ -113,6 +112,6 @@ fun LazyItemScope.TrackerListItem(
             TrackedThing.Type.FiveEStats -> StatsListItem(isDragged, item, scope, viewModel)
         }
     } else {
-        OverviewListItem(item, Modifier.clickable(onClick = { onOpenDetails(item) }))
+        OverviewItem(item, Modifier.clickable(onClick = { onOpenDetails(item) }))
     }
 }

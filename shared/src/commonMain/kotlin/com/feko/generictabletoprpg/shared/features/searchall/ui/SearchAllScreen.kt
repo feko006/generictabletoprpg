@@ -26,8 +26,8 @@ import com.feko.generictabletoprpg.shared.common.domain.model.IIdentifiable
 import com.feko.generictabletoprpg.shared.common.domain.model.IText.StringResourceText.Companion.asText
 import com.feko.generictabletoprpg.shared.common.ui.RootDestinations
 import com.feko.generictabletoprpg.shared.common.ui.components.GttrpgTopAppBar
-import com.feko.generictabletoprpg.shared.common.ui.components.OverviewListItem
-import com.feko.generictabletoprpg.shared.common.ui.components.SearchableLazyList
+import com.feko.generictabletoprpg.shared.common.ui.components.OverviewItem
+import com.feko.generictabletoprpg.shared.common.ui.components.SearchableLazyItems
 import com.feko.generictabletoprpg.shared.common.ui.components.filterListIcon
 import com.feko.generictabletoprpg.shared.common.ui.theme.LocalDimens
 import com.feko.generictabletoprpg.shared.common.ui.viewmodel.AppViewModel
@@ -74,10 +74,10 @@ fun SearchAllScreen(
             ) {
                 if (it == null) viewModel.resetFilter() else viewModel.filterUpdated(it)
             }
-            SearchableLazyList(
+            SearchableLazyItems(
                 viewModel,
-                listItem = { item ->
-                    OverviewListItem(
+                item = { item ->
+                    OverviewItem(
                         item,
                         Modifier
                             .fillMaxWidth()
@@ -90,7 +90,7 @@ fun SearchAllScreen(
                                 }
                             })
                 },
-                uniqueListItemKey = { getUniqueListItemKey(it) },
+                uniqueItemKey = { getUniqueListItemKey(it) },
                 searchFieldHint = Res.string.search_everywhere.asText()
             )
         }

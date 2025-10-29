@@ -3,6 +3,7 @@ package com.feko.generictabletoprpg.shared.common.ui.components
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -10,17 +11,19 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyItemScope
-import androidx.compose.foundation.lazy.LazyListItemInfo
-import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.lazy.staggeredgrid.LazyStaggeredGridItemInfo
+import androidx.compose.foundation.lazy.staggeredgrid.LazyStaggeredGridItemScope
+import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
+import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
+import androidx.compose.foundation.lazy.staggeredgrid.items
+import androidx.compose.foundation.lazy.staggeredgrid.rememberLazyStaggeredGridState
 import androidx.compose.foundation.shape.CornerSize
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -44,118 +47,118 @@ import com.feko.generictabletoprpg.shared.common.domain.model.IText
 import com.feko.generictabletoprpg.shared.common.domain.model.IText.StringResourceText.Companion.asText
 import com.feko.generictabletoprpg.shared.common.ui.theme.LocalDimens
 import com.feko.generictabletoprpg.shared.common.ui.theme.Typography
+import com.feko.generictabletoprpg.shared.common.ui.theme.columnCount
 import com.feko.generictabletoprpg.shared.common.ui.viewmodel.OverviewViewModel
 import com.feko.generictabletoprpg.shared.features.spell.Spell
 import org.jetbrains.compose.resources.stringResource
 import sh.calvin.reorderable.ReorderableCollectionItemScope
 import sh.calvin.reorderable.ReorderableItem
-import sh.calvin.reorderable.rememberReorderableLazyListState
+import sh.calvin.reorderable.rememberReorderableLazyStaggeredGridState
 
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
-fun <TViewModel, T> SearchableLazyList(
+fun <TViewModel, T> SearchableLazyItems(
     viewModel: TViewModel,
-    listItem: @Composable LazyItemScope.(T) -> Unit,
+    item: @Composable LazyStaggeredGridItemScope.(T) -> Unit,
     modifier: Modifier = Modifier,
-    addFabButtonSpacerToList: Boolean = false,
-    uniqueListItemKey: (Any) -> Any = { (it as IIdentifiable).id },
+    addFabButtonSpacer: Boolean = false,
+    uniqueItemKey: (Any) -> Any = { (it as IIdentifiable).id },
     searchFieldHint: IText = Res.string.search.asText(),
 ) where TViewModel : OverviewViewModel<T>,
         T : Any {
-    SearchableLazyListLayout(
-        viewModel,
-        modifier,
-        searchFieldHint
-    ) { searchString ->
-        val listItems by viewModel.items.collectAsState(emptyList())
-        if (listItems.isNotEmpty()) {
-            val listState: LazyListState = rememberLazyListState()
-            LazyColumn(
-                Modifier.fillMaxSize(),
-                listState,
-                contentPadding = PaddingValues(bottom = if (addFabButtonSpacerToList) 40.dp else 0.dp),
-                verticalArrangement = Arrangement.spacedBy(LocalDimens.current.gapSmall)
-            ) {
-                items(
-                    listItems,
-                    key = uniqueListItemKey
-                ) { item ->
-                    listItem(item)
-                    HorizontalDivider()
+    BoxWithConstraints {
+        SearchableLazyItemsLayout(
+            viewModel,
+            modifier,
+            searchFieldHint
+        ) { searchString ->
+            val items by viewModel.items.collectAsState(emptyList())
+            if (items.isNotEmpty()) {
+                val gridState = rememberLazyStaggeredGridState()
+                LazyVerticalStaggeredGrid(
+                    StaggeredGridCells.Fixed(columnCount(maxWidth)),
+                    Modifier.fillMaxSize(),
+                    gridState,
+                    contentPadding = PaddingValues(bottom = if (addFabButtonSpacer) 40.dp else 0.dp),
+                    verticalItemSpacing = LocalDimens.current.gapSmall,
+                    horizontalArrangement = Arrangement.spacedBy(LocalDimens.current.gapSmall)
+                ) {
+                    items(items, key = uniqueItemKey) { item -> item(item) }
                 }
-            }
-            val scrollToEndOfList by viewModel.scrollToEndOfList.collectAsState(false)
-            if (scrollToEndOfList) {
-                LaunchedEffect(key1 = searchString) {
-                    listState.scrollToItem(listItems.size)
-                    viewModel.consumeScrollToEndOfListEvent()
+                val scrollToEnd by viewModel.scrollToEnd.collectAsState(false)
+                if (scrollToEnd) {
+                    LaunchedEffect(key1 = searchString) {
+                        gridState.scrollToItem(items.size)
+                        viewModel.consumeScrollToEndEvent()
+                    }
                 }
+                LaunchedEffect(key1 = items) {
+                    gridState.scrollToItem(0)
+                }
+            } else {
+                NoItemsIndicator()
             }
-            LaunchedEffect(key1 = listItems) {
-                listState.scrollToItem(0)
-            }
-        } else {
-            EmptyList()
         }
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun <TViewModel, T> SearchableReorderableLazyList(
+fun <TViewModel, T> SearchableReorderableLazyItems(
     viewModel: TViewModel,
-    listItem: @Composable LazyItemScope.(T, Boolean, ReorderableCollectionItemScope) -> Unit,
+    item: @Composable LazyStaggeredGridItemScope.(T, Boolean, ReorderableCollectionItemScope) -> Unit,
     modifier: Modifier = Modifier,
-    addFabButtonSpacerToList: Boolean = false,
-    uniqueListItemKey: (Any) -> Any = { (it as IIdentifiable).id },
-    onItemReordered: (LazyListItemInfo, LazyListItemInfo) -> Unit = { _, _ -> },
-    searchFieldHint: IText = Res.string.search.asText(),
-    addHorizontalDivider: Boolean = true,
+    addFabButtonSpacer: Boolean = false,
+    uniqueItemKey: (Any) -> Any = { (it as IIdentifiable).id },
+    onItemReordered: (LazyStaggeredGridItemInfo, LazyStaggeredGridItemInfo) -> Unit = { _, _ -> },
+    searchFieldHint: IText = Res.string.search.asText()
 ) where TViewModel : OverviewViewModel<T>,
         T : Any {
-    SearchableLazyListLayout(
-        viewModel,
-        modifier,
-        searchFieldHint,
-    ) { searchString ->
-        val listItems by viewModel.items.collectAsState(emptyList())
-        val hapticFeedback = LocalHapticFeedback.current
-        if (listItems.isNotEmpty()) {
-            val listState = rememberLazyListState()
-            val state = rememberReorderableLazyListState(listState, onMove = { from, to ->
-                onItemReordered(from, to)
-                hapticFeedback.performHapticFeedback(HapticFeedbackType.SegmentFrequentTick)
-            })
-            LazyColumn(
-                Modifier.fillMaxSize(),
-                listState,
-                contentPadding = PaddingValues(bottom = if (addFabButtonSpacerToList) 40.dp else 0.dp),
-                verticalArrangement = Arrangement.spacedBy(LocalDimens.current.gapSmall)
-            ) {
-                items(
-                    listItems,
-                    key = uniqueListItemKey
-                ) { item ->
-                    ReorderableItem(state, uniqueListItemKey(item)) { isDragging ->
-                        listItem(item, isDragging, this)
-                    }
-                    if (addHorizontalDivider) {
-                        HorizontalDivider()
+    BoxWithConstraints {
+        SearchableLazyItemsLayout(
+            viewModel,
+            modifier,
+            searchFieldHint,
+        ) { searchString ->
+            val items by viewModel.items.collectAsState(emptyList())
+            val hapticFeedback = LocalHapticFeedback.current
+            if (items.isNotEmpty()) {
+                val gridState = rememberLazyStaggeredGridState()
+                val state =
+                    rememberReorderableLazyStaggeredGridState(gridState, onMove = { from, to ->
+                        onItemReordered(from, to)
+                        hapticFeedback.performHapticFeedback(HapticFeedbackType.SegmentFrequentTick)
+                    })
+                LazyVerticalStaggeredGrid(
+                    StaggeredGridCells.Fixed(columnCount(maxWidth)),
+                    Modifier.fillMaxSize(),
+                    gridState,
+                    contentPadding = PaddingValues(bottom = if (addFabButtonSpacer) 40.dp else 0.dp),
+                    verticalItemSpacing = LocalDimens.current.gapSmall,
+                    horizontalArrangement = Arrangement.spacedBy(LocalDimens.current.gapSmall)
+                ) {
+                    items(
+                        items,
+                        key = uniqueItemKey
+                    ) { item ->
+                        ReorderableItem(state, uniqueItemKey(item)) { isDragging ->
+                            item(item, isDragging, this)
+                        }
                     }
                 }
-            }
-            val scrollToEndOfList by viewModel.scrollToEndOfList.collectAsState(false)
-            if (scrollToEndOfList) {
+                val scrollToEnd by viewModel.scrollToEnd.collectAsState(false)
+                if (scrollToEnd) {
+                    LaunchedEffect(key1 = searchString) {
+                        gridState.scrollToItem(items.size)
+                        viewModel.consumeScrollToEndEvent()
+                    }
+                }
                 LaunchedEffect(key1 = searchString) {
-                    listState.scrollToItem(listItems.size)
-                    viewModel.consumeScrollToEndOfListEvent()
+                    gridState.scrollToItem(0)
                 }
+            } else {
+                NoItemsIndicator()
             }
-            LaunchedEffect(key1 = searchString) {
-                listState.scrollToItem(0)
-            }
-        } else {
-            EmptyList()
         }
     }
 }
@@ -202,11 +205,11 @@ fun Modifier.longPressDraggableHandle(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun <TViewModel, T> SearchableLazyListLayout(
+private fun <TViewModel, T> SearchableLazyItemsLayout(
     viewModel: TViewModel,
     modifier: Modifier = Modifier,
     searchFieldHint: IText = Res.string.search.asText(),
-    listContent: @Composable (String) -> Unit
+    content: @Composable (String) -> Unit
 ) where TViewModel : OverviewViewModel<T>,
         T : Any {
     val searchString by viewModel.searchString.collectAsState("")
@@ -230,7 +233,7 @@ private fun <TViewModel, T> SearchableLazyListLayout(
             searchFieldHint
         )
         Box {
-            listContent(searchString)
+            content(searchString)
             val isLoadingShown by viewModel.isLoadingShown.collectAsState()
             StableAnimatedVisibility(isLoadingShown) {
                 FillingLoadingIndicator()
@@ -240,7 +243,7 @@ private fun <TViewModel, T> SearchableLazyListLayout(
 }
 
 @Composable
-fun EmptyList() {
+fun NoItemsIndicator() {
     Box(Modifier.fillMaxSize()) {
         val dimens = LocalDimens.current
         Column(
@@ -267,19 +270,17 @@ fun EmptyList() {
 }
 
 @Composable
-fun <T> LazyItemScope.OverviewListItem(
-    item: T,
-    modifier: Modifier = Modifier
-) {
-    ListItem(
-        headlineContent = {
-            Text((item as INamed).name)
-        },
-        supportingContent = {
-            if (item is Spell) {
-                Text("${stringResource(Res.string.level)} ${item.level}, ${item.school}")
-            }
-        },
-        modifier = modifier.animateItem()
-    )
+fun <T> LazyStaggeredGridItemScope.OverviewItem(item: T, modifier: Modifier = Modifier) {
+    Card(shape = MaterialTheme.shapes.extraLarge) {
+        ListItem(
+            headlineContent = { Text((item as INamed).name) },
+            supportingContent = {
+                if (item is Spell) {
+                    Text("${stringResource(Res.string.level)} ${item.level}, ${item.school}")
+                }
+            },
+            modifier = modifier.animateItem(),
+            colors = ListItemDefaults.colors(containerColor = CardDefaults.cardColors().containerColor)
+        )
+    }
 }

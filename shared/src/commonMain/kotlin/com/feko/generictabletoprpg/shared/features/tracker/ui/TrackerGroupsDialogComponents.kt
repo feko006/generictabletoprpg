@@ -3,9 +3,13 @@ package com.feko.generictabletoprpg.shared.features.tracker.ui
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -69,48 +73,51 @@ fun TrackerGroupListItem(
     pickDirectoryLauncher: PickerResultLauncher,
     onTrackerGroupClick: (id: Long, name: String) -> Unit
 ) {
-    ListItem(
-        headlineContent = { Text((item as INamed).name) },
-        trailingContent = {
-            var expanded by remember { mutableStateOf(false) }
-            GttrpgContextMenu(
-                expanded,
-                { expanded = it }
-            ) {
-                DropdownMenuItem(
-                    text = { Text(stringResource(Res.string.export)) },
-                    onClick = {
-                        viewModel.export.exportSingleRequested(item)
-                        pickDirectoryLauncher.launch()
-                        expanded = false
-                    },
-                    leadingIcon = {
-                        Icon(sendToMobileIcon, "")
-                    })
-                DropdownMenuItem(
-                    text = { Text(stringResource(Res.string.edit)) },
-                    onClick = {
-                        viewModel.editItemRequested(item)
-                        expanded = false
-                    },
-                    leadingIcon = {
-                        Icon(editIcon, "")
-                    }
-                )
-                DropdownMenuItem(
-                    text = { Text(stringResource(Res.string.delete)) },
-                    onClick = {
-                        viewModel.deleteItemRequested(item)
-                        expanded = false
-                    },
-                    leadingIcon = { Icon(deleteIcon, "") }
-                )
-            }
-        },
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(onClick = { onTrackerGroupClick(item.id, item.name) })
-    )
+    Card(shape = MaterialTheme.shapes.extraLarge) {
+        ListItem(
+            headlineContent = { Text((item as INamed).name) },
+            trailingContent = {
+                var expanded by remember { mutableStateOf(false) }
+                GttrpgContextMenu(
+                    expanded,
+                    { expanded = it }
+                ) {
+                    DropdownMenuItem(
+                        text = { Text(stringResource(Res.string.export)) },
+                        onClick = {
+                            viewModel.export.exportSingleRequested(item)
+                            pickDirectoryLauncher.launch()
+                            expanded = false
+                        },
+                        leadingIcon = {
+                            Icon(sendToMobileIcon, "")
+                        })
+                    DropdownMenuItem(
+                        text = { Text(stringResource(Res.string.edit)) },
+                        onClick = {
+                            viewModel.editItemRequested(item)
+                            expanded = false
+                        },
+                        leadingIcon = {
+                            Icon(editIcon, "")
+                        }
+                    )
+                    DropdownMenuItem(
+                        text = { Text(stringResource(Res.string.delete)) },
+                        onClick = {
+                            viewModel.deleteItemRequested(item)
+                            expanded = false
+                        },
+                        leadingIcon = { Icon(deleteIcon, "") }
+                    )
+                }
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable(onClick = { onTrackerGroupClick(item.id, item.name) }),
+            colors = ListItemDefaults.colors(containerColor = CardDefaults.cardColors().containerColor)
+        )
+    }
 }
 
 @Composable

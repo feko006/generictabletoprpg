@@ -8,6 +8,7 @@ import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.staticCompositionLocalOf
+import androidx.compose.ui.unit.Dp
 import androidx.window.core.layout.WindowSizeClass
 
 val LocalDimens = staticCompositionLocalOf<Dimens> { error("No Dimens provided") }
@@ -27,8 +28,8 @@ fun GttrpgTheme(
     val dimens =
         currentWindowAdaptiveInfo().windowSizeClass.let {
             when {
-                it.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_MEDIUM_LOWER_BOUND) -> mediumDimens
                 it.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND) -> expandedDimens
+                it.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_MEDIUM_LOWER_BOUND) -> mediumDimens
                 else -> compactDimens
             }
         }
@@ -40,4 +41,10 @@ fun GttrpgTheme(
             content = content
         )
     }
+}
+
+fun columnCount(uiWidth: Dp): Int = when {
+    uiWidth.value >= WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND -> 3
+    uiWidth.value >= WindowSizeClass.WIDTH_DP_MEDIUM_LOWER_BOUND -> 2
+    else -> 1
 }

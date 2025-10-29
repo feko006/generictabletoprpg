@@ -14,7 +14,7 @@ import com.feko.generictabletoprpg.shared.common.domain.model.IText.StringResour
 import com.feko.generictabletoprpg.shared.common.ui.RootDestinations
 import com.feko.generictabletoprpg.shared.common.ui.components.AddFABButton
 import com.feko.generictabletoprpg.shared.common.ui.components.GttrpgTopAppBar
-import com.feko.generictabletoprpg.shared.common.ui.components.SearchableLazyList
+import com.feko.generictabletoprpg.shared.common.ui.components.SearchableLazyItems
 import com.feko.generictabletoprpg.shared.common.ui.components.ToastMessage
 import com.feko.generictabletoprpg.shared.common.ui.components.sendToMobileIcon
 import com.feko.generictabletoprpg.shared.common.ui.viewmodel.AppViewModel
@@ -51,9 +51,9 @@ fun TrackerGroupsScreen(
         },
         floatingActionButton = { AddFABButton { viewModel.newTrackedThingGroupRequested() } }
     ) { paddingValues ->
-        SearchableLazyList(
+        SearchableLazyItems(
             viewModel = viewModel,
-            listItem = { item ->
+            item = { item ->
                 TrackerGroupListItem(
                     item = item,
                     viewModel = viewModel,
@@ -62,7 +62,7 @@ fun TrackerGroupsScreen(
                 )
             },
             Modifier.padding(paddingValues),
-            addFabButtonSpacerToList = true
+            addFabButtonSpacer = true
         )
     }
     ToastMessage(viewModel.export.toast)

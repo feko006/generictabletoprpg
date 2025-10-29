@@ -23,8 +23,8 @@ import com.feko.generictabletoprpg.Res
 import com.feko.generictabletoprpg.encounters
 import com.feko.generictabletoprpg.round
 import com.feko.generictabletoprpg.shared.common.domain.model.IText.StringResourceText.Companion.asText
-import com.feko.generictabletoprpg.shared.common.ui.components.EmptyList
 import com.feko.generictabletoprpg.shared.common.ui.components.GttrpgTopAppBar
+import com.feko.generictabletoprpg.shared.common.ui.components.NoItemsIndicator
 import com.feko.generictabletoprpg.shared.common.ui.components.ToastMessage
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -39,9 +39,7 @@ fun EncounterScreen(onNavigationIconClick: () -> Unit) {
     ) { paddingValues ->
         Column(Modifier.padding(paddingValues)) {
             if (entries.isEmpty()) {
-                Box(Modifier.weight(1f)) {
-                    EmptyList()
-                }
+                Box(Modifier.weight(1f)) { NoItemsIndicator() }
             } else {
                 val listState = rememberLazyListState()
                 LazyColumn(

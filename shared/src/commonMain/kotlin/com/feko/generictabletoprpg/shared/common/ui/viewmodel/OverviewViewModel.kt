@@ -56,13 +56,13 @@ open class OverviewViewModel<T : Any>(
             }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
     }
 
-    private val _scrollToEndOfList = MutableStateFlow(false)
-    val scrollToEndOfList: Flow<Boolean>
-        get() = _scrollToEndOfList
+    private val _scrollToEnd = MutableStateFlow(false)
+    val scrollToEnd: Flow<Boolean>
+        get() = _scrollToEnd
 
-    fun consumeScrollToEndOfListEvent() {
+    fun consumeScrollToEndEvent() {
         viewModelScope.launch {
-            _scrollToEndOfList.emit(false)
+            _scrollToEnd.emit(false)
         }
     }
 
@@ -103,7 +103,7 @@ open class OverviewViewModel<T : Any>(
         val items = _items.value.toMutableList()
         items.add(item)
         _items.emit(items.sortedBy(sortedBy))
-        _scrollToEndOfList.emit(true)
+        _scrollToEnd.emit(true)
     }
 
     protected suspend fun removeItem(item: T) {
