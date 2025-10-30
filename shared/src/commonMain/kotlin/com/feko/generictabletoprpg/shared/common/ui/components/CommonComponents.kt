@@ -57,6 +57,7 @@ import com.dokar.sonner.rememberToasterState
 import com.feko.generictabletoprpg.shared.common.appNamesByType
 import com.feko.generictabletoprpg.shared.common.domain.model.IText
 import com.feko.generictabletoprpg.shared.common.ui.theme.LocalDimens
+import com.feko.generictabletoprpg.shared.common.ui.theme.LocalTheme
 import com.feko.generictabletoprpg.shared.common.ui.viewmodel.IToastSubViewModel
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
@@ -125,7 +126,7 @@ fun <T : Any> getTypeName(type: KClass<T>): String = stringResource(appNamesByTy
 fun ToastMessage(toast: IToastSubViewModel) {
     val shouldShowToastMessage by toast.shouldShowMessage.collectAsState(false)
     val toaster = rememberToasterState()
-    Toaster(toaster)
+    Toaster(toaster, darkTheme = LocalTheme.current.isInDarkMode)
     if (shouldShowToastMessage) {
         toaster.show(toast.getMessage())
         toast.messageConsumed()

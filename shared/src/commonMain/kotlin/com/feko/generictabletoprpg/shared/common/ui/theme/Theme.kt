@@ -12,6 +12,9 @@ import androidx.compose.ui.unit.Dp
 import androidx.window.core.layout.WindowSizeClass
 
 val LocalDimens = staticCompositionLocalOf<Dimens> { error("No Dimens provided") }
+val LocalTheme = staticCompositionLocalOf<Theme> { error("No Theme provided") }
+
+data class Theme(val isInDarkMode: Boolean)
 
 @Composable
 expect fun getColorScheme(dynamicColor: Boolean, darkTheme: Boolean): ColorScheme
@@ -34,7 +37,12 @@ fun GttrpgTheme(
             }
         }
 
-    CompositionLocalProvider(LocalDimens provides dimens) {
+    val theme = Theme(darkTheme)
+
+    CompositionLocalProvider(
+        LocalDimens provides dimens,
+        LocalTheme provides theme
+    ) {
         MaterialExpressiveTheme(
             colorScheme = colorScheme,
             typography = Typography,
