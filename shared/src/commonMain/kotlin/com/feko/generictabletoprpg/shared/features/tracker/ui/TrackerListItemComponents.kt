@@ -322,9 +322,8 @@ fun SpellListItem(
         isDragged,
         scope,
         onItemClicked = {
-            if (screenSize == ScreenSize.Compact) {
-                viewModel.showPreviewSpellListDialog(spellList, resetListState = true)
-            } else {
+            viewModel.showPreviewSpellListDialog(spellList, resetListState = true)
+            if (screenSize != ScreenSize.Compact) {
                 onNavigateToSpellListScreen()
             }
         }) {

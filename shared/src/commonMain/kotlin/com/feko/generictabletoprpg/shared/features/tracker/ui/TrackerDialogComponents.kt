@@ -58,6 +58,7 @@ import com.feko.generictabletoprpg.shared.common.ui.components.EnterValueDialog
 import com.feko.generictabletoprpg.shared.common.ui.components.IInputFieldValueConverter
 import com.feko.generictabletoprpg.shared.common.ui.components.NumberDialogInputField
 import com.feko.generictabletoprpg.shared.common.ui.theme.LocalDimens
+import com.feko.generictabletoprpg.shared.common.ui.theme.ScreenSize
 import com.feko.generictabletoprpg.shared.common.ui.theme.Typography
 import com.feko.generictabletoprpg.shared.features.spell.Spell
 import com.feko.generictabletoprpg.shared.features.tracker.model.StatEntry
@@ -92,7 +93,9 @@ private fun TrackerAlertDialog(
 ) {
     when (dialog) {
         is ITrackerDialog.SpellListDialog ->
-            SpellListDialogWithViewModel(dialog, viewModel, onSpellClick)
+            if (LocalDimens.current.screenSize == ScreenSize.Compact) {
+                SpellListDialogWithViewModel(dialog, viewModel, onSpellClick)
+            }
 
         is ITrackerDialog.ConfirmDeletionDialog ->
             ConfirmDeletionDialog(dialog, viewModel::deleteTrackedThing, viewModel::dismissDialog)

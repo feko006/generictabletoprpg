@@ -234,7 +234,12 @@ fun NavigationHost(
 
             is SpellListDestination ->
                 NavEntry(key, metadata = ListDetailSceneStrategy.detailPane()) {
-                    SpellListScreen(trackerViewModel)
+                    SpellListScreen(
+                        trackerViewModel,
+                        onNavigateToSimpleSpellDetailsScreen = {
+                            backStack.add(SimpleSpellDetailsDestination(it))
+                        }
+                    )
                 }
         }
     }

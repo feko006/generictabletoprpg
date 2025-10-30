@@ -46,6 +46,7 @@ import com.feko.generictabletoprpg.Res
 import com.feko.generictabletoprpg.amount
 import com.feko.generictabletoprpg.cancel
 import com.feko.generictabletoprpg.confirm
+import com.feko.generictabletoprpg.shared.common.ui.theme.LocalDimens
 import com.feko.generictabletoprpg.shared.common.ui.theme.Typography
 import org.jetbrains.compose.resources.stringResource
 
@@ -61,10 +62,11 @@ fun AlertDialogBase(
 ) {
     BasicAlertDialog(onDismissRequest = onDialogDismiss) {
         Card {
+            val dialogPadding = LocalDimens.current.paddingMedium
             Column(
                 Modifier
                     .heightIn(max = with(LocalDensity.current) { LocalWindowInfo.current.containerSize.height.toDp() } * screenHeight)
-                    .padding(start = 16.dp, top = 16.dp, end = 16.dp),
+                    .padding(start = dialogPadding, top = dialogPadding, end = dialogPadding),
                 verticalArrangement
             ) {
                 dialogTitle()
