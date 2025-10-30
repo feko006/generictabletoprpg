@@ -8,6 +8,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import com.feko.generictabletoprpg.shared.common.domain.model.IText
+import com.feko.generictabletoprpg.shared.common.ui.theme.LocalDimens
+import com.feko.generictabletoprpg.shared.common.ui.theme.ScreenSize
 
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
@@ -19,8 +21,10 @@ fun GttrpgTopAppBar(
     TopAppBar(
         title = { Text(title.text()) },
         navigationIcon = {
-            IconButton(onClick = onNavigationIconClick) {
-                Icon(menuIcon, "")
+            if (LocalDimens.current.screenSize == ScreenSize.Compact) {
+                IconButton(onClick = onNavigationIconClick) {
+                    Icon(menuIcon, "")
+                }
             }
         },
         actions = actions
