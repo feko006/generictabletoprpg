@@ -47,6 +47,8 @@ import com.feko.generictabletoprpg.shared.common.domain.asSignedString
 import com.feko.generictabletoprpg.shared.common.ui.components.draggableHandle
 import com.feko.generictabletoprpg.shared.common.ui.components.longPressDraggableHandle
 import com.feko.generictabletoprpg.shared.common.ui.components.menuIcon
+import com.feko.generictabletoprpg.shared.common.ui.theme.LocalDimens
+import com.feko.generictabletoprpg.shared.common.ui.theme.ScreenSize
 import com.feko.generictabletoprpg.shared.common.ui.theme.Typography
 import com.feko.generictabletoprpg.shared.features.tracker.model.SpellListEntry
 import com.feko.generictabletoprpg.shared.features.tracker.model.StatEntry
@@ -312,13 +314,19 @@ fun SpellListItem(
     spellList: TrackedThing,
     scope: ReorderableCollectionItemScope,
     viewModel: TrackerViewModel,
+    onNavigateToSpellListScreen: () -> Unit,
     onSelectSpellRequest: () -> Unit
 ) {
+    val screenSize = LocalDimens.current.screenSize
     TrackedThingListItem(
         isDragged,
         scope,
         onItemClicked = {
-            viewModel.showPreviewSpellListDialog(spellList, resetListState = true)
+            if (screenSize == ScreenSize.Compact) {
+                viewModel.showPreviewSpellListDialog(spellList, resetListState = true)
+            } else {
+                onNavigateToSpellListScreen()
+            }
         }) {
         SpellListItemContent(
             spellList,

@@ -7,6 +7,10 @@ import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffoldDefaults
 import androidx.compose.material3.adaptive.layout.PaneScaffoldDirective
 import androidx.compose.material3.adaptive.navigation.BackNavigationBehavior
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.NavBackStack
@@ -16,6 +20,21 @@ import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import androidx.window.core.layout.WindowSizeClass
 import com.feko.generictabletoprpg.shared.common.domain.model.IIdentifiable
+import com.feko.generictabletoprpg.shared.common.ui.components.INavigationDestination.ActionDetailsDestination
+import com.feko.generictabletoprpg.shared.common.ui.components.INavigationDestination.AmmunitionDetailsDestination
+import com.feko.generictabletoprpg.shared.common.ui.components.INavigationDestination.ArmorDetailsDestination
+import com.feko.generictabletoprpg.shared.common.ui.components.INavigationDestination.ConditionDetailsDestination
+import com.feko.generictabletoprpg.shared.common.ui.components.INavigationDestination.DiseaseDetailsDestination
+import com.feko.generictabletoprpg.shared.common.ui.components.INavigationDestination.EncounterDestination
+import com.feko.generictabletoprpg.shared.common.ui.components.INavigationDestination.FeatDetailsDestination
+import com.feko.generictabletoprpg.shared.common.ui.components.INavigationDestination.ImportDestination
+import com.feko.generictabletoprpg.shared.common.ui.components.INavigationDestination.SearchAllDestination
+import com.feko.generictabletoprpg.shared.common.ui.components.INavigationDestination.SimpleSpellDetailsDestination
+import com.feko.generictabletoprpg.shared.common.ui.components.INavigationDestination.SpellDetailsDestination
+import com.feko.generictabletoprpg.shared.common.ui.components.INavigationDestination.SpellListDestination
+import com.feko.generictabletoprpg.shared.common.ui.components.INavigationDestination.TrackerDestination
+import com.feko.generictabletoprpg.shared.common.ui.components.INavigationDestination.TrackerGroupsDestination
+import com.feko.generictabletoprpg.shared.common.ui.components.INavigationDestination.WeaponDetailsDestination
 import com.feko.generictabletoprpg.shared.common.ui.components.navigation3.ListDetailSceneStrategy
 import com.feko.generictabletoprpg.shared.common.ui.viewmodel.AppViewModel
 import com.feko.generictabletoprpg.shared.common.ui.viewmodel.ResultViewModel
@@ -39,12 +58,16 @@ import com.feko.generictabletoprpg.shared.features.searchall.ui.SearchAllScreen
 import com.feko.generictabletoprpg.shared.features.spell.Spell
 import com.feko.generictabletoprpg.shared.features.spell.ui.SimpleSpellDetailsScreen
 import com.feko.generictabletoprpg.shared.features.spell.ui.SpellDetailsScreen
+import com.feko.generictabletoprpg.shared.features.tracker.ui.SpellListScreen
 import com.feko.generictabletoprpg.shared.features.tracker.ui.TrackerGroupsScreen
 import com.feko.generictabletoprpg.shared.features.tracker.ui.TrackerScreen
+import com.feko.generictabletoprpg.shared.features.tracker.ui.TrackerViewModel
 import com.feko.generictabletoprpg.shared.features.weapon.Weapon
 import com.feko.generictabletoprpg.shared.features.weapon.ui.WeaponDetailsScreen
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import org.koin.compose.viewmodel.koinViewModel
+import org.koin.core.parameter.parameterSetOf
 
 @Composable
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
@@ -75,6 +98,7 @@ fun NavigationHost(
                 else -> 1
             }
         }
+    var trackerViewModel: TrackerViewModel? by remember { mutableStateOf(null) }
     NavDisplay(
         backStack,
         entryDecorators = listOf(
@@ -94,46 +118,45 @@ fun NavigationHost(
             throw IllegalStateException("Destination target unknown.")
         }
         when (key) {
-            INavigationDestination.TrackerGroupsDestination ->
+            TrackerGroupsDestination ->
                 NavEntry(key) {
                     TrackerGroupsScreen(appViewModel, onNavigationIconClick) { id, name ->
-                        backStack.add(INavigationDestination.TrackerDestination(id, name))
+                        backStack.add(TrackerDestination(id, name))
                     }
                 }
 
-            is INavigationDestination.TrackerDestination ->
+            is TrackerDestination ->
                 NavEntry(
                     key,
                     metadata = ListDetailSceneStrategy.listPane()
                 ) {
+                    trackerViewModel =
+                        koinViewModel(parameters = { parameterSetOf(key.id, key.name) })
                     TrackerScreen(
-                        key.id,
-                        key.name,
+                        trackerViewModel!!,
                         onNavigationIconClick,
                         searchAllResultViewModel,
+                        onNavigateToSpellListScreen = {
+                            backStack.add(SpellListDestination)
+                        },
                         onNavigateToSimpleSpellDetailsScreen = {
-                            backStack.add(
-                                INavigationDestination.SimpleSpellDetailsDestination(it)
-                            )
+                            backStack.add(SimpleSpellDetailsDestination(it))
                         },
                         onOpenDetails = {
                             backStack.add(getDetailsDestination(it))
                         },
                         onSelectSpellRequest = {
                             backStack.add(
-                                INavigationDestination.SearchAllDestination(
-                                    SpellFilter().index(),
-                                    isShownForResult = true
-                                )
+                                SearchAllDestination(SpellFilter().index(), isShownForResult = true)
                             )
                         }
                     )
                 }
 
-            INavigationDestination.EncounterDestination ->
+            EncounterDestination ->
                 NavEntry(key) { EncounterScreen(onNavigationIconClick) }
 
-            is INavigationDestination.SearchAllDestination ->
+            is SearchAllDestination ->
                 NavEntry(
                     key,
                     metadata = ListDetailSceneStrategy.listPane()
@@ -150,55 +173,55 @@ fun NavigationHost(
                     )
                 }
 
-            is INavigationDestination.ActionDetailsDestination ->
+            is ActionDetailsDestination ->
                 NavEntry(
                     key,
                     metadata = ListDetailSceneStrategy.detailPane()
                 ) { ActionDetailsScreen(key.id, onNavigationIconClick) }
 
-            is INavigationDestination.AmmunitionDetailsDestination ->
+            is AmmunitionDetailsDestination ->
                 NavEntry(
                     key,
                     metadata = ListDetailSceneStrategy.detailPane()
                 ) { AmmunitionDetailsScreen(key.id, onNavigationIconClick) }
 
-            is INavigationDestination.ArmorDetailsDestination ->
+            is ArmorDetailsDestination ->
                 NavEntry(
                     key,
                     metadata = ListDetailSceneStrategy.detailPane()
                 ) { ArmorDetailsScreen(key.id, onNavigationIconClick) }
 
-            is INavigationDestination.ConditionDetailsDestination ->
+            is ConditionDetailsDestination ->
                 NavEntry(
                     key,
                     metadata = ListDetailSceneStrategy.detailPane()
                 ) { ConditionDetailsScreen(key.id, onNavigationIconClick) }
 
-            is INavigationDestination.DiseaseDetailsDestination ->
+            is DiseaseDetailsDestination ->
                 NavEntry(
                     key,
                     metadata = ListDetailSceneStrategy.detailPane()
                 ) { DiseaseDetailsScreen(key.id, onNavigationIconClick) }
 
-            is INavigationDestination.FeatDetailsDestination ->
+            is FeatDetailsDestination ->
                 NavEntry(
                     key,
                     metadata = ListDetailSceneStrategy.detailPane()
                 ) { FeatDetailsScreen(key.id, onNavigationIconClick) }
 
-            is INavigationDestination.SpellDetailsDestination ->
+            is SpellDetailsDestination ->
                 NavEntry(
                     key,
                     metadata = ListDetailSceneStrategy.detailPane()
                 ) { SpellDetailsScreen(key.id, onNavigationIconClick) }
 
-            is INavigationDestination.WeaponDetailsDestination ->
+            is WeaponDetailsDestination ->
                 NavEntry(
                     key,
                     metadata = ListDetailSceneStrategy.detailPane()
                 ) { WeaponDetailsScreen(key.id, onNavigationIconClick) }
 
-            is INavigationDestination.SimpleSpellDetailsDestination ->
+            is SimpleSpellDetailsDestination ->
                 NavEntry(
                     key,
                     metadata = ListDetailSceneStrategy.extraPane()
@@ -206,8 +229,13 @@ fun NavigationHost(
                     SimpleSpellDetailsScreen(key.spell, onNavigationIconClick)
                 }
 
-            INavigationDestination.ImportDestination ->
+            ImportDestination ->
                 NavEntry(key) { ImportScreen(appViewModel, onNavigationIconClick) }
+
+            is SpellListDestination ->
+                NavEntry(key, metadata = ListDetailSceneStrategy.detailPane()) {
+                    SpellListScreen(trackerViewModel)
+                }
         }
     }
 }
@@ -215,14 +243,14 @@ fun NavigationHost(
 fun getDetailsDestination(item: Any): INavigationDestination {
     val id = (item as IIdentifiable).id
     return when (item) {
-        is Action -> INavigationDestination.ActionDetailsDestination(id)
-        is Ammunition -> INavigationDestination.AmmunitionDetailsDestination(id)
-        is Armor -> INavigationDestination.ArmorDetailsDestination(id)
-        is Condition -> INavigationDestination.ConditionDetailsDestination(id)
-        is Disease -> INavigationDestination.DiseaseDetailsDestination(id)
-        is Feat -> INavigationDestination.FeatDetailsDestination(id)
-        is Spell -> INavigationDestination.SpellDetailsDestination(id)
-        is Weapon -> INavigationDestination.WeaponDetailsDestination(id)
+        is Action -> ActionDetailsDestination(id)
+        is Ammunition -> AmmunitionDetailsDestination(id)
+        is Armor -> ArmorDetailsDestination(id)
+        is Condition -> ConditionDetailsDestination(id)
+        is Disease -> DiseaseDetailsDestination(id)
+        is Feat -> FeatDetailsDestination(id)
+        is Spell -> SpellDetailsDestination(id)
+        is Weapon -> WeaponDetailsDestination(id)
         else -> throw IllegalStateException("Unknown list item")
     }
 }

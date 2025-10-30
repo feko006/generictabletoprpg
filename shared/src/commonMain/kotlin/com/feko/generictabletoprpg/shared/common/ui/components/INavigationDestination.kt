@@ -55,6 +55,9 @@ sealed interface INavigationDestination : NavKey {
     @Serializable
     data object ImportDestination : INavigationDestination
 
+    @Serializable
+    data object SpellListDestination : INavigationDestination
+
     companion object {
         val startDestination: INavigationDestination = TrackerGroupsDestination
 

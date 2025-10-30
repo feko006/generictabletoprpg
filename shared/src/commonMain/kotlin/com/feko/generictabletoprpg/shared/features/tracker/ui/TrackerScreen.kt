@@ -24,22 +24,18 @@ import com.feko.generictabletoprpg.shared.common.ui.viewmodel.ResultViewModel
 import com.feko.generictabletoprpg.shared.features.searchall.ui.getUniqueListItemKey
 import com.feko.generictabletoprpg.shared.features.spell.Spell
 import com.feko.generictabletoprpg.shared.features.tracker.model.TrackedThing
-import org.koin.compose.viewmodel.koinViewModel
-import org.koin.core.parameter.parameterSetOf
 import sh.calvin.reorderable.ReorderableCollectionItemScope
 
 @Composable
 fun TrackerScreen(
-    groupId: Long,
-    groupName: String,
+    viewModel: TrackerViewModel,
     onNavigationIconClick: () -> Unit,
     spellSelectionResultViewModel: ResultViewModel<Long>,
+    onNavigateToSpellListScreen: () -> Unit,
     onNavigateToSimpleSpellDetailsScreen: (Spell) -> Unit,
     onOpenDetails: (Any) -> Unit,
     onSelectSpellRequest: () -> Unit
 ) {
-    val viewModel: TrackerViewModel =
-        koinViewModel(parameters = { parameterSetOf(groupId, groupName) })
     spellSelectionResultViewModel.selectionResult?.let {
         spellSelectionResultViewModel.consumeSelectionResult()
         viewModel.addSpellToList(it)
@@ -47,7 +43,7 @@ fun TrackerScreen(
     Scaffold(
         topBar = {
             GttrpgTopAppBar(
-                groupName.asText(),
+                viewModel.groupName.asText(),
                 onNavigationIconClick
             ) {
                 IconButton(onClick = { viewModel.refreshAllRequested() }) {
@@ -72,6 +68,7 @@ fun TrackerScreen(
                     isDragged,
                     scope,
                     viewModel,
+                    onNavigateToSpellListScreen,
                     onOpenDetails,
                     onSelectSpellRequest
                 )
@@ -93,6 +90,7 @@ fun LazyStaggeredGridItemScope.TrackerListItem(
     isDragged: Boolean,
     scope: ReorderableCollectionItemScope,
     viewModel: TrackerViewModel,
+    onNavigateToSpellListScreen: () -> Unit,
     onOpenDetails: (Any) -> Unit,
     onSelectSpellRequest: () -> Unit
 ) {
@@ -105,7 +103,14 @@ fun LazyStaggeredGridItemScope.TrackerListItem(
             TrackedThing.Type.SpellSlot -> SpellSlotListItem(isDragged, item, scope, viewModel)
             TrackedThing.Type.Number -> NumberListItem(isDragged, item, scope, viewModel)
             TrackedThing.Type.SpellList ->
-                SpellListItem(isDragged, item, scope, viewModel, onSelectSpellRequest)
+                SpellListItem(
+                    isDragged,
+                    item,
+                    scope,
+                    viewModel,
+                    onNavigateToSpellListScreen,
+                    onSelectSpellRequest
+                )
 
             TrackedThing.Type.Text -> TextListItem(isDragged, item, scope, viewModel)
             TrackedThing.Type.HitDice -> HitDiceListItem(isDragged, item, scope, viewModel)
