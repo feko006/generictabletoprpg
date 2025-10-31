@@ -22,7 +22,7 @@ abstract class SpellDao
     abstract override suspend fun getEntityIdByName(name: String): Long?
 
     @Query("select * from spells order by name")
-    abstract override suspend fun getAllSortedByNameInternal(): List<SpellEntity>
+    abstract override fun getAllSortedByNameInternal(): Flow<List<SpellEntity>>
 
     @Query("select * from spells where id = :id")
     abstract override suspend fun getByIdInternal(id: Long): SpellEntity

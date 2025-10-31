@@ -6,6 +6,7 @@ import com.feko.generictabletoprpg.shared.common.data.local.BaseDao
 import com.feko.generictabletoprpg.shared.common.data.local.IGetAllDao
 import com.feko.generictabletoprpg.shared.common.data.local.IGetByIdDao
 import com.feko.generictabletoprpg.shared.common.data.local.IInsertAllDao
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 abstract class ConditionDao
@@ -20,7 +21,7 @@ abstract class ConditionDao
     abstract override suspend fun getEntityIdByName(name: String): Long?
 
     @Query("select * from conditions order by name")
-    abstract override suspend fun getAllSortedByNameInternal(): List<ConditionEntity>
+    abstract override fun getAllSortedByNameInternal(): Flow<List<ConditionEntity>>
 
     @Query("select * from conditions where id = :id")
     abstract override suspend fun getByIdInternal(id: Long): ConditionEntity

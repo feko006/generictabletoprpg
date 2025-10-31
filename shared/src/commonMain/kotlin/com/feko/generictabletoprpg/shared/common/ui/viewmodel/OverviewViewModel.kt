@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.feko.generictabletoprpg.shared.common.data.local.IGetAllDao
 import com.feko.generictabletoprpg.shared.common.domain.createNewComparator
-import com.feko.generictabletoprpg.shared.common.domain.model.IIdentifiable
 import com.feko.generictabletoprpg.shared.features.filter.Filter
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -21,7 +20,10 @@ open class OverviewViewModel<T : Any>(
     private val getAll: IGetAllDao<T>?
 ) : ViewModel() {
 
-    protected val _items = MutableStateFlow<List<T>>(listOf())
+    protected val _items by lazy {
+        getAllItems()
+            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), listOf())
+    }
 
     val searchString: Flow<String>
         get() = _searchString
@@ -68,51 +70,13 @@ open class OverviewViewModel<T : Any>(
 
     open fun getFilterFlow(): StateFlow<Filter?>? = null
 
-    init {
-        refreshItems()
-    }
-
-    fun refreshItems() {
-        viewModelScope.launch {
-            val allItems =
-                withContext(Dispatchers.Default) { getAllItems() }
-            _items.emit(allItems)
-        }
-    }
-
-    open suspend fun getAllItems(): List<T> = getAll!!.getAllSortedByName()
+    open fun getAllItems(): Flow<List<T>> = getAll!!.getAllSortedByName()
 
     fun searchStringUpdated(searchString: String) {
         _searchString.update { searchString }
     }
 
-    protected suspend fun replaceItem(item: T) {
-        if (item !is IIdentifiable) return
-        val newList = _items.value.toMutableList()
-        val index =
-            newList.indexOfFirst {
-                if (it !is IIdentifiable) false
-                else it.id == item.id
-            }
-        newList.removeAt(index)
-        newList.add(index, item)
-        _items.emit(newList)
-    }
-
-    protected suspend fun <R : Comparable<R>> addItem(item: T, sortedBy: (T) -> R?) {
-        val items = _items.value.toMutableList()
-        items.add(item)
-        _items.emit(items.sortedBy(sortedBy))
+    protected suspend fun scrollToEnd() {
         _scrollToEnd.emit(true)
-    }
-
-    protected suspend fun removeItem(item: T) {
-        if (item !is IIdentifiable) return
-        val newList = _items.value.toMutableList()
-        newList.removeAll {
-            if (it !is IIdentifiable) false
-            else it.id == item.id
-        }
-        _items.emit(newList)
     }
 }

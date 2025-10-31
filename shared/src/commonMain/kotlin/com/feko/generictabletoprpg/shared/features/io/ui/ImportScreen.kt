@@ -72,14 +72,6 @@ fun ImportScreen(
                 }
 
                 is ImportViewModel.IImportScreenState.Importing -> FillingLoadingIndicator()
-
-                is ImportViewModel.IImportScreenState.RestartApp -> {
-                    // TODO KMP
-//                    LocalActivity.current?.apply {
-//                        finish()
-//                        startActivity(intent)
-//                    }
-                }
             }
         }
     }

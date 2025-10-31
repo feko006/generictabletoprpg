@@ -1,5 +1,7 @@
 package com.feko.generictabletoprpg.shared.features.searchall.usecase
 
+import kotlinx.coroutines.flow.Flow
+
 interface ISearchAllUseCase {
-    suspend fun getAllItems(): List<Any>
+    fun getAllItems(): Flow<List<Any>>
 }

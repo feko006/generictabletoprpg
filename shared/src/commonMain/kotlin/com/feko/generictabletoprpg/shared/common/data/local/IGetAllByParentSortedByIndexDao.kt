@@ -1,5 +1,7 @@
 package com.feko.generictabletoprpg.shared.common.data.local
 
+import kotlinx.coroutines.flow.Flow
+
 interface IGetAllByParentSortedByIndexDao<out T> {
-    suspend fun getAllSortedByIndex(parentId: Long): List<T>
+    fun getAllSortedByIndex(parentId: Long): Flow<List<T>>
 }

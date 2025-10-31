@@ -10,6 +10,7 @@ import com.feko.generictabletoprpg.shared.features.tracker.model.TrackedThing
 import com.feko.generictabletoprpg.shared.features.tracker.model.TrackedThingGroup
 import io.github.vinceglb.filekit.PlatformFile
 import io.github.vinceglb.filekit.writeString
+import kotlinx.coroutines.flow.first
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -45,9 +46,9 @@ class TrackerGroupExportSubViewModel(
         val dereferencedState = exportState
         val json = when (dereferencedState) {
             is ExportState.ExportingAll -> {
-                val allTrackedThingGroups = getAllTrackedThingGroups.getAllSortedByName()
+                val allTrackedThingGroups = getAllTrackedThingGroups.getAllSortedByName().first()
                 allTrackedThingGroups.forEach {
-                    it.trackedThings = getAllTrackedThings.getAllSortedByIndex(it.id)
+                    it.trackedThings = getAllTrackedThings.getAllSortedByIndex(it.id).first()
                 }
                 json.encodeToString(
                     AppModel.serializer(),
@@ -59,7 +60,7 @@ class TrackerGroupExportSubViewModel(
                 val trackedThingGroup =
                     dereferencedState.item
                         .apply {
-                            trackedThings = getAllTrackedThings.getAllSortedByIndex(id)
+                            trackedThings = getAllTrackedThings.getAllSortedByIndex(id).first()
                         }
                 json.encodeToString(
                     AppModel.serializer(),

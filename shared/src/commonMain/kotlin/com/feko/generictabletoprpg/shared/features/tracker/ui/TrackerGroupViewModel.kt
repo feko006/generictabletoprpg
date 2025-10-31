@@ -62,10 +62,9 @@ class TrackerGroupViewModel(
             if (isNewEntry) {
                 val trackedThingId = trackedThingGroupDao.insert(item.toEntity())
                 item.id = trackedThingId
-                addItem(item) { it.name }
+                scrollToEnd()
             } else {
                 trackedThingGroupDao.update(item.toEntity())
-                replaceItem(item)
             }
         }
     }
@@ -75,7 +74,6 @@ class TrackerGroupViewModel(
             withContext(Dispatchers.Default) {
                 trackedThingGroupDao.delete(item.id)
             }
-            removeItem(item)
         }
     }
 

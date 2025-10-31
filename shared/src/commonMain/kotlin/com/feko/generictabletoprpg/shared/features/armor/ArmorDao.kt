@@ -6,6 +6,7 @@ import com.feko.generictabletoprpg.shared.common.data.local.BaseDao
 import com.feko.generictabletoprpg.shared.common.data.local.IGetAllDao
 import com.feko.generictabletoprpg.shared.common.data.local.IGetByIdDao
 import com.feko.generictabletoprpg.shared.common.data.local.IInsertAllDao
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 abstract class ArmorDao
@@ -20,7 +21,7 @@ abstract class ArmorDao
     abstract override suspend fun getEntityIdByName(name: String): Long?
 
     @Query("select * from armors order by name")
-    abstract override suspend fun getAllSortedByNameInternal(): List<ArmorEntity>
+    abstract override fun getAllSortedByNameInternal(): Flow<List<ArmorEntity>>
 
     @Query("select * from armors where id = :id")
     abstract override suspend fun getByIdInternal(id: Long): ArmorEntity

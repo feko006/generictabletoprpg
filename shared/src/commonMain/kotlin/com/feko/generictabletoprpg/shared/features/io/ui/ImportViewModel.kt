@@ -48,12 +48,11 @@ class ImportViewModel(
 
     private suspend fun showToastAndResetScreen(toastMessage: StringResource) {
         _toastMessage.showMessage(toastMessage)
-        _screenState.emit(IImportScreenState.RestartApp)
+        _screenState.emit(IImportScreenState.ReadyToImport)
     }
 
     interface IImportScreenState {
         data object ReadyToImport : IImportScreenState
         data object Importing : IImportScreenState
-        data object RestartApp : IImportScreenState
     }
 }

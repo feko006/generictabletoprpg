@@ -6,6 +6,8 @@ import com.feko.generictabletoprpg.shared.common.domain.model.ICoreConvertible
 import com.feko.generictabletoprpg.shared.common.domain.model.IMutableIdentifiable
 import com.feko.generictabletoprpg.shared.common.domain.model.INamed
 import com.feko.generictabletoprpg.shared.logger
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
 abstract class BaseDao<TEntity, TCore> :
     IInsertAllDao<TCore>,
@@ -23,6 +25,12 @@ abstract class BaseDao<TEntity, TCore> :
 
     @Update
     abstract suspend fun update(entity: TEntity)
+
+    @Update
+    protected abstract suspend fun updateAllInternal(entities: List<TEntity>)
+
+    suspend fun updateAll(list: List<TCore>) =
+        updateAllInternal(list.map { getEntityFromCoreModel(it) })
 
     override suspend fun insertAll(list: List<TCore>): Result<Boolean> {
         val errors = mutableListOf<Exception>()
@@ -61,15 +69,15 @@ abstract class BaseDao<TEntity, TCore> :
         entity.id = existingEntityId
     }
 
-    final override suspend fun getAllSortedByName(): List<TCore> =
+    final override fun getAllSortedByName(): Flow<List<TCore>> =
         getAllSortedByNameInternal()
-            .map { it.toCoreModel() }
+            .map { entities -> entities.map { it.toCoreModel() } }
 
     final override suspend fun getAllSortedByName(parentId: Long): List<TCore> =
         getAllSortedByNameInternal(parentId)
             .map { it.toCoreModel() }
 
-    protected open suspend fun getAllSortedByNameInternal(): List<TEntity> =
+    protected open fun getAllSortedByNameInternal(): Flow<List<TEntity>> =
         throw NotImplementedError()
 
     protected open suspend fun getAllSortedByNameInternal(parentId: Long): List<TEntity> =

@@ -1,5 +1,7 @@
 package com.feko.generictabletoprpg.shared.common.data.local
 
+import kotlinx.coroutines.flow.Flow
+
 interface IGetAllDao<out T> {
-    suspend fun getAllSortedByName(): List<T>
+    fun getAllSortedByName(): Flow<List<T>>
 }

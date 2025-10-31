@@ -6,6 +6,8 @@ import com.feko.generictabletoprpg.shared.common.data.local.BaseDao
 import com.feko.generictabletoprpg.shared.common.data.local.IGetAllByParentSortedByIndexDao
 import com.feko.generictabletoprpg.shared.common.data.local.IInsertOrUpdateDao
 import com.feko.generictabletoprpg.shared.features.tracker.model.TrackedThing
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
 @Dao
 abstract class TrackedThingDao :
@@ -45,9 +47,9 @@ abstract class TrackedThingDao :
         if (entity.id > 0) entity.id else null
 
     @Query("select * from tracked_things where groupId = :parentId order by idx")
-    abstract suspend fun getAllSortedByIndexInternal(parentId: Long): List<TrackedThingEntity>
+    abstract fun getAllSortedByIndexInternal(parentId: Long): Flow<List<TrackedThingEntity>>
 
-    override suspend fun getAllSortedByIndex(parentId: Long): List<TrackedThing> =
+    override fun getAllSortedByIndex(parentId: Long): Flow<List<TrackedThing>> =
         getAllSortedByIndexInternal(parentId)
-            .map { it.toCoreModel() }
+            .map { list -> list.map { it.toCoreModel() } }
 }

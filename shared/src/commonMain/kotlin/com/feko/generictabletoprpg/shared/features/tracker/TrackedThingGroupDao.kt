@@ -6,6 +6,7 @@ import com.feko.generictabletoprpg.shared.common.data.local.BaseDao
 import com.feko.generictabletoprpg.shared.common.data.local.IGetAllDao
 import com.feko.generictabletoprpg.shared.common.data.local.IInsertOrUpdateDao
 import com.feko.generictabletoprpg.shared.features.tracker.model.TrackedThingGroup
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 abstract class TrackedThingGroupDao :
@@ -17,7 +18,7 @@ abstract class TrackedThingGroupDao :
         item.toEntity()
 
     @Query("select * from tracked_thing_groups order by name")
-    abstract override suspend fun getAllSortedByNameInternal(): List<TrackedThingGroupEntity>
+    abstract override fun getAllSortedByNameInternal(): Flow<List<TrackedThingGroupEntity>>
 
     @Query("select * from tracked_thing_groups where id = :id")
     abstract override suspend fun getByIdInternal(id: Long): TrackedThingGroupEntity
