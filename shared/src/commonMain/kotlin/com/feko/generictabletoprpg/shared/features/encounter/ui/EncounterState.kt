@@ -14,5 +14,11 @@ enum class EncounterState(
     Empty(true, false, false, false, false, false),
     ReadyToStart(true, true, true, false, false, false),
     TurnInProgress(true, true, false, true, false, false),
-    TurnCompletedChoiceRequired(true, true, false, false, true, true)
+    TurnCompletedChoiceRequired(true, true, false, false, true, true);
+
+    val isSecondFloatingButtonToolbarVisible: Boolean =
+        isStartEncounterButtonVisible
+                || isCompleteTurnButtonVisible
+                || isLegendaryActionButtonVisible
+                || isNextTurnButtonVisible
 }

@@ -87,25 +87,27 @@ fun ActionButtons(viewModel: EncounterViewModel) {
                 }
             }
         }
-        HorizontalFloatingToolbar(expanded = true) {
-            if (encounterState.isStartEncounterButtonVisible) {
-                IconButton(onClick = viewModel::startInitiative) {
-                    Icon(playArrowIcon, "")
+        if (encounterState.isSecondFloatingButtonToolbarVisible) {
+            HorizontalFloatingToolbar(expanded = true) {
+                if (encounterState.isStartEncounterButtonVisible) {
+                    IconButton(onClick = viewModel::startInitiative) {
+                        Icon(playArrowIcon, "")
+                    }
                 }
-            }
-            if (encounterState.isCompleteTurnButtonVisible) {
-                IconButton(onClick = viewModel::concludeTurnOfCurrentEntry) {
-                    Icon(checkIcon, "")
+                if (encounterState.isCompleteTurnButtonVisible) {
+                    IconButton(onClick = viewModel::concludeTurnOfCurrentEntry) {
+                        Icon(checkIcon, "")
+                    }
                 }
-            }
-            if (encounterState.isLegendaryActionButtonVisible) {
-                IconButton(onClick = viewModel::progressInitiativeWithLegendaryAction) {
-                    Icon(boltIcon, "")
+                if (encounterState.isLegendaryActionButtonVisible) {
+                    IconButton(onClick = viewModel::progressInitiativeWithLegendaryAction) {
+                        Icon(boltIcon, "")
+                    }
                 }
-            }
-            if (encounterState.isNextTurnButtonVisible) {
-                IconButton(onClick = viewModel::progressInitiative) {
-                    Icon(skipNextIcon, "")
+                if (encounterState.isNextTurnButtonVisible) {
+                    IconButton(onClick = viewModel::progressInitiative) {
+                        Icon(skipNextIcon, "")
+                    }
                 }
             }
         }
