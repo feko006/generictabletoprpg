@@ -106,7 +106,7 @@ fun NavigationHost(
             rememberViewModelStoreNavEntryDecorator()
         ),
         sceneStrategy = ListDetailSceneStrategy(
-            BackNavigationBehavior.Companion.PopLatest,
+            BackNavigationBehavior.Companion.PopUntilCurrentDestinationChange,
             PaneScaffoldDirective.Companion.Default.copy(
                 maxHorizontalPartitions = panes,
                 maxVerticalPartitions = panes
@@ -126,10 +126,7 @@ fun NavigationHost(
                 }
 
             is TrackerDestination ->
-                NavEntry(
-                    key,
-                    metadata = ListDetailSceneStrategy.listPane()
-                ) {
+                NavEntry(key, metadata = ListDetailSceneStrategy.listPane()) {
                     trackerViewModel =
                         koinViewModel(parameters = { parameterSetOf(key.id, key.name) })
                     TrackerScreen(
