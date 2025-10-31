@@ -470,6 +470,10 @@ class TrackerViewModel(
                 spellList.setItem(sortedSpells)
                 trackedThingDao.insertOrUpdate(spellList)
                 replaceItem(spellList)
+                val currentDialog = _dialog.value
+                if (currentDialog is ITrackerDialog.SpellListDialog) {
+                    _dialog.update { currentDialog.copy(spellList = spellList) }
+                }
                 _toast.showMessage(Res.string.spell_successfully_added_to_list)
             }
             spellListBeingAddedTo = null
