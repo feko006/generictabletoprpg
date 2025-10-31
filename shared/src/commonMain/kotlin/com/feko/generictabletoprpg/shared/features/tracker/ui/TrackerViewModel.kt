@@ -35,6 +35,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -55,6 +56,9 @@ class TrackerViewModel(
 
     private val _dialog: MutableStateFlow<ITrackerDialog> = MutableStateFlow(ITrackerDialog.None)
     val dialog: Flow<ITrackerDialog> = _dialog
+
+    val spellListDialog: Flow<ITrackerDialog.SpellListDialog> =
+        _dialog.filterIsInstance<ITrackerDialog.SpellListDialog>()
 
     private lateinit var allItems: List<Any>
 

@@ -16,7 +16,7 @@ fun SpellListScreen(
     onNavigateToSimpleSpellDetailsScreen: (Spell) -> Unit
 ) {
     if (trackerViewModel == null) return
-    val alertDialog by trackerViewModel.dialog.collectAsState(ITrackerDialog.None)
+    val alertDialog by trackerViewModel.spellListDialog.collectAsState(ITrackerDialog.None)
     val dereferencedDialog = alertDialog
     if (dereferencedDialog !is ITrackerDialog.SpellListDialog) return
     DisposableEffect(trackerViewModel) {
