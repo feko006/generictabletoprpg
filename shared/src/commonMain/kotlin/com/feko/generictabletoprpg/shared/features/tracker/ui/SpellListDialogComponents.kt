@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyListState
@@ -21,6 +22,8 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.feko.generictabletoprpg.Res
@@ -125,7 +128,11 @@ fun SpellListDialog(
             onSpellPreparedStateChanged,
             onCastSpellRequested,
             onRemoveSpellRequested,
-            onSpellClick
+            onSpellClick,
+            Modifier.heightIn(
+                0.dp,
+                with(LocalDensity.current) { (LocalWindowInfo.current.containerSize.height * 0.7f).toDp() }
+            )
         )
     }
 }

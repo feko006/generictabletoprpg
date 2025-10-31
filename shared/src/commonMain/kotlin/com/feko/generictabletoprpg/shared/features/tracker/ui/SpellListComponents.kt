@@ -2,7 +2,6 @@ package com.feko.generictabletoprpg.shared.features.tracker.ui
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -18,8 +17,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.unit.dp
 import com.feko.generictabletoprpg.Res
 import com.feko.generictabletoprpg.cantrips
@@ -48,7 +45,8 @@ fun SpellListContent(
     onSpellPreparedStateChanged: (SpellListEntry, Boolean) -> Unit,
     onCastSpellRequested: (Int) -> Unit,
     onRemoveSpellRequested: (SpellListEntry) -> Unit,
-    onSpellClick: (Spell) -> Unit
+    onSpellClick: (Spell) -> Unit,
+    listModifier: Modifier = Modifier
 ) {
     @Suppress("UNCHECKED_CAST")
     val entries = dialog.spellList.serializedItem as List<SpellListEntry>
@@ -116,10 +114,7 @@ fun SpellListContent(
     BoxWithScrollIndicator(
         spellListState,
         CardDefaults.cardColors().containerColor,
-        Modifier.heightIn(
-            0.dp,
-            with(LocalDensity.current) { (LocalWindowInfo.current.containerSize.height * 0.7f).toDp() }
-        )
+        listModifier
     ) {
         LazyColumn(
             state = spellListState,
