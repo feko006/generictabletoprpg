@@ -15,10 +15,12 @@ sealed interface IText {
     ) : IText {
         @Composable
         override fun text(): String =
-            stringResource(stringResource, formatArgs)
+            stringResource(stringResource, *formatArgs)
 
         companion object {
             fun StringResource.asText(): IText = StringResourceText(this)
+            fun StringResource.asText(formatArgs: Array<String>): IText =
+                StringResourceText(this, formatArgs)
         }
     }
 

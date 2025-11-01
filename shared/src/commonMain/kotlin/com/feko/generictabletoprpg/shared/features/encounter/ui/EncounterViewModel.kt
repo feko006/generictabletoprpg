@@ -7,8 +7,7 @@ import com.feko.generictabletoprpg.add
 import com.feko.generictabletoprpg.edit
 import com.feko.generictabletoprpg.legendary_action_used
 import com.feko.generictabletoprpg.shared.common.domain.model.IText
-import com.feko.generictabletoprpg.shared.common.ui.viewmodel.IToastSubViewModel
-import com.feko.generictabletoprpg.shared.common.ui.viewmodel.ToastSubViewModel
+import com.feko.generictabletoprpg.shared.common.ui.ToastMessage
 import com.feko.generictabletoprpg.shared.features.encounter.InitiativeEntryDao
 import com.feko.generictabletoprpg.shared.features.encounter.InitiativeEntryEntity
 import kotlinx.coroutines.flow.Flow
@@ -32,9 +31,8 @@ class EncounterViewModel(private val dao: InitiativeEntryDao) : ViewModel() {
     val currentRound: Flow<Int>
         get() = _currentRound
 
-    private val _toastMessage = ToastSubViewModel(viewModelScope)
-    val toastMessage: IToastSubViewModel
-        get() = _toastMessage
+    private val _toastMessage = MutableStateFlow<ToastMessage?>(null)
+    val toastMessage: Flow<ToastMessage?> = _toastMessage
 
     val encounterState: Flow<EncounterState> =
         entries.map { entry ->
@@ -212,7 +210,12 @@ class EncounterViewModel(private val dao: InitiativeEntryDao) : ViewModel() {
     }
 
     private suspend fun useLegendaryAction(entry: InitiativeEntryEntity) {
-        _toastMessage.showMessage(Res.string.legendary_action_used, entry.name)
+        _toastMessage.emit(
+            ToastMessage(
+                IText.StringResourceText(Res.string.legendary_action_used, arrayOf(entry.name)),
+                _toastMessage
+            )
+        )
         dao.update(entry.copy(availableLegendaryActions = entry.availableLegendaryActions - 1))
     }
 

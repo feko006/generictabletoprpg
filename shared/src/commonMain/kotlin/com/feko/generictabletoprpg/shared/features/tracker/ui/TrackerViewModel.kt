@@ -8,11 +8,11 @@ import com.feko.generictabletoprpg.five_e_stats
 import com.feko.generictabletoprpg.shared.common.domain.createNewComparator
 import com.feko.generictabletoprpg.shared.common.domain.model.IText
 import com.feko.generictabletoprpg.shared.common.domain.model.IText.StringResourceText.Companion.asText
+import com.feko.generictabletoprpg.shared.common.ui.ToastMessage
+import com.feko.generictabletoprpg.shared.common.ui.theme.ScreenSize
 import com.feko.generictabletoprpg.shared.common.ui.viewmodel.FabDropdownSubViewModel
 import com.feko.generictabletoprpg.shared.common.ui.viewmodel.IFabDropdownSubViewModel
-import com.feko.generictabletoprpg.shared.common.ui.viewmodel.IToastSubViewModel
 import com.feko.generictabletoprpg.shared.common.ui.viewmodel.OverviewViewModel
-import com.feko.generictabletoprpg.shared.common.ui.viewmodel.ToastSubViewModel
 import com.feko.generictabletoprpg.shared.features.searchall.usecase.ISearchAllUseCase
 import com.feko.generictabletoprpg.shared.features.spell.SpellDao
 import com.feko.generictabletoprpg.shared.features.tracker.TrackedThingDao
@@ -53,8 +53,8 @@ class TrackerViewModel(
     private val _fabDropdown = FabDropdownSubViewModel(viewModelScope)
     val fabDropdown: IFabDropdownSubViewModel = _fabDropdown
 
-    private val _toast = ToastSubViewModel(viewModelScope)
-    val toast: IToastSubViewModel = _toast
+    private val _toast = MutableStateFlow<ToastMessage?>(null)
+    val toast: Flow<ToastMessage?> = _toast
 
     private val _dialog: MutableStateFlow<ITrackerDialog> = MutableStateFlow(ITrackerDialog.None)
     val dialog: Flow<ITrackerDialog> = _dialog
@@ -448,7 +448,7 @@ class TrackerViewModel(
             val spellAlreadyInList =
                 serializedItem.any { it.id == spellId && it.name == spellToAdd.name }
             if (spellAlreadyInList) {
-                _toast.showMessage(Res.string.spell_already_in_list)
+                _toast.emit(ToastMessage(Res.string.spell_already_in_list.asText(), _toast))
             } else {
                 val sortedSpells =
                     serializedItem
@@ -468,7 +468,9 @@ class TrackerViewModel(
                 if (currentDialog is ITrackerDialog.SpellListDialog) {
                     _dialog.update { currentDialog.copy(spellList = spellList) }
                 }
-                _toast.showMessage(Res.string.spell_successfully_added_to_list)
+                _toast.emit(
+                    ToastMessage(Res.string.spell_successfully_added_to_list.asText(), _toast)
+                )
             }
             spellListBeingAddedTo = null
         }
@@ -541,9 +543,11 @@ class TrackerViewModel(
                                 && it.amount.toInt() > 0
                     }
             reduceByOneSuspending(spellSlot)
-            _toast.showMessage(
-                Res.string.spell_cast_with_slot_level,
-                withSlotLevel.toString()
+            _toast.emit(
+                ToastMessage(
+                    Res.string.spell_cast_with_slot_level.asText(arrayOf(withSlotLevel.toString())),
+                    _toast
+                )
             )
         }
     }
@@ -559,9 +563,11 @@ class TrackerViewModel(
                                 && it.amount.toInt() > 0
                     }
             reduceByOneSuspending(spellSlot)
-            _toast.showMessage(
-                Res.string.spell_cast_with_slot_level,
-                withSlotLevel.toString()
+            _toast.emit(
+                ToastMessage(
+                    Res.string.spell_cast_with_slot_level.asText(arrayOf(withSlotLevel.toString())),
+                    _toast
+                )
             )
         }
     }

@@ -80,7 +80,8 @@ fun TrackerScreen(
             searchFieldHint = Res.string.search_everywhere.asText()
         )
     }
-    ToastMessage(viewModel.toast)
+    val toastMessage by viewModel.toast.collectAsState(null)
+    ToastMessage(toastMessage)
     TrackerAlertDialog(viewModel, onNavigateToSimpleSpellDetailsScreen)
 }
 

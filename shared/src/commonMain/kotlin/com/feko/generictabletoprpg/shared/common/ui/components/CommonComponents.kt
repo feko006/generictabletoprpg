@@ -37,8 +37,6 @@ import androidx.compose.material3.TextFieldColors
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -56,9 +54,9 @@ import com.dokar.sonner.Toaster
 import com.dokar.sonner.rememberToasterState
 import com.feko.generictabletoprpg.shared.common.appNamesByType
 import com.feko.generictabletoprpg.shared.common.domain.model.IText
+import com.feko.generictabletoprpg.shared.common.ui.ToastMessage
 import com.feko.generictabletoprpg.shared.common.ui.theme.LocalDimens
 import com.feko.generictabletoprpg.shared.common.ui.theme.LocalTheme
-import com.feko.generictabletoprpg.shared.common.ui.viewmodel.IToastSubViewModel
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 import kotlin.reflect.KClass
@@ -123,13 +121,12 @@ fun AddFABButton(
 fun <T : Any> getTypeName(type: KClass<T>): String = stringResource(appNamesByType[type]!!)
 
 @Composable
-fun ToastMessage(toast: IToastSubViewModel) {
-    val shouldShowToastMessage by toast.shouldShowMessage.collectAsState(false)
+fun ToastMessage(toast: ToastMessage?) {
     val toaster = rememberToasterState()
     Toaster(toaster, darkTheme = LocalTheme.current.isInDarkMode)
-    if (shouldShowToastMessage) {
-        toaster.show(toast.getMessage())
-        toast.messageConsumed()
+    if (toast != null) {
+        toaster.show(toast.message.text())
+        toast.toastConsumed()
     }
 }
 

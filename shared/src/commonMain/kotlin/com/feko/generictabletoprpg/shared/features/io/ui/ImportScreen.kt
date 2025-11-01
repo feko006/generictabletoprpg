@@ -51,8 +51,9 @@ fun ImportScreen(
                 rememberFilePickerLauncher(
                     FileKitType.File(".json", "orcbrew")
                 ) { file -> viewModel.fileSelected(file) }
+            val toastMessage by viewModel.toastMessage.collectAsState(null)
+            ToastMessage(toastMessage)
             val screenState by viewModel.screenState.collectAsState()
-            ToastMessage(viewModel.toastMessage)
             when (screenState) {
                 is ImportViewModel.IImportScreenState.ReadyToImport -> {
                     Column(

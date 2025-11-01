@@ -65,7 +65,8 @@ fun TrackerGroupsScreen(
             addFabButtonSpacer = true
         )
     }
-    ToastMessage(viewModel.export.toast)
+    val toastMessage by viewModel.export.toast.collectAsState(initial = null)
+    ToastMessage(toastMessage)
     val dialog by viewModel.dialog.collectAsState(ITrackerGroupDialog.None)
     TrackerGroupsAlertDialog(dialog, viewModel)
 }

@@ -85,5 +85,6 @@ fun EncounterScreen(onNavigationIconClick: () -> Unit) {
         }
     }
     EncounterAlertDialog(viewModel)
-    ToastMessage(viewModel.toastMessage)
+    val toastMessage by viewModel.toastMessage.collectAsState(initial = null)
+    ToastMessage(toastMessage)
 }
