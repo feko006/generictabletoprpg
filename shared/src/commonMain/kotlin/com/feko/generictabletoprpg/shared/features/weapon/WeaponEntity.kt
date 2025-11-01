@@ -59,6 +59,23 @@ data class WeaponEntity(
             subType
         )
 
+    @DoNotObfuscate
+    data class RangedWeaponRangeEmbeddedEntity(
+        val minimum: Int,
+        val maximum: Int
+    ) : ICoreConvertible<Weapon.RangedWeaponRange> {
+        override fun toCoreModel(): Weapon.RangedWeaponRange =
+            Weapon.RangedWeaponRange(minimum, maximum)
+
+        companion object {
+            fun fromCoreModel(range: Weapon.RangedWeaponRange) =
+                RangedWeaponRangeEmbeddedEntity(
+                    range.minimum,
+                    range.maximum
+                )
+        }
+    }
+
     companion object {
         fun fromCoreModel(weapon: Weapon): WeaponEntity {
             val damage: DamageEmbeddedEntity? =
@@ -88,23 +105,6 @@ data class WeaponEntity(
                 weapon.isSpecial,
                 weapon.subType
             )
-        }
-    }
-
-    @DoNotObfuscate
-    data class RangedWeaponRangeEmbeddedEntity(
-        val minimum: Int,
-        val maximum: Int
-    ) : ICoreConvertible<Weapon.RangedWeaponRange> {
-        override fun toCoreModel(): Weapon.RangedWeaponRange =
-            Weapon.RangedWeaponRange(minimum, maximum)
-
-        companion object {
-            fun fromCoreModel(range: Weapon.RangedWeaponRange) =
-                RangedWeaponRangeEmbeddedEntity(
-                    range.minimum,
-                    range.maximum
-                )
         }
     }
 }

@@ -29,6 +29,12 @@ data class SpellListEntry(
     INamed,
     IFromSource {
 
+    fun toSpell() =
+        Spell(
+            id, name, description, school, duration, concentration, level, source,
+            components, castingTime, classesThatCanCast, range, isRitual
+        )
+
     companion object {
         fun fromSpell(spell: Spell) =
             spell.run {
@@ -55,13 +61,6 @@ data class SpellListEntry(
             false
         )
     }
-
-    fun toSpell() =
-        Spell(
-            id, name, description, school, duration, concentration, level, source,
-            components, castingTime, classesThatCanCast, range, isRitual
-        )
-
 }
 
 fun List<SpellListEntry>.preparedSpellsCount() = count { it.isPrepared }

@@ -41,9 +41,7 @@ data class InitiativeEntryEntity(
     }
     val isNameValid by lazy { name.isNotEmpty() }
     val isEntryValid by lazy { isNameValid }
-    val printableLegendaryActions by lazy {
-        "%d/%d".format(availableLegendaryActions, legendaryActions)
-    }
+    val printableLegendaryActions by lazy { "$availableLegendaryActions/$legendaryActions" }
 
     companion object {
         val Empty = InitiativeEntryEntity(0L, "", 0, 0, 0, 0, 0, 0, 0, false, false, false)

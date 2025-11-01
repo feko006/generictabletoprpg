@@ -1,7 +1,7 @@
 package com.feko.generictabletoprpg.shared.features.spell
 
-import com.feko.generictabletoprpg.shared.common.domain.model.DoNotObfuscate
 import com.feko.generictabletoprpg.shared.common.domain.IProcessEdnMap
+import com.feko.generictabletoprpg.shared.common.domain.model.DoNotObfuscate
 import com.feko.generictabletoprpg.shared.common.domain.model.IFromSource
 import com.feko.generictabletoprpg.shared.common.domain.model.IIdentifiable
 import com.feko.generictabletoprpg.shared.common.domain.model.INamed
@@ -31,57 +31,6 @@ data class Spell(
 
     val castingTimeWithRitualTag: String
         get() = "${castingTime}${if (isRitual) " (Ritual)" else ""}"
-
-    companion object {
-        fun createFromOrcbrewData(
-            processEdnMapPort: IProcessEdnMap,
-            spellMap: Map<Any, Any>,
-            defaultSource: String
-        ): Spell {
-            val componentsMap =
-                processEdnMapPort.getValueOrDefault(
-                    spellMap,
-                    ":components",
-                    mapOf<Any, Any>()
-                )
-            val classesThatCanCastMap =
-                processEdnMapPort.getValueOrDefault<Map<Any, Any>>(
-                    spellMap,
-                    ":spell-lists",
-                    mapOf()
-                )
-            val rangeString =
-                processEdnMapPort.getValue<String>(spellMap, ":range")
-            val spellDuration =
-                processEdnMapPort.getValueOrDefault(spellMap, ":duration", "Instantaneous")
-            val classesThatCanCast =
-                processEdnMapPort
-                    .toStringKeyedMap<Boolean>(classesThatCanCastMap)
-                    .filter { it.value }
-                    .map { it.key.substring(1) }
-            return Spell(
-                0,
-                processEdnMapPort.getValue(spellMap, ":name"),
-                processEdnMapPort.getValueOrDefault(spellMap, ":description", ""),
-                processEdnMapPort.getValue(spellMap, ":school"),
-                spellDuration,
-                spellDuration.contains("Concentration"),
-                processEdnMapPort.getValue(spellMap, ":level"),
-                processEdnMapPort
-                    .getValueOrDefault<Any?>(
-                        spellMap,
-                        ":source",
-                        null
-                    )?.toString()
-                    ?: defaultSource,
-                SpellComponents.createFromOrcbrewData(processEdnMapPort, componentsMap),
-                processEdnMapPort.getValue(spellMap, ":casting-time"),
-                classesThatCanCast,
-                SpellRange.createFromString(rangeString),
-                processEdnMapPort.getValueOrDefault(spellMap, ":ritual", false)
-            )
-        }
-    }
 
     @DoNotObfuscate
     @Serializable
@@ -131,6 +80,57 @@ data class Spell(
             }
 
             val Empty = SpellComponents(false, false, false, null)
+        }
+    }
+
+    companion object {
+        fun createFromOrcbrewData(
+            processEdnMapPort: IProcessEdnMap,
+            spellMap: Map<Any, Any>,
+            defaultSource: String
+        ): Spell {
+            val componentsMap =
+                processEdnMapPort.getValueOrDefault(
+                    spellMap,
+                    ":components",
+                    mapOf<Any, Any>()
+                )
+            val classesThatCanCastMap =
+                processEdnMapPort.getValueOrDefault<Map<Any, Any>>(
+                    spellMap,
+                    ":spell-lists",
+                    mapOf()
+                )
+            val rangeString =
+                processEdnMapPort.getValue<String>(spellMap, ":range")
+            val spellDuration =
+                processEdnMapPort.getValueOrDefault(spellMap, ":duration", "Instantaneous")
+            val classesThatCanCast =
+                processEdnMapPort
+                    .toStringKeyedMap<Boolean>(classesThatCanCastMap)
+                    .filter { it.value }
+                    .map { it.key.substring(1) }
+            return Spell(
+                0,
+                processEdnMapPort.getValue(spellMap, ":name"),
+                processEdnMapPort.getValueOrDefault(spellMap, ":description", ""),
+                processEdnMapPort.getValue(spellMap, ":school"),
+                spellDuration,
+                spellDuration.contains("Concentration"),
+                processEdnMapPort.getValue(spellMap, ":level"),
+                processEdnMapPort
+                    .getValueOrDefault<Any?>(
+                        spellMap,
+                        ":source",
+                        null
+                    )?.toString()
+                    ?: defaultSource,
+                SpellComponents.createFromOrcbrewData(processEdnMapPort, componentsMap),
+                processEdnMapPort.getValue(spellMap, ":casting-time"),
+                classesThatCanCast,
+                SpellRange.createFromString(rangeString),
+                processEdnMapPort.getValueOrDefault(spellMap, ":ritual", false)
+            )
         }
     }
 }

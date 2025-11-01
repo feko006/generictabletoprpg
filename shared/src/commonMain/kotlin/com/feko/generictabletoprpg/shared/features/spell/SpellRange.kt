@@ -12,6 +12,18 @@ data class SpellRange(
     val distance: Long,
     val unit: String?
 ) {
+    override fun toString(): String {
+        return if (isSelf) {
+            "Self"
+        } else if (isTouch) {
+            "Touch"
+        } else if (isSight) {
+            "Sight"
+        } else {
+            "$distance $unit"
+        }
+    }
+
     companion object {
         fun createFromString(string: String): SpellRange {
             val parts = string.split(" ")
@@ -25,17 +37,5 @@ data class SpellRange(
         }
 
         val Empty = SpellRange(false, false, false, 0L, null)
-    }
-
-    override fun toString(): String {
-        return if (isSelf) {
-            "Self"
-        } else if (isTouch) {
-            "Touch"
-        } else if (isSight) {
-            "Sight"
-        } else {
-            "$distance $unit"
-        }
     }
 }

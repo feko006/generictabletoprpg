@@ -112,6 +112,28 @@ data class Weapon(
             return builder.toString()
         }
 
+    // In feat
+    @DoNotObfuscate
+    @Serializable
+    data class RangedWeaponRange(
+        val minimum: Int,
+        val maximum: Int
+    ) {
+        fun ft(): String =
+            "$minimum/$maximum ft"
+
+        companion object {
+            fun createFromOrcbrewData(
+                processEdnMapPort: IProcessEdnMap,
+                rangeMap: Map<Any, Any>
+            ): RangedWeaponRange =
+                RangedWeaponRange(
+                    processEdnMapPort.getValue(rangeMap, ":min"),
+                    processEdnMapPort.getValue(rangeMap, ":max")
+                )
+        }
+    }
+
     companion object {
         fun createFromOrcbrewData(
             processEdnMapPort: IProcessEdnMap,
@@ -164,27 +186,4 @@ data class Weapon(
             )
         }
     }
-
-    // In feat
-    @DoNotObfuscate
-    @Serializable
-    data class RangedWeaponRange(
-        val minimum: Int,
-        val maximum: Int
-    ) {
-        fun ft(): String =
-            "$minimum/$maximum ft"
-
-        companion object {
-            fun createFromOrcbrewData(
-                processEdnMapPort: IProcessEdnMap,
-                rangeMap: Map<Any, Any>
-            ): RangedWeaponRange =
-                RangedWeaponRange(
-                    processEdnMapPort.getValue(rangeMap, ":min"),
-                    processEdnMapPort.getValue(rangeMap, ":max")
-                )
-        }
-    }
 }
-
