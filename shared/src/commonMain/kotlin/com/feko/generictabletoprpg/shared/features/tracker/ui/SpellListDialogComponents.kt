@@ -86,9 +86,7 @@ fun SpellListDialog(
         dialogTitle = { DialogTitle(dialog.title.text()) },
         dialogButtons = {
             Row(
-                Modifier
-                    .fillMaxWidth()
-                    .padding(top = 8.dp),
+                Modifier.fillMaxWidth(),
                 Arrangement.SpaceBetween
             ) {
                 val coroutineScope = rememberCoroutineScope()

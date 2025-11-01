@@ -2,18 +2,15 @@ package com.feko.generictabletoprpg.shared.features.encounter.ui
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -30,11 +27,13 @@ import com.feko.generictabletoprpg.name
 import com.feko.generictabletoprpg.shared.common.ui.components.AlertDialogBase
 import com.feko.generictabletoprpg.shared.common.ui.components.BoxWithScrollIndicator
 import com.feko.generictabletoprpg.shared.common.ui.components.ConfirmationDialog
+import com.feko.generictabletoprpg.shared.common.ui.components.DialogButton
 import com.feko.generictabletoprpg.shared.common.ui.components.DialogInputField
 import com.feko.generictabletoprpg.shared.common.ui.components.DialogTitle
 import com.feko.generictabletoprpg.shared.common.ui.components.EnterValueDialog
 import com.feko.generictabletoprpg.shared.common.ui.components.IInputFieldValueConverter
 import com.feko.generictabletoprpg.shared.common.ui.components.NumberDialogInputField
+import com.feko.generictabletoprpg.shared.common.ui.components.OutlinedDialogButton
 import com.feko.generictabletoprpg.shared.common.ui.components.SelectFromListDialog
 import com.feko.generictabletoprpg.shared.features.encounter.InitiativeEntryEntity
 import com.feko.generictabletoprpg.spell_attack_modifier
@@ -170,31 +169,24 @@ fun EditDialog(
         onDismiss,
         screenHeight = 0.6f,
         dialogTitle = { DialogTitle(title) },
-        Arrangement.spacedBy(8.dp),
         dialogButtons = {
-            Column {
-                if (isLairActionsButtonVisible) {
-                    TextButton(
-                        onClick = {
-                            onAddLairActions()
-                            onDismiss()
-                        },
-                        modifier = Modifier
-                            .align(Alignment.End)
-                            .wrapContentWidth()
-                    ) { Text(stringResource(Res.string.add_lair_actions)) }
-                }
-                TextButton(
+            if (isLairActionsButtonVisible) {
+                OutlinedDialogButton(
+                    stringResource(Res.string.add_lair_actions),
                     onClick = {
-                        onConfirm(initiativeEntry)
+                        onAddLairActions()
                         onDismiss()
-                    },
-                    modifier = Modifier
-                        .align(Alignment.End)
-                        .wrapContentWidth(),
-                    enabled = initiativeEntry.isEntryValid
-                ) { Text(stringResource(Res.string.confirm)) }
+                    }
+                )
             }
+            DialogButton(
+                stringResource(Res.string.confirm),
+                onClick = {
+                    onConfirm(initiativeEntry)
+                    onDismiss()
+                },
+                isEnabled = initiativeEntry.isEntryValid
+            )
         }) {
         val scrollState = rememberScrollState()
         BoxWithScrollIndicator(

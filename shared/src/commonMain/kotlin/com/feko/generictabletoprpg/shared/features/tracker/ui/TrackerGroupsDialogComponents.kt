@@ -11,7 +11,6 @@ import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -31,9 +30,11 @@ import com.feko.generictabletoprpg.shared.common.domain.model.INamed
 import com.feko.generictabletoprpg.shared.common.domain.model.IText
 import com.feko.generictabletoprpg.shared.common.ui.components.AlertDialogBase
 import com.feko.generictabletoprpg.shared.common.ui.components.ConfirmationDialog
+import com.feko.generictabletoprpg.shared.common.ui.components.DialogButton
 import com.feko.generictabletoprpg.shared.common.ui.components.DialogInputField
 import com.feko.generictabletoprpg.shared.common.ui.components.DialogTitle
 import com.feko.generictabletoprpg.shared.common.ui.components.GttrpgContextMenu
+import com.feko.generictabletoprpg.shared.common.ui.components.OutlinedDialogButton
 import com.feko.generictabletoprpg.shared.common.ui.components.deleteIcon
 import com.feko.generictabletoprpg.shared.common.ui.components.editIcon
 import com.feko.generictabletoprpg.shared.common.ui.components.sendToMobileIcon
@@ -142,18 +143,15 @@ fun EditDialog(
             DialogTitle(dialogState.dialogTitle.text())
         },
         dialogButtons = {
-            TextButton(onClick = onDialogDismiss) {
-                Text(stringResource(Res.string.cancel))
-            }
-            TextButton(
+            DialogButton(
+                stringResource(Res.string.confirm),
                 onClick = {
                     onConfirm(dialogState.trackedThingGroup)
                     onDialogDismiss()
                 },
-                enabled = dialogState.trackedThingGroup.name.isNotEmpty(),
-            ) {
-                Text(stringResource(Res.string.confirm))
-            }
+                isEnabled = dialogState.trackedThingGroup.name.isNotEmpty(),
+            )
+            OutlinedDialogButton(stringResource(Res.string.cancel), onDialogDismiss)
         }
     ) {
         DialogInputField(

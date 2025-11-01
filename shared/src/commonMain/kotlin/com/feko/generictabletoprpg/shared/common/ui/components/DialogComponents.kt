@@ -5,8 +5,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
@@ -15,13 +13,14 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.BasicAlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldColors
 import androidx.compose.material3.TextFieldDefaults
@@ -41,6 +40,7 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.feko.generictabletoprpg.Res
 import com.feko.generictabletoprpg.amount
@@ -56,32 +56,47 @@ fun AlertDialogBase(
     onDialogDismiss: () -> Unit,
     screenHeight: Float = 1f,
     dialogTitle: @Composable ColumnScope.() -> Unit = {},
-    verticalArrangement: Arrangement.Vertical = Arrangement.Top,
-    dialogButtons: @Composable (RowScope.() -> Unit)? = null,
+    dialogButtons: @Composable (ColumnScope.() -> Unit)? = null,
     dialogContent: @Composable ColumnScope.() -> Unit = {}
 ) {
     BasicAlertDialog(onDismissRequest = onDialogDismiss) {
-        Card {
-            val dialogPadding = LocalDimens.current.paddingMedium
+        Card(shape = MaterialTheme.shapes.extraLarge) {
             Column(
                 Modifier
                     .heightIn(max = with(LocalDensity.current) { LocalWindowInfo.current.containerSize.height.toDp() } * screenHeight)
-                    .padding(start = dialogPadding, top = dialogPadding, end = dialogPadding),
-                verticalArrangement
+                    .padding(LocalDimens.current.paddingMedium),
+                Arrangement.spacedBy(LocalDimens.current.gapSmall)
             ) {
                 dialogTitle()
                 dialogContent()
                 if (dialogButtons != null) {
-                    Row(
-                        Modifier.fillMaxWidth(),
-                        Arrangement.End
-                    ) {
+                    Column(Modifier.fillMaxWidth()) {
                         dialogButtons()
                     }
                 }
             }
         }
     }
+}
+
+@Composable
+fun DialogButton(text: String, onClick: () -> Unit, isEnabled: Boolean = true) {
+    Button(
+        onClick,
+        Modifier.fillMaxWidth(),
+        isEnabled,
+        shape = MaterialTheme.shapes.extraLarge
+    ) { Text(text) }
+}
+
+@Composable
+fun OutlinedDialogButton(text: String, onClick: () -> Unit, isEnabled: Boolean = true) {
+    OutlinedButton(
+        onClick,
+        Modifier.fillMaxWidth(),
+        isEnabled,
+        shape = MaterialTheme.shapes.extraLarge
+    ) { Text(text) }
 }
 
 @Composable
@@ -95,15 +110,13 @@ fun ConfirmationDialog(
         onDialogDismiss,
         dialogTitle = { DialogTitle(dialogTitle) },
         dialogButtons = {
-            TextButton(onClick = onDialogDismiss) {
-                Text(stringResource(Res.string.cancel))
-            }
-            TextButton(onClick = {
-                onConfirm()
-                onDialogDismiss()
-            }) {
-                Text(stringResource(Res.string.confirm))
-            }
+            DialogButton(
+                stringResource(Res.string.confirm),
+                onClick = {
+                    onConfirm()
+                    onDialogDismiss()
+                })
+            OutlinedDialogButton(stringResource(Res.string.cancel), onDialogDismiss)
         }) {
         if (dialogMessage != null) {
             Text(dialogMessage, Modifier.padding(top = 8.dp))
@@ -130,18 +143,15 @@ fun EnterValueDialog(
         onDialogDismissed,
         dialogTitle = { DialogTitle(dialogTitle) },
         dialogButtons = {
-            TextButton(onClick = onDialogDismissed) {
-                Text(stringResource(Res.string.cancel))
-            }
-            TextButton(
+            DialogButton(
+                stringResource(Res.string.confirm),
                 onClick = {
                     onConfirm(value)
                     onDialogDismissed()
                 },
-                enabled = isInputFieldValid(value)
-            ) {
-                Text(stringResource(Res.string.confirm))
-            }
+                isEnabled = isInputFieldValid(value)
+            )
+            OutlinedDialogButton(stringResource(Res.string.cancel), onDialogDismissed)
         }) {
         DialogInputField(
             value,
@@ -174,9 +184,7 @@ fun <T> SelectFromListDialog(
         onDialogDismiss,
         dialogTitle = { DialogTitle(dialogTitle) },
         dialogButtons = {
-            TextButton(onClick = onDialogDismiss) {
-                Text(stringResource(Res.string.cancel))
-            }
+            OutlinedDialogButton(stringResource(Res.string.cancel), onDialogDismiss)
         }) {
         LazyColumn(
             Modifier.padding(top = 16.dp, bottom = 8.dp),
@@ -196,7 +204,12 @@ fun <T> SelectFromListDialog(
 
 @Composable
 fun DialogTitle(dialogTitle: String) {
-    Text(dialogTitle, style = Typography.titleLarge)
+    Text(
+        dialogTitle,
+        Modifier.fillMaxWidth(),
+        textAlign = TextAlign.Center,
+        style = Typography.titleLarge
+    )
 }
 
 @Composable

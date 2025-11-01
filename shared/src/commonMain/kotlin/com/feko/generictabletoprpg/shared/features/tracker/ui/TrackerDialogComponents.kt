@@ -52,11 +52,13 @@ import com.feko.generictabletoprpg.shared.common.ui.components.AlertDialogBase
 import com.feko.generictabletoprpg.shared.common.ui.components.BoxWithScrollIndicator
 import com.feko.generictabletoprpg.shared.common.ui.components.CheckboxWithText
 import com.feko.generictabletoprpg.shared.common.ui.components.ConfirmationDialog
+import com.feko.generictabletoprpg.shared.common.ui.components.DialogButton
 import com.feko.generictabletoprpg.shared.common.ui.components.DialogInputField
 import com.feko.generictabletoprpg.shared.common.ui.components.DialogTitle
 import com.feko.generictabletoprpg.shared.common.ui.components.EnterValueDialog
 import com.feko.generictabletoprpg.shared.common.ui.components.IInputFieldValueConverter
 import com.feko.generictabletoprpg.shared.common.ui.components.NumberDialogInputField
+import com.feko.generictabletoprpg.shared.common.ui.components.OutlinedDialogButton
 import com.feko.generictabletoprpg.shared.common.ui.theme.LocalDimens
 import com.feko.generictabletoprpg.shared.common.ui.theme.ScreenSize
 import com.feko.generictabletoprpg.shared.common.ui.theme.Typography
@@ -321,12 +323,13 @@ fun PreviewStatSkillsDialog(
         onDialogDismiss = onDismiss,
         screenHeight = 0.7f,
         dialogTitle = { DialogTitle(dialog.title.text()) },
-        Arrangement.Top,
         dialogButtons = {
-            TextButton(
-                onClick = onDismiss,
-                modifier = Modifier.wrapContentWidth()
-            ) { Text(stringResource(Res.string.dismiss)) }
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
+                TextButton(
+                    onClick = onDismiss,
+                    modifier = Modifier.wrapContentWidth()
+                ) { Text(stringResource(Res.string.dismiss)) }
+            }
         }
     ) {
         val statsContainer = dialog.stats
@@ -381,21 +384,16 @@ private fun EditDialog(
     AlertDialogBase(
         onDialogDismiss = onDismiss,
         dialogTitle = { DialogTitle(dialog.title.text()) },
-        verticalArrangement = Arrangement.spacedBy(8.dp),
         dialogButtons = {
-            TextButton(onClick = onDismiss) {
-                Text(stringResource(Res.string.cancel))
-            }
-            TextButton(
+            DialogButton(
+                stringResource(Res.string.confirm),
                 onClick = {
                     onConfirm(dialog.editedItem)
                     onDismiss()
                 },
-                enabled = canConfirmEditOperation,
-                modifier = Modifier.wrapContentWidth()
-            ) {
-                Text(stringResource(Res.string.confirm))
-            }
+                isEnabled = canConfirmEditOperation
+            )
+            OutlinedDialogButton(stringResource(Res.string.cancel), onDismiss)
         }
     ) {
         val isSpellList = editedTrackedThing.type == TrackedThing.Type.SpellList
@@ -526,14 +524,16 @@ fun StatsEditDialog(
         screenHeight = 0.6f,
         dialogTitle = { DialogTitle(dialog.title.text()) },
         dialogButtons = {
-            TextButton(
-                onClick = {
-                    onFormSubmit(editedStats)
-                    onDismiss()
-                },
-                modifier = Modifier.wrapContentWidth()
-            ) {
-                Text(stringResource(Res.string.confirm))
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
+                TextButton(
+                    onClick = {
+                        onFormSubmit(editedStats)
+                        onDismiss()
+                    },
+                    modifier = Modifier.wrapContentWidth()
+                ) {
+                    Text(stringResource(Res.string.confirm))
+                }
             }
         }
     ) {
