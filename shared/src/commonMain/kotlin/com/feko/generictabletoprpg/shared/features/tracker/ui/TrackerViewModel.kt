@@ -417,7 +417,12 @@ class TrackerViewModel(
         }
     }
 
-    fun showPreviewSpellListDialog(spellList: TrackedThing, resetListState: Boolean) {
+    fun showPreviewSpellListDialog(
+        spellList: TrackedThing,
+        resetListState: Boolean,
+        screenSize: ScreenSize,
+        onNavigateToSpellListScreen: () -> Unit
+    ) {
         @Suppress("UNCHECKED_CAST")
         if ((spellList.serializedItem as List<SpellListEntry>).isEmpty()) {
             return
@@ -427,6 +432,9 @@ class TrackerViewModel(
         }
         _dialog.update {
             ITrackerDialog.SpellListDialog(spellList, isShowingPreparedSpells.value)
+        }
+        if (screenSize != ScreenSize.Compact) {
+            onNavigateToSpellListScreen()
         }
     }
 

@@ -48,7 +48,6 @@ import com.feko.generictabletoprpg.shared.common.ui.components.draggableHandle
 import com.feko.generictabletoprpg.shared.common.ui.components.longPressDraggableHandle
 import com.feko.generictabletoprpg.shared.common.ui.components.menuIcon
 import com.feko.generictabletoprpg.shared.common.ui.theme.LocalDimens
-import com.feko.generictabletoprpg.shared.common.ui.theme.ScreenSize
 import com.feko.generictabletoprpg.shared.common.ui.theme.Typography
 import com.feko.generictabletoprpg.shared.features.tracker.model.SpellListEntry
 import com.feko.generictabletoprpg.shared.features.tracker.model.StatEntry
@@ -322,10 +321,12 @@ fun SpellListItem(
         isDragged,
         scope,
         onItemClicked = {
-            viewModel.showPreviewSpellListDialog(spellList, resetListState = true)
-            if (screenSize != ScreenSize.Compact) {
-                onNavigateToSpellListScreen()
-            }
+            viewModel.showPreviewSpellListDialog(
+                spellList,
+                resetListState = true,
+                screenSize,
+                onNavigateToSpellListScreen
+            )
         }) {
         SpellListItemContent(
             spellList,
@@ -333,7 +334,9 @@ fun SpellListItem(
             onListButtonClicked = {
                 viewModel.showPreviewSpellListDialog(
                     spellList,
-                    resetListState = true
+                    resetListState = true,
+                    screenSize,
+                    onNavigateToSpellListScreen
                 )
             },
             onAddButtonClicked = {
