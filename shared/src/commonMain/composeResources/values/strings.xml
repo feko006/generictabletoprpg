@@ -94,7 +94,7 @@
     <string name="spell_successfully_added_to_list">Spell successfully added to list!</string>
     <string name="confirm_spell_removal_from_list_dialog_title">Remove spell?</string>
     <string name="select_slot_level_for_casting_spell">Cast at which level?</string>
-    <string name="spell_cast_with_slot_level">Spell cast at level %s</string>
+    <string name="spell_cast_with_slot_level">Spell cast at level %1$s</string>
     <string name="text">Text</string>
     <string name="hit_dice">Hit dice</string>
     <!--Spell-->
@@ -171,11 +171,11 @@
     <string name="spell_attack_modifier">Spell Attack Modifier</string>
     <string name="add_lair_actions">Add Lair Actions</string>
     <string name="lair_action">Lair Action</string>
-    <string name="legendary_action_used">Used legendary action from %s</string>
+    <string name="legendary_action_used">Used legendary action from %1$s</string>
     <string name="select_legendary_action">Select Legendary Action</string>
     <string name="round">Round</string>
     <string name="reset_encounter_message">This will delete all non-favorite entries</string>
-    <string name="remove_from_encounter_after_taking_lethal_damage_dialog_message_template">%s has taken lethal damage bringing its HP to 0. Do you want to remove it?</string>
+    <string name="remove_from_encounter_after_taking_lethal_damage_dialog_message_template">%1$s has taken lethal damage bringing its HP to 0. Do you want to remove it?</string>
     <string name="encounters">Encounters</string>
     <string name="expertise">Expertise</string>
 </resources>
