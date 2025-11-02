@@ -1,6 +1,7 @@
 package com.feko.generictabletoprpg.shared.features.tracker.ui
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -17,6 +18,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.feko.generictabletoprpg.Res
 import com.feko.generictabletoprpg.cantrips
@@ -46,14 +48,15 @@ fun SpellListContent(
     onCastSpellRequested: (Int) -> Unit,
     onRemoveSpellRequested: (SpellListEntry) -> Unit,
     onSpellClick: (Spell) -> Unit,
-    listModifier: Modifier = Modifier
+    listModifier: Modifier = Modifier,
+    showScrollIndicator: Boolean = true,
+    listContentBottomPadding: Dp = 0.dp
 ) {
     @Suppress("UNCHECKED_CAST")
     val entries = dialog.spellList.serializedItem as List<SpellListEntry>
     val numberOfPreparedSpells = entries.preparedSpellsCount()
     val numberOfCantripSpells = entries.cantripSpellsCount()
     Row(
-        Modifier.padding(bottom = 8.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -111,29 +114,69 @@ fun SpellListContent(
             onFilteringByPreparedStateChanged(false)
         }
     }
-    BoxWithScrollIndicator(
-        spellListState,
-        CardDefaults.cardColors().containerColor,
-        listModifier
-    ) {
-        LazyColumn(
-            state = spellListState,
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+    if (showScrollIndicator) {
+        BoxWithScrollIndicator(
+            spellListState,
+            CardDefaults.cardColors().containerColor,
+            listModifier
         ) {
-            items(
-                entries.filterPreparedAndCantrips(dialog.isFilteringByPreparedSpells),
-                key = { "${it.name}${it.id}" }) { spellListEntry ->
-                SpellListEntryListItem(
-                    spellListEntry,
-                    canSpellBeCast(spellListEntry.level),
-                    onSpellPreparedStateChanged = {
-                        onSpellPreparedStateChanged(spellListEntry, it)
-                    },
-                    onCastSpellClicked = { onCastSpellRequested(spellListEntry.level) },
-                    onRemoveSpellRequested = { onRemoveSpellRequested(spellListEntry) },
-                    onSpellClick = onSpellClick
-                )
-            }
+            SpellList(
+                spellListState,
+                listContentBottomPadding,
+                entries,
+                dialog,
+                canSpellBeCast,
+                onSpellPreparedStateChanged,
+                onCastSpellRequested,
+                onRemoveSpellRequested,
+                onSpellClick
+            )
+        }
+    } else {
+        SpellList(
+            spellListState,
+            listContentBottomPadding,
+            entries,
+            dialog,
+            canSpellBeCast,
+            onSpellPreparedStateChanged,
+            onCastSpellRequested,
+            onRemoveSpellRequested,
+            onSpellClick
+        )
+    }
+}
+
+@Composable
+private fun SpellList(
+    spellListState: LazyListState,
+    listContentBottomPadding: Dp,
+    entries: List<SpellListEntry>,
+    dialog: ITrackerDialog.SpellListDialog,
+    canSpellBeCast: (Int) -> Boolean,
+    onSpellPreparedStateChanged: (SpellListEntry, Boolean) -> Unit,
+    onCastSpellRequested: (Int) -> Unit,
+    onRemoveSpellRequested: (SpellListEntry) -> Unit,
+    onSpellClick: (Spell) -> Unit
+) {
+    LazyColumn(
+        state = spellListState,
+        contentPadding = PaddingValues(bottom = listContentBottomPadding),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        items(
+            entries.filterPreparedAndCantrips(dialog.isFilteringByPreparedSpells),
+            key = { "${it.name}${it.id}" }) { spellListEntry ->
+            SpellListEntryListItem(
+                spellListEntry,
+                canSpellBeCast(spellListEntry.level),
+                onSpellPreparedStateChanged = {
+                    onSpellPreparedStateChanged(spellListEntry, it)
+                },
+                onCastSpellClicked = { onCastSpellRequested(spellListEntry.level) },
+                onRemoveSpellRequested = { onRemoveSpellRequested(spellListEntry) },
+                onSpellClick = onSpellClick
+            )
         }
     }
 }
