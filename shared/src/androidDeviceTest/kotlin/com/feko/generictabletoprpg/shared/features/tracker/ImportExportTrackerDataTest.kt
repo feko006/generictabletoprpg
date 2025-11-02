@@ -15,6 +15,7 @@ import io.github.vinceglb.filekit.PlatformFile
 import io.github.vinceglb.filekit.filesDir
 import io.github.vinceglb.filekit.readString
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import org.hamcrest.CoreMatchers
 import org.hamcrest.MatcherAssert
@@ -330,7 +331,7 @@ class ImportExportTrackerDataTest {
         jsonImportAllUseCase.import(file.readString())
 
         // Then
-        val allTrackedThingGroups = trackedThingGroupDao.getAllSortedByName()
+        val allTrackedThingGroups = trackedThingGroupDao.getAllSortedByName().first()
         MatcherAssert.assertThat(allTrackedThingGroups.size, CoreMatchers.equalTo(2))
         MatcherAssert.assertThat(
             allTrackedThingGroups[0].name,
@@ -341,7 +342,7 @@ class ImportExportTrackerDataTest {
                 .first { it.id != originalTrackedThingGroupId }
                 .id
         val importedTrackedThings =
-            trackedThingDao.getAllSortedByIndex(importedTrackedThingGroupId)
+            trackedThingDao.getAllSortedByIndex(importedTrackedThingGroupId).first()
         MatcherAssert.assertThat(
             trackedThings.size,
             CoreMatchers.equalTo(importedTrackedThings.size)
