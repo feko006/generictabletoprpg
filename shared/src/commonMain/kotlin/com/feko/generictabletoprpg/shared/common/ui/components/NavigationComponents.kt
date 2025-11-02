@@ -238,7 +238,8 @@ fun NavigationHost(
                         },
                         onPopSpellListScreen = {
                             backStack.popUpTo<SpellListDestination>(inclusive = true)
-                        }
+                        },
+                        onPopAll = { backStack.popAll(it) }
                     )
                 }
         }
@@ -256,6 +257,10 @@ private inline fun <reified T : NavKey> NavBackStack<NavKey>.popUpTo(inclusive: 
             removeAt(i)
         }
     }
+}
+
+private fun NavBackStack<NavKey>.popAll(predicate: (NavKey) -> Boolean) {
+    removeAll(predicate)
 }
 
 fun getDetailsDestination(item: Any): INavigationDestination {
