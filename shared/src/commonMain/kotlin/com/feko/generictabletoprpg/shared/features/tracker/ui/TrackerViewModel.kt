@@ -36,6 +36,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -68,6 +69,12 @@ class TrackerViewModel(
 
     lateinit var spellListState: LazyListState
     private val isShowingPreparedSpells = MutableStateFlow(false)
+
+    val availableSpellSlotLevels =
+        _items.map { list ->
+            list.filterIsInstance<TrackedThing>()
+                .filter { it.type == TrackedThing.Type.SpellSlot && it.amount.toInt() > 0 }
+        }
 
     override val combinedItemFlow: Flow<List<Any>> =
         _items.combine(_searchString) { items, searchString ->
@@ -505,13 +512,9 @@ class TrackerViewModel(
     fun castSpellRequested(level: Int) {
         viewModelScope.launch {
             val availableSpellSlots =
-                _items.value
-                    .filterIsInstance<TrackedThing>()
-                    .filter {
-                        it.type == TrackedThing.Type.SpellSlot
-                                && it.level >= level
-                                && it.amount.toInt() > 0
-                    }
+                availableSpellSlotLevels
+                    .first()
+                    .filter { it.level >= level }
                     .map { it.level }
                     .distinct()
             require(availableSpellSlots.isNotEmpty())
@@ -572,15 +575,6 @@ class TrackerViewModel(
         _dialog.update {
             ITrackerDialog.PreviewStatSkillsDialog(stats.serializedItem as StatsContainer)
         }
-
-    fun canCastSpell(level: Int): Boolean =
-        _items.value
-            .filterIsInstance<TrackedThing>()
-            .any {
-                it.type == TrackedThing.Type.SpellSlot
-                        && it.level >= level
-                        && it.amount.toInt() > 0
-            }
 
     fun changeSpellListEntryPreparedState(
         spellList: TrackedThing,

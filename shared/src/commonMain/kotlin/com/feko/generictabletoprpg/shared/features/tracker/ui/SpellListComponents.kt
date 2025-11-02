@@ -33,6 +33,7 @@ import com.feko.generictabletoprpg.shared.common.ui.components.doneIcon
 import com.feko.generictabletoprpg.shared.common.ui.theme.Typography
 import com.feko.generictabletoprpg.shared.features.spell.Spell
 import com.feko.generictabletoprpg.shared.features.tracker.model.SpellListEntry
+import com.feko.generictabletoprpg.shared.features.tracker.model.TrackedThing
 import com.feko.generictabletoprpg.shared.features.tracker.model.cantripSpellsCount
 import com.feko.generictabletoprpg.shared.features.tracker.model.filterPreparedAndCantrips
 import com.feko.generictabletoprpg.shared.features.tracker.model.preparedSpellsCount
@@ -41,9 +42,9 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 fun SpellListContent(
     dialog: ITrackerDialog.SpellListDialog,
+    availableSpellSlots: List<TrackedThing>,
     spellListState: LazyListState,
     onFilteringByPreparedStateChanged: (Boolean) -> Unit,
-    canSpellBeCast: (Int) -> Boolean,
     onSpellPreparedStateChanged: (SpellListEntry, Boolean) -> Unit,
     onCastSpellRequested: (Int) -> Unit,
     onRemoveSpellRequested: (SpellListEntry) -> Unit,
@@ -125,7 +126,7 @@ fun SpellListContent(
                 listContentBottomPadding,
                 entries,
                 dialog,
-                canSpellBeCast,
+                availableSpellSlots,
                 onSpellPreparedStateChanged,
                 onCastSpellRequested,
                 onRemoveSpellRequested,
@@ -138,7 +139,7 @@ fun SpellListContent(
             listContentBottomPadding,
             entries,
             dialog,
-            canSpellBeCast,
+            availableSpellSlots,
             onSpellPreparedStateChanged,
             onCastSpellRequested,
             onRemoveSpellRequested,
@@ -153,7 +154,7 @@ private fun SpellList(
     listContentBottomPadding: Dp,
     entries: List<SpellListEntry>,
     dialog: ITrackerDialog.SpellListDialog,
-    canSpellBeCast: (Int) -> Boolean,
+    availableSpellSlots: List<TrackedThing>,
     onSpellPreparedStateChanged: (SpellListEntry, Boolean) -> Unit,
     onCastSpellRequested: (Int) -> Unit,
     onRemoveSpellRequested: (SpellListEntry) -> Unit,
@@ -167,9 +168,10 @@ private fun SpellList(
         items(
             entries.filterPreparedAndCantrips(dialog.isFilteringByPreparedSpells),
             key = { "${it.name}${it.id}" }) { spellListEntry ->
+            val canCastSpell = availableSpellSlots.any { it.level >= spellListEntry.level }
             SpellListEntryListItem(
                 spellListEntry,
-                canSpellBeCast(spellListEntry.level),
+                canCastSpell,
                 onSpellPreparedStateChanged = {
                     onSpellPreparedStateChanged(spellListEntry, it)
                 },

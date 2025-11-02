@@ -63,11 +63,13 @@ fun SpellListScreen(
                 .padding(horizontal = screenAdditionalPadding),
             verticalArrangement = Arrangement.spacedBy(LocalDimens.current.gapSmall)
         ) {
+            val availableSpellSlots
+                    by trackerViewModel.availableSpellSlotLevels.collectAsState(listOf())
             SpellListContent(
                 dereferencedDialog,
+                availableSpellSlots,
                 trackerViewModel.spellListState,
                 onFilteringByPreparedStateChanged = { trackerViewModel.setShowingPreparedSpells(it) },
-                canSpellBeCast = { level -> trackerViewModel.canCastSpell(level) },
                 onSpellPreparedStateChanged = { spellListEntry, isPrepared ->
                     trackerViewModel.changeSpellListEntryPreparedState(
                         dereferencedDialog.spellList,
@@ -79,7 +81,7 @@ fun SpellListScreen(
                 onRemoveSpellRequested = { trackerViewModel.removeSpellFromSpellListRequested(it) },
                 onSpellClick = onNavigateToSimpleSpellDetailsScreen,
                 showScrollIndicator = false,
-                listContentBottomPadding = screenAdditionalPadding
+                listContentBottomPadding = screenAdditionalPadding,
             )
         }
     }

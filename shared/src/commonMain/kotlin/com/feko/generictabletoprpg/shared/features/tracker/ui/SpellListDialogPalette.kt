@@ -22,10 +22,10 @@ fun SpellListDialogPreview() {
                 },
             isFilteringByPreparedSpells = false
         ),
+        listOf(TrackedThing.emptyOfType(TrackedThing.Type.SpellSlot, 0, 0L)),
         spellListState = rememberLazyListState(),
         onDialogDismissed = {},
         onFilteringByPreparedStateChanged = {},
-        canSpellBeCast = { true },
         onSpellPreparedStateChanged = { _, _ -> },
         onCastSpellRequested = {},
         onRemoveSpellRequested = {},

@@ -19,6 +19,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -40,6 +42,7 @@ import com.feko.generictabletoprpg.shared.common.ui.components.verticalAlignTopI
 import com.feko.generictabletoprpg.shared.common.ui.theme.Typography
 import com.feko.generictabletoprpg.shared.features.spell.Spell
 import com.feko.generictabletoprpg.shared.features.tracker.model.SpellListEntry
+import com.feko.generictabletoprpg.shared.features.tracker.model.TrackedThing
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 
@@ -49,12 +52,13 @@ fun SpellListDialogWithViewModel(
     viewModel: TrackerViewModel,
     onSpellClick: (Spell) -> Unit,
 ) {
+    val availableSpellSlots by viewModel.availableSpellSlotLevels.collectAsState(listOf())
     SpellListDialog(
         dialog,
+        availableSpellSlots,
         viewModel.spellListState,
         onDialogDismissed = viewModel::dismissDialog,
         onFilteringByPreparedStateChanged = { viewModel.setShowingPreparedSpells(it) },
-        canSpellBeCast = { level -> viewModel.canCastSpell(level) },
         onSpellPreparedStateChanged = { spellListEntry, isPrepared ->
             viewModel.changeSpellListEntryPreparedState(
                 dialog.spellList,
@@ -64,7 +68,7 @@ fun SpellListDialogWithViewModel(
         },
         onCastSpellRequested = { level -> viewModel.castSpellRequested(level) },
         onRemoveSpellRequested = { viewModel.removeSpellFromSpellListRequested(it) },
-        onSpellClick = onSpellClick
+        onSpellClick = onSpellClick,
     )
     SpellListSecondaryDialog(dialog, viewModel)
 }
@@ -72,10 +76,10 @@ fun SpellListDialogWithViewModel(
 @Composable
 fun SpellListDialog(
     dialog: ITrackerDialog.SpellListDialog,
+    availableSpellSlots: List<TrackedThing>,
     spellListState: LazyListState,
     onDialogDismissed: () -> Unit,
     onFilteringByPreparedStateChanged: (Boolean) -> Unit,
-    canSpellBeCast: (level: Int) -> Boolean,
     onSpellPreparedStateChanged: (SpellListEntry, Boolean) -> Unit,
     onCastSpellRequested: (level: Int) -> Unit,
     onRemoveSpellRequested: (spell: SpellListEntry) -> Unit,
@@ -120,9 +124,9 @@ fun SpellListDialog(
     ) {
         SpellListContent(
             dialog,
+            availableSpellSlots,
             spellListState,
             onFilteringByPreparedStateChanged,
-            canSpellBeCast,
             onSpellPreparedStateChanged,
             onCastSpellRequested,
             onRemoveSpellRequested,
