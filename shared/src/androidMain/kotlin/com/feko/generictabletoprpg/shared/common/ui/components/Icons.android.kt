@@ -1,6 +1,7 @@
 package com.feko.generictabletoprpg.shared.common.ui.components
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Input
 import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.automirrored.filled.SendToMobile
 import androidx.compose.material.icons.filled.Add
@@ -17,7 +18,6 @@ import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.FilterList
-import androidx.compose.material.icons.filled.ImportExport
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.Menu
@@ -63,4 +63,4 @@ actual val diamondIcon = Icons.Default.Diamond
 actual val removeIcon = Icons.Default.Remove
 actual val sendToMobileIcon = Icons.AutoMirrored.Filled.SendToMobile
 actual val dashboardIcon = Icons.Filled.Dashboard
-actual val inputIcon = Icons.Filled.ImportExport
+actual val inputIcon = Icons.AutoMirrored.Default.Input
