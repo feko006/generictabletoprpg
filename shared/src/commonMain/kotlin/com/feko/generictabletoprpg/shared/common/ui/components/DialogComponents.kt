@@ -2,7 +2,6 @@ package com.feko.generictabletoprpg.shared.common.ui.components
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -31,6 +30,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.focus.FocusRequester
@@ -191,12 +191,15 @@ fun <T> SelectFromListDialog(
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             items(listItems, getListItemKey) {
-                Box(Modifier.clickable {
-                    onItemSelect(it)
-                    onDialogDismiss()
-                }) {
-                    listItem(it)
-                }
+                Card(
+                    Modifier
+                        .clip(MaterialTheme.shapes.extraLarge)
+                        .clickable {
+                            onItemSelect(it)
+                            onDialogDismiss()
+                        },
+                    shape = MaterialTheme.shapes.extraLarge
+                ) { listItem(it) }
             }
         }
     }
