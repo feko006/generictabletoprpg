@@ -235,9 +235,25 @@ fun NavigationHost(
                         trackerViewModel,
                         onNavigateToSimpleSpellDetailsScreen = {
                             backStack.add(SimpleSpellDetailsDestination(it))
+                        },
+                        onPopSpellListScreen = {
+                            backStack.popUpTo<SpellListDestination>(inclusive = true)
                         }
                     )
                 }
+        }
+    }
+}
+
+private inline fun <reified T : NavKey> NavBackStack<NavKey>.popUpTo(inclusive: Boolean) {
+    if (any { it is T }) {
+        for (i in indices.reversed()) {
+            val navKey = this[i]
+            if (navKey is T) {
+                if (inclusive) removeAt(i)
+                break
+            }
+            removeAt(i)
         }
     }
 }

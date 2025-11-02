@@ -486,7 +486,11 @@ class TrackerViewModel(
             it.copy(secondaryDialog = ISpellListDialogDialogs.ConfirmSpellRemovalDialog(spell))
         }
 
-    fun removeSpellFromSpellList(spellList: TrackedThing, spellListEntry: SpellListEntry) {
+    fun removeSpellFromSpellList(
+        spellList: TrackedThing,
+        spellListEntry: SpellListEntry,
+        onPopSpellListScreen: () -> Unit
+    ) {
         viewModelScope.launch {
             @Suppress("UNCHECKED_CAST")
             val serializedItem =
@@ -495,6 +499,7 @@ class TrackerViewModel(
             spellListCopy.setItem(serializedItem)
             trackedThingDao.insertOrUpdate(spellListCopy)
             if (serializedItem.isEmpty()) {
+                onPopSpellListScreen()
                 dismissDialog()
             } else {
                 _dialog.update {

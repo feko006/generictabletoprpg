@@ -141,7 +141,8 @@ fun SpellListContent(
 @Composable
 fun SpellListSecondaryDialog(
     dialog: ITrackerDialog.SpellListDialog,
-    viewModel: TrackerViewModel
+    viewModel: TrackerViewModel,
+    onPopSpellListScreen: () -> Unit = {}
 ) {
     when (dialog.secondaryDialog) {
         is ISpellListDialogDialogs.SelectSpellSlotDialog ->
@@ -157,7 +158,8 @@ fun SpellListSecondaryDialog(
             ) {
                 viewModel.removeSpellFromSpellList(
                     dialog.spellList,
-                    dialog.secondaryDialog.spellListEntry
+                    dialog.secondaryDialog.spellListEntry,
+                    onPopSpellListScreen
                 )
             }
 

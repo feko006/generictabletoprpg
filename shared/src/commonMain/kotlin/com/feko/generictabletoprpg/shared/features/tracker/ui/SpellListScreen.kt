@@ -13,7 +13,8 @@ import com.feko.generictabletoprpg.shared.features.spell.Spell
 @Composable
 fun SpellListScreen(
     trackerViewModel: TrackerViewModel?,
-    onNavigateToSimpleSpellDetailsScreen: (Spell) -> Unit
+    onNavigateToSimpleSpellDetailsScreen: (Spell) -> Unit,
+    onPopSpellListScreen: () -> Unit
 ) {
     if (trackerViewModel == null) return
     val alertDialog by trackerViewModel.spellListDialog.collectAsState(ITrackerDialog.None)
@@ -42,5 +43,5 @@ fun SpellListScreen(
             onSpellClick = onNavigateToSimpleSpellDetailsScreen
         )
     }
-    SpellListSecondaryDialog(dereferencedDialog, trackerViewModel)
+    SpellListSecondaryDialog(dereferencedDialog, trackerViewModel, onPopSpellListScreen)
 }
