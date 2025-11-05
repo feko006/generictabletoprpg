@@ -3,8 +3,11 @@ package com.feko.generictabletoprpg.shared.features.filter.ui
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.PrimaryScrollableTabRow
 import androidx.compose.material3.Tab
@@ -16,6 +19,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import com.feko.generictabletoprpg.Res
 import com.feko.generictabletoprpg.class_filter_disclaimer
 import com.feko.generictabletoprpg.class_term
@@ -28,6 +32,7 @@ import com.feko.generictabletoprpg.ritual
 import com.feko.generictabletoprpg.school
 import com.feko.generictabletoprpg.shared.common.domain.model.IText.StringResourceText.Companion.asText
 import com.feko.generictabletoprpg.shared.common.domain.model.IText.StringText.Companion.asText
+import com.feko.generictabletoprpg.shared.common.ui.components.BoxWithScrollIndicator
 import com.feko.generictabletoprpg.shared.common.ui.components.CheckboxWithText
 import com.feko.generictabletoprpg.shared.common.ui.theme.LocalDimens
 import com.feko.generictabletoprpg.shared.features.filter.Filter
@@ -38,7 +43,7 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun SpellFilters(
+fun ColumnScope.SpellFilters(
     filter: SpellFilter,
     onFilterUpdate: (Filter) -> Unit
 ) {
@@ -55,29 +60,41 @@ fun SpellFilters(
             else this
         }
     }
-    var selectedTab by remember { mutableIntStateOf(0) }
-    PrimaryScrollableTabRow(selectedTab) {
-        tabTitles.forEachIndexed { index, title ->
-            Tab(
-                selectedTab == index,
-                onClick = { selectedTab = index },
-                text = { Text(text = stringResource(tabTitles[index])) }
-            )
-        }
-    }
+    val scrollState = rememberScrollState()
+    BoxWithScrollIndicator(
+        scrollState,
+        Color.Transparent,
+        Modifier.weight(1f)
+    ) {
+        Column(Modifier.verticalScroll(scrollState)) {
+            var selectedTab by remember { mutableIntStateOf(0) }
+            PrimaryScrollableTabRow(selectedTab) {
+                tabTitles.forEachIndexed { index, title ->
+                    Tab(
+                        selectedTab == index,
+                        onClick = { selectedTab = index },
+                        text = { Text(text = stringResource(tabTitles[index])) }
+                    )
+                }
+            }
 
-    Crossfade(selectedTab) { selectedTab ->
-        when (selectedTab) {
-            tabTitles.indexOf(Res.string.common) -> CommonSpellFilterSection(filter, onFilterUpdate)
+            Crossfade(selectedTab) { selectedTab ->
+                when (selectedTab) {
+                    tabTitles.indexOf(Res.string.common) -> CommonSpellFilterSection(
+                        filter,
+                        onFilterUpdate
+                    )
 
-            tabTitles.indexOf(Res.string.school) ->
-                SchoolSpellFilterSection(spellFilterViewModel, filter, onFilterUpdate)
+                    tabTitles.indexOf(Res.string.school) ->
+                        SchoolSpellFilterSection(spellFilterViewModel, filter, onFilterUpdate)
 
-            tabTitles.indexOf(Res.string.level) ->
-                LevelSpellFilterSection(spellFilterViewModel, filter, onFilterUpdate)
+                    tabTitles.indexOf(Res.string.level) ->
+                        LevelSpellFilterSection(spellFilterViewModel, filter, onFilterUpdate)
 
-            tabTitles.indexOf(Res.string.class_term) ->
-                ClassSpellFilterSection(classes, filter, onFilterUpdate)
+                    tabTitles.indexOf(Res.string.class_term) ->
+                        ClassSpellFilterSection(classes, filter, onFilterUpdate)
+                }
+            }
         }
     }
 }
