@@ -216,7 +216,7 @@ private fun <TViewModel, T> SearchableLazyItemsLayout(
     val dimens = LocalDimens.current
     Column(
         modifier = modifier
-            .padding(horizontal = dimens.paddingMedium)
+            .padding(horizontal = dimens.paddingSmall)
             .clip(
                 MaterialTheme.shapes.extraLarge.copy(
                     topStart = CornerSize(0.dp),
