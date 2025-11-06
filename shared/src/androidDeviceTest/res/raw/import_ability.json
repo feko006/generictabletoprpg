@@ -1,0 +1,18 @@
+{
+  "sources": [],
+  "trackedGroups": [
+    {
+      "name": "import_ability_group",
+      "trackedThings": [
+        {
+          "name": "ability",
+          "value": "1",
+          "amount": 1,
+          "type": "Ability",
+          "defaultValue": "2",
+          "index": 1
+        }
+      ]
+    }
+  ]
+}

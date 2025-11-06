@@ -1,0 +1,112 @@
+name: Build Release Artifacts
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  android:
+    name: Android Release
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: 17
+          cache: gradle
+
+      - name: Build Android release
+        env:
+          ORG_GRADLE_PROJECT_storePassword: ${{ secrets.STORE_PASSWORD }}
+          ORG_GRADLE_PROJECT_keyAlias: ${{ secrets.KEY_ALIAS }}
+          ORG_GRADLE_PROJECT_keyPassword: ${{ secrets.KEY_PASSWORD }}
+        run: ./gradlew :androidApp:assembleRelease :androidApp:bundleRelease --stacktrace
+
+      - name: Upload Android artifacts
+        uses: actions/upload-artifact@v5
+        with:
+          name: android-release
+          path: |
+            androidApp/build/outputs/apk/release/*.apk
+            androidApp/build/outputs/bundle/release/*.aab
+
+  linux:
+    name: Linux Packages (DEB & RPM)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: 17
+          cache: gradle
+
+      - name: Build Linux packages
+        run: ./gradlew :desktopApp:packageReleaseDeb :desktopApp:packageReleaseRpm --stacktrace
+
+      - name: Upload Linux artifacts
+        uses: actions/upload-artifact@v5
+        with:
+          name: linux-packages
+          path: |
+            desktopApp/build/compose/binaries/main-release/deb/*.deb
+            desktopApp/build/compose/binaries/main-release/rpm/*.rpm
+
+  windows:
+    name: Windows Package (MSI)
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: 17
+          cache: gradle
+
+      - name: Build Windows MSI
+        run: ./gradlew :desktopApp:packageReleaseMsi --stacktrace
+
+      - name: Upload Windows artifact
+        uses: actions/upload-artifact@v5
+        with:
+          name: windows-msi
+          path: desktopApp/build/compose/binaries/main-release/msi/*.msi
+
+  mac:
+    name: macOS Package (DMG)
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: 17
+          cache: gradle
+
+      - name: Build macOS DMG
+        run: ./gradlew :desktopApp:packageReleaseDmg --stacktrace
+
+      - name: Upload macOS artifact
+        uses: actions/upload-artifact@v5
+        with:
+          name: macos-dmg
+          path: desktopApp/build/compose/binaries/main-release/dmg/*.dmg

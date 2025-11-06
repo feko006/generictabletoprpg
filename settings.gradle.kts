@@ -3,6 +3,7 @@ pluginManagement {
         gradlePluginPortal()
         google()
         mavenCentral()
+        maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
     }
 }
 @Suppress("UnstableApiUsage")
@@ -15,3 +16,5 @@ dependencyResolutionManagement {
 }
 rootProject.name = "generictabletoprpg"
 include(":androidApp")
+include(":desktopApp")
+include(":shared")

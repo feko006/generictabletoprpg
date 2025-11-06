@@ -1,0 +1,14 @@
+package com.feko.generictabletoprpg.shared.features.filter
+
+fun Filter.index(): Int =
+    when (this) {
+        is GenericFilter -> 0
+        is SpellFilter -> 1
+    }
+
+fun Int.asFilter(): Filter =
+    when (this) {
+        0 -> GenericFilter(Any::class)
+        1 -> SpellFilter()
+        else -> throw IllegalStateException()
+    }
