@@ -1,1 +1,1 @@
-Quick access for your DnD data with a built in way to track your character data and encounters.
+Quick access for your DnD data and tracking your character data and encounters.
