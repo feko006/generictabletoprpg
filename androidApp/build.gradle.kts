@@ -21,7 +21,7 @@ android {
         applicationId = "com.feko.generictabletoprpg"
         minSdk = 24
         targetSdk = 36
-        versionCode = 8
+        versionCode = 9
         versionName = libs.versions.app.get()
 
         vectorDrawables {
