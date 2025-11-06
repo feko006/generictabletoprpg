@@ -39,7 +39,7 @@ import com.feko.generictabletoprpg.shared.common.ui.components.deleteIcon
 import com.feko.generictabletoprpg.shared.common.ui.components.editIcon
 import com.feko.generictabletoprpg.shared.common.ui.components.sendToMobileIcon
 import com.feko.generictabletoprpg.shared.features.tracker.model.TrackedThingGroup
-import io.github.vinceglb.filekit.dialogs.compose.PickerResultLauncher
+import io.github.vinceglb.filekit.dialogs.compose.SaverResultLauncher
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -71,8 +71,8 @@ fun TrackerGroupsAlertDialog(
 fun TrackerGroupListItem(
     item: TrackedThingGroup,
     viewModel: TrackerGroupViewModel,
-    pickDirectoryLauncher: PickerResultLauncher,
-    onTrackerGroupClick: (id: Long, name: String) -> Unit
+    fileSaverLauncher: SaverResultLauncher,
+    onTrackerGroupClick: (Long, String) -> Unit
 ) {
     Card(shape = MaterialTheme.shapes.extraLarge) {
         ListItem(
@@ -87,7 +87,7 @@ fun TrackerGroupListItem(
                         text = { Text(stringResource(Res.string.export)) },
                         onClick = {
                             viewModel.export.exportSingleRequested(item)
-                            pickDirectoryLauncher.launch()
+                            launchFileSaver(viewModel, fileSaverLauncher)
                             expanded = false
                         },
                         leadingIcon = {
@@ -119,6 +119,11 @@ fun TrackerGroupListItem(
             colors = ListItemDefaults.colors(containerColor = CardDefaults.cardColors().containerColor)
         )
     }
+}
+
+fun launchFileSaver(viewModel: TrackerGroupViewModel, fileSaveLauncher: SaverResultLauncher) {
+    val displayName = viewModel.export.getExportedFileData()
+    fileSaveLauncher.launch(suggestedName = displayName, extension = "json")
 }
 
 @Composable

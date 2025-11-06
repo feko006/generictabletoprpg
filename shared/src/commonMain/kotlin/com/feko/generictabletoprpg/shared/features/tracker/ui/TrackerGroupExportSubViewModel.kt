@@ -27,12 +27,12 @@ class TrackerGroupExportSubViewModel(
                 val date =
                     SimpleDateFormat("yyyy-MM-dd-HH-mm-ss", Locale.getDefault())
                         .format(Date())
-                "tracked-groups-$date.json"
+                "tracked-groups-$date"
             }
 
             is ExportState.ExportingSingle -> {
                 val trackedGroupFileName = dereferencedState.item.name.replace(" ", "-")
-                "tracked-group-$trackedGroupFileName.json"
+                "tracked-group-$trackedGroupFileName"
             }
 
             else ->

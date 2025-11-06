@@ -20,7 +20,7 @@ import com.feko.generictabletoprpg.shared.common.ui.components.sendToMobileIcon
 import com.feko.generictabletoprpg.shared.common.ui.viewmodel.AppViewModel
 import com.feko.generictabletoprpg.tracker_title
 import io.github.vinceglb.filekit.PlatformFile
-import io.github.vinceglb.filekit.dialogs.compose.rememberDirectoryPickerLauncher
+import io.github.vinceglb.filekit.dialogs.compose.rememberFileSaverLauncher
 import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -32,9 +32,9 @@ fun TrackerGroupsScreen(
 ) {
     val viewModel: TrackerGroupViewModel = koinViewModel()
     val coroutineScope = rememberCoroutineScope()
-    val pickDirectoryLauncher =
-        rememberDirectoryPickerLauncher { directory ->
-            coroutineScope.launch { onDirectorySelected(directory, viewModel) }
+    val fileSaveLauncher =
+        rememberFileSaverLauncher { file ->
+            coroutineScope.launch { onFileSaveLocationSelected(file, viewModel) }
         }
     appViewModel.updateActiveDrawerItem(RootDestinations.Tracker.destination)
     Scaffold(
@@ -44,7 +44,7 @@ fun TrackerGroupsScreen(
                 if (exportButtonVisible) {
                     IconButton(onClick = {
                         viewModel.export.exportAllRequested()
-                        pickDirectoryLauncher.launch()
+                        launchFileSaver(viewModel, fileSaveLauncher)
                     }) { Icon(sendToMobileIcon, "") }
                 }
             }
@@ -57,7 +57,7 @@ fun TrackerGroupsScreen(
                 TrackerGroupListItem(
                     item = item,
                     viewModel = viewModel,
-                    pickDirectoryLauncher,
+                    fileSaveLauncher,
                     onNavigateToTrackerScreen
                 )
             },
@@ -71,18 +71,16 @@ fun TrackerGroupsScreen(
     TrackerGroupsAlertDialog(dialog, viewModel)
 }
 
-private suspend fun onDirectorySelected(
-    directoryUri: PlatformFile?,
+private suspend fun onFileSaveLocationSelected(
+    file: PlatformFile?,
     viewModel: TrackerGroupViewModel
 ) {
-    if (directoryUri == null) {
+    if (file == null) {
         viewModel.export.notifyCancelled()
         return
     }
     try {
-        val displayName = viewModel.export.getExportedFileData()
-        val newFile = PlatformFile(directoryUri, displayName)
-        viewModel.export.exportData(newFile)
+        viewModel.export.exportData(file)
     } catch (e: Exception) {
         viewModel.export.notifyFailed(e)
     }

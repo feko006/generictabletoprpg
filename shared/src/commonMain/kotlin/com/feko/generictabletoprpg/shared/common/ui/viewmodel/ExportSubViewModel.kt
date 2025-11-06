@@ -12,6 +12,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -57,20 +58,16 @@ abstract class ExportSubViewModel<T> : IExportSubViewModel<T> {
     }
 
     override fun exportAllRequested() {
-        CoroutineScope(Dispatchers.Main).launch {
-            exportState = ExportState.ExportingAll
-            _toast.emit(
-                ToastMessage(Res.string.export_location_hint.asText(), _toast)
-            )
+        exportState = ExportState.ExportingAll
+        _toast.update {
+            ToastMessage(Res.string.export_location_hint.asText(), _toast)
         }
     }
 
     override fun exportSingleRequested(item: T) {
-        CoroutineScope(Dispatchers.Main).launch {
-            exportState = ExportState.ExportingSingle(item)
-            _toast.emit(
-                ToastMessage(Res.string.export_location_hint.asText(), _toast)
-            )
+        exportState = ExportState.ExportingSingle(item)
+        _toast.update {
+            ToastMessage(Res.string.export_location_hint.asText(), _toast)
         }
     }
 }
