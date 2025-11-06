@@ -5,12 +5,24 @@
 This is an app that helps you quickly access your dungeonmastersvault data via your Android device.
 It can also help you track various things (see below).
 
+:new: Now also available on Windows, Linux and macOS!
+
 [<img src="https://fdroid.gitlab.io/artwork/badge/get-it-on.png"
 alt="Get it on F-Droid"
 height="80">](https://f-droid.org/packages/com.feko.generictabletoprpg/)
 
 Or download the latest APK from
 the [Releases Section](https://github.com/feko006/generictabletoprpg/releases/latest).
+
+Or, register as a closed tester
+via [Web](https://play.google.com/apps/testing/com.feko.generictabletoprpg)
+or [Android](https://play.google.com/store/apps/details?id=com.feko.generictabletoprpg).
+
+Note: Closed testing is a prerequisite to making the application public on the Google Play Store. If
+eventually this app reaches a certain amount of users, this section will be updated with the public
+link to the Google Play Store!
+
+Also, feedback is very welcome and appreciated!
 
 ## Table of Contents
 
