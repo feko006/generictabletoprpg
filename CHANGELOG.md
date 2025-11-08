@@ -15,6 +15,41 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
+## [1.4.0]
+
+### Known Issues
+
+- Opening the Encounter screen crashes the application in certain scenarios (e.g. when deep into the
+  tracker navigation hierarchy)
+
+### Added
+
+- Windows, Linux and MacOS builds!
+- Fuzzy search when searching everywhere
+- Better support for larger screens
+- Expertise support for the 5E stats trackable
+- New GitHub workflow for creating release builds
+
+### Fixed
+
+- New trackable dropdown menu items not being localized
+- Filter button disappearing when the list is empty
+
+### Changed
+
+- Project is now set up for Kotlin Multiplatform
+  - Project structure has changed
+  - Many libraries have been changed and updated
+  - Project now uses Jetpack Navigation 3 instead of Compose Destinations
+- UI refresh
+  - Material 3 Expressive theme and components
+  - Spell filter improvements
+  - Encounter screen refresh
+
+### Removed
+
+- Limitation of 1 line in the text trackable
+
 ## [1.3.0]
 
 ### Added

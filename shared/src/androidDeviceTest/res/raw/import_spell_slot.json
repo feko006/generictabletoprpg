@@ -1,0 +1,19 @@
+{
+  "sources": [],
+  "trackedGroups": [
+    {
+      "name": "import_spell_slot_group",
+      "trackedThings": [
+        {
+          "name": "spell_slot",
+          "value": "3",
+          "amount": 3,
+          "type": "SpellSlot",
+          "defaultValue": "5",
+          "index": 5,
+          "level": 4
+        }
+      ]
+    }
+  ]
+}

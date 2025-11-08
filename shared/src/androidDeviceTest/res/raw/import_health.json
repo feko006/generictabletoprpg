@@ -1,0 +1,19 @@
+{
+  "sources": [],
+  "trackedGroups": [
+    {
+      "name": "import_health_group",
+      "trackedThings": [
+        {
+          "name": "health",
+          "value": "5",
+          "amount": 5,
+          "type": "Health",
+          "defaultValue": "10",
+          "index": 2,
+          "temporaryHp": 3
+        }
+      ]
+    }
+  ]
+}

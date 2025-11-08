@@ -1,0 +1,55 @@
+package com.feko.generictabletoprpg.shared.features.tracker
+
+import androidx.room.Dao
+import androidx.room.Query
+import com.feko.generictabletoprpg.shared.common.data.local.BaseDao
+import com.feko.generictabletoprpg.shared.common.data.local.IGetAllByParentSortedByIndexDao
+import com.feko.generictabletoprpg.shared.common.data.local.IInsertOrUpdateDao
+import com.feko.generictabletoprpg.shared.features.tracker.model.TrackedThing
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
+
+@Dao
+abstract class TrackedThingDao :
+    BaseDao<TrackedThingEntity, TrackedThing>(),
+    IGetAllByParentSortedByIndexDao<TrackedThing>,
+    IInsertOrUpdateDao<TrackedThing> {
+    override fun getEntityFromCoreModel(item: TrackedThing): TrackedThingEntity {
+        var level = 0
+        if (item.type == TrackedThing.Type.SpellSlot) {
+            level = item.level
+        }
+        var temporaryHp = 0
+        if (item.type == TrackedThing.Type.Health) {
+            temporaryHp = item.temporaryHp
+        }
+        val type = item.type.ordinal
+        return TrackedThingEntity(
+            item.id,
+            item.name,
+            level,
+            temporaryHp,
+            item.value,
+            item.managedDefaultValue,
+            type,
+            item.index,
+            item.groupId
+        )
+    }
+
+    @Query("select * from tracked_things where id = :id")
+    abstract override suspend fun getByIdInternal(id: Long): TrackedThingEntity
+
+    @Query("delete from tracked_things where id = :id")
+    abstract suspend fun delete(id: Long)
+
+    override suspend fun getEntityId(entity: TrackedThingEntity): Long? =
+        if (entity.id > 0) entity.id else null
+
+    @Query("select * from tracked_things where groupId = :parentId order by idx")
+    abstract fun getAllSortedByIndexInternal(parentId: Long): Flow<List<TrackedThingEntity>>
+
+    override fun getAllSortedByIndex(parentId: Long): Flow<List<TrackedThing>> =
+        getAllSortedByIndexInternal(parentId)
+            .map { list -> list.map { it.toCoreModel() } }
+}
