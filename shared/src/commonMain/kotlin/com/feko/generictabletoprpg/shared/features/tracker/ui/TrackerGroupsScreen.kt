@@ -19,7 +19,6 @@ import com.feko.generictabletoprpg.shared.common.ui.components.ToastMessage
 import com.feko.generictabletoprpg.shared.common.ui.components.sendToMobileIcon
 import com.feko.generictabletoprpg.shared.common.ui.viewmodel.AppViewModel
 import com.feko.generictabletoprpg.tracker_title
-import io.github.vinceglb.filekit.PlatformFile
 import io.github.vinceglb.filekit.dialogs.compose.rememberFileSaverLauncher
 import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
@@ -32,9 +31,9 @@ fun TrackerGroupsScreen(
 ) {
     val viewModel: TrackerGroupViewModel = koinViewModel()
     val coroutineScope = rememberCoroutineScope()
-    val fileSaveLauncher =
+    val fileSaverLauncher =
         rememberFileSaverLauncher { file ->
-            coroutineScope.launch { onFileSaveLocationSelected(file, viewModel) }
+            coroutineScope.launch { viewModel.onFileSaveLocationSelected(file) }
         }
     appViewModel.updateActiveDrawerItem(RootDestinations.Tracker.destination)
     Scaffold(
@@ -43,8 +42,7 @@ fun TrackerGroupsScreen(
                 val exportButtonVisible by viewModel.exportButtonVisible.collectAsState(false)
                 if (exportButtonVisible) {
                     IconButton(onClick = {
-                        viewModel.export.exportAllRequested()
-                        launchFileSaver(viewModel, fileSaveLauncher)
+                        viewModel.exportAll(fileSaverLauncher)
                     }) { Icon(sendToMobileIcon, "") }
                 }
             }
@@ -57,7 +55,7 @@ fun TrackerGroupsScreen(
                 TrackerGroupListItem(
                     item = item,
                     viewModel = viewModel,
-                    fileSaveLauncher,
+                    fileSaverLauncher,
                     onNavigateToTrackerScreen
                 )
             },
@@ -65,23 +63,8 @@ fun TrackerGroupsScreen(
             addFabButtonSpacer = true
         )
     }
-    val toastMessage by viewModel.export.toast.collectAsState(initial = null)
+    val toastMessage by viewModel.exportToast.collectAsState(initial = null)
     ToastMessage(toastMessage)
     val dialog by viewModel.dialog.collectAsState(ITrackerGroupDialog.None)
     TrackerGroupsAlertDialog(dialog, viewModel)
-}
-
-private suspend fun onFileSaveLocationSelected(
-    file: PlatformFile?,
-    viewModel: TrackerGroupViewModel
-) {
-    if (file == null) {
-        viewModel.export.notifyCancelled()
-        return
-    }
-    try {
-        viewModel.export.exportData(file)
-    } catch (e: Exception) {
-        viewModel.export.notifyFailed(e)
-    }
 }
