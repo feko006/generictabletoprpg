@@ -2,7 +2,7 @@
 agp = "8.13.1"
 androidx-test-runner = "1.7.0"
 #noinspection UnusedVersionCatalogEntry
-app = "1.4.0"
+app = "1.4.1"
 compose-mp = "1.10.0-beta01"
 compose-mp-m3 = "1.10.0-alpha04"
 coroutines = "1.10.2"
