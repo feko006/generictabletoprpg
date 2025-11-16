@@ -15,7 +15,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
-## [1.4.0]
+## [1.4.1] - 2025-11-17
+
+### Fixed
+
+- Desktop app database being saved in temporary location causing data loss at random points in time,
+  or when updating the application
+
+## [1.4.0] - 2025-11-08
 
 ### Known Issues
 
@@ -38,13 +45,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Project is now set up for Kotlin Multiplatform
-  - Project structure has changed
-  - Many libraries have been changed and updated
-  - Project now uses Jetpack Navigation 3 instead of Compose Destinations
+    - Project structure has changed
+    - Many libraries have been changed and updated
+    - Project now uses Jetpack Navigation 3 instead of Compose Destinations
 - UI refresh
-  - Material 3 Expressive theme and components
-  - Spell filter improvements
-  - Encounter screen refresh
+    - Material 3 Expressive theme and components
+    - Spell filter improvements
+    - Encounter screen refresh
 
 ### Removed
 

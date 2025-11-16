@@ -1,31 +1,30 @@
 [versions]
-agp = "8.13.0"
+agp = "8.13.1"
 androidx-test-runner = "1.7.0"
-app = "1.4.0"
-compose-mp = "1.10.0-alpha03"
+#noinspection UnusedVersionCatalogEntry
+app = "1.4.1"
+compose-mp = "1.10.0-beta01"
+compose-mp-m3 = "1.10.0-alpha04"
 coroutines = "1.10.2"
-coroutines-test = "1.10.2"
 edn-java = "0.7.1"
 file-kit = "0.12.0"
 fuzzy-wuzzy = "0.1.1"
+jetbrains-navigation3 = "1.0.0-alpha04"
 junit-version = "1.3.0"
 koin = "4.1.1"
 kotlin = "2.2.21"
-kotlin-logging = "7.0.13"
-kotlin-stdlib = "2.2.21"
-kotlin-test = "2.2.21"
+logcat = "0.4"
 kotlinx-serialization = "1.9.0"
-ksp = "2.3.0"
-lifecycle-viewmodel-compose = "2.9.5"
+ksp = "2.3.2"
+lifecycle-viewmodel-compose = "2.9.6"
 material-icons = "1.7.3"
 material3-adaptive = "1.2.0"
 multiplatform-settings = "1.3.0"
-jetbrains-navigation3 = "1.0.0-alpha03"
-navigation3-viewmodel = "2.10.0-alpha03"
+navigation3-viewmodel = "2.10.0-alpha04"
 reorderable = "3.0.0"
 room = "2.8.3"
-slf4j-simple = "2.0.17"
 slf4j-android = "1.7.36"
+slf4j-simple = "2.0.17"
 sonner = "0.3.8"
 sqlite = "2.6.1"
 
@@ -34,36 +33,43 @@ androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "j
 androidx-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
 androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
 androidx-room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
-androidx-sqlite-bundled = { module = "androidx.sqlite:sqlite-bundled", version.ref = "sqlite" }
+androidx-sqlite-bundled = { group = "androidx.sqlite", name = "sqlite-bundled", version.ref = "sqlite" }
 androidx-test-runner = { group = "androidx.test", name = "runner", version.ref = "androidx-test-runner" }
 bpsm-edn-java = { group = "us.bpsm", name = "edn-java", version.ref = "edn-java" }
-compose-ui-tooling-preview = { group = "org.jetbrains.compose.components", name = "components-ui-tooling-preview", version.ref = "compose-mp" }
+compose-components-resources = { group = "org.jetbrains.compose.components", name = "components-resources", version.ref = "compose-mp" }
+compose-desktop = { group = "org.jetbrains.compose.desktop", name = "desktop", version.ref = "compose-mp" }
+compose-foundation = { group = "org.jetbrains.compose.foundation", name = "foundation", version.ref = "compose-mp" }
+compose-runtime = { group = "org.jetbrains.compose.runtime", name = "runtime", version.ref = "compose-mp" }
+compose-ui-backhandler = { group = "org.jetbrains.compose.ui", name = "ui-backhandler", version.ref = "compose-mp" }
+compose-ui-tooling = { group = "org.jetbrains.compose.ui", name = "ui-tooling", version.ref = "compose-mp" }
+compose-ui-tooling-preview = { group = "org.jetbrains.compose.ui", name = "ui-tooling-preview", version.ref = "compose-mp" }
 coroutines-swing = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-swing", version.ref = "coroutines" }
 file-kit-core = { group = "io.github.vinceglb", name = "filekit-core", version.ref = "file-kit" }
 file-kit-dialogs-compose = { group = "io.github.vinceglb", name = "filekit-dialogs-compose", version.ref = "file-kit" }
 fuzzywuzzy-kotlin = { group = "eu.codlab", name = "fuzzywuzzy-kotlin", version.ref = "fuzzy-wuzzy" }
-jetbrains-kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "coroutines-test" }
+jetbrains-kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "coroutines" }
 jetbrains-kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
 koin-compose-viewmodel = { group = "io.insert-koin", name = "koin-compose-viewmodel", version.ref = "koin" }
-kotlin-logging = { group = "io.github.oshai", name = "kotlin-logging", version.ref = "kotlin-logging" }
-kotlin-stdlib = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib", version.ref = "kotlin-stdlib" }
-kotlin-test = { group = "org.jetbrains.kotlin", name = "kotlin-test", version.ref = "kotlin-test" }
+kotlin-stdlib = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib", version.ref = "kotlin" }
+kotlin-test = { group = "org.jetbrains.kotlin", name = "kotlin-test", version.ref = "kotlin" }
 lifecycle-viewmodel-compose = { group = "org.jetbrains.androidx.lifecycle", name = "lifecycle-viewmodel-compose", version.ref = "lifecycle-viewmodel-compose" }
 lifecycle-viewmodel-navigation3 = { group = "org.jetbrains.androidx.lifecycle", name = "lifecycle-viewmodel-navigation3", version.ref = "navigation3-viewmodel" }
+logcat = { group = "com.squareup.logcat", name = "logcat", version.ref = "logcat" }
 material-icons = { group = "org.jetbrains.compose.material", name = "material-icons-extended", version.ref = "material-icons" }
-material3 = { group = "org.jetbrains.compose.material3", name = "material3", version.ref = "compose-mp" }
+material3 = { group = "org.jetbrains.compose.material3", name = "material3", version.ref = "compose-mp-m3" }
 material3-adaptive = { group = "org.jetbrains.compose.material3.adaptive", name = "adaptive", version.ref = "material3-adaptive" }
 material3-layout = { group = "org.jetbrains.compose.material3.adaptive", name = "adaptive-layout", version.ref = "material3-adaptive" }
 material3-navigation = { group = "org.jetbrains.compose.material3.adaptive", name = "adaptive-navigation", version.ref = "material3-adaptive" }
 multiplatform-settings = { group = "com.russhwolf", name = "multiplatform-settings", version.ref = "multiplatform-settings" }
 navigation3-ui = { group = "org.jetbrains.androidx.navigation3", name = "navigation3-ui", version.ref = "jetbrains-navigation3" }
 reorderable = { group = "sh.calvin.reorderable", name = "reorderable", version.ref = "reorderable" }
-slf4j-simple = { group = "org.slf4j", name = "slf4j-simple", version.ref = "slf4j-simple" }
 slf4j-android = { group = "org.slf4j", name = "slf4j-android", version.ref = "slf4j-android" }
+slf4j-simple = { group = "org.slf4j", name = "slf4j-simple", version.ref = "slf4j-simple" }
 sonner = { group = "io.github.dokar3", name = "sonner", version.ref = "sonner" }
-ui-backhandler = { group = "org.jetbrains.compose.ui", name = "ui-backhandler", version.ref = "compose-mp" }
 
 [bundles]
+compose-mp = ["compose-components-resources", "compose-foundation", "compose-runtime", "compose-ui-tooling", "compose-ui-tooling-preview", "compose-ui-backhandler"]
+compose-mp-material = ["material-icons", "material3", "material3-adaptive", "material3-layout", "material3-navigation"]
 navigation3 = ["navigation3-ui", "lifecycle-viewmodel-navigation3"]
 file-kit = ["file-kit-core", "file-kit-dialogs-compose"]
 

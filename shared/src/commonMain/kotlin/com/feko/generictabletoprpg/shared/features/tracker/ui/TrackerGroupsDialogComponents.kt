@@ -68,6 +68,7 @@ fun TrackerGroupsAlertDialog(
 }
 
 @Composable
+@Suppress("AssignedValueIsNeverRead")
 fun TrackerGroupListItem(
     item: TrackedThingGroup,
     viewModel: TrackerGroupViewModel,
@@ -81,13 +82,12 @@ fun TrackerGroupListItem(
                 var expanded by remember { mutableStateOf(false) }
                 GttrpgContextMenu(
                     expanded,
-                    { expanded = it }
+                    onDropdownExpandedStateChanged = { expanded = it }
                 ) {
                     DropdownMenuItem(
                         text = { Text(stringResource(Res.string.export)) },
                         onClick = {
-                            viewModel.export.exportSingleRequested(item)
-                            launchFileSaver(viewModel, fileSaverLauncher)
+                            viewModel.export(item, fileSaverLauncher)
                             expanded = false
                         },
                         leadingIcon = {
@@ -119,11 +119,6 @@ fun TrackerGroupListItem(
             colors = ListItemDefaults.colors(containerColor = CardDefaults.cardColors().containerColor)
         )
     }
-}
-
-fun launchFileSaver(viewModel: TrackerGroupViewModel, fileSaveLauncher: SaverResultLauncher) {
-    val displayName = viewModel.export.getExportedFileData()
-    fileSaveLauncher.launch(suggestedName = displayName, extension = "json")
 }
 
 @Composable

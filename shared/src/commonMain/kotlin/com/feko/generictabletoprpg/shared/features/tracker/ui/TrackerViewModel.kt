@@ -10,8 +10,6 @@ import com.feko.generictabletoprpg.shared.common.domain.model.IText
 import com.feko.generictabletoprpg.shared.common.domain.model.IText.StringResourceText.Companion.asText
 import com.feko.generictabletoprpg.shared.common.ui.ToastMessage
 import com.feko.generictabletoprpg.shared.common.ui.theme.ScreenSize
-import com.feko.generictabletoprpg.shared.common.ui.viewmodel.FabDropdownSubViewModel
-import com.feko.generictabletoprpg.shared.common.ui.viewmodel.IFabDropdownSubViewModel
 import com.feko.generictabletoprpg.shared.common.ui.viewmodel.OverviewViewModel
 import com.feko.generictabletoprpg.shared.features.searchall.usecase.ISearchAllUseCase
 import com.feko.generictabletoprpg.shared.features.spell.SpellDao
@@ -34,6 +32,7 @@ import com.feko.generictabletoprpg.spell_successfully_added_to_list
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
@@ -50,8 +49,8 @@ class TrackerViewModel(
     searchAllUseCase: ISearchAllUseCase,
 ) : OverviewViewModel<Any>(trackedThingDao) {
 
-    private val _fabDropdown = FabDropdownSubViewModel(viewModelScope)
-    val fabDropdown: IFabDropdownSubViewModel = _fabDropdown
+    private val _fabDropdownExpanded = MutableStateFlow(false)
+    val fabDropdownExpanded: StateFlow<Boolean> = _fabDropdownExpanded
 
     private val _toast = MutableStateFlow<ToastMessage?>(null)
     val toast: Flow<ToastMessage?> = _toast
@@ -125,12 +124,12 @@ class TrackerViewModel(
                 )
             } else {
                 val newTrackedThing =
-                    TrackedThing.Companion.emptyOfType(type, _items.value.size, groupId)
+                    TrackedThing.emptyOfType(type, _items.value.size, groupId)
                 _dialog.emit(
                     ITrackerDialog.EditDialog(newTrackedThing, type.nameResource!!.asText())
                 )
             }
-            _fabDropdown.collapse()
+            dismissFabDropdown()
         }
     }
 
@@ -146,7 +145,7 @@ class TrackerViewModel(
                     ITrackerDialog.EditDialog(copy, IText.StringResourceText(Res.string.edit))
                 )
             }
-            _fabDropdown.collapse()
+            dismissFabDropdown()
         }
     }
 
@@ -458,10 +457,8 @@ class TrackerViewModel(
             } else {
                 val sortedSpells =
                     serializedItem
-                        .plus(SpellListEntry.Companion.fromSpell(spellToAdd))
+                        .plus(SpellListEntry.fromSpell(spellToAdd))
                         .sortedWith { spell1, spell2 ->
-                            requireNotNull(spell1)
-                            requireNotNull(spell2)
                             val comparisonByLevel = spell1.level.compareTo(spell2.level)
                             when {
                                 comparisonByLevel != 0 -> comparisonByLevel
@@ -613,5 +610,13 @@ class TrackerViewModel(
         if (currentDialog is ITrackerDialog.SpellListDialog) {
             _dialog.update { transform(currentDialog) }
         }
+    }
+
+    fun dismissFabDropdown() {
+        _fabDropdownExpanded.update { false }
+    }
+
+    fun toggleFabDropdown() {
+        _fabDropdownExpanded.update { !it }
     }
 }

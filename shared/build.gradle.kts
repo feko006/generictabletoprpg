@@ -43,32 +43,22 @@ kotlin {
     sourceSets {
         commonMain {
             dependencies {
-                implementation(compose.components.resources)
-                implementation(compose.foundation)
-                implementation(compose.material)
-                implementation(compose.runtime)
-                implementation(compose.uiTooling)
                 implementation(libs.androidx.room.runtime)
                 implementation(libs.androidx.sqlite.bundled)
                 implementation(libs.bpsm.edn.java)
+                implementation(libs.bundles.compose.mp)
+                implementation(libs.bundles.compose.mp.material)
                 implementation(libs.bundles.file.kit)
                 implementation(libs.bundles.navigation3)
-                implementation(libs.compose.ui.tooling.preview)
                 implementation(libs.fuzzywuzzy.kotlin)
                 implementation(libs.jetbrains.kotlinx.serialization.json)
                 implementation(libs.koin.compose.viewmodel)
-                implementation(libs.kotlin.logging)
                 implementation(libs.kotlin.stdlib)
                 implementation(libs.lifecycle.viewmodel.compose)
-                implementation(libs.material.icons)
-                implementation(libs.material3)
-                implementation(libs.material3.adaptive)
-                implementation(libs.material3.layout)
-                implementation(libs.material3.navigation)
+                implementation(libs.logcat)
                 implementation(libs.multiplatform.settings)
                 implementation(libs.reorderable)
                 implementation(libs.sonner)
-                implementation(libs.ui.backhandler)
             }
         }
 
@@ -87,7 +77,7 @@ kotlin {
 
         val desktopMain by getting
         desktopMain.dependencies {
-            implementation(compose.desktop.common)
+            implementation(libs.compose.desktop)
             implementation(compose.desktop.currentOs)
             implementation(libs.coroutines.swing)
             implementation(libs.slf4j.simple)

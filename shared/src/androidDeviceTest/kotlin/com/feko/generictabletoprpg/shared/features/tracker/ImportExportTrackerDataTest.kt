@@ -8,27 +8,30 @@ import com.feko.generictabletoprpg.shared.common.data.local.GenericTabletopRpgDa
 import com.feko.generictabletoprpg.shared.features.io.domain.usecase.JsonImportAllUseCase
 import com.feko.generictabletoprpg.shared.features.tracker.model.TrackedThing
 import com.feko.generictabletoprpg.shared.features.tracker.model.TrackedThingGroup
-import com.feko.generictabletoprpg.shared.features.tracker.ui.TrackerGroupExportSubViewModel
+import com.feko.generictabletoprpg.shared.features.tracker.ui.TrackerGroupViewModel
 import com.feko.generictabletoprpg.shared.test.R
 import io.github.vinceglb.filekit.FileKit
 import io.github.vinceglb.filekit.PlatformFile
 import io.github.vinceglb.filekit.filesDir
 import io.github.vinceglb.filekit.readString
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import org.hamcrest.CoreMatchers
 import org.hamcrest.MatcherAssert
 import org.junit.After
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 
 class ImportExportTrackerDataTest {
+    @get:Rule
+    val mainDispatcherRule = MainDispatcherRule()
+
     private lateinit var context: Context
     private lateinit var db: GenericTabletopRpgDatabase
     private lateinit var trackedThingGroupDao: TrackedThingGroupDao
     private lateinit var trackedThingDao: TrackedThingDao
-    private lateinit var exportSubViewModel: TrackerGroupExportSubViewModel
+    private lateinit var viewModel: TrackerGroupViewModel
     private lateinit var jsonImportAllUseCase: JsonImportAllUseCase
 
     @Before
@@ -42,11 +45,7 @@ class ImportExportTrackerDataTest {
             .build()
         trackedThingGroupDao = db.trackedThingGroupDao()
         trackedThingDao = db.trackedThingDao()
-        exportSubViewModel =
-            TrackerGroupExportSubViewModel(
-                trackedThingGroupDao,
-                trackedThingDao
-            )
+        viewModel = TrackerGroupViewModel(trackedThingGroupDao, trackedThingDao)
         jsonImportAllUseCase =
             JsonImportAllUseCase(
                 db.actionDao(),
@@ -325,9 +324,8 @@ class ImportExportTrackerDataTest {
         val file = PlatformFile(FileKit.filesDir, "export.json")
 
         // When
-        exportSubViewModel.exportAllRequested()
-        delay(timeMillis = 100) // The user needs to pick a file, so a delay is simulated
-        exportSubViewModel.exportData(file)
+        viewModel.exportAll(fileSaverLauncher = null)
+        viewModel.onFileSaveLocationSelected(file)
         jsonImportAllUseCase.import(file.readString())
 
         // Then

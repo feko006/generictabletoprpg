@@ -52,11 +52,11 @@ fun TrackerScreen(
             }
         },
         floatingActionButton = {
-            val expanded by viewModel.fabDropdown.isMenuExpanded.collectAsState(false)
+            val dropdownExpanded by viewModel.fabDropdownExpanded.collectAsState()
             AddFABButtonWithDropdown(
-                expanded = expanded,
-                onDismissRequest = { viewModel.fabDropdown.dismiss() },
-                onFabClicked = { viewModel.fabDropdown.toggleFabDropdownRequested() }
+                expanded = dropdownExpanded,
+                onDismissRequest = { viewModel.dismissFabDropdown() },
+                onFabClicked = { viewModel.toggleFabDropdown() }
             ) { DropdownMenuContent { type -> viewModel.showCreateDialog(type) } }
         }
     ) { paddingValues ->
