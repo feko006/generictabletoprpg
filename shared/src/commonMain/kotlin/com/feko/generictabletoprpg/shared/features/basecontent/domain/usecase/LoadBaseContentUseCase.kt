@@ -54,6 +54,6 @@ class LoadBaseContentUseCase(
     companion object {
         private const val LOADED_BASE_CONTENT_VERSION_KEY = "loaded_base_content_version_key"
         private const val INVALID_BASE_CONTENT_VERSION = -1
-        private const val CURRENT_BASE_CONTENT_VERSION = 8
+        private const val CURRENT_BASE_CONTENT_VERSION = 9
     }
 }

@@ -6,7 +6,10 @@ import com.feko.generictabletoprpg.shared.common.data.local.GenericTabletopRpgDa
 import java.io.File
 
 actual fun getDatabaseBuilder(): RoomDatabase.Builder<GenericTabletopRpgDatabase> {
-    val dbFile = File(System.getProperty("java.io.tmpdir"), databaseName)
+    val userHome = System.getProperty("user.home")
+    val dbDirectory = File(userHome, ".gttrpg")
+    dbDirectory.mkdirs()
+    val dbFile = File(dbDirectory, databaseName)
     return Room.databaseBuilder<GenericTabletopRpgDatabase>(
         name = dbFile.absolutePath,
     )
