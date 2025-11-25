@@ -428,7 +428,8 @@ private fun EditDialog(
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Number,
                     imeAction = ImeAction.Next
-                )
+                ),
+                allowIncrementDecrement = true
             )
         }
         EditDialogValueInputField(
@@ -571,7 +572,8 @@ fun StatsEditDialog(
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Number,
                         imeAction = ImeAction.Next
-                    )
+                    ),
+                    allowIncrementDecrement = true
                 )
                 NumberDialogInputField(
                     value = statsContainer.initiativeAdditionalBonus,
@@ -587,7 +589,8 @@ fun StatsEditDialog(
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Number,
                         imeAction = ImeAction.Next
-                    )
+                    ),
+                    allowIncrementDecrement = true
                 )
                 NumberDialogInputField(
                     value = statsContainer.spellSaveDcAdditionalBonus,
@@ -603,7 +606,8 @@ fun StatsEditDialog(
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Number,
                         imeAction = ImeAction.Next
-                    )
+                    ),
+                    allowIncrementDecrement = true
                 )
                 NumberDialogInputField(
                     value = statsContainer.spellAttackAdditionalBonus,
@@ -619,7 +623,8 @@ fun StatsEditDialog(
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Number,
                         imeAction = ImeAction.Next
-                    )
+                    ),
+                    allowIncrementDecrement = true
                 )
                 for ((statIndex, statEntry) in statsContainer.stats.withIndex()) {
                     Spacer(Modifier.height(8.dp))
@@ -685,7 +690,8 @@ private fun StatsStatEntry(
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Number,
                 imeAction = ImeAction.Next
-            )
+            ),
+            allowIncrementDecrement = true
         )
         NumberDialogInputField(
             value = statEntry.savingThrowAdditionalBonus,
@@ -704,7 +710,8 @@ private fun StatsStatEntry(
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Number,
                 imeAction = ImeAction.Next
-            )
+            ),
+            allowIncrementDecrement = true
         )
     }
     CheckboxWithText(
@@ -811,7 +818,8 @@ private fun StatsStatEntrySkill(
                     unfocusedContainerColor = Color.Transparent,
                     disabledContainerColor = Color.Transparent,
                     errorContainerColor = Color.Transparent
-                )
+                ),
+                allowIncrementDecrement = true
             )
         }
         CheckboxWithText(
