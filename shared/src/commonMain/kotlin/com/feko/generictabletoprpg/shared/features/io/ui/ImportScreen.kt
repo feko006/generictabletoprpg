@@ -25,7 +25,9 @@ import com.feko.generictabletoprpg.shared.common.ui.components.GttrpgFloatingAct
 import com.feko.generictabletoprpg.shared.common.ui.components.GttrpgTopAppBar
 import com.feko.generictabletoprpg.shared.common.ui.components.ToastMessage
 import com.feko.generictabletoprpg.shared.common.ui.components.addIcon
+import com.feko.generictabletoprpg.shared.common.ui.modifiers.dragAndDropTargetKmp
 import com.feko.generictabletoprpg.shared.common.ui.viewmodel.AppViewModel
+import io.github.vinceglb.filekit.PlatformFile
 import io.github.vinceglb.filekit.dialogs.FileKitType
 import io.github.vinceglb.filekit.dialogs.compose.rememberFilePickerLauncher
 import org.jetbrains.compose.resources.stringResource
@@ -44,13 +46,16 @@ fun ImportScreen(
         Box(
             Modifier
                 .fillMaxSize()
-                .padding(paddingValues),
+                .padding(paddingValues)
+                .dragAndDropTargetKmp(viewModel.supportedExtensions) { files ->
+                    viewModel.filesSelected(files.map { PlatformFile(it) })
+                },
             contentAlignment = Alignment.Center
         ) {
             val pickFileLauncher =
-                rememberFilePickerLauncher(
-                    FileKitType.File(".json", "orcbrew")
-                ) { file -> viewModel.fileSelected(file) }
+                rememberFilePickerLauncher(FileKitType.File(*viewModel.supportedExtensions)) { file ->
+                    if (file != null) viewModel.filesSelected(listOf(file))
+                }
             val toastMessage by viewModel.toastMessage.collectAsState(null)
             ToastMessage(toastMessage)
             val screenState by viewModel.screenState.collectAsState()
