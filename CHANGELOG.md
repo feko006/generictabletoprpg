@@ -15,6 +15,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
+## [1.5.0]
+
+### Added
+
+- Drag and drop capability for importing data in the desktop version of the application.
+- Shortcut buttons for bumping an input fields value up or down by 1 in certain dialogs.
+
 ## [1.4.1] - 2025-11-17
 
 ### Fixed
