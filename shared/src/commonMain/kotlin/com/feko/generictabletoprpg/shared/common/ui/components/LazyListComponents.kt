@@ -42,6 +42,7 @@ import com.feko.generictabletoprpg.empty_list
 import com.feko.generictabletoprpg.level
 import com.feko.generictabletoprpg.search
 import com.feko.generictabletoprpg.shared.common.domain.model.IIdentifiable
+import com.feko.generictabletoprpg.shared.common.domain.model.IKClassProvider
 import com.feko.generictabletoprpg.shared.common.domain.model.INamed
 import com.feko.generictabletoprpg.shared.common.domain.model.IText
 import com.feko.generictabletoprpg.shared.common.domain.model.IText.StringResourceText.Companion.asText
@@ -275,9 +276,15 @@ fun <T> LazyStaggeredGridItemScope.OverviewItem(item: T, modifier: Modifier = Mo
         ListItem(
             headlineContent = { Text((item as INamed).name) },
             supportingContent = {
-                if (item is Spell) {
-                    Text("${stringResource(Res.string.level)} ${item.level}, ${item.school}")
+                var supportingText: String? = null
+                if (item is IKClassProvider) {
+                    supportingText = getTypeName(item.kclass)
                 }
+                if (item is Spell) {
+                    supportingText +=
+                        ", ${stringResource(Res.string.level)} ${item.level}, ${item.school}"
+                }
+                supportingText?.let { Text(it) }
             },
             modifier = modifier.animateItem(),
             colors = ListItemDefaults.colors(containerColor = CardDefaults.cardColors().containerColor)

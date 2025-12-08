@@ -4,8 +4,10 @@ import com.feko.generictabletoprpg.shared.common.domain.IProcessEdnMap
 import com.feko.generictabletoprpg.shared.common.domain.model.DoNotObfuscate
 import com.feko.generictabletoprpg.shared.common.domain.model.IFromSource
 import com.feko.generictabletoprpg.shared.common.domain.model.IIdentifiable
+import com.feko.generictabletoprpg.shared.common.domain.model.IKClassProvider
 import com.feko.generictabletoprpg.shared.common.domain.model.INamed
 import kotlinx.serialization.Serializable
+import kotlin.reflect.KClass
 
 @DoNotObfuscate
 @Serializable
@@ -22,9 +24,13 @@ data class Armor(
     val minimumStrength: Int?
 ) : IIdentifiable,
     INamed,
-    IFromSource {
+    IFromSource,
+    IKClassProvider {
     val weightInLbs
         get() = "$weight lbs"
+
+    override val kclass: KClass<*>
+        get() = Armor::class
 
     companion object {
         fun createFromOrcbrewData(

@@ -10,7 +10,6 @@ import com.feko.generictabletoprpg.classes
 import com.feko.generictabletoprpg.components
 import com.feko.generictabletoprpg.duration
 import com.feko.generictabletoprpg.level
-import com.feko.generictabletoprpg.name
 import com.feko.generictabletoprpg.range
 import com.feko.generictabletoprpg.school
 import com.feko.generictabletoprpg.shared.common.ui.components.TextWithLabel
@@ -19,7 +18,6 @@ import com.feko.generictabletoprpg.shared.features.spell.Spell
 @Composable
 fun ColumnScope.SpellDetailsContent(item: Spell) {
     item.run {
-        TextWithLabel(Res.string.name, name)
         TextWithLabel(Res.string.level, level.toString())
         TextWithLabel(Res.string.school, school)
         TextWithLabel(Res.string.casting_time, castingTimeWithRitualTag)

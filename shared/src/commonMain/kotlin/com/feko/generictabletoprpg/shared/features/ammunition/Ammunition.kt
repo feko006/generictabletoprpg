@@ -5,8 +5,10 @@ import com.feko.generictabletoprpg.shared.common.domain.model.Cost
 import com.feko.generictabletoprpg.shared.common.domain.model.DoNotObfuscate
 import com.feko.generictabletoprpg.shared.common.domain.model.IFromSource
 import com.feko.generictabletoprpg.shared.common.domain.model.IIdentifiable
+import com.feko.generictabletoprpg.shared.common.domain.model.IKClassProvider
 import com.feko.generictabletoprpg.shared.common.domain.model.INamed
 import kotlinx.serialization.Serializable
+import kotlin.reflect.KClass
 
 @DoNotObfuscate
 @Serializable
@@ -19,7 +21,12 @@ data class Ammunition(
     override var source: String = ""
 ) : IIdentifiable,
     INamed,
-    IFromSource {
+    IFromSource,
+    IKClassProvider {
+
+    override val kclass: KClass<*>
+        get() = Ammunition::class
+
     companion object {
         fun createFromOrcbrewData(
             processEdnMapPort: IProcessEdnMap,

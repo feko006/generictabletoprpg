@@ -4,9 +4,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import com.feko.generictabletoprpg.Res
-import com.feko.generictabletoprpg.name
 import com.feko.generictabletoprpg.rarity
-import com.feko.generictabletoprpg.shared.common.domain.model.IText.StringText.Companion.asText
 import com.feko.generictabletoprpg.shared.common.ui.components.DetailsScreen
 import com.feko.generictabletoprpg.shared.common.ui.components.TextWithLabel
 import com.feko.generictabletoprpg.shared.features.magicitem.MagicItem
@@ -18,10 +16,8 @@ fun MagicItemDetailsScreen(id: Long, onNavigationIconClick: () -> Unit) {
     DetailsScreen<MagicItemViewModel, MagicItem>(
         id,
         koinViewModel(),
-        "TODO".asText(),
         onNavigationIconClick
     ) {
-        TextWithLabel(Res.string.name, it.name)
         TextWithLabel(Res.string.type, it.type)
         TextWithLabel(Res.string.rarity, it.rarity)
         HorizontalDivider()

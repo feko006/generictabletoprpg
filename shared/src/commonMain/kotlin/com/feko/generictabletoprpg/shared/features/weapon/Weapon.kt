@@ -5,8 +5,10 @@ import com.feko.generictabletoprpg.shared.common.domain.model.Damage
 import com.feko.generictabletoprpg.shared.common.domain.model.DoNotObfuscate
 import com.feko.generictabletoprpg.shared.common.domain.model.IFromSource
 import com.feko.generictabletoprpg.shared.common.domain.model.IIdentifiable
+import com.feko.generictabletoprpg.shared.common.domain.model.IKClassProvider
 import com.feko.generictabletoprpg.shared.common.domain.model.INamed
 import kotlinx.serialization.Serializable
+import kotlin.reflect.KClass
 
 
 @DoNotObfuscate
@@ -31,7 +33,8 @@ data class Weapon(
     val subType: String
 ) : IIdentifiable,
     INamed,
-    IFromSource {
+    IFromSource,
+    IKClassProvider {
 
     init {
         if (!isMelee && !isRanged) {
@@ -111,6 +114,9 @@ data class Weapon(
             }
             return builder.toString()
         }
+
+    override val kclass: KClass<*>
+        get() = Weapon::class
 
     // In feat
     @DoNotObfuscate

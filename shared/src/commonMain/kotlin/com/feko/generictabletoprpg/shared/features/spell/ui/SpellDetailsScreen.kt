@@ -1,11 +1,8 @@
 package com.feko.generictabletoprpg.shared.features.spell.ui
 
 import androidx.compose.runtime.Composable
-import com.feko.generictabletoprpg.Res
-import com.feko.generictabletoprpg.shared.common.domain.model.IText.StringResourceText.Companion.asText
 import com.feko.generictabletoprpg.shared.common.ui.components.DetailsScreen
 import com.feko.generictabletoprpg.shared.features.spell.Spell
-import com.feko.generictabletoprpg.spell_details_title
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -16,7 +13,6 @@ fun SpellDetailsScreen(
     DetailsScreen<SpellDetailsViewModel, Spell>(
         id,
         koinViewModel(),
-        Res.string.spell_details_title.asText(),
         onNavigationIconClick
     ) { spell ->
         SpellDetailsContent(spell)

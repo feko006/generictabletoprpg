@@ -11,7 +11,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import com.feko.generictabletoprpg.shared.common.domain.model.IText
+import com.feko.generictabletoprpg.shared.common.domain.model.INamed
+import com.feko.generictabletoprpg.shared.common.domain.model.IText.StringText.Companion.asText
 import com.feko.generictabletoprpg.shared.common.ui.theme.LocalDimens
 import com.feko.generictabletoprpg.shared.common.ui.viewmodel.DetailsViewModel
 
@@ -19,7 +20,6 @@ import com.feko.generictabletoprpg.shared.common.ui.viewmodel.DetailsViewModel
 fun <TViewModel, T> DetailsScreen(
     id: Long,
     viewModel: TViewModel,
-    title: IText,
     onNavigationIconClick: () -> Unit,
     screenContent: @Composable ColumnScope.(T) -> Unit
 ) where TViewModel : DetailsViewModel<T> {
@@ -34,6 +34,7 @@ fun <TViewModel, T> DetailsScreen(
             @Suppress("UNCHECKED_CAST")
             val readiedItem =
                 screenState as DetailsViewModel.DetailsScreenState.ItemReady<T>
+            val title = (readiedItem.item as INamed).name.asText()
             Scaffold(
                 topBar = { GttrpgTopAppBar(title, onNavigationIconClick) }
             ) { paddingValues ->
