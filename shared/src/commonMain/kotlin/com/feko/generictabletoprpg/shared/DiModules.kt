@@ -17,6 +17,7 @@ import com.feko.generictabletoprpg.shared.features.encounter.encounterModule
 import com.feko.generictabletoprpg.shared.features.feat.featModule
 import com.feko.generictabletoprpg.shared.features.filter.filterModule
 import com.feko.generictabletoprpg.shared.features.io.ioModule
+import com.feko.generictabletoprpg.shared.features.magicitem.magicItemModule
 import com.feko.generictabletoprpg.shared.features.searchall.searchAllModule
 import com.feko.generictabletoprpg.shared.features.spell.spellModule
 import com.feko.generictabletoprpg.shared.features.tracker.trackerGroupsModule
@@ -56,5 +57,6 @@ val diModules = listOf(
     searchAllModule,
     filterModule,
     encounterModule,
-    baseContentModule
+    baseContentModule,
+    magicItemModule
 )

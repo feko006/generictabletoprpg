@@ -6,6 +6,7 @@ import com.feko.generictabletoprpg.shared.features.armor.ArmorDao
 import com.feko.generictabletoprpg.shared.features.condition.ConditionDao
 import com.feko.generictabletoprpg.shared.features.disease.DiseaseDao
 import com.feko.generictabletoprpg.shared.features.feat.FeatDao
+import com.feko.generictabletoprpg.shared.features.magicitem.MagicItemDao
 import com.feko.generictabletoprpg.shared.features.searchall.ui.SearchAllViewModel
 import com.feko.generictabletoprpg.shared.features.searchall.usecase.ISearchAllUseCase
 import com.feko.generictabletoprpg.shared.features.searchall.usecase.SearchAllUseCase
@@ -26,6 +27,7 @@ val searchAllModule = module {
                 get<FeatDao>(),
                 get<SpellDao>(),
                 get<WeaponDao>(),
+                get<MagicItemDao>()
             )
         )
     }

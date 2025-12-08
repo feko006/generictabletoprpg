@@ -52,6 +52,7 @@
     <string name="apply">Apply</string>
     <string name="export">Export</string>
     <string name="delete">Delete</string>
+    <string name="rarity">Rarity</string>
     <!--Action-->
     <string name="action">Action</string>
     <string name="action_details_title">Action Details</string>
@@ -179,4 +180,6 @@
     <string name="remove_from_encounter_after_taking_lethal_damage_dialog_message_template">%1$s has taken lethal damage bringing its HP to 0. Do you want to remove it?</string>
     <string name="encounters">Encounters</string>
     <string name="expertise">Expertise</string>
+    <!--Magic item-->
+    <string name="magic_item">Magic Item</string>
 </resources>

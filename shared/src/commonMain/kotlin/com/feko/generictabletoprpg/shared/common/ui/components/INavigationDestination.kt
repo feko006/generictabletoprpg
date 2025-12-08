@@ -58,6 +58,9 @@ sealed interface INavigationDestination : NavKey {
     @Serializable
     data object SpellListDestination : INavigationDestination
 
+    @Serializable
+    data class MagicItemDetailsDestination(val id: Long) : INavigationDestination
+
     companion object {
         val startDestination: INavigationDestination = TrackerGroupsDestination
 
@@ -77,6 +80,7 @@ sealed interface INavigationDestination : NavKey {
                 subclass(serializer = WeaponDetailsDestination.serializer())
                 subclass(serializer = SimpleSpellDetailsDestination.serializer())
                 subclass(serializer = ImportDestination.serializer())
+                subclass(serializer = MagicItemDetailsDestination.serializer())
             }
         }
     }

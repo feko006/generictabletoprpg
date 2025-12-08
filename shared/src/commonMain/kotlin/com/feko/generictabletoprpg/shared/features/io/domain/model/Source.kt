@@ -7,6 +7,7 @@ import com.feko.generictabletoprpg.shared.features.armor.Armor
 import com.feko.generictabletoprpg.shared.features.condition.Condition
 import com.feko.generictabletoprpg.shared.features.disease.Disease
 import com.feko.generictabletoprpg.shared.features.feat.Feat
+import com.feko.generictabletoprpg.shared.features.magicitem.MagicItem
 import com.feko.generictabletoprpg.shared.features.spell.Spell
 import com.feko.generictabletoprpg.shared.features.weapon.Weapon
 import kotlinx.serialization.Serializable
@@ -22,5 +23,16 @@ data class Source(
     val diseases: List<Disease> = mutableListOf(),
     val feats: List<Feat> = mutableListOf(),
     val spells: List<Spell> = mutableListOf(),
-    val weapons: List<Weapon> = mutableListOf()
+    val weapons: List<Weapon> = mutableListOf(),
+    val magicItems: List<MagicItemImpl> = mutableListOf()
 )
+
+@Serializable
+data class MagicItemImpl(
+    override val id: Long = 0L,
+    override val name: String,
+    override var source: String = "",
+    override val type: String,
+    override val rarity: String,
+    override val description: String
+) : MagicItem

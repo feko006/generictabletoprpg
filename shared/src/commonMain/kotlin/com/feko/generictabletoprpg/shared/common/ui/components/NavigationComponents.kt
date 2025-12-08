@@ -28,6 +28,7 @@ import com.feko.generictabletoprpg.shared.common.ui.components.INavigationDestin
 import com.feko.generictabletoprpg.shared.common.ui.components.INavigationDestination.EncounterDestination
 import com.feko.generictabletoprpg.shared.common.ui.components.INavigationDestination.FeatDetailsDestination
 import com.feko.generictabletoprpg.shared.common.ui.components.INavigationDestination.ImportDestination
+import com.feko.generictabletoprpg.shared.common.ui.components.INavigationDestination.MagicItemDetailsDestination
 import com.feko.generictabletoprpg.shared.common.ui.components.INavigationDestination.SearchAllDestination
 import com.feko.generictabletoprpg.shared.common.ui.components.INavigationDestination.SimpleSpellDetailsDestination
 import com.feko.generictabletoprpg.shared.common.ui.components.INavigationDestination.SpellDetailsDestination
@@ -54,6 +55,8 @@ import com.feko.generictabletoprpg.shared.features.feat.ui.FeatDetailsScreen
 import com.feko.generictabletoprpg.shared.features.filter.SpellFilter
 import com.feko.generictabletoprpg.shared.features.filter.index
 import com.feko.generictabletoprpg.shared.features.io.ui.ImportScreen
+import com.feko.generictabletoprpg.shared.features.magicitem.MagicItem
+import com.feko.generictabletoprpg.shared.features.magicitem.ui.MagicItemDetailsScreen
 import com.feko.generictabletoprpg.shared.features.searchall.ui.SearchAllScreen
 import com.feko.generictabletoprpg.shared.features.spell.Spell
 import com.feko.generictabletoprpg.shared.features.spell.ui.SimpleSpellDetailsScreen
@@ -242,6 +245,11 @@ fun NavigationHost(
                         onPopAll = { backStack.popAll(it) }
                     )
                 }
+
+            is MagicItemDetailsDestination ->
+                NavEntry(key, metadata = ListDetailSceneStrategy.detailPane()) {
+                    MagicItemDetailsScreen(key.id, onNavigationIconClick)
+                }
         }
     }
 }
@@ -274,6 +282,7 @@ fun getDetailsDestination(item: Any): INavigationDestination {
         is Feat -> FeatDetailsDestination(id)
         is Spell -> SpellDetailsDestination(id)
         is Weapon -> WeaponDetailsDestination(id)
+        is MagicItem -> MagicItemDetailsDestination(id)
         else -> throw IllegalStateException("Unknown list item")
     }
 }

@@ -32,14 +32,11 @@ data class Armor(
             armorMap: Map<Any, Any>,
             defaultSource: String
         ): Armor {
-            val type = processEdnMapPort.getValue<Any>(armorMap, ":type")
-                .toString()
-                .substring(1)
             return Armor(
                 0,
                 processEdnMapPort.getValue(armorMap, ":name"),
                 defaultSource,
-                type,
+                processEdnMapPort.getValue(armorMap, ":type"),
                 processEdnMapPort.getValueOrDefault<Long?>(armorMap, ":base-ac", null)?.toInt(),
                 processEdnMapPort.getValueOrDefault<Long?>(armorMap, ":max-dex-mod", null)?.toInt(),
                 processEdnMapPort.getValueOrDefault(armorMap, ":stealth-disadvantage", null),

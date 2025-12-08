@@ -23,6 +23,7 @@ import com.feko.generictabletoprpg.shared.features.io.domain.usecase.OrcbrewImpo
 import com.feko.generictabletoprpg.shared.features.io.domain.usecase.OrcbrewImportSpellsUseCase
 import com.feko.generictabletoprpg.shared.features.io.domain.usecase.OrcbrewImportWeaponsUseCase
 import com.feko.generictabletoprpg.shared.features.io.ui.ImportViewModel
+import com.feko.generictabletoprpg.shared.features.magicitem.MagicItemDao
 import com.feko.generictabletoprpg.shared.features.spell.SpellDao
 import com.feko.generictabletoprpg.shared.features.tracker.TrackedThingDao
 import com.feko.generictabletoprpg.shared.features.tracker.TrackedThingGroupDao
@@ -70,7 +71,8 @@ val ioModule = module {
             get<ConditionDao>(),
             get<DiseaseDao>(),
             get<TrackedThingGroupDao>(),
-            get<TrackedThingDao>()
+            get<TrackedThingDao>(),
+            get<MagicItemDao>()
         )
     }
     singleOf(::ImportAllUseCase) bind IImportAllUseCase::class
