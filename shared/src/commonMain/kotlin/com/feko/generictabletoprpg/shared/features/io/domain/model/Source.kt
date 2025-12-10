@@ -34,5 +34,6 @@ data class MagicItemImpl(
     override var source: String = "",
     override val type: String,
     override val rarity: String,
+    override val attunement: Boolean = false,
     override val description: String
 ) : MagicItem

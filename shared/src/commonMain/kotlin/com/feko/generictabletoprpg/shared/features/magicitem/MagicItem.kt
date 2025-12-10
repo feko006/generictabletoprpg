@@ -9,6 +9,7 @@ import kotlin.reflect.KClass
 interface MagicItem : IIdentifiable, INamed, IFromSource, IKClassProvider {
     val type: String
     val rarity: String
+    val attunement: Boolean
     val description: String
     override val kclass: KClass<*>
         get() = MagicItem::class

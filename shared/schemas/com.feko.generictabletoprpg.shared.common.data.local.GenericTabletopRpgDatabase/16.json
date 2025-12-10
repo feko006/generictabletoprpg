@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 16,
-    "identityHash": "1d01ca6dc6b238a3e1256623f4e444a0",
+    "identityHash": "2a3253c49a8655f5f1e86f9b27fa1516",
     "entities": [
       {
         "tableName": "spells",
@@ -755,7 +755,7 @@
       },
       {
         "tableName": "magic_items",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `source` TEXT NOT NULL, `type` TEXT NOT NULL, `rarity` TEXT NOT NULL, `description` TEXT NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `source` TEXT NOT NULL, `type` TEXT NOT NULL, `rarity` TEXT NOT NULL, `attunement` INTEGER NOT NULL, `description` TEXT NOT NULL)",
         "fields": [
           {
             "fieldPath": "id",
@@ -788,6 +788,12 @@
             "notNull": true
           },
           {
+            "fieldPath": "attunement",
+            "columnName": "attunement",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
             "fieldPath": "description",
             "columnName": "description",
             "affinity": "TEXT",
@@ -804,7 +810,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '1d01ca6dc6b238a3e1256623f4e444a0')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '2a3253c49a8655f5f1e86f9b27fa1516')"
     ]
   }
 }

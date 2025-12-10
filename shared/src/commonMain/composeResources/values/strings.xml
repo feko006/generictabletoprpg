@@ -53,6 +53,7 @@
     <string name="export">Export</string>
     <string name="delete">Delete</string>
     <string name="rarity">Rarity</string>
+    <string name="attunement">Attunement</string>
     <!--Action-->
     <string name="action">Action</string>
     <!--Ammunition-->

@@ -15,6 +15,7 @@ data class MagicItemEntity(
     override val source: String,
     override val type: String,
     override val rarity: String,
+    override val attunement: Boolean,
     override val description: String,
 ) : IMutableIdentifiable,
     ICoreConvertible<MagicItem>,
@@ -25,6 +26,8 @@ data class MagicItemEntity(
     companion object {
         fun fromCoreModel(item: MagicItem): MagicItemEntity =
             item as? MagicItemEntity
-                ?: item.run { MagicItemEntity(id, name, source, type, rarity, description) }
+                ?: item.run {
+                    MagicItemEntity(id, name, source, type, rarity, attunement, description)
+                }
     }
 }
