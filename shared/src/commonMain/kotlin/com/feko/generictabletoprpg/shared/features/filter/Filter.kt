@@ -21,7 +21,7 @@ sealed class Filter(
         )
 
     open fun isAccepted(obj: Any): Boolean {
-        var isAccepted = obj::class == type
+        var isAccepted = type.isInstance(obj)
         if (name != null) {
             isAccepted = isAccepted
                     && obj is INamed
