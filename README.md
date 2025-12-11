@@ -102,6 +102,8 @@ install the app on a new device.
 ## Disclaimers
 
 - This app is not affiliated with *WotC* or *The Dungeon Master's Vault*.
+- This app contains content from the D&D fifth edition SRD, which you can
+  find [here](https://www.dndbeyond.com/srd).
 
 ## License
 
