@@ -16,10 +16,7 @@ data class Cost(
             processEdnMapPort: IProcessEdnMap,
             featMap: Map<Any, Any>
         ): Cost {
-            val type =
-                processEdnMapPort.getValue<Any>(featMap, ":type")
-                    .toString()
-                    .substring(1)
+            val type = processEdnMapPort.getValue<String>(featMap, ":type")
             return Cost(processEdnMapPort.getValue(featMap, ":num"), type)
         }
     }

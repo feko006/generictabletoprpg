@@ -152,18 +152,14 @@ data class Weapon(
                 && processEdnMapPort.containsKey(weaponMap, ":damage-die-count")
             ) {
                 val damageType =
-                    processEdnMapPort.getValue<Any>(weaponMap, ":damage-type")
-                        .toString()
-                        .substring(1)
+                    processEdnMapPort.getValue<String>(weaponMap, ":damage-type")
                 val damageDie =
                     processEdnMapPort.getValue<Int>(weaponMap, ":damage-die")
                 val damageDieCount =
                     processEdnMapPort.getValue<Int>(weaponMap, ":damage-die-count")
                 damage = Damage(damageType, damageDie, damageDieCount)
             }
-            val type = processEdnMapPort.getValue<Any>(weaponMap, ":type")
-                .toString()
-                .substring(1)
+            val type = processEdnMapPort.getValue<String>(weaponMap, ":type")
             var range: RangedWeaponRange? = null
             if (processEdnMapPort.containsKey(weaponMap, ":range")) {
                 range = RangedWeaponRange.createFromOrcbrewData(
