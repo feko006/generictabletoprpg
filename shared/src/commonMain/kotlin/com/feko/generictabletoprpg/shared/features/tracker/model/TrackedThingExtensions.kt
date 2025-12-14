@@ -96,8 +96,7 @@ fun TrackedThing.isValueValid(): Boolean = when (type) {
             && amount.toInt() > 0
             && amount.toInt() <= type.toAmount(managedDefaultValue).toInt()
 
-    Type.Percentage -> value.isNotBlank()
-            && amount.toFloat().let { it >= 0f && it <= 100f }
+    Type.Percentage -> amount.toFloat().let { it >= 0f && it <= 100f }
 
     Type.Text,
     Type.SpellList,
@@ -125,15 +124,16 @@ val TrackedThing.printableValue: String
         Type.None,
         Type.FiveEStats -> ""
 
-        Type.Text,
-        Type.Number -> value
+        Type.Text -> value
+
+        Type.Number -> type.toAmount(value).toString()
 
         Type.Ability,
         Type.Health,
         Type.HitDice,
         Type.SpellSlot -> "$value / $managedDefaultValue"
 
-        Type.Percentage -> "$value%"
+        Type.Percentage -> "${type.toAmount(value)}%"
 
         Type.SpellList -> (serializedItem as? List<SpellListEntry>)?.size?.toString() ?: "0"
     }
