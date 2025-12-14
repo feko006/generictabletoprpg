@@ -116,6 +116,7 @@ fun LazyStaggeredGridItemScope.TrackerListItem(
             TrackedThing.Type.Text -> TextListItem(isDragged, item, scope, viewModel)
             TrackedThing.Type.HitDice -> HitDiceListItem(isDragged, item, scope, viewModel)
             TrackedThing.Type.FiveEStats -> StatsListItem(isDragged, item, scope, viewModel)
+            TrackedThing.Type.Equipment -> Unit
         }
     } else {
         OverviewItem(item, Modifier.clickable(onClick = { onOpenDetails(item) }))

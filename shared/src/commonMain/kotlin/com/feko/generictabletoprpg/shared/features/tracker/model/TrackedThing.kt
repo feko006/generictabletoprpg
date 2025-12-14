@@ -2,6 +2,7 @@ package com.feko.generictabletoprpg.shared.features.tracker.model
 
 import com.feko.generictabletoprpg.Res
 import com.feko.generictabletoprpg.ability
+import com.feko.generictabletoprpg.equipment
 import com.feko.generictabletoprpg.five_e_stats
 import com.feko.generictabletoprpg.health
 import com.feko.generictabletoprpg.hit_dice
@@ -55,7 +56,8 @@ data class TrackedThing(
         SpellList(Res.string.spell_list),
         Text(Res.string.text),
         HitDice(Res.string.hit_dice),
-        FiveEStats(Res.string.five_e_stats)
+        FiveEStats(Res.string.five_e_stats),
+        Equipment(Res.string.equipment)
     }
 
     companion object {

@@ -7,6 +7,7 @@ import com.feko.generictabletoprpg.shared.common.domain.model.IFromSource
 import com.feko.generictabletoprpg.shared.common.domain.model.IIdentifiable
 import com.feko.generictabletoprpg.shared.common.domain.model.IKClassProvider
 import com.feko.generictabletoprpg.shared.common.domain.model.INamed
+import com.feko.generictabletoprpg.shared.features.tracker.model.IEquipmentListEntry
 import kotlinx.serialization.Serializable
 import kotlin.reflect.KClass
 
@@ -34,7 +35,8 @@ data class Weapon(
 ) : IIdentifiable,
     INamed,
     IFromSource,
-    IKClassProvider {
+    IKClassProvider,
+    IEquipmentListEntry {
 
     init {
         if (!isMelee && !isRanged) {

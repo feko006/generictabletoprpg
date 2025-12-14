@@ -93,6 +93,7 @@
     <string name="spell_cast_with_slot_level">Spell cast at level %1$s</string>
     <string name="text">Text</string>
     <string name="hit_dice">Hit dice</string>
+    <string name="equipment">Equipment</string>
     <!--Spell-->
     <string name="spell">Spell</string>
     <string name="concentration">Concentration</string>

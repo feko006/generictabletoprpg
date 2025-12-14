@@ -10,7 +10,8 @@ val Type.initialDefaultValue
         Type.None,
         Type.Text,
         Type.SpellList,
-        Type.FiveEStats -> ""
+        Type.FiveEStats,
+        Type.Equipment -> ""
 
         Type.Ability,
         Type.Health,
@@ -24,7 +25,8 @@ fun Type.normalize(value: String) = when (this) {
     Type.None,
     Type.Text,
     Type.SpellList,
-    Type.FiveEStats -> value
+    Type.FiveEStats,
+    Type.Equipment -> value
 
     Type.Ability,
     Type.Health,
@@ -33,14 +35,15 @@ fun Type.normalize(value: String) = when (this) {
     Type.SpellSlot -> value.toIntOrNull()?.toString() ?: "0"
 
     Type.Percentage ->
-        String.format(Locale.US, "%.2f", value.toFloat())
+        String.format(Locale.US, "%.2f", toAmount(value))
 }
 
 fun Type.toAmount(value: String): Number = when (this) {
     Type.None,
     Type.Text,
     Type.SpellList,
-    Type.FiveEStats -> 0
+    Type.FiveEStats,
+    Type.Equipment -> 0
 
     Type.Ability,
     Type.Health,
@@ -57,7 +60,8 @@ val TrackedThing.isIntBased
         Type.Health,
         Type.HitDice,
         Type.Number,
-        Type.SpellSlot -> true
+        Type.SpellSlot,
+        Type.Equipment -> true
 
         Type.None,
         Type.Percentage,
@@ -81,7 +85,8 @@ fun TrackedThing.setNewValue(value: String) {
         Type.Percentage,
         Type.Text,
         Type.SpellList,
-        Type.FiveEStats -> this.value = type.normalize(value)
+        Type.FiveEStats,
+        Type.Equipment -> this.value = type.normalize(value)
     }
 }
 
@@ -100,7 +105,8 @@ fun TrackedThing.isValueValid(): Boolean = when (type) {
 
     Type.Text,
     Type.SpellList,
-    Type.FiveEStats -> value.isNotBlank()
+    Type.FiveEStats,
+    Type.Equipment -> value.isNotBlank()
 }
 
 fun TrackedThing.validate(): Boolean = when (type) {
@@ -113,7 +119,8 @@ fun TrackedThing.validate(): Boolean = when (type) {
     Type.Percentage,
     Type.Text,
     Type.SpellList,
-    Type.FiveEStats -> isValueValid()
+    Type.FiveEStats,
+    Type.Equipment -> isValueValid()
 
     Type.SpellSlot -> isValueValid() && isLevelValid
 }
@@ -122,6 +129,7 @@ fun TrackedThing.validate(): Boolean = when (type) {
 val TrackedThing.printableValue: String
     get() = when (type) {
         Type.None,
+        Type.Equipment,
         Type.FiveEStats -> ""
 
         Type.Text -> value
@@ -143,7 +151,8 @@ fun TrackedThing.add(delta: String) {
         Type.None,
         Type.Text,
         Type.SpellList,
-        Type.FiveEStats -> Unit
+        Type.FiveEStats,
+        Type.Equipment -> Unit
 
         Type.Ability,
         Type.Health,
@@ -171,7 +180,8 @@ fun TrackedThing.subtract(delta: String) {
         Type.None,
         Type.Text,
         Type.SpellList,
-        Type.FiveEStats -> Unit
+        Type.FiveEStats,
+        Type.Equipment -> Unit
 
         Type.Ability,
         Type.HitDice,
@@ -208,7 +218,8 @@ val TrackedThing.canAdd: Boolean
         Type.None,
         Type.Text,
         Type.SpellList,
-        Type.FiveEStats -> false
+        Type.FiveEStats,
+        Type.Equipment -> false
 
         Type.Number -> true
 
@@ -225,7 +236,8 @@ val TrackedThing.canSubtract: Boolean
         Type.None,
         Type.Text,
         Type.SpellList,
-        Type.FiveEStats -> false
+        Type.FiveEStats,
+        Type.Equipment -> false
 
         Type.Number -> true
 
@@ -243,7 +255,8 @@ fun TrackedThing.resetValueToDefault() =
         Type.Number,
         Type.Text,
         Type.SpellList,
-        Type.FiveEStats -> Unit
+        Type.FiveEStats,
+        Type.Equipment -> Unit
 
         Type.Ability,
         Type.Health,
@@ -272,23 +285,33 @@ val TrackedThing.isLevelValid: Boolean
 fun TrackedThing.setItem(item: Any) {
     serializedItem = item
     value =
-        if (type == Type.FiveEStats && item is StatsContainer) {
-            json.encodeToString(StatsContainer.Companion.serializer(), item)
-        } else if (type == Type.SpellList && item is List<*> && item.all { it is SpellListEntry }) {
-            @Suppress("UNCHECKED_CAST")
-            json.encodeToString(
-                ListSerializer(SpellListEntry.Companion.serializer()),
-                (item as List<SpellListEntry>)
-            )
-        } else ""
+        when (type) {
+            Type.FiveEStats if item is StatsContainer ->
+                json.encodeToString(StatsContainer.serializer(), item)
+
+            Type.SpellList if item is List<*> && item.all { it is SpellListEntry } ->
+                @Suppress("UNCHECKED_CAST")
+                json.encodeToString(
+                    ListSerializer(SpellListEntry.serializer()),
+                    (item as List<SpellListEntry>)
+                )
+
+            Type.Equipment if item is EquipmentContainer ->
+                json.encodeToString(EquipmentContainer.serializer(), item)
+
+            else -> ""
+        }
 }
 
 fun TrackedThing.getItem(): Any =
     when (type) {
-        Type.FiveEStats -> json.decodeFromString(StatsContainer.Companion.serializer(), value)
+        Type.FiveEStats -> json.decodeFromString(StatsContainer.serializer(), value)
         Type.SpellList -> json.decodeFromString(
-            ListSerializer(SpellListEntry.Companion.serializer()),
+            ListSerializer(SpellListEntry.serializer()),
             value
         )
+
+        Type.Equipment -> json.decodeFromString(EquipmentContainer.serializer(), value)
+
         else -> ""
     }
