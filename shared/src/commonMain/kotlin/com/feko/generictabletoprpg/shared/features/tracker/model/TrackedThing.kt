@@ -76,6 +76,9 @@ data class TrackedThing(
             if (type == Type.FiveEStats) {
                 empty.setItem(StatsContainer.Empty)
             }
+            if (type == Type.Equipment) {
+                empty.setItem(EquipmentContainer.Empty)
+            }
             return empty
         }
     }

@@ -396,7 +396,10 @@ private fun EditDialog(
             OutlinedDialogButton(stringResource(Res.string.cancel), onDismiss)
         }
     ) {
-        val isSpellList = editedTrackedThing.type == TrackedThing.Type.SpellList
+        val showExtraValueInputField = editedTrackedThing.type == TrackedThing.Type.SpellSlot
+        val showValueInputField =
+            editedTrackedThing.type != TrackedThing.Type.SpellList
+                    && editedTrackedThing.type != TrackedThing.Type.Equipment
         val onFormSubmit = {
             if (canConfirmEditOperation) {
                 onConfirm(dialog.editedItem)
@@ -411,12 +414,13 @@ private fun EditDialog(
             },
             onFormSubmit = onFormSubmit,
             keyboardOptions = KeyboardOptions(
-                imeAction = if (isSpellList) ImeAction.Done else ImeAction.Next
+                imeAction =
+                    if (!showExtraValueInputField && !showValueInputField) ImeAction.Done
+                    else ImeAction.Next
             ),
             autoFocus = true
         )
-        val isSpellSlot = editedTrackedThing.type == TrackedThing.Type.SpellSlot
-        if (isSpellSlot) {
+        if (showExtraValueInputField) {
             NumberDialogInputField(
                 value = editedTrackedThing.level,
                 label = stringResource(Res.string.level),
@@ -432,33 +436,31 @@ private fun EditDialog(
                 allowIncrementDecrement = true
             )
         }
-        EditDialogValueInputField(
-            isSpellList,
-            editedTrackedThing,
-            {
-                onValueUpdate(
-                    editedTrackedThing
-                        .copy()
-                        .apply {
-                            setNewValue(it)
-                            managedDefaultValue = it
-                        }
-                )
-            },
-            onFormSubmit
-        )
+        if (showValueInputField) {
+            EditDialogValueInputField(
+                editedTrackedThing,
+                {
+                    onValueUpdate(
+                        editedTrackedThing
+                            .copy()
+                            .apply {
+                                setNewValue(it)
+                                managedDefaultValue = it
+                            }
+                    )
+                },
+                onFormSubmit
+            )
+        }
     }
 }
 
 @Composable
 private fun EditDialogValueInputField(
-    isSpellList: Boolean,
     editedTrackedThing: TrackedThing,
     onValueChange: (String) -> Unit,
     onFormSubmit: () -> Unit
 ) {
-    if (isSpellList) return
-
     if (editedTrackedThing.type == TrackedThing.Type.Text) {
         DialogInputField(
             value = editedTrackedThing.value,
