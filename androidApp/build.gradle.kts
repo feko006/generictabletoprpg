@@ -1,3 +1,4 @@
+import com.android.build.api.dsl.ApplicationExtension
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
 
@@ -5,17 +6,16 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.google.ksp)
-    alias(libs.plugins.jetbrains.kotlin.android)
     alias(libs.plugins.jetbrains.kotlin.serialization)
 }
 
-android {
+configure<ApplicationExtension> {
     signingConfigs {
         create("release") { }
     }
     namespace = "com.feko.generictabletoprpg"
     compileSdk = 36
-    buildToolsVersion = "35.0.0"
+    buildToolsVersion = "36.0.0"
 
     defaultConfig {
         applicationId = "com.feko.generictabletoprpg"
@@ -60,7 +60,7 @@ android {
             excludes.add("/META-INF/{AL2.0,LGPL2.1}")
         }
     }
-    sourceSets["main"].res.srcDirs("../shared/src/commonMain/composeResources")
+    sourceSets["main"].res.directories.add("../shared/src/commonMain/composeResources")
 }
 
 tasks.withType<KotlinJvmCompile>().configureEach {
