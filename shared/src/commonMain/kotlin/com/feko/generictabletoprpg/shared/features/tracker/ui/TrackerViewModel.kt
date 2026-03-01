@@ -5,7 +5,9 @@ import androidx.lifecycle.viewModelScope
 import com.feko.generictabletoprpg.Res
 import com.feko.generictabletoprpg.edit
 import com.feko.generictabletoprpg.five_e_stats
+import com.feko.generictabletoprpg.item_successfully_added_to_equipment
 import com.feko.generictabletoprpg.shared.common.domain.createNewComparator
+import com.feko.generictabletoprpg.shared.common.domain.model.INamed
 import com.feko.generictabletoprpg.shared.common.domain.model.IText
 import com.feko.generictabletoprpg.shared.common.domain.model.IText.StringResourceText.Companion.asText
 import com.feko.generictabletoprpg.shared.common.ui.ToastMessage
@@ -14,6 +16,9 @@ import com.feko.generictabletoprpg.shared.common.ui.viewmodel.OverviewViewModel
 import com.feko.generictabletoprpg.shared.features.searchall.usecase.ISearchAllUseCase
 import com.feko.generictabletoprpg.shared.features.spell.Spell
 import com.feko.generictabletoprpg.shared.features.tracker.TrackedThingDao
+import com.feko.generictabletoprpg.shared.features.tracker.model.EquipmentContainer
+import com.feko.generictabletoprpg.shared.features.tracker.model.EquipmentEntry
+import com.feko.generictabletoprpg.shared.features.tracker.model.IEquipmentItem
 import com.feko.generictabletoprpg.shared.features.tracker.model.SpellListEntry
 import com.feko.generictabletoprpg.shared.features.tracker.model.StatEntry
 import com.feko.generictabletoprpg.shared.features.tracker.model.StatSkillEntry
@@ -627,7 +632,32 @@ class TrackerViewModel(
 
     fun addItemToEquipment(item: Any) {
         viewModelScope.launch {
-            // TODO
+            val namedItem = item as INamed
+            val equipment = requireNotNull(equipmentBeingAddedTo).copy()
+            val serializedItem = equipment.serializedItem as EquipmentContainer
+            val itemAlreadyInEquipment = serializedItem.entries.firstOrNull { entry ->
+                entry.item::class == item::class
+                        && entry.item.name == namedItem.name
+            }
+            val newEntries: List<EquipmentEntry>
+            if (itemAlreadyInEquipment != null) {
+                val newItem = itemAlreadyInEquipment.copy(count = itemAlreadyInEquipment.count + 1)
+                newEntries = serializedItem.entries
+                    .minus(itemAlreadyInEquipment)
+                    .plus(newItem)
+                    .sortedBy { it.item.name }
+            } else {
+                val newItem = EquipmentEntry(item as IEquipmentItem)
+                newEntries = serializedItem.entries
+                    .plus(newItem)
+                    .sortedBy { it.item.name }
+            }
+            val newSerializedItem = serializedItem.copy(entries = newEntries)
+            equipment.setItem(newSerializedItem)
+            trackedThingDao.insertOrUpdate(equipment)
+            _toast.emit(
+                ToastMessage(Res.string.item_successfully_added_to_equipment.asText(), _toast)
+            )
             equipmentBeingAddedTo = null
         }
     }

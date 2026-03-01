@@ -5,10 +5,8 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 @DoNotObfuscate
-data class EquipmentContainer(
-    val entries: List<EquipmentEntry>
-) {
-    companion object {
-        val Empty = EquipmentContainer(listOf())
-    }
-}
+data class EquipmentEntry(
+    val item: IEquipmentItem,
+    val count: Int = 1,
+    val isFavorite: Boolean = false
+)

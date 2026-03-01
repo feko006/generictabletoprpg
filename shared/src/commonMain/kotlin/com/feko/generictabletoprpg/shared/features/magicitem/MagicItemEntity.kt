@@ -5,8 +5,12 @@ import androidx.room.PrimaryKey
 import com.feko.generictabletoprpg.shared.common.domain.model.DoNotObfuscate
 import com.feko.generictabletoprpg.shared.common.domain.model.ICoreConvertible
 import com.feko.generictabletoprpg.shared.common.domain.model.IMutableIdentifiable
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
+@Serializable
 @DoNotObfuscate
+@SerialName("magic_item")
 @Entity(tableName = "magic_items")
 data class MagicItemEntity(
     @PrimaryKey(autoGenerate = true)

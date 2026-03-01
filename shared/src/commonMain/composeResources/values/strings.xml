@@ -179,4 +179,6 @@
     <string name="expertise">Expertise</string>
     <!--Magic item-->
     <string name="magic_item">Magic Item</string>
+    <!--Equipment-->
+    <string name="item_successfully_added_to_equipment">Item successfully added to equipment!</string>
 </resources>

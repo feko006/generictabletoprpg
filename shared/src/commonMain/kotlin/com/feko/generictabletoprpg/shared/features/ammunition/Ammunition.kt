@@ -7,11 +7,14 @@ import com.feko.generictabletoprpg.shared.common.domain.model.IFromSource
 import com.feko.generictabletoprpg.shared.common.domain.model.IIdentifiable
 import com.feko.generictabletoprpg.shared.common.domain.model.IKClassProvider
 import com.feko.generictabletoprpg.shared.common.domain.model.INamed
+import com.feko.generictabletoprpg.shared.features.tracker.model.IEquipmentItem
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlin.reflect.KClass
 
-@DoNotObfuscate
 @Serializable
+@DoNotObfuscate
+@SerialName("ammo")
 data class Ammunition(
     override val id: Long = 0,
     override val name: String,
@@ -22,7 +25,8 @@ data class Ammunition(
 ) : IIdentifiable,
     INamed,
     IFromSource,
-    IKClassProvider {
+    IKClassProvider,
+    IEquipmentItem {
 
     override val kclass: KClass<*>
         get() = Ammunition::class
