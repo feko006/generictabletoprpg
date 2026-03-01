@@ -48,9 +48,9 @@ import com.feko.generictabletoprpg.initiative
 import com.feko.generictabletoprpg.proficiency_bonus
 import com.feko.generictabletoprpg.shared.common.domain.asSignedString
 import com.feko.generictabletoprpg.shared.common.ui.components.GttrpgContextMenu
+import com.feko.generictabletoprpg.shared.common.ui.components.dragIcon
 import com.feko.generictabletoprpg.shared.common.ui.components.draggableHandle
 import com.feko.generictabletoprpg.shared.common.ui.components.longPressDraggableHandle
-import com.feko.generictabletoprpg.shared.common.ui.components.menuIcon
 import com.feko.generictabletoprpg.shared.common.ui.theme.LocalDimens
 import com.feko.generictabletoprpg.shared.common.ui.theme.Typography
 import com.feko.generictabletoprpg.shared.common.ui.theme.compactDimens
@@ -606,7 +606,7 @@ private fun ReorderHandle(
             .padding(8.dp)
             .then(modifier)
     ) {
-        Icon(menuIcon, "", Modifier.align(iconAlignment))
+        Icon(dragIcon, "", Modifier.align(iconAlignment))
     }
 }
 
