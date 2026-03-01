@@ -54,6 +54,9 @@
     <string name="delete">Delete</string>
     <string name="rarity">Rarity</string>
     <string name="attunement">Attunement</string>
+    <string name="list">List</string>
+    <string name="add_existing">Add Existing</string>
+    <string name="add_new">Add New</string>
     <!--Action-->
     <string name="action">Action</string>
     <!--Ammunition-->

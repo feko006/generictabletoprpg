@@ -6,10 +6,13 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import com.feko.generictabletoprpg.Res
+import com.feko.generictabletoprpg.add_existing
+import com.feko.generictabletoprpg.add_new
 import com.feko.generictabletoprpg.delete
 import com.feko.generictabletoprpg.edit
 import com.feko.generictabletoprpg.heart_minus
 import com.feko.generictabletoprpg.heart_plus
+import com.feko.generictabletoprpg.list
 import com.feko.generictabletoprpg.shared.common.ui.components.addIcon
 import com.feko.generictabletoprpg.shared.common.ui.components.keyboardArrowDownIcon
 import com.feko.generictabletoprpg.shared.common.ui.components.keyboardArrowUpIcon
@@ -254,9 +257,33 @@ fun HitDiceActions(
 @Composable
 fun EquipmentDropDownActions(
     closeContextMenu: () -> Unit,
+    onListClicked: () -> Unit,
+    onAddExistingClicked: () -> Unit,
+    onAddNewClicked: () -> Unit,
     onEditClicked: () -> Unit,
     onDeleteClicked: () -> Unit
 ) {
+    DropdownMenuItem(
+        text = { Text(stringResource(Res.string.list)) },
+        onClick = {
+            closeContextMenu()
+            onListClicked()
+        }
+    )
+    DropdownMenuItem(
+        text = { Text(stringResource(Res.string.add_existing)) },
+        onClick = {
+            closeContextMenu()
+            onAddExistingClicked()
+        }
+    )
+    DropdownMenuItem(
+        text = { Text(stringResource(Res.string.add_new)) },
+        onClick = {
+            closeContextMenu()
+            onAddNewClicked()
+        }
+    )
     DropdownMenuItem(
         text = { Text(stringResource(Res.string.edit)) },
         onClick = {

@@ -524,8 +524,12 @@ fun EquipmentListItem(
         ) { closeContextMenu ->
             EquipmentDropDownActions(
                 closeContextMenu,
+                onListClicked = {},
+                onAddExistingClicked = {},
+                onAddNewClicked = {},
                 onEditClicked = { viewModel.showEditDialog(equipment) },
-                onDeleteClicked = { viewModel.deleteItemRequested(equipment) })
+                onDeleteClicked = { viewModel.deleteItemRequested(equipment) }
+            )
         }
     }
 }
