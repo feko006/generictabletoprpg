@@ -36,6 +36,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.hapticfeedback.HapticFeedback
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.feko.generictabletoprpg.Res
 import com.feko.generictabletoprpg.empty_list
@@ -109,7 +110,7 @@ fun <TViewModel, T> SearchableReorderableLazyItems(
     viewModel: TViewModel,
     item: @Composable LazyStaggeredGridItemScope.(T, Boolean, ReorderableCollectionItemScope) -> Unit,
     modifier: Modifier = Modifier,
-    addFabButtonSpacer: Boolean = false,
+    bottomContentPadding: Dp = 0.dp,
     uniqueItemKey: (Any) -> Any = { (it as IIdentifiable).id },
     onItemReordered: (LazyStaggeredGridItemInfo, LazyStaggeredGridItemInfo) -> Unit = { _, _ -> },
     searchFieldHint: IText = Res.string.search.asText()
@@ -134,7 +135,7 @@ fun <TViewModel, T> SearchableReorderableLazyItems(
                     StaggeredGridCells.Fixed(columnCount(maxWidth)),
                     Modifier.fillMaxSize(),
                     gridState,
-                    contentPadding = PaddingValues(bottom = if (addFabButtonSpacer) 40.dp else 0.dp),
+                    contentPadding = PaddingValues(bottom = bottomContentPadding),
                     verticalItemSpacing = LocalDimens.current.gapSmall,
                     horizontalArrangement = Arrangement.spacedBy(LocalDimens.current.gapSmall)
                 ) {

@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -18,11 +19,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Card
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -44,11 +47,13 @@ import com.feko.generictabletoprpg.book_4_spark
 import com.feko.generictabletoprpg.initiative
 import com.feko.generictabletoprpg.proficiency_bonus
 import com.feko.generictabletoprpg.shared.common.domain.asSignedString
+import com.feko.generictabletoprpg.shared.common.ui.components.GttrpgContextMenu
 import com.feko.generictabletoprpg.shared.common.ui.components.draggableHandle
 import com.feko.generictabletoprpg.shared.common.ui.components.longPressDraggableHandle
 import com.feko.generictabletoprpg.shared.common.ui.components.menuIcon
 import com.feko.generictabletoprpg.shared.common.ui.theme.LocalDimens
 import com.feko.generictabletoprpg.shared.common.ui.theme.Typography
+import com.feko.generictabletoprpg.shared.common.ui.theme.compactDimens
 import com.feko.generictabletoprpg.shared.features.tracker.model.SpellListEntry
 import com.feko.generictabletoprpg.shared.features.tracker.model.StatEntry
 import com.feko.generictabletoprpg.shared.features.tracker.model.StatsContainer
@@ -121,29 +126,71 @@ private fun DefaultTrackableLayout(
                 modifier = Modifier.height(IntrinsicSize.Min),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalAlignment = Alignment.CenterVertically
-            ) firstRow@{
+            ) {
                 Text(
                     trackableName,
                     style = Typography.titleMedium,
                     modifier = Modifier.weight(1f)
                 )
-                if (valuePreview == null) return@firstRow
-                Box(
-                    Modifier
-                        .fillMaxHeight()
-                        .width(1.dp)
-                        .padding(vertical = 4.dp)
-                        .background(Color.Gray)
-                )
-                Column(
-                    verticalArrangement = Arrangement.SpaceAround,
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier.width(85.dp)
-                ) {
-                    valuePreview()
+                if (valuePreview != null) {
+                    Box(
+                        Modifier
+                            .fillMaxHeight()
+                            .width(1.dp)
+                            .padding(vertical = 4.dp)
+                            .background(Color.Gray)
+                    )
+                    Column(
+                        verticalArrangement = Arrangement.SpaceAround,
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier.width(85.dp)
+                    ) {
+                        valuePreview()
+                    }
                 }
             }
             content()
+        }
+    }
+}
+
+@Composable
+fun ContextMenuTrackedThingLayout(
+    trackableName: String,
+    trackableType: TrackedThing.Type,
+    scope: ReorderableCollectionItemScope,
+    interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
+    valuePreview: @Composable (() -> Unit)? = null,
+    contextMenuItems: @Composable ColumnScope.(closeContextMenu: () -> Unit) -> Unit
+) {
+    Column {
+        val dimens = LocalDimens.current
+        trackableType.nameResource?.let { type ->
+            Text(
+                stringResource(type),
+                Modifier.padding(start = dimens.paddingSmall, top = dimens.paddingSmall),
+                style = Typography.labelSmall
+            )
+        }
+        Row(
+            Modifier.height(IntrinsicSize.Min),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            ReorderHandle(scope, interactionSource)
+            Text(trackableName, style = Typography.titleMedium, modifier = Modifier.weight(1f))
+            if (valuePreview != null) {
+                Spacer(Modifier.width(dimens.gapSmall))
+                valuePreview()
+            }
+            var contextMenuExpanded by remember { mutableStateOf(false) }
+            GttrpgContextMenu(
+                contextMenuExpanded,
+                onDropdownExpandedStateChanged = { contextMenuExpanded = it }
+            ) {
+                contextMenuItems {
+                    contextMenuExpanded = false
+                }
+            }
         }
     }
 }
@@ -460,6 +507,30 @@ fun StatsListItem(
 }
 
 @Composable
+fun EquipmentListItem(
+    isDragged: Boolean,
+    equipment: TrackedThing,
+    scope: ReorderableCollectionItemScope,
+    viewModel: TrackerViewModel
+) {
+    val interactionSource = remember { MutableInteractionSource() }
+    TrackedThingListItem(isDragged, scope, interactionSource) {
+        ContextMenuTrackedThingLayout(
+            equipment.name,
+            TrackedThing.Type.Equipment,
+            scope,
+            interactionSource,
+            valuePreview = { Text(equipment.printableValue) }
+        ) { closeContextMenu ->
+            EquipmentDropDownActions(
+                closeContextMenu,
+                onEditClicked = { viewModel.showEditDialog(equipment) },
+                onDeleteClicked = { viewModel.deleteItemRequested(equipment) })
+        }
+    }
+}
+
+@Composable
 fun TextListItem(
     isDragged: Boolean,
     text: TrackedThing,
@@ -698,4 +769,39 @@ private fun SpellListTrackedThingPreview() {
                 onDeleteButtonClicked = {}
             )
         })
+}
+
+@Preview
+@Composable
+private fun ContextMenuTrackedThingLayoutPreview() {
+    CompositionLocalProvider(
+        LocalDimens provides compactDimens
+    ) {
+        ContextMenuTrackedThingLayout(
+            "My Equipment",
+            TrackedThing.Type.Equipment,
+            object : ReorderableCollectionItemScope {
+                override fun Modifier.draggableHandle(
+                    enabled: Boolean,
+                    interactionSource: MutableInteractionSource?,
+                    onDragStarted: (startedPosition: Offset) -> Unit,
+                    onDragStopped: () -> Unit,
+                    dragGestureDetector: DragGestureDetector
+                ): Modifier = this
+
+                override fun Modifier.longPressDraggableHandle(
+                    enabled: Boolean,
+                    interactionSource: MutableInteractionSource?,
+                    onDragStarted: (startedPosition: Offset) -> Unit,
+                    onDragStopped: () -> Unit
+                ): Modifier = this
+            },
+            valuePreview = { Text("123") }
+        ) {
+            DropdownMenuItem(
+                text = { Text("Add") },
+                onClick = { }
+            )
+        }
+    }
 }

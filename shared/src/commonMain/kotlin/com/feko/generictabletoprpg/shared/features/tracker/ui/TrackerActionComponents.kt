@@ -1,9 +1,13 @@
 package com.feko.generictabletoprpg.shared.features.tracker.ui
 
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import com.feko.generictabletoprpg.Res
+import com.feko.generictabletoprpg.delete
+import com.feko.generictabletoprpg.edit
 import com.feko.generictabletoprpg.heart_minus
 import com.feko.generictabletoprpg.heart_plus
 import com.feko.generictabletoprpg.shared.common.ui.components.addIcon
@@ -18,6 +22,7 @@ import com.feko.generictabletoprpg.shared.features.tracker.model.canAdd
 import com.feko.generictabletoprpg.shared.features.tracker.model.canSubtract
 import com.feko.generictabletoprpg.shield_with_heart
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun PercentageActions(
@@ -244,4 +249,26 @@ fun HitDiceActions(
             Icon(addIcon, "")
         }
     }
+}
+
+@Composable
+fun EquipmentDropDownActions(
+    closeContextMenu: () -> Unit,
+    onEditClicked: () -> Unit,
+    onDeleteClicked: () -> Unit
+) {
+    DropdownMenuItem(
+        text = { Text(stringResource(Res.string.edit)) },
+        onClick = {
+            closeContextMenu()
+            onEditClicked()
+        }
+    )
+    DropdownMenuItem(
+        text = { Text(stringResource(Res.string.delete)) },
+        onClick = {
+            closeContextMenu()
+            onDeleteClicked()
+        }
+    )
 }

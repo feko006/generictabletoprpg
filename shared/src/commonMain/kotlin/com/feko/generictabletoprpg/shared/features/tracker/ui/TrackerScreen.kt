@@ -10,6 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import com.feko.generictabletoprpg.Res
 import com.feko.generictabletoprpg.search_everywhere
 import com.feko.generictabletoprpg.shared.common.domain.model.IText.StringResourceText.Companion.asText
@@ -74,7 +75,7 @@ fun TrackerScreen(
                 )
             },
             Modifier.padding(paddingValues),
-            addFabButtonSpacer = true,
+            bottomContentPadding = 60.dp,
             uniqueItemKey = { getUniqueListItemKey(it) },
             onItemReordered = { from, to -> viewModel.itemReordered(from.index, to.index) },
             searchFieldHint = Res.string.search_everywhere.asText()
@@ -116,7 +117,7 @@ fun LazyStaggeredGridItemScope.TrackerListItem(
             TrackedThing.Type.Text -> TextListItem(isDragged, item, scope, viewModel)
             TrackedThing.Type.HitDice -> HitDiceListItem(isDragged, item, scope, viewModel)
             TrackedThing.Type.FiveEStats -> StatsListItem(isDragged, item, scope, viewModel)
-            TrackedThing.Type.Equipment -> Unit
+            TrackedThing.Type.Equipment -> EquipmentListItem(isDragged, item, scope, viewModel)
         }
     } else {
         OverviewItem(item, Modifier.clickable(onClick = { onOpenDetails(item) }))
