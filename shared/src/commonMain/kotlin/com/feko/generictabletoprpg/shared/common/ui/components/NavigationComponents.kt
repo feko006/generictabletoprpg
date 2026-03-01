@@ -52,6 +52,7 @@ import com.feko.generictabletoprpg.shared.features.disease.ui.DiseaseDetailsScre
 import com.feko.generictabletoprpg.shared.features.encounter.ui.EncounterScreen
 import com.feko.generictabletoprpg.shared.features.feat.Feat
 import com.feko.generictabletoprpg.shared.features.feat.ui.FeatDetailsScreen
+import com.feko.generictabletoprpg.shared.features.filter.EquipmentFilter
 import com.feko.generictabletoprpg.shared.features.filter.SpellFilter
 import com.feko.generictabletoprpg.shared.features.filter.index
 import com.feko.generictabletoprpg.shared.features.io.ui.ImportScreen
@@ -92,7 +93,7 @@ fun NavigationHost(
         backStack.removeLastOrNull()
     }
 
-    val searchAllResultViewModel = viewModel<ResultViewModel<Long>>()
+    val searchAllResultViewModel = viewModel<ResultViewModel<Any>>()
     val panes =
         currentWindowAdaptiveInfo().windowSizeClass.let {
             when {
@@ -109,8 +110,8 @@ fun NavigationHost(
             rememberViewModelStoreNavEntryDecorator()
         ),
         sceneStrategy = ListDetailSceneStrategy(
-            BackNavigationBehavior.Companion.PopUntilCurrentDestinationChange,
-            PaneScaffoldDirective.Companion.Default.copy(
+            BackNavigationBehavior.PopUntilCurrentDestinationChange,
+            PaneScaffoldDirective.Default.copy(
                 maxHorizontalPartitions = panes,
                 maxVerticalPartitions = panes
             ),
@@ -148,6 +149,14 @@ fun NavigationHost(
                         onSelectSpellRequest = {
                             backStack.add(
                                 SearchAllDestination(SpellFilter().index(), isShownForResult = true)
+                            )
+                        },
+                        onSelectEquipmentRequest = {
+                            backStack.add(
+                                SearchAllDestination(
+                                    EquipmentFilter().index(),
+                                    isShownForResult = true
+                                )
                             )
                         }
                     )

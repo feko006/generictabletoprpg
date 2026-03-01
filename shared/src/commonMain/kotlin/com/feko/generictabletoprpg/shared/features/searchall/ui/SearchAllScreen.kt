@@ -46,7 +46,7 @@ fun SearchAllScreen(
     onNavigateBack: () -> Unit,
     onOpenDetails: (Any) -> Unit,
     fixedFilter: Int? = null,
-    resultViewModel: ResultViewModel<Long>? = null
+    resultViewModel: ResultViewModel<Any>? = null
 ) {
     val isStartedForResult = resultViewModel != null
     val viewModel: SearchAllViewModel = koinViewModel { parametersOf(fixedFilter?.asFilter()) }
@@ -83,7 +83,7 @@ fun SearchAllScreen(
                             .fillMaxWidth()
                             .clickable {
                                 if (isStartedForResult) {
-                                    resultViewModel.setSelectionResult((item as IIdentifiable).id)
+                                    resultViewModel.setSelectionResult(item)
                                     onNavigateBack()
                                 } else {
                                     onOpenDetails(item)
@@ -101,9 +101,10 @@ fun SearchAllScreen(
             onDismissRequest = { viewModel.bottomSheetHidden() },
             sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
         ) {
+            val typeOptions by viewModel.availableTypeOptions.collectAsState()
             FilterScreen(
                 filter,
-                isTypeFixed = isStartedForResult,
+                typeOptions,
                 onFilterUpdated = { updatedFilter ->
                     viewModel.bottomSheetHidden()
                     viewModel.filterUpdated(updatedFilter)

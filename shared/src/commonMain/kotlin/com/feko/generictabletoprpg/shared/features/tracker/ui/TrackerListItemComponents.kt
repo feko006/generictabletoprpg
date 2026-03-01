@@ -511,7 +511,8 @@ fun EquipmentListItem(
     isDragged: Boolean,
     equipment: TrackedThing,
     scope: ReorderableCollectionItemScope,
-    viewModel: TrackerViewModel
+    viewModel: TrackerViewModel,
+    onSelectEquipmentRequest: () -> Unit
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     TrackedThingListItem(isDragged, scope, interactionSource) {
@@ -524,11 +525,14 @@ fun EquipmentListItem(
         ) { closeContextMenu ->
             EquipmentDropDownActions(
                 closeContextMenu,
-                onListClicked = {},
-                onAddExistingClicked = {},
-                onAddNewClicked = {},
-                onEditClicked = { viewModel.showEditDialog(equipment) },
-                onDeleteClicked = { viewModel.deleteItemRequested(equipment) }
+                onOpenListClick = {},
+                onAddExistingClick = {
+                    viewModel.addingItemToEquipment(equipment)
+                    onSelectEquipmentRequest()
+                },
+                onAddNewClick = {},
+                onEditClick = { viewModel.showEditDialog(equipment) },
+                onDeleteClick = { viewModel.deleteItemRequested(equipment) }
             )
         }
     }

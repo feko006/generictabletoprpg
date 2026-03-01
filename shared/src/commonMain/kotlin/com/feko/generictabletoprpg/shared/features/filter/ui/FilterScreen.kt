@@ -23,7 +23,6 @@ import com.feko.generictabletoprpg.clear_all
 import com.feko.generictabletoprpg.filter
 import com.feko.generictabletoprpg.filter_type_placeholder
 import com.feko.generictabletoprpg.shared.common.appNamesByType
-import com.feko.generictabletoprpg.shared.common.appTypes
 import com.feko.generictabletoprpg.shared.common.ui.components.GttrpgDropdownField
 import com.feko.generictabletoprpg.shared.common.ui.components.getTypeName
 import com.feko.generictabletoprpg.shared.common.ui.theme.LocalDimens
@@ -32,11 +31,12 @@ import com.feko.generictabletoprpg.shared.features.filter.GenericFilter
 import com.feko.generictabletoprpg.shared.features.filter.SpellFilter
 import com.feko.generictabletoprpg.shared.features.spell.Spell
 import org.jetbrains.compose.resources.stringResource
+import kotlin.reflect.KClass
 
 @Composable
 fun FilterScreen(
     initialFilter: Filter?,
-    isTypeFixed: Boolean = false,
+    typeOptions: List<KClass<out Any>>,
     onFilterUpdated: (Filter?) -> Unit,
     onFilterCleared: () -> Unit
 ) {
@@ -62,10 +62,9 @@ fun FilterScreen(
             style = MaterialTheme.typography.titleLarge
         )
         GttrpgDropdownField(
-            appTypes.toList(),
+            typeOptions,
             stringResource(textFieldInitialValue),
             dropdownExpanded,
-            enabled = !isTypeFixed,
             onDropdownExpandedStateChanged = { dropdownExpanded = it },
             onDropdownMenuItemClick = onClick@{
                 if (it == filter?.type) {

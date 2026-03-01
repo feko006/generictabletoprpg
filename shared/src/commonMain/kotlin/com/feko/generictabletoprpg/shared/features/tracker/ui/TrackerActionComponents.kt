@@ -257,45 +257,45 @@ fun HitDiceActions(
 @Composable
 fun EquipmentDropDownActions(
     closeContextMenu: () -> Unit,
-    onListClicked: () -> Unit,
-    onAddExistingClicked: () -> Unit,
-    onAddNewClicked: () -> Unit,
-    onEditClicked: () -> Unit,
-    onDeleteClicked: () -> Unit
+    onOpenListClick: () -> Unit,
+    onAddExistingClick: () -> Unit,
+    onAddNewClick: () -> Unit,
+    onEditClick: () -> Unit,
+    onDeleteClick: () -> Unit
 ) {
     DropdownMenuItem(
         text = { Text(stringResource(Res.string.list)) },
         onClick = {
             closeContextMenu()
-            onListClicked()
+            onOpenListClick()
         }
     )
     DropdownMenuItem(
         text = { Text(stringResource(Res.string.add_existing)) },
         onClick = {
             closeContextMenu()
-            onAddExistingClicked()
+            onAddExistingClick()
         }
     )
     DropdownMenuItem(
         text = { Text(stringResource(Res.string.add_new)) },
         onClick = {
             closeContextMenu()
-            onAddNewClicked()
+            onAddNewClick()
         }
     )
     DropdownMenuItem(
         text = { Text(stringResource(Res.string.edit)) },
         onClick = {
             closeContextMenu()
-            onEditClicked()
+            onEditClick()
         }
     )
     DropdownMenuItem(
         text = { Text(stringResource(Res.string.delete)) },
         onClick = {
             closeContextMenu()
-            onDeleteClicked()
+            onDeleteClick()
         }
     )
 }

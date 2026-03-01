@@ -28,14 +28,13 @@ fun <T> GttrpgDropdownField(
     options: List<T>,
     textFieldValue: String,
     expanded: Boolean,
-    enabled: Boolean,
     onDropdownExpandedStateChanged: (Boolean) -> Unit,
     onDropdownMenuItemClick: (T) -> Unit,
     dropdownMenuItemText: @Composable (T) -> Unit
 ) {
     ExposedDropdownMenuBox(
         expanded = expanded,
-        onExpandedChange = { onDropdownExpandedStateChanged(enabled && !expanded) },
+        onExpandedChange = { onDropdownExpandedStateChanged(!expanded) },
         modifier = Modifier.fillMaxWidth()
     ) {
         var textFieldSize by remember { mutableStateOf(Size.Zero) }

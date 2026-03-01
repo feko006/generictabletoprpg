@@ -31,15 +31,20 @@ import sh.calvin.reorderable.ReorderableCollectionItemScope
 fun TrackerScreen(
     viewModel: TrackerViewModel,
     onNavigationIconClick: () -> Unit,
-    spellSelectionResultViewModel: ResultViewModel<Long>,
+    spellSelectionResultViewModel: ResultViewModel<Any>,
     onNavigateToSpellListScreen: () -> Unit,
     onNavigateToSimpleSpellDetailsScreen: (Spell) -> Unit,
     onOpenDetails: (Any) -> Unit,
-    onSelectSpellRequest: () -> Unit
+    onSelectSpellRequest: () -> Unit,
+    onSelectEquipmentRequest: () -> Unit
 ) {
     spellSelectionResultViewModel.selectionResult?.let {
         spellSelectionResultViewModel.consumeSelectionResult()
-        viewModel.addSpellToList(it)
+        if (it is Spell) {
+            viewModel.addSpellToList(it)
+        } else {
+            viewModel.addItemToEquipment(it)
+        }
     }
     Scaffold(
         topBar = {
@@ -71,7 +76,8 @@ fun TrackerScreen(
                     viewModel,
                     onNavigateToSpellListScreen,
                     onOpenDetails,
-                    onSelectSpellRequest
+                    onSelectSpellRequest,
+                    onSelectEquipmentRequest
                 )
             },
             Modifier.padding(paddingValues),
@@ -94,7 +100,8 @@ fun LazyStaggeredGridItemScope.TrackerListItem(
     viewModel: TrackerViewModel,
     onNavigateToSpellListScreen: () -> Unit,
     onOpenDetails: (Any) -> Unit,
-    onSelectSpellRequest: () -> Unit
+    onSelectSpellRequest: () -> Unit,
+    onSelectEquipmentRequest: () -> Unit
 ) {
     if (item is TrackedThing) {
         when (item.type) {
@@ -117,7 +124,8 @@ fun LazyStaggeredGridItemScope.TrackerListItem(
             TrackedThing.Type.Text -> TextListItem(isDragged, item, scope, viewModel)
             TrackedThing.Type.HitDice -> HitDiceListItem(isDragged, item, scope, viewModel)
             TrackedThing.Type.FiveEStats -> StatsListItem(isDragged, item, scope, viewModel)
-            TrackedThing.Type.Equipment -> EquipmentListItem(isDragged, item, scope, viewModel)
+            TrackedThing.Type.Equipment ->
+                EquipmentListItem(isDragged, item, scope, viewModel, onSelectEquipmentRequest)
         }
     } else {
         OverviewItem(item, Modifier.clickable(onClick = { onOpenDetails(item) }))

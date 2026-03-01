@@ -12,7 +12,7 @@ import com.feko.generictabletoprpg.shared.common.ui.ToastMessage
 import com.feko.generictabletoprpg.shared.common.ui.theme.ScreenSize
 import com.feko.generictabletoprpg.shared.common.ui.viewmodel.OverviewViewModel
 import com.feko.generictabletoprpg.shared.features.searchall.usecase.ISearchAllUseCase
-import com.feko.generictabletoprpg.shared.features.spell.SpellDao
+import com.feko.generictabletoprpg.shared.features.spell.Spell
 import com.feko.generictabletoprpg.shared.features.tracker.TrackedThingDao
 import com.feko.generictabletoprpg.shared.features.tracker.model.SpellListEntry
 import com.feko.generictabletoprpg.shared.features.tracker.model.StatEntry
@@ -45,7 +45,6 @@ class TrackerViewModel(
     private val groupId: Long,
     val groupName: String,
     private val trackedThingDao: TrackedThingDao,
-    private val spellDao: SpellDao,
     searchAllUseCase: ISearchAllUseCase,
 ) : OverviewViewModel<Any>(trackedThingDao) {
 
@@ -64,6 +63,7 @@ class TrackerViewModel(
     private lateinit var allItems: List<Any>
 
     private var spellListBeingAddedTo: TrackedThing? = null
+    private var equipmentBeingAddedTo: TrackedThing? = null
     private var fiveEDefaultStats: List<StatEntry>? = null
 
     lateinit var spellListState: LazyListState
@@ -443,21 +443,21 @@ class TrackerViewModel(
         }
     }
 
-    fun addSpellToList(spellId: Long) {
+    fun addSpellToList(spell: Spell) {
         viewModelScope.launch {
-            val spellToAdd = spellDao.getById(spellId)
+            val spellId = spell.id
             val spellList = requireNotNull(spellListBeingAddedTo).copy()
 
             @Suppress("UNCHECKED_CAST")
             val serializedItem = spellList.serializedItem as List<SpellListEntry>
             val spellAlreadyInList =
-                serializedItem.any { it.id == spellId && it.name == spellToAdd.name }
+                serializedItem.any { it.id == spellId && it.name == spell.name }
             if (spellAlreadyInList) {
                 _toast.emit(ToastMessage(Res.string.spell_already_in_list.asText(), _toast))
             } else {
                 val sortedSpells =
                     serializedItem
-                        .plus(SpellListEntry.fromSpell(spellToAdd))
+                        .plus(SpellListEntry.fromSpell(spell))
                         .sortedWith { spell1, spell2 ->
                             val comparisonByLevel = spell1.level.compareTo(spell2.level)
                             when {
@@ -598,8 +598,9 @@ class TrackerViewModel(
 
     fun editDialogValueUpdated(trackedThing: TrackedThing) =
         _dialog.update {
-            if (it !is ITrackerDialog.EditDialog) return
-            it.copy(editedItem = trackedThing)
+            if (it is ITrackerDialog.EditDialog)
+                it.copy(editedItem = trackedThing)
+            else it
         }
 
     private fun updateSpellListDialogState(
@@ -618,5 +619,16 @@ class TrackerViewModel(
 
     fun toggleFabDropdown() {
         _fabDropdownExpanded.update { !it }
+    }
+
+    fun addingItemToEquipment(equipment: TrackedThing) {
+        equipmentBeingAddedTo = equipment
+    }
+
+    fun addItemToEquipment(item: Any) {
+        viewModelScope.launch {
+            // TODO
+            equipmentBeingAddedTo = null
+        }
     }
 }
