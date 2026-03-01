@@ -515,7 +515,12 @@ fun EquipmentListItem(
     onSelectEquipmentRequest: () -> Unit
 ) {
     val interactionSource = remember { MutableInteractionSource() }
-    TrackedThingListItem(isDragged, scope, interactionSource) {
+    TrackedThingListItem(
+        isDragged,
+        scope,
+        interactionSource,
+        onItemClicked = { viewModel.showEquipmentDialog(equipment) }
+    ) {
         ContextMenuTrackedThingLayout(
             equipment.name,
             TrackedThing.Type.Equipment,
@@ -525,7 +530,7 @@ fun EquipmentListItem(
         ) { closeContextMenu ->
             EquipmentDropDownActions(
                 closeContextMenu,
-                onOpenListClick = {},
+                onOpenListClick = { viewModel.showEquipmentDialog(equipment) },
                 onAddExistingClick = {
                     viewModel.addingItemToEquipment(equipment)
                     onSelectEquipmentRequest()

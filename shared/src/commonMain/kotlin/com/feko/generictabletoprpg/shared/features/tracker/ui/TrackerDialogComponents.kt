@@ -167,6 +167,12 @@ private fun TrackerAlertDialog(
                 viewModel::dismissDialog
             )
 
+        is ITrackerDialog.EquipmentListDialog ->
+            EquipmentListDialog(
+                dialog,
+                viewModel::dismissDialog
+            )
+
         is ITrackerDialog.None -> Unit
     }
 }
@@ -867,6 +873,32 @@ private fun StatsStatEntrySkill(
                         if (index == statIndex) newStatEntry else statEntry
                     })
             )
+        }
+    }
+}
+
+@Composable
+fun EquipmentListDialog(
+    dialog: ITrackerDialog.EquipmentListDialog,
+    onDismiss: () -> Unit
+) {
+    AlertDialogBase(
+        onDialogDismiss = onDismiss,
+        screenHeight = 0.6f,
+        dialogTitle = { DialogTitle(dialog.title.text()) },
+        dialogButtons = {
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
+                TextButton(
+                    onClick = { onDismiss() },
+                    modifier = Modifier.wrapContentWidth()
+                ) {
+                    Text(stringResource(Res.string.dismiss))
+                }
+            }
+        }
+    ) {
+        dialog.equipmentContainer.entries.forEach {
+            Text(it.item.name)
         }
     }
 }

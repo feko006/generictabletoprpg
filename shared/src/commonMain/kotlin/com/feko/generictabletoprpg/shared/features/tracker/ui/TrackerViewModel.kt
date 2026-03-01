@@ -661,4 +661,10 @@ class TrackerViewModel(
             equipmentBeingAddedTo = null
         }
     }
+
+    fun showEquipmentDialog(equipment: TrackedThing) {
+        _dialog.update {
+            ITrackerDialog.EquipmentListDialog(equipment.serializedItem as EquipmentContainer)
+        }
+    }
 }
