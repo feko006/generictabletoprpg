@@ -23,16 +23,21 @@ fun ArmorDetailsScreen(
         koinViewModel(),
         onNavigationIconClick
     ) {
-        TextWithLabel(Res.string.type, it.type)
-        it.baseAc?.let { TextWithLabel(Res.string.base_ac, it.toString()) }
-        it.maxDexModifier?.let { TextWithLabel(Res.string.maximum_dex_modifier, it.toString()) }
-        it.stealthDisadvantage?.let {
-            TextWithLabel(
-                Res.string.stealth_disadvantage,
-                it.toString()
-            )
-        }
-        it.weight?.let { weight -> TextWithLabel(Res.string.weight, it.weightInLbs) }
-        it.minimumStrength?.let { TextWithLabel(Res.string.minimum_str, it.toString()) }
+        ArmorDetailsContent(it)
     }
+}
+
+@Composable
+fun ArmorDetailsContent(armor: Armor) {
+    TextWithLabel(Res.string.type, armor.type)
+    armor.baseAc?.let { TextWithLabel(Res.string.base_ac, it.toString()) }
+    armor.maxDexModifier?.let { TextWithLabel(Res.string.maximum_dex_modifier, it.toString()) }
+    armor.stealthDisadvantage?.let {
+        TextWithLabel(
+            Res.string.stealth_disadvantage,
+            it.toString()
+        )
+    }
+    armor.weight?.let { weight -> TextWithLabel(Res.string.weight, armor.weightInLbs) }
+    armor.minimumStrength?.let { TextWithLabel(Res.string.minimum_str, it.toString()) }
 }

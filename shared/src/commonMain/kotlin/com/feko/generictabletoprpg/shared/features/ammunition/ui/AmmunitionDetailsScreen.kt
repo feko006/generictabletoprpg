@@ -20,8 +20,13 @@ fun AmmunitionDetailsScreen(
         koinViewModel(),
         onNavigationIconClick
     ) {
-        TextWithLabel(Res.string.sell_quantity, it.sellQuantity.toString())
-        TextWithLabel(Res.string.cost, it.cost.toString())
-        TextWithLabel(Res.string.weight, it.weight)
+        AmmunitionDetailsContent(it)
     }
+}
+
+@Composable
+fun AmmunitionDetailsContent(ammunition: Ammunition) {
+    TextWithLabel(Res.string.sell_quantity, ammunition.sellQuantity.toString())
+    TextWithLabel(Res.string.cost, ammunition.cost.toString())
+    TextWithLabel(Res.string.weight, ammunition.weight)
 }

@@ -1,7 +1,6 @@
 package com.feko.generictabletoprpg.shared.features.tracker.ui
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -10,17 +9,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentWidth
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -69,6 +63,7 @@ import com.feko.generictabletoprpg.shared.common.ui.theme.LocalDimens
 import com.feko.generictabletoprpg.shared.common.ui.theme.ScreenSize
 import com.feko.generictabletoprpg.shared.common.ui.theme.Typography
 import com.feko.generictabletoprpg.shared.features.spell.Spell
+import com.feko.generictabletoprpg.shared.features.tracker.model.IEquipmentItem
 import com.feko.generictabletoprpg.shared.features.tracker.model.StatEntry
 import com.feko.generictabletoprpg.shared.features.tracker.model.StatSkillEntry
 import com.feko.generictabletoprpg.shared.features.tracker.model.StatsContainer
@@ -88,9 +83,13 @@ import com.feko.generictabletoprpg.text
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-fun TrackerAlertDialog(viewModel: TrackerViewModel, onSpellClick: (Spell) -> Unit) {
+fun TrackerAlertDialog(
+    viewModel: TrackerViewModel,
+    onSpellClick: (Spell) -> Unit,
+    onEquipmentClick: (IEquipmentItem) -> Unit
+) {
     val dialog by viewModel.dialog.collectAsState(ITrackerDialog.None)
-    TrackerAlertDialog(dialog, viewModel, onSpellClick)
+    TrackerAlertDialog(dialog, viewModel, onSpellClick, onEquipmentClick)
 }
 
 @Composable
@@ -98,6 +97,7 @@ private fun TrackerAlertDialog(
     dialog: ITrackerDialog,
     viewModel: TrackerViewModel,
     onSpellClick: (Spell) -> Unit,
+    onEquipmentClick: (IEquipmentItem) -> Unit,
 ) {
     when (dialog) {
         is ITrackerDialog.SpellListDialog ->
@@ -174,10 +174,13 @@ private fun TrackerAlertDialog(
             )
 
         is ITrackerDialog.EquipmentListDialog ->
-            EquipmentListDialog(
-                dialog,
-                viewModel::dismissDialog
-            )
+            if (LocalDimens.current.screenSize == ScreenSize.Compact) {
+                EquipmentListDialog(
+                    dialog,
+                    onEquipmentClick,
+                    viewModel::dismissDialog
+                )
+            }
 
         is ITrackerDialog.None -> Unit
     }
@@ -879,73 +882,6 @@ private fun StatsStatEntrySkill(
                         if (index == statIndex) newStatEntry else statEntry
                     })
             )
-        }
-    }
-}
-
-@Composable
-fun EquipmentListDialog(
-    dialog: ITrackerDialog.EquipmentListDialog,
-    onDismiss: () -> Unit
-) {
-    AlertDialogBase(
-        onDialogDismiss = onDismiss,
-        screenHeight = 0.6f,
-        dialogTitle = { DialogTitle(dialog.title.text()) },
-        dialogButtons = {
-            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
-                TextButton(
-                    onClick = onDismiss,
-                    modifier = Modifier.wrapContentWidth()
-                ) {
-                    Text(stringResource(Res.string.dismiss))
-                }
-            }
-        }
-    ) {
-        val scrollState = rememberLazyListState()
-        val dimens = LocalDimens.current
-        BoxWithScrollIndicator(
-            scrollState,
-            backgroundColor = CardDefaults.cardColors().containerColor,
-            Modifier.weight(1f)
-                .padding(top = dimens.paddingSmall)
-        ) {
-            LazyColumn(
-                state = scrollState,
-                verticalArrangement = Arrangement.spacedBy(dimens.gapSmall)
-            ) {
-                items(
-                    dialog.equipmentContainer.entries,
-                    key = { it.item.name }
-                ) {
-                    EquipmentListItem(it.item.name, it.count, {}, {}, {})
-                }
-            }
-        }
-    }
-}
-
-@Composable
-private fun EquipmentListItem(
-    name: String,
-    count: Int,
-    onClick: () -> Unit,
-    onDecrement: () -> Unit,
-    onIncrement: () -> Unit
-) {
-    Card(shape = MaterialTheme.shapes.extraLarge) {
-        val dimens = LocalDimens.current
-        Row(
-            Modifier.clickable(onClick = onClick)
-                .padding(dimens.paddingSmall)
-                .padding(start = dimens.paddingMedium),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(name, modifier = Modifier.weight(1f))
-            IconButton(onDecrement) { Text("<") }
-            Text(count.toString())
-            IconButton(onIncrement) { Text(">") }
         }
     }
 }

@@ -21,12 +21,17 @@ fun MagicItemDetailsScreen(id: Long, onNavigationIconClick: () -> Unit) {
         koinViewModel(),
         onNavigationIconClick
     ) {
-        TextWithLabel(Res.string.type, it.type)
-        TextWithLabel(Res.string.rarity, it.rarity)
-        if (it.attunement) {
-            TextWithLabel(Res.string.attunement, stringResource(Res.string.yes))
-        }
-        HorizontalDivider()
-        Text(it.description)
+        MagicItemDetailsContent(it)
     }
+}
+
+@Composable
+fun MagicItemDetailsContent(item: MagicItem) {
+    TextWithLabel(Res.string.type, item.type)
+    TextWithLabel(Res.string.rarity, item.rarity)
+    if (item.attunement) {
+        TextWithLabel(Res.string.attunement, stringResource(Res.string.yes))
+    }
+    HorizontalDivider()
+    Text(item.description)
 }

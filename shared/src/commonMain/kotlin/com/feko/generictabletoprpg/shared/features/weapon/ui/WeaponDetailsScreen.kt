@@ -22,14 +22,19 @@ fun WeaponDetailsScreen(
         koinViewModel(),
         onNavigationIconClick
     ) {
-        TextWithLabel(Res.string.type, it.type)
-        if (it.subType.isNotBlank()) {
-            TextWithLabel(Res.string.subtype, it.subType)
-        }
-        TextWithLabel(Res.string.damage, it.damage.toString())
-        TextWithLabel(Res.string.range, it.readableRange)
-        if (it.hasAnyProperties) {
-            TextWithLabel(Res.string.properties, it.properties)
-        }
+        WeaponDetailsContent(it)
+    }
+}
+
+@Composable
+fun WeaponDetailsContent(weapon: Weapon) {
+    TextWithLabel(Res.string.type, weapon.type)
+    if (weapon.subType.isNotBlank()) {
+        TextWithLabel(Res.string.subtype, weapon.subType)
+    }
+    TextWithLabel(Res.string.damage, weapon.damage.toString())
+    TextWithLabel(Res.string.range, weapon.readableRange)
+    if (weapon.hasAnyProperties) {
+        TextWithLabel(Res.string.properties, weapon.properties)
     }
 }

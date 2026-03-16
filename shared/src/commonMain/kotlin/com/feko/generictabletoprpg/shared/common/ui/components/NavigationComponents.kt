@@ -26,6 +26,8 @@ import com.feko.generictabletoprpg.shared.common.ui.components.INavigationDestin
 import com.feko.generictabletoprpg.shared.common.ui.components.INavigationDestination.ConditionDetailsDestination
 import com.feko.generictabletoprpg.shared.common.ui.components.INavigationDestination.DiseaseDetailsDestination
 import com.feko.generictabletoprpg.shared.common.ui.components.INavigationDestination.EncounterDestination
+import com.feko.generictabletoprpg.shared.common.ui.components.INavigationDestination.EquipmentItemDetailsDestination
+import com.feko.generictabletoprpg.shared.common.ui.components.INavigationDestination.EquipmentListDestination
 import com.feko.generictabletoprpg.shared.common.ui.components.INavigationDestination.FeatDetailsDestination
 import com.feko.generictabletoprpg.shared.common.ui.components.INavigationDestination.ImportDestination
 import com.feko.generictabletoprpg.shared.common.ui.components.INavigationDestination.MagicItemDetailsDestination
@@ -62,6 +64,8 @@ import com.feko.generictabletoprpg.shared.features.searchall.ui.SearchAllScreen
 import com.feko.generictabletoprpg.shared.features.spell.Spell
 import com.feko.generictabletoprpg.shared.features.spell.ui.SimpleSpellDetailsScreen
 import com.feko.generictabletoprpg.shared.features.spell.ui.SpellDetailsScreen
+import com.feko.generictabletoprpg.shared.features.tracker.ui.EquipmentItemDetailsScreen
+import com.feko.generictabletoprpg.shared.features.tracker.ui.EquipmentListScreen
 import com.feko.generictabletoprpg.shared.features.tracker.ui.SpellListScreen
 import com.feko.generictabletoprpg.shared.features.tracker.ui.TrackerGroupsScreen
 import com.feko.generictabletoprpg.shared.features.tracker.ui.TrackerScreen
@@ -160,6 +164,12 @@ fun NavigationHost(
                                     isShownForResult = true
                                 )
                             )
+                        },
+                        onNavigateToEquipmentDetailsScreen = {
+                            backStack.add(EquipmentItemDetailsDestination(it))
+                        },
+                        onNavigateToEquipmentListScreen = {
+                            backStack.add(EquipmentListDestination)
                         }
                     )
                 }
@@ -260,6 +270,25 @@ fun NavigationHost(
             is MagicItemDetailsDestination ->
                 NavEntry(key, metadata = ListDetailSceneStrategy.detailPane()) {
                     MagicItemDetailsScreen(key.id, onNavigationIconClick)
+                }
+
+            is EquipmentItemDetailsDestination ->
+                NavEntry(key, metadata = ListDetailSceneStrategy.extraPane()) {
+                    EquipmentItemDetailsScreen(key.equipmentItem, onNavigationIconClick)
+                }
+
+            is EquipmentListDestination ->
+                NavEntry(key, metadata = ListDetailSceneStrategy.detailPane()) {
+                    EquipmentListScreen(
+                        trackerViewModel,
+                        onNavigateToEquipmentItemDetailsScreen = {
+                            backStack.add(EquipmentItemDetailsDestination(it))
+                        },
+                        onPopEquipmentListScreen = {
+                            backStack.popUpTo<EquipmentListDestination>(inclusive = true)
+                        },
+                        onPopAll = { backStack.popAll(it) }
+                    )
                 }
         }
     }

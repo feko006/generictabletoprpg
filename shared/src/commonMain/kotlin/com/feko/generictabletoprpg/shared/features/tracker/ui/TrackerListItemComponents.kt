@@ -512,14 +512,22 @@ fun EquipmentListItem(
     equipment: TrackedThing,
     scope: ReorderableCollectionItemScope,
     viewModel: TrackerViewModel,
-    onSelectEquipmentRequest: () -> Unit
+    onSelectEquipmentRequest: () -> Unit,
+    onNavigateToEquipmentListScreen: () -> Unit
 ) {
     val interactionSource = remember { MutableInteractionSource() }
+    val screenSize = LocalDimens.current.screenSize
     TrackedThingListItem(
         isDragged,
         scope,
         interactionSource,
-        onItemClicked = { viewModel.showEquipmentDialog(equipment) }
+        onItemClicked = {
+            viewModel.showEquipmentListDialog(
+                equipment,
+                screenSize,
+                onNavigateToEquipmentListScreen
+            )
+        }
     ) {
         ContextMenuTrackedThingLayout(
             equipment.name,
@@ -530,7 +538,13 @@ fun EquipmentListItem(
         ) { closeContextMenu ->
             EquipmentDropDownActions(
                 closeContextMenu,
-                onOpenListClick = { viewModel.showEquipmentDialog(equipment) },
+                onOpenListClick = {
+                    viewModel.showEquipmentListDialog(
+                        equipment,
+                        screenSize,
+                        onNavigateToEquipmentListScreen
+                    )
+                },
                 onAddExistingClick = {
                     viewModel.addingItemToEquipment(equipment)
                     onSelectEquipmentRequest()

@@ -24,6 +24,7 @@ import com.feko.generictabletoprpg.shared.common.ui.components.refreshIcon
 import com.feko.generictabletoprpg.shared.common.ui.viewmodel.ResultViewModel
 import com.feko.generictabletoprpg.shared.features.searchall.ui.getUniqueListItemKey
 import com.feko.generictabletoprpg.shared.features.spell.Spell
+import com.feko.generictabletoprpg.shared.features.tracker.model.IEquipmentItem
 import com.feko.generictabletoprpg.shared.features.tracker.model.TrackedThing
 import sh.calvin.reorderable.ReorderableCollectionItemScope
 
@@ -36,7 +37,9 @@ fun TrackerScreen(
     onNavigateToSimpleSpellDetailsScreen: (Spell) -> Unit,
     onOpenDetails: (Any) -> Unit,
     onSelectSpellRequest: () -> Unit,
-    onSelectEquipmentRequest: () -> Unit
+    onSelectEquipmentRequest: () -> Unit,
+    onNavigateToEquipmentDetailsScreen: (IEquipmentItem) -> Unit,
+    onNavigateToEquipmentListScreen: () -> Unit
 ) {
     spellSelectionResultViewModel.selectionResult?.let {
         spellSelectionResultViewModel.consumeSelectionResult()
@@ -77,7 +80,8 @@ fun TrackerScreen(
                     onNavigateToSpellListScreen,
                     onOpenDetails,
                     onSelectSpellRequest,
-                    onSelectEquipmentRequest
+                    onSelectEquipmentRequest,
+                    onNavigateToEquipmentListScreen
                 )
             },
             Modifier.padding(paddingValues),
@@ -89,7 +93,11 @@ fun TrackerScreen(
     }
     val toastMessage by viewModel.toast.collectAsState(null)
     ToastMessage(toastMessage)
-    TrackerAlertDialog(viewModel, onNavigateToSimpleSpellDetailsScreen)
+    TrackerAlertDialog(
+        viewModel,
+        onNavigateToSimpleSpellDetailsScreen,
+        onNavigateToEquipmentDetailsScreen
+    )
 }
 
 @Composable
@@ -101,7 +109,8 @@ fun LazyStaggeredGridItemScope.TrackerListItem(
     onNavigateToSpellListScreen: () -> Unit,
     onOpenDetails: (Any) -> Unit,
     onSelectSpellRequest: () -> Unit,
-    onSelectEquipmentRequest: () -> Unit
+    onSelectEquipmentRequest: () -> Unit,
+    onNavigateToEquipmentListScreen: () -> Unit
 ) {
     if (item is TrackedThing) {
         when (item.type) {
@@ -125,7 +134,14 @@ fun LazyStaggeredGridItemScope.TrackerListItem(
             TrackedThing.Type.HitDice -> HitDiceListItem(isDragged, item, scope, viewModel)
             TrackedThing.Type.FiveEStats -> StatsListItem(isDragged, item, scope, viewModel)
             TrackedThing.Type.Equipment ->
-                EquipmentListItem(isDragged, item, scope, viewModel, onSelectEquipmentRequest)
+                EquipmentListItem(
+                    isDragged,
+                    item,
+                    scope,
+                    viewModel,
+                    onSelectEquipmentRequest,
+                    onNavigateToEquipmentListScreen
+                )
         }
     } else {
         OverviewItem(item, Modifier.clickable(onClick = { onOpenDetails(item) }))

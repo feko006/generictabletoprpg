@@ -65,6 +65,9 @@ class TrackerViewModel(
     private val _spellListDialog = MutableStateFlow<ITrackerDialog.SpellListDialog?>(null)
     val spellListDialog: Flow<ITrackerDialog.SpellListDialog?> = _spellListDialog
 
+    private val _equipmentListDialog = MutableStateFlow<ITrackerDialog.EquipmentListDialog?>(null)
+    val equipmentListDialog: Flow<ITrackerDialog.EquipmentListDialog?> = _equipmentListDialog
+
     private lateinit var allItems: List<Any>
 
     private var spellListBeingAddedTo: TrackedThing? = null
@@ -661,10 +664,21 @@ class TrackerViewModel(
             equipmentBeingAddedTo = null
         }
     }
-
-    fun showEquipmentDialog(equipment: TrackedThing) {
-        _dialog.update {
+    fun showEquipmentListDialog(
+        equipment: TrackedThing,
+        screenSize: ScreenSize,
+        onNavigateToEquipmentListScreen: () -> Unit
+    ) {
+        @Suppress("UNCHECKED_CAST")
+        if ((equipment.serializedItem as EquipmentContainer).entries.isEmpty()) {
+            return
+        }
+        val equipmentListDialog =
             ITrackerDialog.EquipmentListDialog(equipment.serializedItem as EquipmentContainer)
+        _dialog.update { equipmentListDialog }
+        _equipmentListDialog.update { equipmentListDialog }
+        if (screenSize != ScreenSize.Compact) {
+            onNavigateToEquipmentListScreen()
         }
     }
 }
