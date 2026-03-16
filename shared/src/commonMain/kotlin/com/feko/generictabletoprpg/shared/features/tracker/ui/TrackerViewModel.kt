@@ -102,7 +102,7 @@ class TrackerViewModel(
         viewModelScope.launch {
             allItems = searchAllUseCase.getAllItems().first()
             isShowingPreparedSpells.collect {
-                updateSpellListDialogState {
+                updateFlexDialogState(_spellListDialog) {
                     it.copy(isFilteringByPreparedSpells = isShowingPreparedSpells.value)
                 }
             }
@@ -475,7 +475,7 @@ class TrackerViewModel(
                         }
                 spellList.setItem(sortedSpells)
                 trackedThingDao.insertOrUpdate(spellList)
-                updateSpellListDialogState { it.copy(spellList = spellList) }
+                updateFlexDialogState(_spellListDialog) { it.copy(spellList = spellList) }
                 _toast.emit(
                     ToastMessage(Res.string.spell_successfully_added_to_list.asText(), _toast)
                 )
@@ -489,7 +489,7 @@ class TrackerViewModel(
     }
 
     fun removeSpellFromSpellListRequested(spell: SpellListEntry) =
-        updateSpellListDialogState {
+        updateFlexDialogState(_spellListDialog) {
             it.copy(secondaryDialog = ISpellListDialogDialogs.ConfirmSpellRemovalDialog(spell))
         }
 
@@ -509,7 +509,7 @@ class TrackerViewModel(
                 onPopSpellListScreen()
                 dismissDialog()
             } else {
-                updateSpellListDialogState { it.copy(spellList = spellListCopy) }
+                updateFlexDialogState(_spellListDialog) { it.copy(spellList = spellListCopy) }
             }
         }
     }
@@ -527,7 +527,7 @@ class TrackerViewModel(
                 castSpellImmediate(availableSpellSlots.first())
                 return@launch
             }
-            updateSpellListDialogState {
+            updateFlexDialogState(_spellListDialog) {
                 it.copy(
                     secondaryDialog =
                         ISpellListDialogDialogs.SelectSpellSlotDialog(availableSpellSlots)
@@ -591,7 +591,7 @@ class TrackerViewModel(
             spellListEntry.isPrepared = isPrepared
             spellListCopy.setItem(spellListCopy.serializedItem)
             trackedThingDao.insertOrUpdate(spellListCopy)
-            updateSpellListDialogState { it.copy(spellList = spellListCopy) }
+            updateFlexDialogState(_spellListDialog) { it.copy(spellList = spellListCopy) }
         }
     }
 
@@ -602,7 +602,7 @@ class TrackerViewModel(
     fun dismissDialog() = _dialog.update { ITrackerDialog.None }
 
     fun dismissSpellListSecondaryDialog() =
-        updateSpellListDialogState { it.copy(secondaryDialog = ISpellListDialogDialogs.None) }
+        updateFlexDialogState(_spellListDialog) { it.copy(secondaryDialog = ISpellListDialogDialogs.None) }
 
     fun editDialogValueUpdated(trackedThing: TrackedThing) =
         _dialog.update {
@@ -610,16 +610,6 @@ class TrackerViewModel(
                 it.copy(editedItem = trackedThing)
             else it
         }
-
-    private fun updateSpellListDialogState(
-        transform: (ITrackerDialog.SpellListDialog) -> (ITrackerDialog.SpellListDialog)
-    ) {
-        _spellListDialog.update { dialog -> dialog?.let { transform(it) } }
-        val currentDialog = _dialog.value
-        if (currentDialog is ITrackerDialog.SpellListDialog) {
-            _dialog.update { transform(currentDialog) }
-        }
-    }
 
     fun dismissFabDropdown() {
         _fabDropdownExpanded.update { false }
@@ -674,11 +664,55 @@ class TrackerViewModel(
             return
         }
         val equipmentListDialog =
-            ITrackerDialog.EquipmentListDialog(equipment.serializedItem as EquipmentContainer)
+            ITrackerDialog.EquipmentListDialog(equipment)
         _dialog.update { equipmentListDialog }
         _equipmentListDialog.update { equipmentListDialog }
         if (screenSize != ScreenSize.Compact) {
             onNavigateToEquipmentListScreen()
+        }
+    }
+
+    fun removeItemFromEquipmentListRequested(equipment: EquipmentEntry) =
+        updateFlexDialogState(_equipmentListDialog) {
+            it.copy(secondaryDialog = IEquipmentListDialogDialogs.ConfirmItemRemovalDialog(equipment))
+        }
+
+    fun removeEquipmentItemFromList(
+        equipmentList: TrackedThing,
+        equipmentItem: EquipmentEntry,
+        onPopEquipmentListScreen: () -> Unit = {}
+    ) {
+        viewModelScope.launch {
+            @Suppress("UNCHECKED_CAST")
+            val serializedItem = (equipmentList.serializedItem as EquipmentContainer)
+                .run { copy(entries = entries.minus(equipmentItem)) }
+            val equipmentListCopy = equipmentList.copy()
+            equipmentListCopy.setItem(serializedItem)
+            trackedThingDao.insertOrUpdate(equipmentListCopy)
+            if (serializedItem.entries.isEmpty()) {
+                onPopEquipmentListScreen()
+                dismissDialog()
+            } else {
+                updateFlexDialogState(_equipmentListDialog) {
+                    it.copy(equipment = equipmentListCopy)
+                }
+            }
+        }
+    }
+
+    fun dismissEquipmentListSecondaryDialog() =
+        updateFlexDialogState(_equipmentListDialog) {
+            it.copy(secondaryDialog = IEquipmentListDialogDialogs.None)
+        }
+
+    private inline fun <reified T : ITrackerDialog> updateFlexDialogState(
+        flexDialogProperty: MutableStateFlow<T?>,
+        transform: (T) -> T
+    ) {
+        flexDialogProperty.update { dialog -> dialog?.let { transform(it) } }
+        val currentDialog = _dialog.value
+        if (currentDialog is T) {
+            _dialog.update { transform(currentDialog) }
         }
     }
 }

@@ -97,7 +97,7 @@ private fun TrackerAlertDialog(
     dialog: ITrackerDialog,
     viewModel: TrackerViewModel,
     onSpellClick: (Spell) -> Unit,
-    onEquipmentClick: (IEquipmentItem) -> Unit,
+    onEquipmentClick: (IEquipmentItem) -> Unit
 ) {
     when (dialog) {
         is ITrackerDialog.SpellListDialog ->
@@ -178,8 +178,15 @@ private fun TrackerAlertDialog(
                 EquipmentListDialog(
                     dialog,
                     onEquipmentClick,
-                    viewModel::dismissDialog
+                    onDismiss = viewModel::dismissDialog,
+                    onSetQuantityRequested = {
+
+                    },
+                    onRemoveRequested = {
+                        viewModel.removeItemFromEquipmentListRequested(it)
+                    }
                 )
+                EquipmentListSecondaryDialog(dialog, viewModel)
             }
 
         is ITrackerDialog.None -> Unit

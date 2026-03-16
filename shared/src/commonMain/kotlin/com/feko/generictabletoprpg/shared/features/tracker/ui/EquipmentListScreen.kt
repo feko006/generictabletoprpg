@@ -17,6 +17,7 @@ import androidx.navigation3.runtime.NavKey
 import com.feko.generictabletoprpg.shared.common.ui.components.GttrpgTopAppBar
 import com.feko.generictabletoprpg.shared.common.ui.components.INavigationDestination
 import com.feko.generictabletoprpg.shared.common.ui.theme.LocalDimens
+import com.feko.generictabletoprpg.shared.features.tracker.model.EquipmentContainer
 import com.feko.generictabletoprpg.shared.features.tracker.model.IEquipmentItem
 
 @Composable
@@ -30,7 +31,8 @@ fun EquipmentListScreen(
     val alertDialog by trackerViewModel.equipmentListDialog.collectAsState(ITrackerDialog.None)
     val dereferencedDialog = alertDialog
     if (dereferencedDialog !is ITrackerDialog.EquipmentListDialog) return
-    val equipmentListEntries = dereferencedDialog.equipmentContainer.entries
+    val equipmentListEntries =
+        (dereferencedDialog.equipment.serializedItem as EquipmentContainer).entries
     var previousEquipmentList by remember { mutableStateOf(equipmentListEntries) }
     val removedEquipment = previousEquipmentList.minus(equipmentListEntries.toSet()).firstOrNull()
     LaunchedEffect(removedEquipment) {
@@ -63,7 +65,9 @@ fun EquipmentListScreen(
         ) {
             EquipmentListContent(
                 dereferencedDialog,
-                onEquipmentClick = onNavigateToEquipmentItemDetailsScreen
+                onEquipmentClick = onNavigateToEquipmentItemDetailsScreen,
+                onSetQuantityRequested = {},
+                onRemoveRequested = trackerViewModel::removeItemFromEquipmentListRequested
             )
 //            SpellListContent(
 //                dereferencedDialog,
@@ -85,5 +89,5 @@ fun EquipmentListScreen(
 //            )
         }
     }
-//    SpellListSecondaryDialog(dereferencedDialog, trackerViewModel, onPopSpellListScreen)
+    EquipmentListSecondaryDialog(dereferencedDialog, trackerViewModel, onPopEquipmentListScreen)
 }

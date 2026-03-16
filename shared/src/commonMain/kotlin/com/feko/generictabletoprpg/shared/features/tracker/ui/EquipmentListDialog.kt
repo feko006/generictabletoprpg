@@ -12,19 +12,29 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.IconButton
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.feko.generictabletoprpg.Res
 import com.feko.generictabletoprpg.dismiss
+import com.feko.generictabletoprpg.remove
+import com.feko.generictabletoprpg.set_quantity
 import com.feko.generictabletoprpg.shared.common.ui.components.AlertDialogBase
 import com.feko.generictabletoprpg.shared.common.ui.components.BoxWithScrollIndicator
+import com.feko.generictabletoprpg.shared.common.ui.components.ConfirmationDialog
 import com.feko.generictabletoprpg.shared.common.ui.components.DialogTitle
+import com.feko.generictabletoprpg.shared.common.ui.components.GttrpgContextMenu
 import com.feko.generictabletoprpg.shared.common.ui.theme.LocalDimens
+import com.feko.generictabletoprpg.shared.features.tracker.model.EquipmentContainer
+import com.feko.generictabletoprpg.shared.features.tracker.model.EquipmentEntry
 import com.feko.generictabletoprpg.shared.features.tracker.model.IEquipmentItem
 import org.jetbrains.compose.resources.stringResource
 
@@ -32,7 +42,9 @@ import org.jetbrains.compose.resources.stringResource
 fun EquipmentListDialog(
     dialog: ITrackerDialog.EquipmentListDialog,
     onEquipmentClick: (IEquipmentItem) -> Unit,
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
+    onSetQuantityRequested: (EquipmentEntry) -> Unit,
+    onRemoveRequested: (EquipmentEntry) -> Unit
 ) {
     AlertDialogBase(
         onDialogDismiss = onDismiss,
@@ -49,14 +61,40 @@ fun EquipmentListDialog(
             }
         }
     ) {
-        EquipmentListContent(dialog, onEquipmentClick)
+        EquipmentListContent(dialog, onEquipmentClick, onSetQuantityRequested, onRemoveRequested)
+    }
+}
+
+@Composable
+fun EquipmentListSecondaryDialog(
+    dialog: ITrackerDialog.EquipmentListDialog,
+    viewModel: TrackerViewModel,
+    onPopEquipmentListScreen: () -> Unit = {}
+) {
+    when (dialog.secondaryDialog) {
+        is IEquipmentListDialogDialogs.ConfirmItemRemovalDialog ->
+            ConfirmationDialog(
+                onConfirm = {
+                    viewModel.removeEquipmentItemFromList(
+                        dialog.equipment,
+                        dialog.secondaryDialog.equipmentEntry,
+                        onPopEquipmentListScreen
+                    )
+                },
+                viewModel::dismissEquipmentListSecondaryDialog,
+                dialog.title.text()
+            )
+
+        IEquipmentListDialogDialogs.None -> Unit
     }
 }
 
 @Composable
 fun ColumnScope.EquipmentListContent(
     dialog: ITrackerDialog.EquipmentListDialog,
-    onEquipmentClick: (IEquipmentItem) -> Unit
+    onEquipmentClick: (IEquipmentItem) -> Unit,
+    onSetQuantityRequested: (EquipmentEntry) -> Unit,
+    onRemoveRequested: (EquipmentEntry) -> Unit
 ) {
     val scrollState = rememberLazyListState()
     val dimens = LocalDimens.current
@@ -71,15 +109,15 @@ fun ColumnScope.EquipmentListContent(
             verticalArrangement = Arrangement.spacedBy(dimens.gapSmall)
         ) {
             items(
-                dialog.equipmentContainer.entries,
+                (dialog.equipment.serializedItem as EquipmentContainer).entries,
                 key = { it.item.name }
             ) {
                 EquipmentListItem(
                     it.item.name,
                     it.count,
                     onClick = { onEquipmentClick(it.item) },
-                    {},
-                    {})
+                    onSetQuantityRequested = { onSetQuantityRequested(it) },
+                    onRemoveRequested = { onRemoveRequested(it) })
             }
         }
     }
@@ -90,8 +128,8 @@ private fun EquipmentListItem(
     name: String,
     count: Int,
     onClick: () -> Unit,
-    onDecrement: () -> Unit,
-    onIncrement: () -> Unit
+    onSetQuantityRequested: () -> Unit,
+    onRemoveRequested: () -> Unit
 ) {
     Card(shape = MaterialTheme.shapes.extraLarge) {
         val dimens = LocalDimens.current
@@ -102,9 +140,27 @@ private fun EquipmentListItem(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(name, modifier = Modifier.weight(1f))
-            IconButton(onDecrement) { Text("<") }
-            Text(count.toString())
-            IconButton(onIncrement) { Text(">") }
+            var contextMenuExpanded by remember { mutableStateOf(false) }
+            if (count > 1) {
+                Text("x $count")
+            }
+            GttrpgContextMenu(
+                contextMenuExpanded,
+                { contextMenuExpanded = it }
+            ) {
+                DropdownMenuItem(
+                    { Text(stringResource(Res.string.set_quantity)) },
+                    onClick = {
+                        onSetQuantityRequested()
+                        contextMenuExpanded = false
+                    })
+                DropdownMenuItem(
+                    { Text(stringResource(Res.string.remove)) },
+                    onClick = {
+                        onRemoveRequested()
+                        contextMenuExpanded = false
+                    })
+            }
         }
     }
 }

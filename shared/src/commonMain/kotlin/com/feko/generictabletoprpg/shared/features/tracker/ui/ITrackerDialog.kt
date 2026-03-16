@@ -12,7 +12,6 @@ import com.feko.generictabletoprpg.reduce_percentage_dialog_title
 import com.feko.generictabletoprpg.refresh_all_tracked_things_dialog_title
 import com.feko.generictabletoprpg.shared.common.domain.model.IText
 import com.feko.generictabletoprpg.shared.common.domain.model.IText.StringResourceText.Companion.asText
-import com.feko.generictabletoprpg.shared.features.tracker.model.EquipmentContainer
 import com.feko.generictabletoprpg.shared.features.tracker.model.StatsContainer
 import com.feko.generictabletoprpg.shared.features.tracker.model.TrackedThing
 import com.feko.generictabletoprpg.skills
@@ -106,7 +105,8 @@ sealed interface ITrackerDialog {
 
     @Immutable
     data class EquipmentListDialog(
-        val equipmentContainer: EquipmentContainer,
-        val title: IText = Res.string.equipment.asText()
+        val equipment: TrackedThing,
+        val title: IText = Res.string.equipment.asText(),
+        val secondaryDialog: IEquipmentListDialogDialogs = IEquipmentListDialogDialogs.None
     ) : ITrackerDialog
 }

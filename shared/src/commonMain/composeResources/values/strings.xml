@@ -181,4 +181,6 @@
     <string name="magic_item">Magic Item</string>
     <!--Equipment-->
     <string name="item_successfully_added_to_equipment">Item successfully added to equipment!</string>
+    <string name="set_quantity">Set Quantity</string>
+    <string name="confirm_equipment_item_removal_from_list_dialog_title">Remove item?</string>
 </resources>
