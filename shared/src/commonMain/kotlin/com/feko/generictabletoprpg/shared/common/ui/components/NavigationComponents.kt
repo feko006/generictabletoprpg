@@ -109,13 +109,15 @@ fun NavigationHost(
             rememberSaveableStateHolderNavEntryDecorator(),
             rememberViewModelStoreNavEntryDecorator()
         ),
-        sceneStrategy = ListDetailSceneStrategy(
-            BackNavigationBehavior.PopUntilCurrentDestinationChange,
-            PaneScaffoldDirective.Default.copy(
-                maxHorizontalPartitions = panes,
-                maxVerticalPartitions = panes
-            ),
-            ListDetailPaneScaffoldDefaults.adaptStrategies()
+        sceneStrategies = listOf(
+            ListDetailSceneStrategy(
+                BackNavigationBehavior.PopUntilCurrentDestinationChange,
+                PaneScaffoldDirective.Default.copy(
+                    maxHorizontalPartitions = panes,
+                    maxVerticalPartitions = panes
+                ),
+                ListDetailPaneScaffoldDefaults.adaptStrategies()
+            )
         )
     ) { key ->
         if (key !is INavigationDestination) {
