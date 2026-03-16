@@ -66,27 +66,9 @@ fun EquipmentListScreen(
             EquipmentListContent(
                 dereferencedDialog,
                 onEquipmentClick = onNavigateToEquipmentItemDetailsScreen,
-                onSetQuantityRequested = {},
+                onSetQuantityRequested = trackerViewModel::setItemQuantityRequested,
                 onRemoveRequested = trackerViewModel::removeItemFromEquipmentListRequested
             )
-//            SpellListContent(
-//                dereferencedDialog,
-//                availableSpellSlots,
-//                trackerViewModel.spellListState,
-//                onFilteringByPreparedStateChanged = { trackerViewModel.setShowingPreparedSpells(it) },
-//                onSpellPreparedStateChanged = { spellListEntry, isPrepared ->
-//                    trackerViewModel.changeSpellListEntryPreparedState(
-//                        dereferencedDialog.spellList,
-//                        spellListEntry,
-//                        isPrepared
-//                    )
-//                },
-//                onCastSpellRequested = { level -> trackerViewModel.castSpellRequested(level) },
-//                onRemoveSpellRequested = { trackerViewModel.removeSpellFromSpellListRequested(it) },
-//                onSpellClick = onNavigateToSimpleSpellDetailsScreen,
-//                showScrollIndicator = false,
-//                listContentBottomPadding = screenAdditionalPadding,
-//            )
         }
     }
     EquipmentListSecondaryDialog(dereferencedDialog, trackerViewModel, onPopEquipmentListScreen)

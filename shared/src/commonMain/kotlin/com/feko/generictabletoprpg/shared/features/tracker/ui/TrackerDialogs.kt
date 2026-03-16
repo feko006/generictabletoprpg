@@ -179,12 +179,8 @@ private fun TrackerAlertDialog(
                     dialog,
                     onEquipmentClick,
                     onDismiss = viewModel::dismissDialog,
-                    onSetQuantityRequested = {
-
-                    },
-                    onRemoveRequested = {
-                        viewModel.removeItemFromEquipmentListRequested(it)
-                    }
+                    onSetQuantityRequested = viewModel::setItemQuantityRequested,
+                    onRemoveRequested = viewModel::removeItemFromEquipmentListRequested
                 )
                 EquipmentListSecondaryDialog(dialog, viewModel)
             }

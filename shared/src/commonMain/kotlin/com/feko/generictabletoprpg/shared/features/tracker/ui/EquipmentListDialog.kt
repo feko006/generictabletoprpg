@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenuItem
@@ -23,7 +24,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import com.feko.generictabletoprpg.Res
+import com.feko.generictabletoprpg.details
 import com.feko.generictabletoprpg.dismiss
 import com.feko.generictabletoprpg.remove
 import com.feko.generictabletoprpg.set_quantity
@@ -31,6 +35,7 @@ import com.feko.generictabletoprpg.shared.common.ui.components.AlertDialogBase
 import com.feko.generictabletoprpg.shared.common.ui.components.BoxWithScrollIndicator
 import com.feko.generictabletoprpg.shared.common.ui.components.ConfirmationDialog
 import com.feko.generictabletoprpg.shared.common.ui.components.DialogTitle
+import com.feko.generictabletoprpg.shared.common.ui.components.EnterValueDialog
 import com.feko.generictabletoprpg.shared.common.ui.components.GttrpgContextMenu
 import com.feko.generictabletoprpg.shared.common.ui.theme.LocalDimens
 import com.feko.generictabletoprpg.shared.features.tracker.model.EquipmentContainer
@@ -72,6 +77,8 @@ fun EquipmentListSecondaryDialog(
     onPopEquipmentListScreen: () -> Unit = {}
 ) {
     when (dialog.secondaryDialog) {
+        IEquipmentListDialogDialogs.None -> Unit
+
         is IEquipmentListDialogDialogs.ConfirmItemRemovalDialog ->
             ConfirmationDialog(
                 onConfirm = {
@@ -82,10 +89,25 @@ fun EquipmentListSecondaryDialog(
                     )
                 },
                 viewModel::dismissEquipmentListSecondaryDialog,
-                dialog.title.text()
+                dialog.secondaryDialog.title.text()
             )
 
-        IEquipmentListDialogDialogs.None -> Unit
+        is IEquipmentListDialogDialogs.SetItemQuantityDialog ->
+            EnterValueDialog(
+                onConfirm = {
+                    viewModel.setItemQuantity(
+                        dialog.equipment,
+                        dialog.secondaryDialog.equipmentEntry,
+                        it
+                    )
+                },
+                onDialogDismissed = viewModel::dismissEquipmentListSecondaryDialog,
+                dialogTitle = dialog.secondaryDialog.title.text(),
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Number,
+                    imeAction = ImeAction.Done
+                )
+            )
     }
 }
 
@@ -148,6 +170,12 @@ private fun EquipmentListItem(
                 contextMenuExpanded,
                 { contextMenuExpanded = it }
             ) {
+                DropdownMenuItem(
+                    { Text(stringResource(Res.string.details)) },
+                    onClick = {
+                        onClick()
+                        contextMenuExpanded = false
+                    })
                 DropdownMenuItem(
                     { Text(stringResource(Res.string.set_quantity)) },
                     onClick = {

@@ -678,15 +678,15 @@ class TrackerViewModel(
         }
 
     fun removeEquipmentItemFromList(
-        equipmentList: TrackedThing,
+        equipment: TrackedThing,
         equipmentItem: EquipmentEntry,
         onPopEquipmentListScreen: () -> Unit = {}
     ) {
         viewModelScope.launch {
             @Suppress("UNCHECKED_CAST")
-            val serializedItem = (equipmentList.serializedItem as EquipmentContainer)
+            val serializedItem = (equipment.serializedItem as EquipmentContainer)
                 .run { copy(entries = entries.minus(equipmentItem)) }
-            val equipmentListCopy = equipmentList.copy()
+            val equipmentListCopy = equipment.copy()
             equipmentListCopy.setItem(serializedItem)
             trackedThingDao.insertOrUpdate(equipmentListCopy)
             if (serializedItem.entries.isEmpty()) {
@@ -696,6 +696,38 @@ class TrackerViewModel(
                 updateFlexDialogState(_equipmentListDialog) {
                     it.copy(equipment = equipmentListCopy)
                 }
+            }
+        }
+    }
+
+    fun setItemQuantityRequested(equipmentEntry: EquipmentEntry) =
+        updateFlexDialogState(_equipmentListDialog) {
+            it.copy(
+                secondaryDialog =
+                    IEquipmentListDialogDialogs.SetItemQuantityDialog(equipmentEntry)
+            )
+        }
+
+    fun setItemQuantity(equipment: TrackedThing, equipmentEntry: EquipmentEntry, value: String) {
+        viewModelScope.launch {
+            @Suppress("UNCHECKED_CAST")
+            val serializedItem = (equipment.serializedItem as EquipmentContainer)
+                .run {
+                    copy(entries = entries.map {
+                        if (it.item.name == equipmentEntry.item.name) {
+                            val quantity = (value.toIntOrNull() ?: 1).coerceAtLeast(1)
+                            it.copy(count = quantity)
+                        } else it
+                    })
+                }
+            val equipmentListCopy = equipment.copy()
+            equipmentListCopy.setItem(serializedItem)
+            trackedThingDao.insertOrUpdate(equipmentListCopy)
+            updateFlexDialogState(_equipmentListDialog) {
+                it.copy(
+                    equipment = equipmentListCopy,
+                    secondaryDialog = IEquipmentListDialogDialogs.None
+                )
             }
         }
     }

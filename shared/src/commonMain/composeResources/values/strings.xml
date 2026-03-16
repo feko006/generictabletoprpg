@@ -57,6 +57,7 @@
     <string name="list">List</string>
     <string name="add_existing">Add Existing</string>
     <string name="add_new">Add New</string>
+    <string name="details">Details</string>
     <!--Action-->
     <string name="action">Action</string>
     <!--Ammunition-->
