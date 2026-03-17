@@ -12,6 +12,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.feko.generictabletoprpg.Res
+import com.feko.generictabletoprpg.equipment_item
 import com.feko.generictabletoprpg.search_everywhere
 import com.feko.generictabletoprpg.shared.common.domain.model.IText.StringResourceText.Companion.asText
 import com.feko.generictabletoprpg.shared.common.domain.model.IText.StringText.Companion.asText
@@ -24,6 +25,7 @@ import com.feko.generictabletoprpg.shared.common.ui.components.refreshIcon
 import com.feko.generictabletoprpg.shared.common.ui.viewmodel.ResultViewModel
 import com.feko.generictabletoprpg.shared.features.searchall.ui.getUniqueListItemKey
 import com.feko.generictabletoprpg.shared.features.spell.Spell
+import com.feko.generictabletoprpg.shared.features.tracker.model.EquipmentItem
 import com.feko.generictabletoprpg.shared.features.tracker.model.IEquipmentItem
 import com.feko.generictabletoprpg.shared.features.tracker.model.TrackedThing
 import sh.calvin.reorderable.ReorderableCollectionItemScope
@@ -144,6 +146,9 @@ fun LazyStaggeredGridItemScope.TrackerListItem(
                 )
         }
     } else {
-        OverviewItem(item, Modifier.clickable(onClick = { onOpenDetails(item) }))
+        val supportingText =
+            if (item is EquipmentItem) Res.string.equipment_item.asText()
+            else null
+        OverviewItem(item, Modifier.clickable(onClick = { onOpenDetails(item) }), supportingText)
     }
 }

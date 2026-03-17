@@ -3,6 +3,7 @@ package com.feko.generictabletoprpg.shared.common.data
 import com.feko.generictabletoprpg.shared.features.ammunition.Ammunition
 import com.feko.generictabletoprpg.shared.features.armor.Armor
 import com.feko.generictabletoprpg.shared.features.magicitem.MagicItemEntity
+import com.feko.generictabletoprpg.shared.features.tracker.model.EquipmentItem
 import com.feko.generictabletoprpg.shared.features.tracker.model.IEquipmentItem
 import com.feko.generictabletoprpg.shared.features.weapon.Weapon
 import kotlinx.serialization.json.Json
@@ -21,6 +22,7 @@ val json = Json {
             subclass(Armor::class)
             subclass(MagicItemEntity::class)
             subclass(Weapon::class)
+            subclass(EquipmentItem::class)
         }
     }
 }

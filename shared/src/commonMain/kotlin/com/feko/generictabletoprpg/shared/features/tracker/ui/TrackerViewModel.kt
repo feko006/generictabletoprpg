@@ -4,6 +4,7 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.lifecycle.viewModelScope
 import com.feko.generictabletoprpg.Res
 import com.feko.generictabletoprpg.edit
+import com.feko.generictabletoprpg.equipment_item_successfully_saved
 import com.feko.generictabletoprpg.five_e_stats
 import com.feko.generictabletoprpg.item_successfully_added_to_equipment
 import com.feko.generictabletoprpg.shared.common.domain.createNewComparator
@@ -18,6 +19,7 @@ import com.feko.generictabletoprpg.shared.features.spell.Spell
 import com.feko.generictabletoprpg.shared.features.tracker.TrackedThingDao
 import com.feko.generictabletoprpg.shared.features.tracker.model.EquipmentContainer
 import com.feko.generictabletoprpg.shared.features.tracker.model.EquipmentEntry
+import com.feko.generictabletoprpg.shared.features.tracker.model.EquipmentItem
 import com.feko.generictabletoprpg.shared.features.tracker.model.IEquipmentItem
 import com.feko.generictabletoprpg.shared.features.tracker.model.SpellListEntry
 import com.feko.generictabletoprpg.shared.features.tracker.model.StatEntry
@@ -91,7 +93,16 @@ class TrackerViewModel(
                 _isLoadingShown.emit(true)
                 val sortedItems =
                     withContext(Dispatchers.Default) {
-                        (items + allItems).sortedWith(createNewComparator(searchString))
+                        val equipmentItems =
+                            items.filterIsInstance<TrackedThing>()
+                                .filter { it.type == TrackedThing.Type.Equipment }
+                                .flatMap {
+                                    (it.serializedItem as EquipmentContainer).entries
+                                        .map { entry -> entry.item }
+                                        .filterIsInstance<EquipmentItem>()
+                                }
+                        (items + equipmentItems + allItems)
+                            .sortedWith(createNewComparator(searchString))
                     }
                 _isLoadingShown.emit(false)
                 sortedItems
@@ -736,6 +747,67 @@ class TrackerViewModel(
         updateFlexDialogState(_equipmentListDialog) {
             it.copy(secondaryDialog = IEquipmentListDialogDialogs.None)
         }
+
+    fun showEditEquipmentItemDialog(
+        equipment: TrackedThing,
+        equipmentItem: IEquipmentItem? = null
+    ) {
+        addingItemToEquipment(equipment)
+        val item = (equipmentItem as? EquipmentItem) ?: EquipmentItem.empty()
+        _dialog.update {
+            val editEquipmentItemDialog = ITrackerDialog.EditEquipmentItemDialog(item)
+            if (it is ITrackerDialog.EquipmentListDialog) {
+                it.copy(secondaryDialog = editEquipmentItemDialog)
+            } else editEquipmentItemDialog
+        }
+    }
+
+    fun createOrEditEquipmentItem(equipmentItem: EquipmentItem) {
+        viewModelScope.launch {
+            val equipmentList = requireNotNull(equipmentBeingAddedTo).copy()
+
+            @Suppress("UNCHECKED_CAST")
+            var serializedItem = equipmentList.serializedItem as EquipmentContainer
+            val equipmentAlreadyInList =
+                serializedItem.entries.any {
+                    it.item is EquipmentItem && it.item.id == equipmentItem.id
+                }
+            if (equipmentAlreadyInList) {
+                serializedItem = serializedItem.run {
+                    copy(
+                        entries =
+                            entries.map {
+                                if (it.item !is EquipmentItem || it.item.id != equipmentItem.id) it
+                                else {
+                                    it.copy(item = equipmentItem)
+                                }
+                            })
+                }
+            } else {
+                serializedItem = serializedItem.run {
+                    copy(
+                        entries =
+                            entries.plus(EquipmentEntry(equipmentItem))
+                                .sortedBy { it.item.name }
+                    )
+                }
+            }
+            equipmentList.setItem(serializedItem)
+            trackedThingDao.insertOrUpdate(equipmentList)
+            _dialog.update {
+                if (it is ITrackerDialog.EquipmentListDialog) {
+                    it.copy(
+                        equipment = equipmentList,
+                        secondaryDialog = IEquipmentListDialogDialogs.None
+                    )
+                } else ITrackerDialog.None
+            }
+            _toast.emit(
+                ToastMessage(Res.string.equipment_item_successfully_saved.asText(), _toast)
+            )
+            equipmentBeingAddedTo = null
+        }
+    }
 
     private inline fun <reified T : ITrackerDialog> updateFlexDialogState(
         flexDialogProperty: MutableStateFlow<T?>,

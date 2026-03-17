@@ -272,20 +272,28 @@ fun NoItemsIndicator() {
 }
 
 @Composable
-fun <T> LazyStaggeredGridItemScope.OverviewItem(item: T, modifier: Modifier = Modifier) {
+fun <T> LazyStaggeredGridItemScope.OverviewItem(
+    item: T,
+    modifier: Modifier = Modifier,
+    supportingText: IText? = null
+) {
     Card(shape = MaterialTheme.shapes.extraLarge) {
         ListItem(
             headlineContent = { Text((item as INamed).name) },
             supportingContent = {
-                var supportingText: String? = null
-                if (item is IKClassProvider) {
-                    supportingText = getTypeName(item.kclass)
+                if (supportingText != null) {
+                    Text(supportingText.text())
+                } else {
+                    var supportingText: String? = null
+                    if (item is IKClassProvider) {
+                        supportingText = getTypeName(item.kclass)
+                    }
+                    if (item is Spell) {
+                        supportingText +=
+                            ", ${stringResource(Res.string.level)} ${item.level}, ${item.school}"
+                    }
+                    supportingText?.let { Text(it) }
                 }
-                if (item is Spell) {
-                    supportingText +=
-                        ", ${stringResource(Res.string.level)} ${item.level}, ${item.school}"
-                }
-                supportingText?.let { Text(it) }
             },
             modifier = modifier.animateItem(),
             colors = ListItemDefaults.colors(containerColor = CardDefaults.cardColors().containerColor)

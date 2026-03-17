@@ -66,8 +66,11 @@ fun EquipmentListScreen(
             EquipmentListContent(
                 dereferencedDialog,
                 onEquipmentClick = onNavigateToEquipmentItemDetailsScreen,
-                onSetQuantityRequested = trackerViewModel::setItemQuantityRequested,
-                onRemoveRequested = trackerViewModel::removeItemFromEquipmentListRequested
+                onEdit = {
+                    trackerViewModel.showEditEquipmentItemDialog(dereferencedDialog.equipment, it)
+                },
+                onSetQuantity = trackerViewModel::setItemQuantityRequested,
+                onRemove = trackerViewModel::removeItemFromEquipmentListRequested
             )
         }
     }

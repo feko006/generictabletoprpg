@@ -27,19 +27,26 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import com.feko.generictabletoprpg.Res
+import com.feko.generictabletoprpg.confirm
+import com.feko.generictabletoprpg.description
 import com.feko.generictabletoprpg.details
 import com.feko.generictabletoprpg.dismiss
+import com.feko.generictabletoprpg.edit
+import com.feko.generictabletoprpg.name
 import com.feko.generictabletoprpg.remove
 import com.feko.generictabletoprpg.set_quantity
 import com.feko.generictabletoprpg.shared.common.ui.components.AlertDialogBase
 import com.feko.generictabletoprpg.shared.common.ui.components.BoxWithScrollIndicator
 import com.feko.generictabletoprpg.shared.common.ui.components.ConfirmationDialog
+import com.feko.generictabletoprpg.shared.common.ui.components.DialogButton
+import com.feko.generictabletoprpg.shared.common.ui.components.DialogInputField
 import com.feko.generictabletoprpg.shared.common.ui.components.DialogTitle
 import com.feko.generictabletoprpg.shared.common.ui.components.EnterValueDialog
 import com.feko.generictabletoprpg.shared.common.ui.components.GttrpgContextMenu
 import com.feko.generictabletoprpg.shared.common.ui.theme.LocalDimens
 import com.feko.generictabletoprpg.shared.features.tracker.model.EquipmentContainer
 import com.feko.generictabletoprpg.shared.features.tracker.model.EquipmentEntry
+import com.feko.generictabletoprpg.shared.features.tracker.model.EquipmentItem
 import com.feko.generictabletoprpg.shared.features.tracker.model.IEquipmentItem
 import org.jetbrains.compose.resources.stringResource
 
@@ -47,9 +54,10 @@ import org.jetbrains.compose.resources.stringResource
 fun EquipmentListDialog(
     dialog: ITrackerDialog.EquipmentListDialog,
     onEquipmentClick: (IEquipmentItem) -> Unit,
-    onDismiss: () -> Unit,
-    onSetQuantityRequested: (EquipmentEntry) -> Unit,
-    onRemoveRequested: (EquipmentEntry) -> Unit
+    onEdit: (IEquipmentItem) -> Unit,
+    onSetQuantity: (EquipmentEntry) -> Unit,
+    onRemove: (EquipmentEntry) -> Unit,
+    onDismiss: () -> Unit
 ) {
     AlertDialogBase(
         onDialogDismiss = onDismiss,
@@ -66,7 +74,7 @@ fun EquipmentListDialog(
             }
         }
     ) {
-        EquipmentListContent(dialog, onEquipmentClick, onSetQuantityRequested, onRemoveRequested)
+        EquipmentListContent(dialog, onEquipmentClick, onEdit, onSetQuantity, onRemove)
     }
 }
 
@@ -108,6 +116,9 @@ fun EquipmentListSecondaryDialog(
                     imeAction = ImeAction.Done
                 )
             )
+
+        is ITrackerDialog.EditEquipmentItemDialog ->
+            AddNewEquipmentItemDialog(dialog.secondaryDialog, viewModel)
     }
 }
 
@@ -115,8 +126,9 @@ fun EquipmentListSecondaryDialog(
 fun ColumnScope.EquipmentListContent(
     dialog: ITrackerDialog.EquipmentListDialog,
     onEquipmentClick: (IEquipmentItem) -> Unit,
-    onSetQuantityRequested: (EquipmentEntry) -> Unit,
-    onRemoveRequested: (EquipmentEntry) -> Unit
+    onEdit: (IEquipmentItem) -> Unit,
+    onSetQuantity: (EquipmentEntry) -> Unit,
+    onRemove: (EquipmentEntry) -> Unit
 ) {
     val scrollState = rememberLazyListState()
     val dimens = LocalDimens.current
@@ -137,9 +149,11 @@ fun ColumnScope.EquipmentListContent(
                 EquipmentListItem(
                     it.item.name,
                     it.count,
+                    isEditMenuItemVisible = it.item is EquipmentItem,
                     onClick = { onEquipmentClick(it.item) },
-                    onSetQuantityRequested = { onSetQuantityRequested(it) },
-                    onRemoveRequested = { onRemoveRequested(it) })
+                    onEdit = { onEdit(it.item) },
+                    onSetQuantity = { onSetQuantity(it) },
+                    onRemove = { onRemove(it) })
             }
         }
     }
@@ -149,9 +163,11 @@ fun ColumnScope.EquipmentListContent(
 private fun EquipmentListItem(
     name: String,
     count: Int,
+    isEditMenuItemVisible: Boolean,
     onClick: () -> Unit,
-    onSetQuantityRequested: () -> Unit,
-    onRemoveRequested: () -> Unit
+    onEdit: () -> Unit,
+    onSetQuantity: () -> Unit,
+    onRemove: () -> Unit
 ) {
     Card(shape = MaterialTheme.shapes.extraLarge) {
         val dimens = LocalDimens.current
@@ -176,19 +192,82 @@ private fun EquipmentListItem(
                         onClick()
                         contextMenuExpanded = false
                     })
+                if (isEditMenuItemVisible) {
+                    DropdownMenuItem(
+                        { Text(stringResource(Res.string.edit)) },
+                        onClick = {
+                            onEdit()
+                            contextMenuExpanded = false
+                        })
+                }
                 DropdownMenuItem(
                     { Text(stringResource(Res.string.set_quantity)) },
                     onClick = {
-                        onSetQuantityRequested()
+                        onSetQuantity()
                         contextMenuExpanded = false
                     })
                 DropdownMenuItem(
                     { Text(stringResource(Res.string.remove)) },
                     onClick = {
-                        onRemoveRequested()
+                        onRemove()
                         contextMenuExpanded = false
                     })
             }
         }
+    }
+}
+
+@Composable
+fun AddNewEquipmentItemDialog(
+    dialog: ITrackerDialog.EditEquipmentItemDialog,
+    viewModel: TrackerViewModel
+) {
+    var equipmentItem by remember { mutableStateOf(dialog.equipmentItem) }
+    val canConfirmDialog = equipmentItem.isValid()
+    val onFormSubmit = {
+        viewModel.createOrEditEquipmentItem(equipmentItem)
+    }
+    AlertDialogBase(
+        onDialogDismiss = viewModel::dismissDialog,
+        dialogTitle = { DialogTitle(dialog.title.text()) },
+        dialogButtons = {
+            DialogButton(
+                stringResource(Res.string.confirm),
+                onClick = onFormSubmit,
+                isEnabled = canConfirmDialog
+            )
+        }
+    ) {
+        DialogInputField(
+            equipmentItem.name,
+            stringResource(Res.string.name),
+            onValueChange = {
+                equipmentItem = equipmentItem.copy(name = it)
+            },
+            isInputFieldValid = { equipmentItem.isNameValid() },
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Text,
+                imeAction = ImeAction.Next
+            ),
+            autoFocus = true
+        )
+        DialogInputField(
+            value = equipmentItem.description,
+            label = stringResource(Res.string.description),
+            onValueChange = {
+                equipmentItem = equipmentItem.copy(description = it)
+            },
+            onFormSubmit = {
+                if (canConfirmDialog) {
+                    onFormSubmit()
+                }
+            },
+            isInputFieldValid = { equipmentItem.isDescriptionValid() },
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Text,
+                imeAction = ImeAction.Done
+            ),
+            maxLines = 5
+        )
     }
 }

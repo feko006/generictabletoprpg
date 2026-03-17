@@ -64,6 +64,7 @@ import com.feko.generictabletoprpg.shared.features.searchall.ui.SearchAllScreen
 import com.feko.generictabletoprpg.shared.features.spell.Spell
 import com.feko.generictabletoprpg.shared.features.spell.ui.SimpleSpellDetailsScreen
 import com.feko.generictabletoprpg.shared.features.spell.ui.SpellDetailsScreen
+import com.feko.generictabletoprpg.shared.features.tracker.model.EquipmentItem
 import com.feko.generictabletoprpg.shared.features.tracker.ui.EquipmentItemDetailsScreen
 import com.feko.generictabletoprpg.shared.features.tracker.ui.EquipmentListScreen
 import com.feko.generictabletoprpg.shared.features.tracker.ui.SpellListScreen
@@ -150,7 +151,11 @@ fun NavigationHost(
                             backStack.add(SimpleSpellDetailsDestination(it))
                         },
                         onOpenDetails = {
-                            backStack.add(getDetailsDestination(it))
+                            if (it is EquipmentItem) {
+                                backStack.add(EquipmentItemDetailsDestination(it))
+                            } else {
+                                backStack.add(getDetailsDestination(it))
+                            }
                         },
                         onSelectSpellRequest = {
                             backStack.add(

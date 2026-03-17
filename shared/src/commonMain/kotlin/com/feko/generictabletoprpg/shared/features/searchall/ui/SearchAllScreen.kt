@@ -22,6 +22,7 @@ import androidx.compose.ui.Modifier
 import com.feko.generictabletoprpg.Res
 import com.feko.generictabletoprpg.search_all_title
 import com.feko.generictabletoprpg.search_everywhere
+import com.feko.generictabletoprpg.shared.common.domain.model.IGuidIdentifiable
 import com.feko.generictabletoprpg.shared.common.domain.model.IIdentifiable
 import com.feko.generictabletoprpg.shared.common.domain.model.IText.StringResourceText.Companion.asText
 import com.feko.generictabletoprpg.shared.common.ui.RootDestinations
@@ -119,4 +120,6 @@ fun SearchAllScreen(
     }
 }
 
-fun getUniqueListItemKey(it: Any) = "${it::class}${(it as IIdentifiable).id}"
+fun getUniqueListItemKey(it: Any) =
+    if (it is IGuidIdentifiable) it.id
+    else "${it::class}${(it as IIdentifiable).id}"

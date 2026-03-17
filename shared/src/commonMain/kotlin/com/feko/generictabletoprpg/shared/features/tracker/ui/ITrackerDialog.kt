@@ -3,6 +3,7 @@ package com.feko.generictabletoprpg.shared.features.tracker.ui
 import androidx.compose.runtime.Immutable
 import com.feko.generictabletoprpg.Res
 import com.feko.generictabletoprpg.add
+import com.feko.generictabletoprpg.add_new
 import com.feko.generictabletoprpg.add_temporary_hp_dialog_title
 import com.feko.generictabletoprpg.delete_dialog_title
 import com.feko.generictabletoprpg.equipment
@@ -12,6 +13,7 @@ import com.feko.generictabletoprpg.reduce_percentage_dialog_title
 import com.feko.generictabletoprpg.refresh_all_tracked_things_dialog_title
 import com.feko.generictabletoprpg.shared.common.domain.model.IText
 import com.feko.generictabletoprpg.shared.common.domain.model.IText.StringResourceText.Companion.asText
+import com.feko.generictabletoprpg.shared.features.tracker.model.EquipmentItem
 import com.feko.generictabletoprpg.shared.features.tracker.model.StatsContainer
 import com.feko.generictabletoprpg.shared.features.tracker.model.TrackedThing
 import com.feko.generictabletoprpg.skills
@@ -109,4 +111,10 @@ sealed interface ITrackerDialog {
         val title: IText = Res.string.equipment.asText(),
         val secondaryDialog: IEquipmentListDialogDialogs = IEquipmentListDialogDialogs.None
     ) : ITrackerDialog
+
+    @Immutable
+    data class EditEquipmentItemDialog(
+        val equipmentItem: EquipmentItem,
+        val title: IText = Res.string.add_new.asText()
+    ) : ITrackerDialog, IEquipmentListDialogDialogs
 }

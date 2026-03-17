@@ -549,7 +549,7 @@ fun EquipmentListItem(
                     viewModel.addingItemToEquipment(equipment)
                     onSelectEquipmentRequest()
                 },
-                onAddNewClick = {},
+                onAddNewClick = { viewModel.showEditEquipmentItemDialog(equipment) },
                 onEditClick = { viewModel.showEditDialog(equipment) },
                 onDeleteClick = { viewModel.deleteItemRequested(equipment) }
             )
@@ -685,7 +685,7 @@ fun StatsOverviewPreview() {
     Card {
         var stats by remember { mutableStateOf<List<StatEntry>>(listOf()) }
         LaunchedEffect(Unit) {
-            stats = StatsContainer.Companion.createDefault5EStatEntries()
+            stats = StatsContainer.createDefault5EStatEntries()
         }
         StatsOverview(
             TrackedThing(name = "Stats", type = TrackedThing.Type.FiveEStats, value = "[]").also {

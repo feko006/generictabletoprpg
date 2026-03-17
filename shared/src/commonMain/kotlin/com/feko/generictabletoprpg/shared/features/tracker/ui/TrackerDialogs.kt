@@ -178,12 +178,17 @@ private fun TrackerAlertDialog(
                 EquipmentListDialog(
                     dialog,
                     onEquipmentClick,
+                    onEdit = { equipmentItem ->
+                        viewModel.showEditEquipmentItemDialog(dialog.equipment, equipmentItem)
+                    },
                     onDismiss = viewModel::dismissDialog,
-                    onSetQuantityRequested = viewModel::setItemQuantityRequested,
-                    onRemoveRequested = viewModel::removeItemFromEquipmentListRequested
+                    onSetQuantity = viewModel::setItemQuantityRequested,
+                    onRemove = viewModel::removeItemFromEquipmentListRequested
                 )
                 EquipmentListSecondaryDialog(dialog, viewModel)
             }
+
+        is ITrackerDialog.EditEquipmentItemDialog -> AddNewEquipmentItemDialog(dialog, viewModel)
 
         is ITrackerDialog.None -> Unit
     }

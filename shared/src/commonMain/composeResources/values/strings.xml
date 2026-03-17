@@ -58,6 +58,7 @@
     <string name="add_existing">Add Existing</string>
     <string name="add_new">Add New</string>
     <string name="details">Details</string>
+    <string name="description">Description</string>
     <!--Action-->
     <string name="action">Action</string>
     <!--Ammunition-->
@@ -184,4 +185,6 @@
     <string name="item_successfully_added_to_equipment">Item successfully added to equipment!</string>
     <string name="set_quantity">Set Quantity</string>
     <string name="confirm_equipment_item_removal_from_list_dialog_title">Remove item?</string>
+    <string name="equipment_item">Equipment Item</string>
+    <string name="equipment_item_successfully_saved">Equipment item successfully saved!</string>
 </resources>
