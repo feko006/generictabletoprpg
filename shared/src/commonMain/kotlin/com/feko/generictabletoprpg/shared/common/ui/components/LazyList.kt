@@ -1,5 +1,6 @@
 package com.feko.generictabletoprpg.shared.common.ui.components
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -33,6 +34,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.hapticfeedback.HapticFeedback
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
@@ -275,28 +277,43 @@ fun NoItemsIndicator() {
 fun <T> LazyStaggeredGridItemScope.OverviewItem(
     item: T,
     modifier: Modifier = Modifier,
+    isHighlighted: Boolean = false,
     supportingText: IText? = null
 ) {
     Card(shape = MaterialTheme.shapes.extraLarge) {
-        ListItem(
-            headlineContent = { Text((item as INamed).name) },
-            supportingContent = {
-                if (supportingText != null) {
-                    Text(supportingText.text())
-                } else {
-                    var supportingText: String? = null
-                    if (item is IKClassProvider) {
-                        supportingText = getTypeName(item.kclass)
+        Box {
+            ListItem(
+                headlineContent = { Text((item as INamed).name) },
+                supportingContent = {
+                    if (supportingText != null) {
+                        Text(supportingText.text())
+                    } else {
+                        var supportingText: String? = null
+                        if (item is IKClassProvider) {
+                            supportingText = getTypeName(item.kclass)
+                        }
+                        if (item is Spell) {
+                            supportingText +=
+                                ", ${stringResource(Res.string.level)} ${item.level}, ${item.school}"
+                        }
+                        supportingText?.let { Text(it) }
                     }
-                    if (item is Spell) {
-                        supportingText +=
-                            ", ${stringResource(Res.string.level)} ${item.level}, ${item.school}"
+                },
+                trailingContent = {
+                    if (isHighlighted) {
+                        Icon(doneIcon, "")
                     }
-                    supportingText?.let { Text(it) }
-                }
-            },
-            modifier = modifier.animateItem(),
-            colors = ListItemDefaults.colors(containerColor = CardDefaults.cardColors().containerColor)
-        )
+                },
+                modifier = modifier.animateItem(),
+                colors = ListItemDefaults.colors(containerColor = CardDefaults.cardColors().containerColor)
+            )
+            if (isHighlighted) {
+                Box(
+                    Modifier
+                        .matchParentSize()
+                        .background(Color.White.copy(alpha = 0.2f))
+                )
+            }
+        }
     }
 }

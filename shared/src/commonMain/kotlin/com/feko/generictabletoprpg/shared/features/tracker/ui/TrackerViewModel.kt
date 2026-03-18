@@ -8,7 +8,6 @@ import com.feko.generictabletoprpg.equipment_item_successfully_saved
 import com.feko.generictabletoprpg.five_e_stats
 import com.feko.generictabletoprpg.item_successfully_added_to_equipment
 import com.feko.generictabletoprpg.shared.common.domain.createNewComparator
-import com.feko.generictabletoprpg.shared.common.domain.model.INamed
 import com.feko.generictabletoprpg.shared.common.domain.model.IText
 import com.feko.generictabletoprpg.shared.common.domain.model.IText.StringResourceText.Companion.asText
 import com.feko.generictabletoprpg.shared.common.ui.ToastMessage
@@ -33,9 +32,9 @@ import com.feko.generictabletoprpg.shared.features.tracker.model.getItem
 import com.feko.generictabletoprpg.shared.features.tracker.model.resetValueToDefault
 import com.feko.generictabletoprpg.shared.features.tracker.model.setItem
 import com.feko.generictabletoprpg.shared.features.tracker.model.subtract
-import com.feko.generictabletoprpg.spell_already_in_list
 import com.feko.generictabletoprpg.spell_cast_with_slot_level
-import com.feko.generictabletoprpg.spell_successfully_added_to_list
+import com.feko.generictabletoprpg.spells_already_in_list
+import com.feko.generictabletoprpg.spells_successfully_added_to_list
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -462,21 +461,25 @@ class TrackerViewModel(
         }
     }
 
-    fun addSpellToList(spell: Spell) {
+    fun addSpellsToList(spells: List<Spell>) {
         viewModelScope.launch {
-            val spellId = spell.id
             val spellList = requireNotNull(spellListBeingAddedTo).copy()
 
             @Suppress("UNCHECKED_CAST")
             val serializedItem = spellList.serializedItem as List<SpellListEntry>
-            val spellAlreadyInList =
-                serializedItem.any { it.id == spellId && it.name == spell.name }
-            if (spellAlreadyInList) {
-                _toast.emit(ToastMessage(Res.string.spell_already_in_list.asText(), _toast))
+            val spellsNotInList = spells.filter { newSpell ->
+                serializedItem.all {
+                    it.id != newSpell.id && it.name != newSpell.name
+                }
+            }
+            val spellsAlreadyInList = spellsNotInList.isEmpty()
+            if (spellsAlreadyInList) {
+                _toast.emit(ToastMessage(Res.string.spells_already_in_list.asText(), _toast))
             } else {
+                val newSpells = spellsNotInList.map { SpellListEntry.fromSpell(it) }
                 val sortedSpells =
                     serializedItem
-                        .plus(SpellListEntry.fromSpell(spell))
+                        .plus(newSpells)
                         .sortedWith { spell1, spell2 ->
                             val comparisonByLevel = spell1.level.compareTo(spell2.level)
                             when {
@@ -488,7 +491,7 @@ class TrackerViewModel(
                 trackedThingDao.insertOrUpdate(spellList)
                 updateFlexDialogState(_spellListDialog) { it.copy(spellList = spellList) }
                 _toast.emit(
-                    ToastMessage(Res.string.spell_successfully_added_to_list.asText(), _toast)
+                    ToastMessage(Res.string.spells_successfully_added_to_list.asText(), _toast)
                 )
             }
             spellListBeingAddedTo = null
@@ -634,28 +637,31 @@ class TrackerViewModel(
         equipmentBeingAddedTo = equipment
     }
 
-    fun addItemToEquipment(item: Any) {
+    fun addItemsToEquipment(items: List<IEquipmentItem>) {
         viewModelScope.launch {
-            val namedItem = item as INamed
             val equipment = requireNotNull(equipmentBeingAddedTo).copy()
+            if (items.isEmpty()) {
+                equipmentBeingAddedTo = null
+                return@launch
+            }
+
             val serializedItem = equipment.serializedItem as EquipmentContainer
-            val itemAlreadyInEquipment = serializedItem.entries.firstOrNull { entry ->
-                entry.item::class == item::class
-                        && entry.item.name == namedItem.name
+            var newEntries = serializedItem.entries
+
+            items.forEach { item ->
+                val itemAlreadyInEquipment = serializedItem.entries.firstOrNull { entry ->
+                    entry.item::class == item::class && entry.item.name == item.name
+                }
+                if (itemAlreadyInEquipment != null) {
+                    val newItem =
+                        itemAlreadyInEquipment.copy(count = itemAlreadyInEquipment.count + 1)
+                    newEntries = newEntries.minus(itemAlreadyInEquipment).plus(newItem)
+                } else {
+                    val newItem = EquipmentEntry(item)
+                    newEntries = newEntries.plus(newItem)
+                }
             }
-            val newEntries: List<EquipmentEntry>
-            if (itemAlreadyInEquipment != null) {
-                val newItem = itemAlreadyInEquipment.copy(count = itemAlreadyInEquipment.count + 1)
-                newEntries = serializedItem.entries
-                    .minus(itemAlreadyInEquipment)
-                    .plus(newItem)
-                    .sortedBy { it.item.name }
-            } else {
-                val newItem = EquipmentEntry(item as IEquipmentItem)
-                newEntries = serializedItem.entries
-                    .plus(newItem)
-                    .sortedBy { it.item.name }
-            }
+            newEntries = newEntries.sortedBy { it.item.name }
             val newSerializedItem = serializedItem.copy(entries = newEntries)
             equipment.setItem(newSerializedItem)
             trackedThingDao.insertOrUpdate(equipment)
@@ -665,6 +671,7 @@ class TrackerViewModel(
             equipmentBeingAddedTo = null
         }
     }
+
     fun showEquipmentListDialog(
         equipment: TrackedThing,
         screenSize: ScreenSize,

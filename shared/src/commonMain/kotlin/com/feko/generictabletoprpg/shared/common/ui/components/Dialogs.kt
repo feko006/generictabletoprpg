@@ -315,7 +315,6 @@ fun <T : Number> NumberDialogInputField(
     allowIncrementDecrement: Boolean = false
 ) {
     var inputValue by remember { mutableStateOf(if (value == 0) "" else value.toString()) }
-    @Suppress("KotlinConstantConditions")
     if (value != 0 && value != convertInputValue.getValue(inputValue)) {
         inputValue = value.toString()
     }

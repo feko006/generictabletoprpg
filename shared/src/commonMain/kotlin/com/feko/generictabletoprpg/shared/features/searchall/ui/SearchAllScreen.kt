@@ -18,6 +18,8 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateSetOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import com.feko.generictabletoprpg.Res
 import com.feko.generictabletoprpg.search_all_title
@@ -26,9 +28,11 @@ import com.feko.generictabletoprpg.shared.common.domain.model.IGuidIdentifiable
 import com.feko.generictabletoprpg.shared.common.domain.model.IIdentifiable
 import com.feko.generictabletoprpg.shared.common.domain.model.IText.StringResourceText.Companion.asText
 import com.feko.generictabletoprpg.shared.common.ui.RootDestinations
+import com.feko.generictabletoprpg.shared.common.ui.components.GttrpgFloatingActionButton
 import com.feko.generictabletoprpg.shared.common.ui.components.GttrpgTopAppBar
 import com.feko.generictabletoprpg.shared.common.ui.components.OverviewItem
 import com.feko.generictabletoprpg.shared.common.ui.components.SearchableLazyItems
+import com.feko.generictabletoprpg.shared.common.ui.components.doneIcon
 import com.feko.generictabletoprpg.shared.common.ui.components.filterListIcon
 import com.feko.generictabletoprpg.shared.common.ui.theme.LocalDimens
 import com.feko.generictabletoprpg.shared.common.ui.viewmodel.AppViewModel
@@ -51,6 +55,7 @@ fun SearchAllScreen(
 ) {
     val isStartedForResult = resultViewModel != null
     val viewModel: SearchAllViewModel = koinViewModel { parametersOf(fixedFilter?.asFilter()) }
+    val selectedItems = remember { mutableStateSetOf<Any>() }
     if (!isStartedForResult) {
         appViewModel.updateActiveDrawerItem(RootDestinations.SearchAll.destination)
     }
@@ -62,6 +67,15 @@ fun SearchAllScreen(
                 IconButton(onClick = { viewModel.filterRequested() }) {
                     Icon(filterListIcon, "")
                 }
+            }
+        },
+        floatingActionButton = {
+            if (isStartedForResult) {
+                GttrpgFloatingActionButton(
+                    onClick = {
+                        resultViewModel.setSelectionResult(selectedItems)
+                        onNavigateBack()
+                    }) { Icon(doneIcon, "") }
             }
         }
     ) { paddingValues ->
@@ -78,18 +92,24 @@ fun SearchAllScreen(
             SearchableLazyItems(
                 viewModel,
                 item = { item ->
+                    val isSelected = item in selectedItems
                     OverviewItem(
                         item,
                         Modifier
                             .fillMaxWidth()
                             .clickable {
                                 if (isStartedForResult) {
-                                    resultViewModel.setSelectionResult(item)
-                                    onNavigateBack()
+                                    if (isSelected) {
+                                        selectedItems.remove(item)
+                                    } else {
+                                        selectedItems.add(item)
+                                    }
                                 } else {
                                     onOpenDetails(item)
                                 }
-                            })
+                            },
+                        isHighlighted = isSelected
+                    )
                 },
                 uniqueItemKey = { getUniqueListItemKey(it) },
                 searchFieldHint = Res.string.search_everywhere.asText()

@@ -34,7 +34,7 @@ import sh.calvin.reorderable.ReorderableCollectionItemScope
 fun TrackerScreen(
     viewModel: TrackerViewModel,
     onNavigationIconClick: () -> Unit,
-    spellSelectionResultViewModel: ResultViewModel<Any>,
+    itemSelectionResultViewModel: ResultViewModel<Any>,
     onNavigateToSpellListScreen: () -> Unit,
     onNavigateToSimpleSpellDetailsScreen: (Spell) -> Unit,
     onOpenDetails: (Any) -> Unit,
@@ -43,12 +43,14 @@ fun TrackerScreen(
     onNavigateToEquipmentDetailsScreen: (IEquipmentItem) -> Unit,
     onNavigateToEquipmentListScreen: () -> Unit
 ) {
-    spellSelectionResultViewModel.selectionResult?.let {
-        spellSelectionResultViewModel.consumeSelectionResult()
-        if (it is Spell) {
-            viewModel.addSpellToList(it)
-        } else {
-            viewModel.addItemToEquipment(it)
+    itemSelectionResultViewModel.selectionResult?.let {
+        itemSelectionResultViewModel.consumeSelectionResult()
+        if (it is Collection<*> && it.isNotEmpty()) {
+            if (it.all { item -> item is Spell }) {
+                viewModel.addSpellsToList(it.filterIsInstance<Spell>())
+            } else {
+                viewModel.addItemsToEquipment(it.filterIsInstance<IEquipmentItem>())
+            }
         }
     }
     Scaffold(
@@ -149,6 +151,10 @@ fun LazyStaggeredGridItemScope.TrackerListItem(
         val supportingText =
             if (item is EquipmentItem) Res.string.equipment_item.asText()
             else null
-        OverviewItem(item, Modifier.clickable(onClick = { onOpenDetails(item) }), supportingText)
+        OverviewItem(
+            item,
+            Modifier.clickable(onClick = { onOpenDetails(item) }),
+            supportingText = supportingText
+        )
     }
 }
