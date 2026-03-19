@@ -12,8 +12,8 @@ import com.feko.generictabletoprpg.shared.features.spell.Spell
 import com.feko.generictabletoprpg.shared.features.weapon.Weapon
 import kotlinx.serialization.Serializable
 
-@DoNotObfuscate
 @Serializable
+@DoNotObfuscate
 data class Source(
     val name: String,
     val actions: List<Action> = mutableListOf(),
@@ -28,6 +28,7 @@ data class Source(
 )
 
 @Serializable
+@DoNotObfuscate
 data class MagicItemImpl(
     override val id: Long = 0L,
     override val name: String,

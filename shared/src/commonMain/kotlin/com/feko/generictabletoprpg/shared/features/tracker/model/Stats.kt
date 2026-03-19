@@ -35,8 +35,8 @@ import com.feko.generictabletoprpg.wisdom_short
 import kotlinx.serialization.Serializable
 import org.jetbrains.compose.resources.getString
 
-@DoNotObfuscate
 @Serializable
+@DoNotObfuscate
 data class StatsContainer(
     val proficiencyBonus: Int,
     val spellSaveDc: Int,
@@ -255,3 +255,38 @@ data class StatsContainer(
         }
     }
 }
+
+@Serializable
+@DoNotObfuscate
+data class StatEntry(
+    val name: String,
+    val shortName: String,
+    val score: Int,
+    var bonus: Int,
+    val savingThrowBonus: Int,
+    val savingThrowAdditionalBonus: Int,
+    val isProficientInSavingThrow: Boolean,
+    val isSpellcastingModifier: Boolean,
+    val skills: List<StatSkillEntry>,
+    val use5ESkillBonusCalculation: Boolean = true,
+) {
+    init {
+        if (use5ESkillBonusCalculation) {
+            bonus = calculateBonus(score)
+        }
+    }
+
+    private fun calculateBonus(score: Int): Int = score / 2 - 5
+}
+
+@Serializable
+@DoNotObfuscate
+data class StatSkillEntry(
+    val name: String,
+    val bonus: Int,
+    val passiveScore: Int,
+    val additionalBonus: Int,
+    val isProficient: Boolean,
+    val hasExpertise: Boolean = false,
+    val showPassive: Boolean = false
+)
