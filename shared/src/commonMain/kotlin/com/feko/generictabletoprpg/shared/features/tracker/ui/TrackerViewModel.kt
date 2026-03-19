@@ -380,7 +380,7 @@ class TrackerViewModel(
         trackedThingDao.insertOrUpdate(itemCopy)
     }
 
-    private fun addOne(item: TrackedThing) {
+    fun addOne(item: TrackedThing) {
         viewModelScope.launch {
             val itemCopy = item.copy()
             itemCopy.add("1")
@@ -610,8 +610,6 @@ class TrackerViewModel(
     }
 
     fun setShowingPreparedSpells(value: Boolean) = isShowingPreparedSpells.update { value }
-
-    fun restoreHitDie(item: TrackedThing) = addOne(item)
 
     fun dismissDialog() = _dialog.update { ITrackerDialog.None }
 

@@ -245,7 +245,7 @@ fun HitDiceListItem(
                 canSubtract = hitDice.canSubtract,
                 onSubtractClicked = { viewModel.reduceByOne(hitDice) },
                 canAdd = hitDice.canAdd,
-                onAddClicked = { viewModel.restoreHitDie(hitDice) },
+                onAddClicked = { viewModel.addOne(hitDice) },
                 onEditButtonClicked = { viewModel.showEditDialog(hitDice) },
                 onDeleteButtonClicked = { viewModel.deleteItemRequested(hitDice) }
             )
@@ -444,7 +444,9 @@ fun SpellSlotListItem(
                 }
             }) {
             SpellSlotActions(
+                canAdd = spellSlot.canAdd,
                 canSubtract = spellSlot.canSubtract,
+                onAddClicked = { viewModel.addOne(spellSlot) },
                 onSubtractClicked = { viewModel.reduceByOne(spellSlot) },
                 canRefresh = spellSlot.canAdd,
                 onRefreshClicked = { viewModel.resetValueToDefault(spellSlot) },

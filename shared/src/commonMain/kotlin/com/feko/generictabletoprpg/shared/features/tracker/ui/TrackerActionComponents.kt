@@ -140,7 +140,9 @@ fun AbilityActions(
 
 @Composable
 fun SpellSlotActions(
+    canAdd: Boolean,
     canSubtract: Boolean,
+    onAddClicked: () -> Unit,
     onSubtractClicked: () -> Unit,
     canRefresh: Boolean,
     onRefreshClicked: () -> Unit,
@@ -148,6 +150,12 @@ fun SpellSlotActions(
     onDeleteButtonClicked: () -> Unit
 ) {
     ItemActionsBase(onEditButtonClicked, onDeleteButtonClicked) {
+        IconButton(
+            onClick = onAddClicked,
+            enabled = canAdd
+        ) {
+            Icon(addIcon, "")
+        }
         IconButton(
             onClick = onSubtractClicked,
             enabled = canSubtract
