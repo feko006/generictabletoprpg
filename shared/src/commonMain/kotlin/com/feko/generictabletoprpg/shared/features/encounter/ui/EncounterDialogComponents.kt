@@ -191,8 +191,7 @@ fun EditDialog(
         val scrollState = rememberScrollState()
         BoxWithScrollIndicator(
             scrollState,
-            backgroundColor = CardDefaults.cardColors().containerColor,
-            Modifier.weight(1f)
+            backgroundColor = CardDefaults.cardColors().containerColor
         ) {
             Column(
                 Modifier.verticalScroll(scrollState),

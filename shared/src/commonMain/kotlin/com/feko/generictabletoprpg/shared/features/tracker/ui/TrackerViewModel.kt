@@ -5,6 +5,8 @@ import androidx.lifecycle.viewModelScope
 import com.feko.generictabletoprpg.Res
 import com.feko.generictabletoprpg.edit
 import com.feko.generictabletoprpg.equipment_item_successfully_saved
+import com.feko.generictabletoprpg.failed_to_create_file_shortcut
+import com.feko.generictabletoprpg.file_shortcut_successfully_saved
 import com.feko.generictabletoprpg.five_e_stats
 import com.feko.generictabletoprpg.item_successfully_added_to_equipment
 import com.feko.generictabletoprpg.shared.common.domain.createNewComparator
@@ -19,6 +21,8 @@ import com.feko.generictabletoprpg.shared.features.tracker.TrackedThingDao
 import com.feko.generictabletoprpg.shared.features.tracker.model.EquipmentContainer
 import com.feko.generictabletoprpg.shared.features.tracker.model.EquipmentEntry
 import com.feko.generictabletoprpg.shared.features.tracker.model.EquipmentItem
+import com.feko.generictabletoprpg.shared.features.tracker.model.FileShortcutEntry
+import com.feko.generictabletoprpg.shared.features.tracker.model.FileShortcutsContainer
 import com.feko.generictabletoprpg.shared.features.tracker.model.IEquipmentItem
 import com.feko.generictabletoprpg.shared.features.tracker.model.SpellListEntry
 import com.feko.generictabletoprpg.shared.features.tracker.model.StatEntry
@@ -32,9 +36,17 @@ import com.feko.generictabletoprpg.shared.features.tracker.model.getItem
 import com.feko.generictabletoprpg.shared.features.tracker.model.resetValueToDefault
 import com.feko.generictabletoprpg.shared.features.tracker.model.setItem
 import com.feko.generictabletoprpg.shared.features.tracker.model.subtract
+import com.feko.generictabletoprpg.shared.features.tracker.ui.ITrackerDialog.EditFileShortcutNameDialog
+import com.feko.generictabletoprpg.shared.logger
+import com.feko.generictabletoprpg.shared.preprocessFileShortcut
 import com.feko.generictabletoprpg.spell_cast_with_slot_level
 import com.feko.generictabletoprpg.spells_already_in_list
 import com.feko.generictabletoprpg.spells_successfully_added_to_list
+import io.github.vinceglb.filekit.FileKit
+import io.github.vinceglb.filekit.PlatformFile
+import io.github.vinceglb.filekit.absolutePath
+import io.github.vinceglb.filekit.dialogs.openFileWithDefaultApplication
+import io.github.vinceglb.filekit.nameWithoutExtension
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -46,6 +58,8 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 class TrackerViewModel(
     private val groupId: Long,
@@ -822,6 +836,137 @@ class TrackerViewModel(
         val currentDialog = _dialog.value
         if (currentDialog is T) {
             _dialog.update { transform(currentDialog) }
+        }
+    }
+
+    @OptIn(ExperimentalUuidApi::class)
+    fun addFileToShortcuts(
+        fileShortcuts: TrackedThing,
+        file: PlatformFile
+    ) {
+        try {
+            val newFileShortcut =
+                FileShortcutEntry(
+                    Uuid.random().toHexDashString(),
+                    file.nameWithoutExtension,
+                    preprocessFileShortcut(file.absolutePath())
+                )
+            _dialog.update {
+                EditFileShortcutNameDialog(fileShortcuts, newFileShortcut)
+            }
+        } catch (throwable: Throwable) {
+            logger.error(throwable) { "Failed to add file to shortcuts." }
+            _toast.update {
+                ToastMessage(Res.string.failed_to_create_file_shortcut.asText(), _toast)
+            }
+        }
+    }
+
+    fun showChangeFileShortcutNameSecondaryDialog(
+        fileShortcut: FileShortcutEntry
+    ) {
+        _dialog.update {
+            if (it is ITrackerDialog.FileShortcutsDialog) {
+                it.copy(
+                    secondaryDialog =
+                        EditFileShortcutNameDialog(it.fileShortcuts, fileShortcut)
+                )
+            } else it
+        }
+    }
+
+    fun createOrEditFileShortcut(fileShortcuts: TrackedThing, fileShortcut: FileShortcutEntry) {
+        viewModelScope.launch {
+            val serializedItem = fileShortcuts.serializedItem as FileShortcutsContainer
+            val existingEntry = serializedItem.entries.firstOrNull { it.id == fileShortcut.id }
+            var newEntries = serializedItem.entries
+            if (existingEntry != null) {
+                newEntries = newEntries.minus(existingEntry)
+            }
+            newEntries = newEntries.plus(fileShortcut).sortedBy { it.name }
+            fileShortcuts.setItem(serializedItem.copy(entries = newEntries))
+            trackedThingDao.insertOrUpdate(fileShortcuts)
+            _toast.emit(ToastMessage(Res.string.file_shortcut_successfully_saved.asText(), _toast))
+        }
+    }
+
+    fun showFileShortcutsDialog(fileShortcuts: TrackedThing) {
+        @Suppress("UNCHECKED_CAST")
+        if ((fileShortcuts.serializedItem as FileShortcutsContainer).entries.isEmpty()) {
+            return
+        }
+        _dialog.update { ITrackerDialog.FileShortcutsDialog(fileShortcuts) }
+    }
+
+    fun removeFileShortcutRequested(fileShortcutEntry: FileShortcutEntry) {
+        _dialog.update {
+            if (it is ITrackerDialog.FileShortcutsDialog) {
+                it.copy(
+                    secondaryDialog =
+                        IFileShortcutDialogs.ConfirmItemRemovalDialog(fileShortcutEntry)
+                )
+            } else it
+        }
+    }
+
+    fun removeFileShortcut(fileShortcuts: TrackedThing, fileShortcut: FileShortcutEntry) {
+        viewModelScope.launch {
+            @Suppress("UNCHECKED_CAST")
+            val serializedItem = (fileShortcuts.serializedItem as FileShortcutsContainer)
+                .run { copy(entries = entries.minus(fileShortcut)) }
+            val fileShortcutsCopy = fileShortcuts.copy()
+            fileShortcutsCopy.setItem(serializedItem)
+            trackedThingDao.insertOrUpdate(fileShortcutsCopy)
+            if (serializedItem.entries.isEmpty()) {
+                dismissDialog()
+            } else {
+                _dialog.update {
+                    if (it is ITrackerDialog.FileShortcutsDialog) {
+                        it.copy(
+                            fileShortcuts = fileShortcutsCopy,
+                            secondaryDialog = IFileShortcutDialogs.None
+                        )
+                    } else it
+                }
+            }
+        }
+    }
+
+    fun dismissFileShortcutSecondaryDialog() {
+        _dialog.update {
+            if (it is ITrackerDialog.FileShortcutsDialog) {
+                it.copy(secondaryDialog = IFileShortcutDialogs.None)
+            } else it
+        }
+    }
+
+    fun openFileShortcut(fileShortcut: FileShortcutEntry) {
+        try {
+            val file = PlatformFile(fileShortcut.path)
+            FileKit.openFileWithDefaultApplication(file)
+        } catch (throwable: Throwable) {
+            logger.error(throwable) { "Unable to open file shortcut." }
+            _dialog.update {
+                if (it is ITrackerDialog.FileShortcutsDialog) {
+                    it.copy(
+                        secondaryDialog =
+                            IFileShortcutDialogs.BrokenFileShortcutDialog(fileShortcut)
+                    )
+                } else it
+            }
+        }
+    }
+
+    fun resolveBrokenFileShortcutDialog(file: PlatformFile) {
+        viewModelScope.launch {
+            val fileShortcutDialog = _dialog.value as ITrackerDialog.FileShortcutsDialog
+            val brokenFileShortcutDialog =
+                fileShortcutDialog.secondaryDialog as IFileShortcutDialogs.BrokenFileShortcutDialog
+            createOrEditFileShortcut(
+                fileShortcutDialog.fileShortcuts,
+                brokenFileShortcutDialog.fileShortcut.copy(path = preprocessFileShortcut(file.absolutePath()))
+            )
+            dismissFileShortcutSecondaryDialog()
         }
     }
 }

@@ -23,3 +23,5 @@ actual suspend fun loadResourceAsString(path: String): String {
 
     return stream.bufferedReader().use { it.readText() }
 }
+
+actual fun preprocessFileShortcut(path: String) = path

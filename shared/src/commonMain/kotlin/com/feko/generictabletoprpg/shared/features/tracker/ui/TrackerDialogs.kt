@@ -80,6 +80,9 @@ import com.feko.generictabletoprpg.spell_attack_additional_bonus
 import com.feko.generictabletoprpg.spell_save_dc_additional_bonus
 import com.feko.generictabletoprpg.spellcasting_modifier
 import com.feko.generictabletoprpg.text
+import io.github.vinceglb.filekit.dialogs.FileKitType
+import io.github.vinceglb.filekit.dialogs.compose.PickerResultLauncher
+import io.github.vinceglb.filekit.dialogs.compose.rememberFilePickerLauncher
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -89,7 +92,19 @@ fun TrackerAlertDialog(
     onEquipmentClick: (IEquipmentItem) -> Unit
 ) {
     val dialog by viewModel.dialog.collectAsState(ITrackerDialog.None)
-    TrackerAlertDialog(dialog, viewModel, onSpellClick, onEquipmentClick)
+    val fixBrokenFileShortcutPickFileLauncher =
+        rememberFilePickerLauncher(FileKitType.File()) { file ->
+            if (file != null) {
+                viewModel.resolveBrokenFileShortcutDialog(file)
+            }
+        }
+    TrackerAlertDialog(
+        dialog,
+        viewModel,
+        onSpellClick,
+        onEquipmentClick,
+        fixBrokenFileShortcutPickFileLauncher
+    )
 }
 
 @Composable
@@ -97,7 +112,8 @@ private fun TrackerAlertDialog(
     dialog: ITrackerDialog,
     viewModel: TrackerViewModel,
     onSpellClick: (Spell) -> Unit,
-    onEquipmentClick: (IEquipmentItem) -> Unit
+    onEquipmentClick: (IEquipmentItem) -> Unit,
+    fixBrokenFileShortcutPickFileLauncher: PickerResultLauncher
 ) {
     when (dialog) {
         is ITrackerDialog.SpellListDialog ->
@@ -175,20 +191,18 @@ private fun TrackerAlertDialog(
 
         is ITrackerDialog.EquipmentListDialog ->
             if (LocalDimens.current.screenSize == ScreenSize.Compact) {
-                EquipmentListDialog(
-                    dialog,
-                    onEquipmentClick,
-                    onEdit = { equipmentItem ->
-                        viewModel.showEditEquipmentItemDialog(dialog.equipment, equipmentItem)
-                    },
-                    onDismiss = viewModel::dismissDialog,
-                    onSetQuantity = viewModel::setItemQuantityRequested,
-                    onRemove = viewModel::removeItemFromEquipmentListRequested
-                )
+                EquipmentListDialog(dialog, viewModel, onEquipmentClick)
                 EquipmentListSecondaryDialog(dialog, viewModel)
             }
 
         is ITrackerDialog.EditEquipmentItemDialog -> AddNewEquipmentItemDialog(dialog, viewModel)
+        is ITrackerDialog.EditFileShortcutNameDialog ->
+            EditFileShortcutNameDialog(dialog, viewModel, viewModel::dismissDialog)
+
+        is ITrackerDialog.FileShortcutsDialog -> {
+            FileShortcutsDialog(dialog, viewModel)
+            FileShortcutsSecondaryDialog(dialog, viewModel, fixBrokenFileShortcutPickFileLauncher)
+        }
 
         is ITrackerDialog.None -> Unit
     }
@@ -364,8 +378,7 @@ fun PreviewStatSkillsDialog(
         val scrollState = rememberScrollState()
         BoxWithScrollIndicator(
             scrollState,
-            CardDefaults.cardColors().containerColor,
-            Modifier.weight(1f),
+            CardDefaults.cardColors().containerColor
         ) {
             Column(Modifier.verticalScroll(scrollState)) {
                 HeaderWithDividers(stringResource(Res.string.passive_skills))
@@ -567,9 +580,7 @@ fun StatsEditDialog(
         BoxWithScrollIndicator(
             scrollState,
             backgroundColor = CardDefaults.cardColors().containerColor,
-            Modifier
-                .weight(1f)
-                .padding(top = 8.dp)
+            Modifier.padding(top = 8.dp)
         ) {
             Column(Modifier.verticalScroll(scrollState)) {
                 Text(

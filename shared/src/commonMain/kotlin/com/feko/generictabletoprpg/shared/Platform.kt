@@ -8,3 +8,4 @@ expect val fileImportHint: StringResource
 
 expect suspend fun loadResourceAsBytes(path: String): ByteArray
 expect suspend fun loadResourceAsString(path: String): String
+expect fun preprocessFileShortcut(path: String): String

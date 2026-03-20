@@ -2,7 +2,6 @@ package com.feko.generictabletoprpg.shared.features.tracker.ui
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -53,12 +52,10 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 fun EquipmentListDialog(
     dialog: ITrackerDialog.EquipmentListDialog,
-    onEquipmentClick: (IEquipmentItem) -> Unit,
-    onEdit: (IEquipmentItem) -> Unit,
-    onSetQuantity: (EquipmentEntry) -> Unit,
-    onRemove: (EquipmentEntry) -> Unit,
-    onDismiss: () -> Unit
+    viewModel: TrackerViewModel,
+    onEquipmentClick: (IEquipmentItem) -> Unit
 ) {
+    val onDismiss = viewModel::dismissDialog
     AlertDialogBase(
         onDialogDismiss = onDismiss,
         screenHeight = 0.6f,
@@ -74,7 +71,13 @@ fun EquipmentListDialog(
             }
         }
     ) {
-        EquipmentListContent(dialog, onEquipmentClick, onEdit, onSetQuantity, onRemove)
+        EquipmentListContent(
+            dialog,
+            onEquipmentClick,
+            onEdit = { viewModel.showEditEquipmentItemDialog(dialog.equipment, it) },
+            onSetQuantity = viewModel::setItemQuantityRequested,
+            onRemove = viewModel::removeItemFromEquipmentListRequested
+        )
     }
 }
 
@@ -123,7 +126,7 @@ fun EquipmentListSecondaryDialog(
 }
 
 @Composable
-fun ColumnScope.EquipmentListContent(
+fun EquipmentListContent(
     dialog: ITrackerDialog.EquipmentListDialog,
     onEquipmentClick: (IEquipmentItem) -> Unit,
     onEdit: (IEquipmentItem) -> Unit,
@@ -135,8 +138,7 @@ fun ColumnScope.EquipmentListContent(
     BoxWithScrollIndicator(
         scrollState,
         backgroundColor = CardDefaults.cardColors().containerColor,
-        Modifier.weight(1f)
-            .padding(top = dimens.paddingSmall)
+        Modifier.padding(top = dimens.paddingSmall)
     ) {
         LazyColumn(
             state = scrollState,

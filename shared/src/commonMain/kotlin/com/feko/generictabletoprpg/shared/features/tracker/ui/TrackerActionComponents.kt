@@ -6,6 +6,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import com.feko.generictabletoprpg.Res
+import com.feko.generictabletoprpg.add
 import com.feko.generictabletoprpg.add_existing
 import com.feko.generictabletoprpg.add_new
 import com.feko.generictabletoprpg.delete
@@ -265,45 +266,83 @@ fun HitDiceActions(
 @Composable
 fun EquipmentDropDownActions(
     closeContextMenu: () -> Unit,
-    onOpenListClick: () -> Unit,
-    onAddExistingClick: () -> Unit,
-    onAddNewClick: () -> Unit,
-    onEditClick: () -> Unit,
-    onDeleteClick: () -> Unit
+    onOpenList: () -> Unit,
+    onAddExisting: () -> Unit,
+    onAddNew: () -> Unit,
+    onEdit: () -> Unit,
+    onDelete: () -> Unit
 ) {
     DropdownMenuItem(
         text = { Text(stringResource(Res.string.list)) },
         onClick = {
             closeContextMenu()
-            onOpenListClick()
+            onOpenList()
         }
     )
     DropdownMenuItem(
         text = { Text(stringResource(Res.string.add_existing)) },
         onClick = {
             closeContextMenu()
-            onAddExistingClick()
+            onAddExisting()
         }
     )
     DropdownMenuItem(
         text = { Text(stringResource(Res.string.add_new)) },
         onClick = {
             closeContextMenu()
-            onAddNewClick()
+            onAddNew()
         }
     )
     DropdownMenuItem(
         text = { Text(stringResource(Res.string.edit)) },
         onClick = {
             closeContextMenu()
-            onEditClick()
+            onEdit()
         }
     )
     DropdownMenuItem(
         text = { Text(stringResource(Res.string.delete)) },
         onClick = {
             closeContextMenu()
-            onDeleteClick()
+            onDelete()
+        }
+    )
+}
+
+@Composable
+fun FileShortcutsDropDownActions(
+    closeContextMenu: () -> Unit,
+    onOpenList: () -> Unit,
+    onAdd: () -> Unit,
+    onEdit: () -> Unit,
+    onDelete: () -> Unit
+) {
+    DropdownMenuItem(
+        text = { Text(stringResource(Res.string.list)) },
+        onClick = {
+            closeContextMenu()
+            onOpenList()
+        }
+    )
+    DropdownMenuItem(
+        text = { Text(stringResource(Res.string.add)) },
+        onClick = {
+            closeContextMenu()
+            onAdd()
+        }
+    )
+    DropdownMenuItem(
+        text = { Text(stringResource(Res.string.edit)) },
+        onClick = {
+            closeContextMenu()
+            onEdit()
+        }
+    )
+    DropdownMenuItem(
+        text = { Text(stringResource(Res.string.delete)) },
+        onClick = {
+            closeContextMenu()
+            onDelete()
         }
     )
 }

@@ -7,13 +7,16 @@ import com.feko.generictabletoprpg.add_new
 import com.feko.generictabletoprpg.add_temporary_hp_dialog_title
 import com.feko.generictabletoprpg.delete_dialog_title
 import com.feko.generictabletoprpg.equipment
+import com.feko.generictabletoprpg.file_shortcuts
 import com.feko.generictabletoprpg.heal_dialog_title
 import com.feko.generictabletoprpg.increase_percentage_dialog_title
 import com.feko.generictabletoprpg.reduce_percentage_dialog_title
 import com.feko.generictabletoprpg.refresh_all_tracked_things_dialog_title
+import com.feko.generictabletoprpg.set_name
 import com.feko.generictabletoprpg.shared.common.domain.model.IText
 import com.feko.generictabletoprpg.shared.common.domain.model.IText.StringResourceText.Companion.asText
 import com.feko.generictabletoprpg.shared.features.tracker.model.EquipmentItem
+import com.feko.generictabletoprpg.shared.features.tracker.model.FileShortcutEntry
 import com.feko.generictabletoprpg.shared.features.tracker.model.StatsContainer
 import com.feko.generictabletoprpg.shared.features.tracker.model.TrackedThing
 import com.feko.generictabletoprpg.skills
@@ -117,4 +120,18 @@ sealed interface ITrackerDialog {
         val equipmentItem: EquipmentItem,
         val title: IText = Res.string.add_new.asText()
     ) : ITrackerDialog, IEquipmentListDialogDialogs
+
+    @Immutable
+    data class EditFileShortcutNameDialog(
+        val fileShortcuts: TrackedThing,
+        val fileShortcutEntry: FileShortcutEntry,
+        val title: IText = Res.string.set_name.asText()
+    ) : ITrackerDialog, IFileShortcutDialogs
+
+    @Immutable
+    data class FileShortcutsDialog(
+        val fileShortcuts: TrackedThing,
+        val title: IText = Res.string.file_shortcuts.asText(),
+        val secondaryDialog: IFileShortcutDialogs = IFileShortcutDialogs.None
+    ) : ITrackerDialog
 }

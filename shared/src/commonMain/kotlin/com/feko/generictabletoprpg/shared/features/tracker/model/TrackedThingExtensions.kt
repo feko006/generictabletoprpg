@@ -11,7 +11,8 @@ val Type.initialDefaultValue
         Type.Text,
         Type.SpellList,
         Type.FiveEStats,
-        Type.Equipment -> ""
+        Type.Equipment,
+        Type.FileShortcuts -> ""
 
         Type.Ability,
         Type.Health,
@@ -26,7 +27,8 @@ fun Type.normalize(value: String) = when (this) {
     Type.Text,
     Type.SpellList,
     Type.FiveEStats,
-    Type.Equipment -> value
+    Type.Equipment,
+    Type.FileShortcuts -> value
 
     Type.Ability,
     Type.Health,
@@ -43,7 +45,8 @@ fun Type.toAmount(value: String): Number = when (this) {
     Type.Text,
     Type.SpellList,
     Type.FiveEStats,
-    Type.Equipment -> 0
+    Type.Equipment,
+    Type.FileShortcuts -> 0
 
     Type.Ability,
     Type.Health,
@@ -60,14 +63,15 @@ val TrackedThing.isIntBased
         Type.Health,
         Type.HitDice,
         Type.Number,
-        Type.SpellSlot,
-        Type.Equipment -> true
+        Type.SpellSlot -> true
 
         Type.None,
         Type.Percentage,
         Type.SpellList,
         Type.Text,
-        Type.FiveEStats -> false
+        Type.FiveEStats,
+        Type.Equipment,
+        Type.FileShortcuts -> false
     }
 
 val TrackedThing.amount: Number
@@ -86,7 +90,8 @@ fun TrackedThing.setNewValue(value: String) {
         Type.Text,
         Type.SpellList,
         Type.FiveEStats,
-        Type.Equipment -> this.value = type.normalize(value)
+        Type.Equipment,
+        Type.FileShortcuts -> this.value = type.normalize(value)
     }
 }
 
@@ -101,12 +106,13 @@ fun TrackedThing.isValueValid(): Boolean = when (type) {
             && amount.toInt() > 0
             && amount.toInt() <= type.toAmount(managedDefaultValue).toInt()
 
-    Type.Percentage -> amount.toFloat().let { it >= 0f && it <= 100f }
+    Type.Percentage -> amount.toFloat() in 0f..100f
 
     Type.Text,
     Type.SpellList,
     Type.FiveEStats,
-    Type.Equipment -> value.isNotBlank()
+    Type.Equipment,
+    Type.FileShortcuts -> value.isNotBlank()
 }
 
 fun TrackedThing.validate(): Boolean = when (type) {
@@ -120,7 +126,8 @@ fun TrackedThing.validate(): Boolean = when (type) {
     Type.Text,
     Type.SpellList,
     Type.FiveEStats,
-    Type.Equipment -> isValueValid()
+    Type.Equipment,
+    Type.FileShortcuts -> isValueValid()
 
     Type.SpellSlot -> isValueValid() && isLevelValid
 }
@@ -129,8 +136,10 @@ fun TrackedThing.validate(): Boolean = when (type) {
 val TrackedThing.printableValue: String
     get() = when (type) {
         Type.None,
-        Type.Equipment,
-        Type.FiveEStats -> ""
+        Type.FileShortcuts,
+        Type.FiveEStats,
+        Type.Equipment -> ""
+
 
         Type.Text -> value
 
@@ -152,7 +161,8 @@ fun TrackedThing.add(delta: String) {
         Type.Text,
         Type.SpellList,
         Type.FiveEStats,
-        Type.Equipment -> Unit
+        Type.Equipment,
+        Type.FileShortcuts -> Unit
 
         Type.Ability,
         Type.Health,
@@ -181,7 +191,8 @@ fun TrackedThing.subtract(delta: String) {
         Type.Text,
         Type.SpellList,
         Type.FiveEStats,
-        Type.Equipment -> Unit
+        Type.Equipment,
+        Type.FileShortcuts -> Unit
 
         Type.Ability,
         Type.HitDice,
@@ -218,10 +229,11 @@ val TrackedThing.canAdd: Boolean
         Type.None,
         Type.Text,
         Type.SpellList,
-        Type.FiveEStats,
-        Type.Equipment -> false
+        Type.FiveEStats -> false
 
-        Type.Number -> true
+        Type.Number,
+        Type.Equipment,
+        Type.FileShortcuts -> true
 
         Type.Ability,
         Type.Health,
@@ -236,10 +248,11 @@ val TrackedThing.canSubtract: Boolean
         Type.None,
         Type.Text,
         Type.SpellList,
-        Type.FiveEStats,
-        Type.Equipment -> false
+        Type.FiveEStats -> false
 
-        Type.Number -> true
+        Type.Number,
+        Type.Equipment,
+        Type.FileShortcuts -> true
 
         Type.Ability,
         Type.Health,
@@ -256,7 +269,8 @@ fun TrackedThing.resetValueToDefault() =
         Type.Text,
         Type.SpellList,
         Type.FiveEStats,
-        Type.Equipment -> Unit
+        Type.Equipment,
+        Type.FileShortcuts -> Unit
 
         Type.Ability,
         Type.Health,
@@ -299,6 +313,9 @@ fun TrackedThing.setItem(item: Any) {
             Type.Equipment if item is EquipmentContainer ->
                 json.encodeToString(EquipmentContainer.serializer(), item)
 
+            Type.FileShortcuts if item is FileShortcutsContainer ->
+                json.encodeToString(FileShortcutsContainer.serializer(), item)
+
             else -> ""
         }
 }
@@ -312,6 +329,7 @@ fun TrackedThing.getItem(): Any =
         )
 
         Type.Equipment -> json.decodeFromString(EquipmentContainer.serializer(), value)
+        Type.FileShortcuts -> json.decodeFromString(FileShortcutsContainer.serializer(), value)
 
         else -> ""
     }

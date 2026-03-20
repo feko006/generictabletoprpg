@@ -11,7 +11,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavEntry
@@ -98,7 +97,7 @@ fun NavigationHost(
         backStack.removeLastOrNull()
     }
 
-    val searchAllResultViewModel = viewModel<ResultViewModel<Any>>()
+    val searchAllResultViewModel = koinViewModel<ResultViewModel<Any>>()
     val panes =
         currentWindowAdaptiveInfo().windowSizeClass.let {
             when {

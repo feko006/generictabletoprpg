@@ -146,6 +146,9 @@ fun LazyStaggeredGridItemScope.TrackerListItem(
                     onSelectEquipmentRequest,
                     onNavigateToEquipmentListScreen
                 )
+
+            TrackedThing.Type.FileShortcuts ->
+                FileShortcutsListItem(isDragged, item, scope, viewModel)
         }
     } else {
         val supportingText =

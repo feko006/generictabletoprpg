@@ -64,6 +64,8 @@ import com.feko.generictabletoprpg.shared.features.tracker.model.printableValue
 import com.feko.generictabletoprpg.shield_with_heart
 import com.feko.generictabletoprpg.spell_attack_bonus
 import com.feko.generictabletoprpg.spell_save_dc
+import io.github.vinceglb.filekit.dialogs.FileKitType
+import io.github.vinceglb.filekit.dialogs.compose.rememberFilePickerLauncher
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import sh.calvin.reorderable.DragGestureDetector
@@ -509,57 +511,6 @@ fun StatsListItem(
 }
 
 @Composable
-fun EquipmentListItem(
-    isDragged: Boolean,
-    equipment: TrackedThing,
-    scope: ReorderableCollectionItemScope,
-    viewModel: TrackerViewModel,
-    onSelectEquipmentRequest: () -> Unit,
-    onNavigateToEquipmentListScreen: () -> Unit
-) {
-    val interactionSource = remember { MutableInteractionSource() }
-    val screenSize = LocalDimens.current.screenSize
-    TrackedThingListItem(
-        isDragged,
-        scope,
-        interactionSource,
-        onItemClicked = {
-            viewModel.showEquipmentListDialog(
-                equipment,
-                screenSize,
-                onNavigateToEquipmentListScreen
-            )
-        }
-    ) {
-        ContextMenuTrackedThingLayout(
-            equipment.name,
-            TrackedThing.Type.Equipment,
-            scope,
-            interactionSource,
-            valuePreview = { Text(equipment.printableValue) }
-        ) { closeContextMenu ->
-            EquipmentDropDownActions(
-                closeContextMenu,
-                onOpenListClick = {
-                    viewModel.showEquipmentListDialog(
-                        equipment,
-                        screenSize,
-                        onNavigateToEquipmentListScreen
-                    )
-                },
-                onAddExistingClick = {
-                    viewModel.addingItemToEquipment(equipment)
-                    onSelectEquipmentRequest()
-                },
-                onAddNewClick = { viewModel.showEditEquipmentItemDialog(equipment) },
-                onEditClick = { viewModel.showEditDialog(equipment) },
-                onDeleteClick = { viewModel.deleteItemRequested(equipment) }
-            )
-        }
-    }
-}
-
-@Composable
 fun TextListItem(
     isDragged: Boolean,
     text: TrackedThing,
@@ -602,6 +553,91 @@ fun TextListItem(
                 onExpandStateChanged = { expanded = it },
                 onEditButtonClicked = { viewModel.showEditDialog(text) },
                 onDeleteButtonClicked = { viewModel.deleteItemRequested(text) }
+            )
+        }
+    }
+}
+
+@Composable
+fun EquipmentListItem(
+    isDragged: Boolean,
+    equipment: TrackedThing,
+    scope: ReorderableCollectionItemScope,
+    viewModel: TrackerViewModel,
+    onSelectEquipmentRequest: () -> Unit,
+    onNavigateToEquipmentListScreen: () -> Unit
+) {
+    val interactionSource = remember { MutableInteractionSource() }
+    val screenSize = LocalDimens.current.screenSize
+    TrackedThingListItem(
+        isDragged,
+        scope,
+        interactionSource,
+        onItemClicked = {
+            viewModel.showEquipmentListDialog(
+                equipment,
+                screenSize,
+                onNavigateToEquipmentListScreen
+            )
+        }
+    ) {
+        ContextMenuTrackedThingLayout(
+            equipment.name,
+            TrackedThing.Type.Equipment,
+            scope,
+            interactionSource
+        ) { closeContextMenu ->
+            EquipmentDropDownActions(
+                closeContextMenu,
+                onOpenList = {
+                    viewModel.showEquipmentListDialog(
+                        equipment,
+                        screenSize,
+                        onNavigateToEquipmentListScreen
+                    )
+                },
+                onAddExisting = {
+                    viewModel.addingItemToEquipment(equipment)
+                    onSelectEquipmentRequest()
+                },
+                onAddNew = { viewModel.showEditEquipmentItemDialog(equipment) },
+                onEdit = { viewModel.showEditDialog(equipment) },
+                onDelete = { viewModel.deleteItemRequested(equipment) }
+            )
+        }
+    }
+}
+
+@Composable
+fun FileShortcutsListItem(
+    isDragged: Boolean,
+    fileShortcuts: TrackedThing,
+    scope: ReorderableCollectionItemScope,
+    viewModel: TrackerViewModel
+) {
+    val interactionSource = remember { MutableInteractionSource() }
+    TrackedThingListItem(
+        isDragged,
+        scope,
+        interactionSource,
+        onItemClicked = { viewModel.showFileShortcutsDialog(fileShortcuts) }
+    ) {
+        val pickFileLauncher =
+            rememberFilePickerLauncher(FileKitType.File()) { file ->
+                if (file != null) viewModel.addFileToShortcuts(fileShortcuts, file)
+            }
+        ContextMenuTrackedThingLayout(
+            fileShortcuts.name,
+            TrackedThing.Type.FileShortcuts,
+            scope,
+            interactionSource
+        ) { closeContextMenu ->
+            FileShortcutsDropDownActions(
+                closeContextMenu,
+                onOpenList = { viewModel.showFileShortcutsDialog(fileShortcuts) },
+                onAdd = { pickFileLauncher.launch() },
+                onEdit = { viewModel.showEditDialog(fileShortcuts) },
+                onDelete = { viewModel.deleteItemRequested(fileShortcuts) }
             )
         }
     }
