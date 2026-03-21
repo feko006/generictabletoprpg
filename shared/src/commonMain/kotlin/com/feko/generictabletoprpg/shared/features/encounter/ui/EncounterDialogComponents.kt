@@ -81,7 +81,12 @@ private fun EncounterAlertDialog(dialog: IEncounterDialog, viewModel: EncounterV
         is IEncounterDialog.PickLegendaryActionDialog ->
             PickLegendaryActionDialog(
                 dialog,
-                viewModel::useLegendaryActionAndProgressInitiative,
+                { initiativeEntryEntity ->
+                    viewModel.useLegendaryActionAndProgressInitiative(
+                        initiativeEntryEntity,
+                        dialog.legendaryActionCount
+                    )
+                },
                 viewModel::dismissDialog
             )
 

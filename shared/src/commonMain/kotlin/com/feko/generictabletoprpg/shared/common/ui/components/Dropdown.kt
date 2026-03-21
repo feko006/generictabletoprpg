@@ -18,6 +18,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.toSize
@@ -74,6 +75,7 @@ fun <T> GttrpgDropdownField(
 fun GttrpgContextMenu(
     expanded: Boolean,
     onDropdownExpandedStateChanged: (Boolean) -> Unit,
+    icon: ImageVector = moveVertIcon,
     dropdownMenuContent: @Composable (ColumnScope.() -> Unit)
 ) {
     ExposedDropdownMenuBox(
@@ -83,7 +85,7 @@ fun GttrpgContextMenu(
             onClick = { onDropdownExpandedStateChanged(!expanded) },
             Modifier.menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable)
         ) {
-            Icon(moveVertIcon, "")
+            Icon(icon, "")
         }
         ExposedDropdownMenu(
             expanded,
