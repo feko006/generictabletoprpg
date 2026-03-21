@@ -52,7 +52,8 @@ class ImportExportTrackerDataTest {
                 db.conditionDao(),
                 db.diseaseDao(),
                 db.trackedThingGroupDao(),
-                db.trackedThingDao()
+                db.trackedThingDao(),
+                db.magicItemDao()
             )
     }
 
@@ -218,6 +219,45 @@ class ImportExportTrackerDataTest {
     }
 
     @Test
+    fun importEquipmentFromResource() = runTest {
+        // Given
+        val data = getRawResourceData(R.raw.import_equipment)
+        val expected = TrackedThing(0L, "equipment", "value", TrackedThing.Type.Equipment, 8)
+
+        // When
+        jsonImportAllUseCase.import(data)
+
+        // Then
+        val trackedThingGroup = trackedThingGroupDao.getById(1)
+        MatcherAssert.assertThat(
+            trackedThingGroup.name,
+            CoreMatchers.equalTo("import_equipment_group")
+        )
+        val importedTrackedThing = trackedThingDao.getById(1)
+        assertTrackedThingEqual(importedTrackedThing, expected)
+    }
+
+    @Test
+    fun importFileShortcutsFromResource() = runTest {
+        // Given
+        val data = getRawResourceData(R.raw.import_file_shortcuts)
+        val expected =
+            TrackedThing(0L, "file_shortcuts", "value", TrackedThing.Type.FileShortcuts, 9)
+
+        // When
+        jsonImportAllUseCase.import(data)
+
+        // Then
+        val trackedThingGroup = trackedThingGroupDao.getById(1)
+        MatcherAssert.assertThat(
+            trackedThingGroup.name,
+            CoreMatchers.equalTo("import_file_shortcuts_group")
+        )
+        val importedTrackedThing = trackedThingDao.getById(1)
+        assertTrackedThingEqual(importedTrackedThing, expected)
+    }
+
+    @Test
     fun importTextFromResource() = runTest {
         // Given
         val data = getRawResourceData(R.raw.import_text)
@@ -319,7 +359,45 @@ class ImportExportTrackerDataTest {
                 5,
                 groupId = originalTrackedThingGroupId
             )
-        val trackedThings = listOf(ability, health, number, percentage, spellSlot, spellList)
+        val stats =
+            TrackedThing(
+                0L,
+                "stats",
+                "value1",
+                TrackedThing.Type.FiveEStats,
+                6,
+                groupId = originalTrackedThingGroupId
+            )
+        val equipment =
+            TrackedThing(
+                0L,
+                "equipment",
+                "value2",
+                TrackedThing.Type.Equipment,
+                7,
+                groupId = originalTrackedThingGroupId
+            )
+        val fileShortcuts =
+            TrackedThing(
+                0L,
+                "file_shortcuts",
+                "value3",
+                TrackedThing.Type.FileShortcuts,
+                8,
+                groupId = originalTrackedThingGroupId
+            )
+        val trackedThings =
+            listOf(
+                ability,
+                health,
+                number,
+                percentage,
+                spellSlot,
+                spellList,
+                stats,
+                equipment,
+                fileShortcuts
+            )
         trackedThingDao.insertAll(trackedThings)
         val file = PlatformFile(FileKit.filesDir, "export.json")
 
@@ -351,6 +429,9 @@ class ImportExportTrackerDataTest {
         assertTrackedThingEqual(importedTrackedThings[3], percentage)
         assertSpellSlotEqual(importedTrackedThings[4], spellSlot)
         assertTrackedThingEqual(importedTrackedThings[5], spellList)
+        assertTrackedThingEqual(importedTrackedThings[6], stats)
+        assertTrackedThingEqual(importedTrackedThings[7], equipment)
+        assertTrackedThingEqual(importedTrackedThings[8], fileShortcuts)
     }
 
     private fun assertHealthEqual(actual: TrackedThing, expected: TrackedThing) {
