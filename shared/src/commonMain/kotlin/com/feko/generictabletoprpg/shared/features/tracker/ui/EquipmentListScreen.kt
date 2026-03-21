@@ -30,6 +30,11 @@ fun EquipmentListScreen(
     if (trackerViewModel == null) return
     val alertDialog by trackerViewModel.equipmentListDialog.collectAsState(ITrackerDialog.None)
     val dereferencedDialog = alertDialog
+    LaunchedEffect(alertDialog) {
+        if (alertDialog !is ITrackerDialog.EquipmentListDialog) {
+            onPopEquipmentListScreen()
+        }
+    }
     if (dereferencedDialog !is ITrackerDialog.EquipmentListDialog) return
     val equipmentListEntries =
         (dereferencedDialog.equipment.serializedItem as EquipmentContainer).entries

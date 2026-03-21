@@ -207,6 +207,14 @@ class TrackerViewModel(
         viewModelScope.launch {
             trackedThingDao.delete(trackedThing.id)
             updateItemOrder()
+            val spellListId = _spellListDialog.value?.spellList?.id
+            if (spellListId == trackedThing.id) {
+                _spellListDialog.emit(null)
+            }
+            val equipmentId = _equipmentListDialog.value?.equipment?.id
+            if (equipmentId == trackedThing.id) {
+                _equipmentListDialog.emit(null)
+            }
         }
     }
 
@@ -468,10 +476,12 @@ class TrackerViewModel(
         }
         val spellListDialog =
             ITrackerDialog.SpellListDialog(spellList, isShowingPreparedSpells.value)
-        _dialog.update { spellListDialog }
-        _spellListDialog.update { spellListDialog }
-        if (screenSize != ScreenSize.Compact) {
-            onNavigateToSpellListScreen()
+        viewModelScope.launch {
+            _dialog.emit(spellListDialog)
+            _spellListDialog.emit(spellListDialog)
+            if (screenSize != ScreenSize.Compact) {
+                onNavigateToSpellListScreen()
+            }
         }
     }
 
@@ -677,6 +687,7 @@ class TrackerViewModel(
             val newSerializedItem = serializedItem.copy(entries = newEntries)
             equipment.setItem(newSerializedItem)
             trackedThingDao.insertOrUpdate(equipment)
+            updateFlexDialogState(_equipmentListDialog) { it.copy(equipment = equipment) }
             _toast.emit(
                 ToastMessage(Res.string.item_successfully_added_to_equipment.asText(), _toast)
             )
@@ -773,11 +784,9 @@ class TrackerViewModel(
     ) {
         addingItemToEquipment(equipment)
         val item = (equipmentItem as? EquipmentItem) ?: EquipmentItem.empty()
-        _dialog.update {
+        updateFlexDialogState(_equipmentListDialog) {
             val editEquipmentItemDialog = ITrackerDialog.EditEquipmentItemDialog(item)
-            if (it is ITrackerDialog.EquipmentListDialog) {
-                it.copy(secondaryDialog = editEquipmentItemDialog)
-            } else editEquipmentItemDialog
+            it.copy(secondaryDialog = editEquipmentItemDialog)
         }
     }
 
@@ -813,13 +822,11 @@ class TrackerViewModel(
             }
             equipmentList.setItem(serializedItem)
             trackedThingDao.insertOrUpdate(equipmentList)
-            _dialog.update {
-                if (it is ITrackerDialog.EquipmentListDialog) {
-                    it.copy(
-                        equipment = equipmentList,
-                        secondaryDialog = IEquipmentListDialogDialogs.None
-                    )
-                } else ITrackerDialog.None
+            updateFlexDialogState(_equipmentListDialog) {
+                it.copy(
+                    equipment = equipmentList,
+                    secondaryDialog = IEquipmentListDialogDialogs.None
+                )
             }
             _toast.emit(
                 ToastMessage(Res.string.equipment_item_successfully_saved.asText(), _toast)
