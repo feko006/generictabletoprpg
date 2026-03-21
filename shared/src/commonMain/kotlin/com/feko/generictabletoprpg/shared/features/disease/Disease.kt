@@ -3,8 +3,10 @@ package com.feko.generictabletoprpg.shared.features.disease
 import com.feko.generictabletoprpg.shared.common.domain.model.DoNotObfuscate
 import com.feko.generictabletoprpg.shared.common.domain.model.IFromSource
 import com.feko.generictabletoprpg.shared.common.domain.model.IIdentifiable
+import com.feko.generictabletoprpg.shared.common.domain.model.IKClassProvider
 import com.feko.generictabletoprpg.shared.common.domain.model.INamed
 import kotlinx.serialization.Serializable
+import kotlin.reflect.KClass
 
 @DoNotObfuscate
 @Serializable
@@ -15,4 +17,8 @@ data class Disease(
     override var source: String = ""
 ) : IIdentifiable,
     INamed,
-    IFromSource
+    IFromSource,
+    IKClassProvider {
+    override val kclass: KClass<*>
+        get() = Disease::class
+}

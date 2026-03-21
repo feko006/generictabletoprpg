@@ -1,0 +1,16 @@
+{
+  "sources": [],
+  "trackedGroups": [
+    {
+      "name": "import_equipment_group",
+      "trackedThings": [
+        {
+          "name": "equipment",
+          "value": "value",
+          "type": "Equipment",
+          "index": 8
+        }
+      ]
+    }
+  ]
+}

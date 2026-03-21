@@ -8,24 +8,29 @@ import com.feko.generictabletoprpg.type
 import kotlin.reflect.KClass
 
 sealed class Filter(
-    val type: KClass<*>,
+    val type: KClass<*>?,
     val name: String? = null
 ) {
     open val chipData: List<FilterChipData> =
-        listOf(
-            FilterChipData(
-                Res.string.type.asText(),
-                appNamesByType[type]!!.asText(),
-                null
-            )
-        )
+        buildList {
+            type?.let {
+                val typeChip =
+                    FilterChipData(
+                        Res.string.type.asText(),
+                        appNamesByType[it]!!.asText(),
+                        null
+                    )
+                add(typeChip)
+            }
+        }
 
-    open fun isAccepted(obj: Any): Boolean {
-        var isAccepted = obj::class == type
-        if (name != null) {
-            isAccepted = isAccepted
-                    && obj is INamed
-                    && obj.name.lowercase().contains(name.lowercase())
+    open fun isAccepted(obj: Any, type: KClass<*>? = null): Boolean {
+        var isAccepted = true
+        (type ?: this.type)?.run {
+            isAccepted = isInstance(obj)
+        }
+        if (name != null && obj is INamed) {
+            isAccepted = isAccepted && obj.name.lowercase().contains(name.lowercase())
         }
         return isAccepted
     }

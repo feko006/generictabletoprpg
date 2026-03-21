@@ -4,9 +4,13 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardActions
@@ -29,6 +33,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusDirection
@@ -62,15 +67,21 @@ fun AlertDialogBase(
     BasicAlertDialog(onDismissRequest = onDialogDismiss) {
         Card(shape = MaterialTheme.shapes.extraLarge) {
             Column(
-                Modifier
-                    .heightIn(max = with(LocalDensity.current) { LocalWindowInfo.current.containerSize.height.toDp() } * screenHeight)
-                    .padding(LocalDimens.current.paddingMedium),
+                Modifier.padding(LocalDimens.current.paddingMedium),
                 Arrangement.spacedBy(LocalDimens.current.gapSmall)
             ) {
                 dialogTitle()
-                dialogContent()
+                Column(
+                    Modifier
+                    .fillMaxWidth()
+                    .wrapContentHeight()
+                    .heightIn(max = with(LocalDensity.current) {
+                        LocalWindowInfo.current.containerSize.height.toDp()
+                    } * screenHeight)) {
+                    dialogContent()
+                }
                 if (dialogButtons != null) {
-                    Column(Modifier.fillMaxWidth()) {
+                    Column(Modifier.fillMaxWidth().height(IntrinsicSize.Max)) {
                         dialogButtons()
                     }
                 }
@@ -268,13 +279,27 @@ fun DialogInputField(
     }
 }
 
-sealed interface IInputFieldValueConverter<T : Number> : (String) -> T {
+sealed interface IInputFieldValueConverter<T : Number> {
+    fun getValue(inputValue: String): T
+    fun incrementValue(inputValue: String): String
+    fun decrementValue(inputValue: String): String
+
     data object IntInputFieldValueConverter : IInputFieldValueConverter<Int> {
-        override fun invoke(inputValue: String): Int = inputValue.toIntOrNull() ?: 0
+        override fun getValue(inputValue: String): Int = inputValue.toIntOrNull() ?: 0
+        override fun incrementValue(inputValue: String): String =
+            (getValue(inputValue) + 1).toString()
+
+        override fun decrementValue(inputValue: String): String =
+            (getValue(inputValue) - 1).toString()
     }
 
     data object FloatInputFieldValueConverter : IInputFieldValueConverter<Float> {
-        override fun invoke(inputValue: String): Float = inputValue.toFloatOrNull() ?: 0f
+        override fun getValue(inputValue: String): Float = inputValue.toFloatOrNull() ?: 0f
+        override fun incrementValue(inputValue: String): String =
+            (IntInputFieldValueConverter.getValue(inputValue) + 1).toString()
+
+        override fun decrementValue(inputValue: String): String =
+            (IntInputFieldValueConverter.getValue(inputValue) - 1).toString()
     }
 }
 
@@ -295,31 +320,43 @@ fun <T : Number> NumberDialogInputField(
     autoFocus: Boolean = false,
     maxLines: Int = 1,
     suffix: @Composable (() -> Unit) = {},
-    colors: TextFieldColors = TextFieldDefaults.colors()
+    colors: TextFieldColors = TextFieldDefaults.colors(),
+    allowIncrementDecrement: Boolean = false
 ) {
     var inputValue by remember { mutableStateOf(if (value == 0) "" else value.toString()) }
-    @Suppress("KotlinConstantConditions")
-    if (value != 0 && value != convertInputValue(inputValue)) {
+    if (value != 0 && value != convertInputValue.getValue(inputValue)) {
         inputValue = value.toString()
     }
-    DialogInputField(
-        inputValue,
-        label,
-        onValueChange = {
-            inputValue = it
-            onValueChange(convertInputValue(it))
-        },
-        modifier,
-        onFormSubmit,
-        canSubmitForm = { canSubmitForm(convertInputValue(it)) },
-        isInputFieldValid = { isInputFieldValid(convertInputValue(it)) },
-        focusRequester,
-        focusManager,
-        keyboardOptions,
-        focusDirection,
-        autoFocus,
-        maxLines,
-        suffix,
-        colors
-    )
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        DialogInputField(
+            inputValue,
+            label,
+            onValueChange = {
+                inputValue = it
+                onValueChange(convertInputValue.getValue(it))
+            },
+            modifier.let { if (allowIncrementDecrement) it.weight(1f) else it },
+            onFormSubmit,
+            canSubmitForm = { canSubmitForm(convertInputValue.getValue(it)) },
+            isInputFieldValid = { isInputFieldValid(convertInputValue.getValue(it)) },
+            focusRequester,
+            focusManager,
+            keyboardOptions,
+            focusDirection,
+            autoFocus,
+            maxLines,
+            suffix,
+            colors
+        )
+        if (allowIncrementDecrement) {
+            IconButton(onClick = {
+                inputValue = convertInputValue.incrementValue(inputValue)
+                onValueChange(convertInputValue.getValue(inputValue))
+            }) { Text("+1") }
+            IconButton(onClick = {
+                inputValue = convertInputValue.decrementValue(inputValue)
+                onValueChange(convertInputValue.getValue(inputValue))
+            }) { Text("-1") }
+        }
+    }
 }

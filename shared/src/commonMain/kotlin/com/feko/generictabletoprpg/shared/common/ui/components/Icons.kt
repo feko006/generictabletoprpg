@@ -33,3 +33,4 @@ expect val removeIcon: ImageVector
 expect val sendToMobileIcon: ImageVector
 expect val dashboardIcon: ImageVector
 expect val inputIcon: ImageVector
+expect val dragIcon: ImageVector

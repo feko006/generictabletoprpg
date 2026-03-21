@@ -8,27 +8,30 @@ import com.feko.generictabletoprpg.shared.common.data.local.GenericTabletopRpgDa
 import com.feko.generictabletoprpg.shared.features.io.domain.usecase.JsonImportAllUseCase
 import com.feko.generictabletoprpg.shared.features.tracker.model.TrackedThing
 import com.feko.generictabletoprpg.shared.features.tracker.model.TrackedThingGroup
-import com.feko.generictabletoprpg.shared.features.tracker.ui.TrackerGroupExportSubViewModel
+import com.feko.generictabletoprpg.shared.features.tracker.ui.TrackerGroupViewModel
 import com.feko.generictabletoprpg.shared.test.R
 import io.github.vinceglb.filekit.FileKit
 import io.github.vinceglb.filekit.PlatformFile
 import io.github.vinceglb.filekit.filesDir
 import io.github.vinceglb.filekit.readString
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import org.hamcrest.CoreMatchers
 import org.hamcrest.MatcherAssert
 import org.junit.After
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 
 class ImportExportTrackerDataTest {
+    @get:Rule
+    val mainDispatcherRule = MainDispatcherRule()
+
     private lateinit var context: Context
     private lateinit var db: GenericTabletopRpgDatabase
     private lateinit var trackedThingGroupDao: TrackedThingGroupDao
     private lateinit var trackedThingDao: TrackedThingDao
-    private lateinit var exportSubViewModel: TrackerGroupExportSubViewModel
+    private lateinit var viewModel: TrackerGroupViewModel
     private lateinit var jsonImportAllUseCase: JsonImportAllUseCase
 
     @Before
@@ -42,18 +45,15 @@ class ImportExportTrackerDataTest {
             .build()
         trackedThingGroupDao = db.trackedThingGroupDao()
         trackedThingDao = db.trackedThingDao()
-        exportSubViewModel =
-            TrackerGroupExportSubViewModel(
-                trackedThingGroupDao,
-                trackedThingDao
-            )
+        viewModel = TrackerGroupViewModel(trackedThingGroupDao, trackedThingDao)
         jsonImportAllUseCase =
             JsonImportAllUseCase(
                 db.actionDao(),
                 db.conditionDao(),
                 db.diseaseDao(),
                 db.trackedThingGroupDao(),
-                db.trackedThingDao()
+                db.trackedThingDao(),
+                db.magicItemDao()
             )
     }
 
@@ -219,6 +219,45 @@ class ImportExportTrackerDataTest {
     }
 
     @Test
+    fun importEquipmentFromResource() = runTest {
+        // Given
+        val data = getRawResourceData(R.raw.import_equipment)
+        val expected = TrackedThing(0L, "equipment", "value", TrackedThing.Type.Equipment, 8)
+
+        // When
+        jsonImportAllUseCase.import(data)
+
+        // Then
+        val trackedThingGroup = trackedThingGroupDao.getById(1)
+        MatcherAssert.assertThat(
+            trackedThingGroup.name,
+            CoreMatchers.equalTo("import_equipment_group")
+        )
+        val importedTrackedThing = trackedThingDao.getById(1)
+        assertTrackedThingEqual(importedTrackedThing, expected)
+    }
+
+    @Test
+    fun importFileShortcutsFromResource() = runTest {
+        // Given
+        val data = getRawResourceData(R.raw.import_file_shortcuts)
+        val expected =
+            TrackedThing(0L, "file_shortcuts", "value", TrackedThing.Type.FileShortcuts, 9)
+
+        // When
+        jsonImportAllUseCase.import(data)
+
+        // Then
+        val trackedThingGroup = trackedThingGroupDao.getById(1)
+        MatcherAssert.assertThat(
+            trackedThingGroup.name,
+            CoreMatchers.equalTo("import_file_shortcuts_group")
+        )
+        val importedTrackedThing = trackedThingDao.getById(1)
+        assertTrackedThingEqual(importedTrackedThing, expected)
+    }
+
+    @Test
     fun importTextFromResource() = runTest {
         // Given
         val data = getRawResourceData(R.raw.import_text)
@@ -320,14 +359,51 @@ class ImportExportTrackerDataTest {
                 5,
                 groupId = originalTrackedThingGroupId
             )
-        val trackedThings = listOf(ability, health, number, percentage, spellSlot, spellList)
+        val stats =
+            TrackedThing(
+                0L,
+                "stats",
+                "value1",
+                TrackedThing.Type.FiveEStats,
+                6,
+                groupId = originalTrackedThingGroupId
+            )
+        val equipment =
+            TrackedThing(
+                0L,
+                "equipment",
+                "value2",
+                TrackedThing.Type.Equipment,
+                7,
+                groupId = originalTrackedThingGroupId
+            )
+        val fileShortcuts =
+            TrackedThing(
+                0L,
+                "file_shortcuts",
+                "value3",
+                TrackedThing.Type.FileShortcuts,
+                8,
+                groupId = originalTrackedThingGroupId
+            )
+        val trackedThings =
+            listOf(
+                ability,
+                health,
+                number,
+                percentage,
+                spellSlot,
+                spellList,
+                stats,
+                equipment,
+                fileShortcuts
+            )
         trackedThingDao.insertAll(trackedThings)
         val file = PlatformFile(FileKit.filesDir, "export.json")
 
         // When
-        exportSubViewModel.exportAllRequested()
-        delay(timeMillis = 100) // The user needs to pick a file, so a delay is simulated
-        exportSubViewModel.exportData(file)
+        viewModel.exportAll(fileSaverLauncher = null)
+        viewModel.onFileSaveLocationSelected(file)
         jsonImportAllUseCase.import(file.readString())
 
         // Then
@@ -353,6 +429,9 @@ class ImportExportTrackerDataTest {
         assertTrackedThingEqual(importedTrackedThings[3], percentage)
         assertSpellSlotEqual(importedTrackedThings[4], spellSlot)
         assertTrackedThingEqual(importedTrackedThings[5], spellList)
+        assertTrackedThingEqual(importedTrackedThings[6], stats)
+        assertTrackedThingEqual(importedTrackedThings[7], equipment)
+        assertTrackedThingEqual(importedTrackedThings[8], fileShortcuts)
     }
 
     private fun assertHealthEqual(actual: TrackedThing, expected: TrackedThing) {

@@ -20,6 +20,9 @@ import org.jetbrains.compose.resources.StringResource
 class ImportViewModel(
     private val importAllUseCase: IImportAllUseCase
 ) : ViewModel() {
+
+    val supportedExtensions = arrayOf(".json", "orcbrew")
+
     val screenState: StateFlow<IImportScreenState>
         get() = _screenState
     private val _screenState =
@@ -27,21 +30,18 @@ class ImportViewModel(
     private val _toastMessage = MutableStateFlow<ToastMessage?>(null)
     val toastMessage: Flow<ToastMessage?> = _toastMessage
 
-    fun fileSelected(file: PlatformFile?) {
-        if (file == null) return
+    fun filesSelected(files: List<PlatformFile>) {
         viewModelScope.launch {
             _screenState.emit(IImportScreenState.Importing)
-            val content = file.readString()
-            val result: Result<Boolean> = importAllUseCase.import(content)
-            if (result.isFailure) {
-                showToastAndResetScreen(Res.string.failed_to_import_data_toast)
-            } else {
-                val successfullyImported = result.getOrDefault(false)
-                if (successfullyImported) {
-                    showToastAndResetScreen(Res.string.successfully_imported_data_toast)
-                } else {
-                    showToastAndResetScreen(Res.string.partially_imported_data_toast)
-                }
+            val result = files.map { file ->
+                val content = file.readString()
+                importAllUseCase.import(content)
+            }
+            val successes = result.count { it.isSuccess && it.getOrDefault(false) }
+            when (successes) {
+                0 -> showToastAndResetScreen(Res.string.failed_to_import_data_toast)
+                result.size -> showToastAndResetScreen(Res.string.successfully_imported_data_toast)
+                else -> showToastAndResetScreen(Res.string.partially_imported_data_toast)
             }
         }
     }

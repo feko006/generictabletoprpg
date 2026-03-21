@@ -1,0 +1,16 @@
+{
+  "sources": [],
+  "trackedGroups": [
+    {
+      "name": "import_file_shortcuts_group",
+      "trackedThings": [
+        {
+          "name": "file_shortcuts",
+          "value": "value",
+          "type": "FileShortcuts",
+          "index": 9
+        }
+      ]
+    }
+  ]
+}

@@ -1,11 +1,19 @@
 package com.feko.generictabletoprpg.shared.features.tracker.ui
 
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import com.feko.generictabletoprpg.Res
+import com.feko.generictabletoprpg.add
+import com.feko.generictabletoprpg.add_existing
+import com.feko.generictabletoprpg.add_new
+import com.feko.generictabletoprpg.delete
+import com.feko.generictabletoprpg.edit
 import com.feko.generictabletoprpg.heart_minus
 import com.feko.generictabletoprpg.heart_plus
+import com.feko.generictabletoprpg.list
 import com.feko.generictabletoprpg.shared.common.ui.components.addIcon
 import com.feko.generictabletoprpg.shared.common.ui.components.keyboardArrowDownIcon
 import com.feko.generictabletoprpg.shared.common.ui.components.keyboardArrowUpIcon
@@ -18,6 +26,7 @@ import com.feko.generictabletoprpg.shared.features.tracker.model.canAdd
 import com.feko.generictabletoprpg.shared.features.tracker.model.canSubtract
 import com.feko.generictabletoprpg.shield_with_heart
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun PercentageActions(
@@ -132,7 +141,9 @@ fun AbilityActions(
 
 @Composable
 fun SpellSlotActions(
+    canAdd: Boolean,
     canSubtract: Boolean,
+    onAddClicked: () -> Unit,
     onSubtractClicked: () -> Unit,
     canRefresh: Boolean,
     onRefreshClicked: () -> Unit,
@@ -140,6 +151,12 @@ fun SpellSlotActions(
     onDeleteButtonClicked: () -> Unit
 ) {
     ItemActionsBase(onEditButtonClicked, onDeleteButtonClicked) {
+        IconButton(
+            onClick = onAddClicked,
+            enabled = canAdd
+        ) {
+            Icon(addIcon, "")
+        }
         IconButton(
             onClick = onSubtractClicked,
             enabled = canSubtract
@@ -244,4 +261,88 @@ fun HitDiceActions(
             Icon(addIcon, "")
         }
     }
+}
+
+@Composable
+fun EquipmentDropDownActions(
+    closeContextMenu: () -> Unit,
+    onOpenList: () -> Unit,
+    onAddExisting: () -> Unit,
+    onAddNew: () -> Unit,
+    onEdit: () -> Unit,
+    onDelete: () -> Unit
+) {
+    DropdownMenuItem(
+        text = { Text(stringResource(Res.string.list)) },
+        onClick = {
+            closeContextMenu()
+            onOpenList()
+        }
+    )
+    DropdownMenuItem(
+        text = { Text(stringResource(Res.string.add_existing)) },
+        onClick = {
+            closeContextMenu()
+            onAddExisting()
+        }
+    )
+    DropdownMenuItem(
+        text = { Text(stringResource(Res.string.add_new)) },
+        onClick = {
+            closeContextMenu()
+            onAddNew()
+        }
+    )
+    DropdownMenuItem(
+        text = { Text(stringResource(Res.string.edit)) },
+        onClick = {
+            closeContextMenu()
+            onEdit()
+        }
+    )
+    DropdownMenuItem(
+        text = { Text(stringResource(Res.string.delete)) },
+        onClick = {
+            closeContextMenu()
+            onDelete()
+        }
+    )
+}
+
+@Composable
+fun FileShortcutsDropDownActions(
+    closeContextMenu: () -> Unit,
+    onOpenList: () -> Unit,
+    onAdd: () -> Unit,
+    onEdit: () -> Unit,
+    onDelete: () -> Unit
+) {
+    DropdownMenuItem(
+        text = { Text(stringResource(Res.string.list)) },
+        onClick = {
+            closeContextMenu()
+            onOpenList()
+        }
+    )
+    DropdownMenuItem(
+        text = { Text(stringResource(Res.string.add)) },
+        onClick = {
+            closeContextMenu()
+            onAdd()
+        }
+    )
+    DropdownMenuItem(
+        text = { Text(stringResource(Res.string.edit)) },
+        onClick = {
+            closeContextMenu()
+            onEdit()
+        }
+    )
+    DropdownMenuItem(
+        text = { Text(stringResource(Res.string.delete)) },
+        onClick = {
+            closeContextMenu()
+            onDelete()
+        }
+    )
 }

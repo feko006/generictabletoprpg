@@ -15,7 +15,41 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
-## [1.4.0]
+## [1.5.0]
+
+### Added
+
+- Magic items from SRD v5.2.1 to base content
+- Equipment list trackable
+  - Add existing or create new entry
+  - Easily search through and preview details of added equipment
+  - Keep track of item quantity
+- File shortcuts trackable
+  - Add links to files for easy access
+  - Open added files in the default system app (if one exists)
+  - Fix broken shortcuts in case a file is moved, renamed or deleted
+- Drag and drop capability for importing data in the desktop version of the application
+- Shortcut buttons for bumping an input fields value up or down by 1 in certain dialogs
+- Menu for selecting the amount of legendary actions to be used in the encounter screen
+
+### Fixed
+
+- Value preview of trackables (e.g. number of available spell slots) not having localized subtext.
+
+### Changed
+
+- Selecting spells to add to a spell list trackable, or equipment to add to the equipment list
+  trackable now supports multiple selection.
+- Spell slot trackables now allow restoring spell slots.
+
+## [1.4.1] - 2025-11-17
+
+### Fixed
+
+- Desktop app database being saved in temporary location causing data loss at random points in time,
+  or when updating the application
+
+## [1.4.0] - 2025-11-08
 
 ### Known Issues
 
@@ -38,13 +72,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Project is now set up for Kotlin Multiplatform
-  - Project structure has changed
-  - Many libraries have been changed and updated
-  - Project now uses Jetpack Navigation 3 instead of Compose Destinations
+    - Project structure has changed
+    - Many libraries have been changed and updated
+    - Project now uses Jetpack Navigation 3 instead of Compose Destinations
 - UI refresh
-  - Material 3 Expressive theme and components
-  - Spell filter improvements
-  - Encounter screen refresh
+    - Material 3 Expressive theme and components
+    - Spell filter improvements
+    - Encounter screen refresh
 
 ### Removed
 

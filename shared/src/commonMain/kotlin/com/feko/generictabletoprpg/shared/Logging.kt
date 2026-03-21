@@ -1,5 +1,8 @@
 package com.feko.generictabletoprpg.shared
 
-import io.github.oshai.kotlinlogging.KotlinLogging
+interface ILogger {
+    fun debug(tag: String? = null, message: () -> String)
+    fun error(throwable: Throwable? = null, tag: String? = null, message: () -> String)
+}
 
-val logger = KotlinLogging.logger { }
+expect val logger: ILogger

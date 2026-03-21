@@ -14,13 +14,12 @@ height="80">](https://f-droid.org/packages/com.feko.generictabletoprpg/)
 Or download the latest APK from
 the [Releases Section](https://github.com/feko006/generictabletoprpg/releases/latest).
 
-Or, register as a closed tester
-via [Web](https://play.google.com/apps/testing/com.feko.generictabletoprpg)
-or [Android](https://play.google.com/store/apps/details?id=com.feko.generictabletoprpg).
+Or, get in contact via the [Discord Channel](https://discord.gg/7XCKhDtg) to become a closed tester
+on the Google Play Store.
 
-Note: Closed testing is a prerequisite to making the application public on the Google Play Store. If
-eventually this app reaches a certain amount of users, this section will be updated with the public
-link to the Google Play Store!
+Note: This app is not on the Google Play Store because closed testing is a prerequisite to making
+the application public on the Google Play Store. If eventually this app reaches a certain amount of
+users, this section will be updated with the public link to the Google Play Store!
 
 Also, feedback is very welcome and appreciated!
 
@@ -61,11 +60,13 @@ with a generic tracker.
 - HP + temporary HP too!
 - Abilities
 - Spell slots
-- Arbitrary number, e.g. for gold, arrows...
+- Arbitrary number, e.g. for gold...
 - Known & prepared spells + more
-- Text e.g. for notes, items...
+- Text e.g. for notes...
 - Hit dice
-- Stats :new:
+- Stats
+- Equipment :new:
+- File shortcuts :new:
 
 More types will be supported in the future.
 
@@ -102,6 +103,8 @@ install the app on a new device.
 ## Disclaimers
 
 - This app is not affiliated with *WotC* or *The Dungeon Master's Vault*.
+- This app contains content from the D&D fifth edition SRD, which you can
+  find [here](https://www.dndbeyond.com/srd).
 
 ## License
 

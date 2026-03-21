@@ -5,12 +5,16 @@ import com.feko.generictabletoprpg.shared.common.domain.model.Damage
 import com.feko.generictabletoprpg.shared.common.domain.model.DoNotObfuscate
 import com.feko.generictabletoprpg.shared.common.domain.model.IFromSource
 import com.feko.generictabletoprpg.shared.common.domain.model.IIdentifiable
+import com.feko.generictabletoprpg.shared.common.domain.model.IKClassProvider
 import com.feko.generictabletoprpg.shared.common.domain.model.INamed
+import com.feko.generictabletoprpg.shared.features.tracker.model.IEquipmentItem
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlin.reflect.KClass
 
-
-@DoNotObfuscate
 @Serializable
+@DoNotObfuscate
+@SerialName("weapon")
 data class Weapon(
     override val id: Long = 0,
     override val name: String,
@@ -31,7 +35,9 @@ data class Weapon(
     val subType: String
 ) : IIdentifiable,
     INamed,
-    IFromSource {
+    IFromSource,
+    IKClassProvider,
+    IEquipmentItem {
 
     init {
         if (!isMelee && !isRanged) {
@@ -112,6 +118,9 @@ data class Weapon(
             return builder.toString()
         }
 
+    override val kclass: KClass<*>
+        get() = Weapon::class
+
     // In feat
     @DoNotObfuscate
     @Serializable
@@ -146,18 +155,14 @@ data class Weapon(
                 && processEdnMapPort.containsKey(weaponMap, ":damage-die-count")
             ) {
                 val damageType =
-                    processEdnMapPort.getValue<Any>(weaponMap, ":damage-type")
-                        .toString()
-                        .substring(1)
+                    processEdnMapPort.getValue<String>(weaponMap, ":damage-type")
                 val damageDie =
                     processEdnMapPort.getValue<Int>(weaponMap, ":damage-die")
                 val damageDieCount =
                     processEdnMapPort.getValue<Int>(weaponMap, ":damage-die-count")
                 damage = Damage(damageType, damageDie, damageDieCount)
             }
-            val type = processEdnMapPort.getValue<Any>(weaponMap, ":type")
-                .toString()
-                .substring(1)
+            val type = processEdnMapPort.getValue<String>(weaponMap, ":type")
             var range: RangedWeaponRange? = null
             if (processEdnMapPort.containsKey(weaponMap, ":range")) {
                 range = RangedWeaponRange.createFromOrcbrewData(
