@@ -1,5 +1,6 @@
 package com.feko.generictabletoprpg.shared.common.ui.components
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -33,15 +34,18 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.hapticfeedback.HapticFeedback
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.feko.generictabletoprpg.Res
 import com.feko.generictabletoprpg.empty_list
 import com.feko.generictabletoprpg.level
 import com.feko.generictabletoprpg.search
 import com.feko.generictabletoprpg.shared.common.domain.model.IIdentifiable
+import com.feko.generictabletoprpg.shared.common.domain.model.IKClassProvider
 import com.feko.generictabletoprpg.shared.common.domain.model.INamed
 import com.feko.generictabletoprpg.shared.common.domain.model.IText
 import com.feko.generictabletoprpg.shared.common.domain.model.IText.StringResourceText.Companion.asText
@@ -108,7 +112,7 @@ fun <TViewModel, T> SearchableReorderableLazyItems(
     viewModel: TViewModel,
     item: @Composable LazyStaggeredGridItemScope.(T, Boolean, ReorderableCollectionItemScope) -> Unit,
     modifier: Modifier = Modifier,
-    addFabButtonSpacer: Boolean = false,
+    bottomContentPadding: Dp = 0.dp,
     uniqueItemKey: (Any) -> Any = { (it as IIdentifiable).id },
     onItemReordered: (LazyStaggeredGridItemInfo, LazyStaggeredGridItemInfo) -> Unit = { _, _ -> },
     searchFieldHint: IText = Res.string.search.asText()
@@ -133,7 +137,7 @@ fun <TViewModel, T> SearchableReorderableLazyItems(
                     StaggeredGridCells.Fixed(columnCount(maxWidth)),
                     Modifier.fillMaxSize(),
                     gridState,
-                    contentPadding = PaddingValues(bottom = if (addFabButtonSpacer) 40.dp else 0.dp),
+                    contentPadding = PaddingValues(bottom = bottomContentPadding),
                     verticalItemSpacing = LocalDimens.current.gapSmall,
                     horizontalArrangement = Arrangement.spacedBy(LocalDimens.current.gapSmall)
                 ) {
@@ -270,17 +274,46 @@ fun NoItemsIndicator() {
 }
 
 @Composable
-fun <T> LazyStaggeredGridItemScope.OverviewItem(item: T, modifier: Modifier = Modifier) {
+fun <T> LazyStaggeredGridItemScope.OverviewItem(
+    item: T,
+    modifier: Modifier = Modifier,
+    isHighlighted: Boolean = false,
+    supportingText: IText? = null
+) {
     Card(shape = MaterialTheme.shapes.extraLarge) {
-        ListItem(
-            headlineContent = { Text((item as INamed).name) },
-            supportingContent = {
-                if (item is Spell) {
-                    Text("${stringResource(Res.string.level)} ${item.level}, ${item.school}")
-                }
-            },
-            modifier = modifier.animateItem(),
-            colors = ListItemDefaults.colors(containerColor = CardDefaults.cardColors().containerColor)
-        )
+        Box {
+            ListItem(
+                headlineContent = { Text((item as INamed).name) },
+                supportingContent = {
+                    if (supportingText != null) {
+                        Text(supportingText.text())
+                    } else {
+                        var supportingText: String? = null
+                        if (item is IKClassProvider) {
+                            supportingText = getTypeName(item.kclass)
+                        }
+                        if (item is Spell) {
+                            supportingText +=
+                                ", ${stringResource(Res.string.level)} ${item.level}, ${item.school}"
+                        }
+                        supportingText?.let { Text(it) }
+                    }
+                },
+                trailingContent = {
+                    if (isHighlighted) {
+                        Icon(doneIcon, "")
+                    }
+                },
+                modifier = modifier.animateItem(),
+                colors = ListItemDefaults.colors(containerColor = CardDefaults.cardColors().containerColor)
+            )
+            if (isHighlighted) {
+                Box(
+                    Modifier
+                        .matchParentSize()
+                        .background(Color.White.copy(alpha = 0.2f))
+                )
+            }
+        }
     }
 }

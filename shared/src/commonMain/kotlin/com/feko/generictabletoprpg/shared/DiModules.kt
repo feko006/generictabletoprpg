@@ -7,6 +7,7 @@ import com.feko.generictabletoprpg.shared.common.domain.IParseEdnAsMap
 import com.feko.generictabletoprpg.shared.common.domain.IProcessEdnMap
 import com.feko.generictabletoprpg.shared.common.domain.IUserPreferences
 import com.feko.generictabletoprpg.shared.common.ui.viewmodel.AppViewModel
+import com.feko.generictabletoprpg.shared.common.ui.viewmodel.ResultViewModel
 import com.feko.generictabletoprpg.shared.features.action.actionModule
 import com.feko.generictabletoprpg.shared.features.ammunition.ammunitionModule
 import com.feko.generictabletoprpg.shared.features.armor.armorModule
@@ -17,12 +18,14 @@ import com.feko.generictabletoprpg.shared.features.encounter.encounterModule
 import com.feko.generictabletoprpg.shared.features.feat.featModule
 import com.feko.generictabletoprpg.shared.features.filter.filterModule
 import com.feko.generictabletoprpg.shared.features.io.ioModule
+import com.feko.generictabletoprpg.shared.features.magicitem.magicItemModule
 import com.feko.generictabletoprpg.shared.features.searchall.searchAllModule
 import com.feko.generictabletoprpg.shared.features.spell.spellModule
 import com.feko.generictabletoprpg.shared.features.tracker.trackerGroupsModule
 import com.feko.generictabletoprpg.shared.features.tracker.trackerModule
 import com.feko.generictabletoprpg.shared.features.weapon.weaponModule
 import org.koin.core.module.dsl.singleOf
+import org.koin.core.module.dsl.viewModel
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
@@ -37,6 +40,7 @@ val commonModule = module {
 
     // VMs
     viewModelOf(::AppViewModel)
+    viewModel<ResultViewModel<Any>> { ResultViewModel() }
 }
 
 
@@ -56,5 +60,6 @@ val diModules = listOf(
     searchAllModule,
     filterModule,
     encounterModule,
-    baseContentModule
+    baseContentModule,
+    magicItemModule
 )

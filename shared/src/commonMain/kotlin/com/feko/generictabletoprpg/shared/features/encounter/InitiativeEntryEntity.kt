@@ -29,7 +29,6 @@ data class InitiativeEntryEntity(
     val hasHealth by lazy { health > 0 }
     val hasArmorClass by lazy { armorClass > 0 }
     val hasLegendaryActions by lazy { legendaryActions > 0 }
-    val canUseLegendaryAction by lazy { availableLegendaryActions > 0 && !hasTurn && !isLairAction }
     val hasSpellSaveDc by lazy { spellSaveDc > 0 }
     val hasSpellAttackModifier by lazy { spellAttackModifier > 0 }
     val isSavedInDatabase by lazy { id > 0L }
@@ -42,6 +41,9 @@ data class InitiativeEntryEntity(
     val isNameValid by lazy { name.isNotEmpty() }
     val isEntryValid by lazy { isNameValid }
     val printableLegendaryActions by lazy { "$availableLegendaryActions/$legendaryActions" }
+
+    fun canUseLegendaryActions(count: Int) =
+        availableLegendaryActions >= count && !hasTurn && !isLairAction
 
     companion object {
         val Empty = InitiativeEntryEntity(0L, "", 0, 0, 0, 0, 0, 0, 0, false, false, false)

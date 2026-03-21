@@ -63,6 +63,7 @@ import com.feko.generictabletoprpg.shared.common.ui.theme.LocalDimens
 import com.feko.generictabletoprpg.shared.common.ui.theme.ScreenSize
 import com.feko.generictabletoprpg.shared.common.ui.theme.Typography
 import com.feko.generictabletoprpg.shared.features.spell.Spell
+import com.feko.generictabletoprpg.shared.features.tracker.model.IEquipmentItem
 import com.feko.generictabletoprpg.shared.features.tracker.model.StatEntry
 import com.feko.generictabletoprpg.shared.features.tracker.model.StatSkillEntry
 import com.feko.generictabletoprpg.shared.features.tracker.model.StatsContainer
@@ -79,12 +80,31 @@ import com.feko.generictabletoprpg.spell_attack_additional_bonus
 import com.feko.generictabletoprpg.spell_save_dc_additional_bonus
 import com.feko.generictabletoprpg.spellcasting_modifier
 import com.feko.generictabletoprpg.text
+import io.github.vinceglb.filekit.dialogs.FileKitType
+import io.github.vinceglb.filekit.dialogs.compose.PickerResultLauncher
+import io.github.vinceglb.filekit.dialogs.compose.rememberFilePickerLauncher
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-fun TrackerAlertDialog(viewModel: TrackerViewModel, onSpellClick: (Spell) -> Unit) {
+fun TrackerAlertDialog(
+    viewModel: TrackerViewModel,
+    onSpellClick: (Spell) -> Unit,
+    onEquipmentClick: (IEquipmentItem) -> Unit
+) {
     val dialog by viewModel.dialog.collectAsState(ITrackerDialog.None)
-    TrackerAlertDialog(dialog, viewModel, onSpellClick)
+    val fixBrokenFileShortcutPickFileLauncher =
+        rememberFilePickerLauncher(FileKitType.File()) { file ->
+            if (file != null) {
+                viewModel.resolveBrokenFileShortcutDialog(file)
+            }
+        }
+    TrackerAlertDialog(
+        dialog,
+        viewModel,
+        onSpellClick,
+        onEquipmentClick,
+        fixBrokenFileShortcutPickFileLauncher
+    )
 }
 
 @Composable
@@ -92,6 +112,8 @@ private fun TrackerAlertDialog(
     dialog: ITrackerDialog,
     viewModel: TrackerViewModel,
     onSpellClick: (Spell) -> Unit,
+    onEquipmentClick: (IEquipmentItem) -> Unit,
+    fixBrokenFileShortcutPickFileLauncher: PickerResultLauncher
 ) {
     when (dialog) {
         is ITrackerDialog.SpellListDialog ->
@@ -166,6 +188,21 @@ private fun TrackerAlertDialog(
                 viewModel::editStatsDialogValueUpdated,
                 viewModel::dismissDialog
             )
+
+        is ITrackerDialog.EquipmentListDialog ->
+            if (LocalDimens.current.screenSize == ScreenSize.Compact) {
+                EquipmentListDialog(dialog, viewModel, onEquipmentClick)
+                EquipmentListSecondaryDialog(dialog, viewModel)
+            }
+
+        is ITrackerDialog.EditEquipmentItemDialog -> AddNewEquipmentItemDialog(dialog, viewModel)
+        is ITrackerDialog.EditFileShortcutNameDialog ->
+            EditFileShortcutNameDialog(dialog, viewModel, viewModel::dismissDialog)
+
+        is ITrackerDialog.FileShortcutsDialog -> {
+            FileShortcutsDialog(dialog, viewModel)
+            FileShortcutsSecondaryDialog(dialog, viewModel, fixBrokenFileShortcutPickFileLauncher)
+        }
 
         is ITrackerDialog.None -> Unit
     }
@@ -341,8 +378,7 @@ fun PreviewStatSkillsDialog(
         val scrollState = rememberScrollState()
         BoxWithScrollIndicator(
             scrollState,
-            CardDefaults.cardColors().containerColor,
-            Modifier.weight(1f),
+            CardDefaults.cardColors().containerColor
         ) {
             Column(Modifier.verticalScroll(scrollState)) {
                 HeaderWithDividers(stringResource(Res.string.passive_skills))
@@ -396,7 +432,10 @@ private fun EditDialog(
             OutlinedDialogButton(stringResource(Res.string.cancel), onDismiss)
         }
     ) {
-        val isSpellList = editedTrackedThing.type == TrackedThing.Type.SpellList
+        val showExtraValueInputField = editedTrackedThing.type == TrackedThing.Type.SpellSlot
+        val showValueInputField =
+            editedTrackedThing.type != TrackedThing.Type.SpellList
+                    && editedTrackedThing.type != TrackedThing.Type.Equipment
         val onFormSubmit = {
             if (canConfirmEditOperation) {
                 onConfirm(dialog.editedItem)
@@ -411,12 +450,13 @@ private fun EditDialog(
             },
             onFormSubmit = onFormSubmit,
             keyboardOptions = KeyboardOptions(
-                imeAction = if (isSpellList) ImeAction.Done else ImeAction.Next
+                imeAction =
+                    if (!showExtraValueInputField && !showValueInputField) ImeAction.Done
+                    else ImeAction.Next
             ),
             autoFocus = true
         )
-        val isSpellSlot = editedTrackedThing.type == TrackedThing.Type.SpellSlot
-        if (isSpellSlot) {
+        if (showExtraValueInputField) {
             NumberDialogInputField(
                 value = editedTrackedThing.level,
                 label = stringResource(Res.string.level),
@@ -428,36 +468,35 @@ private fun EditDialog(
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Number,
                     imeAction = ImeAction.Next
-                )
+                ),
+                allowIncrementDecrement = true
             )
         }
-        EditDialogValueInputField(
-            isSpellList,
-            editedTrackedThing,
-            {
-                onValueUpdate(
-                    editedTrackedThing
-                        .copy()
-                        .apply {
-                            setNewValue(it)
-                            managedDefaultValue = it
-                        }
-                )
-            },
-            onFormSubmit
-        )
+        if (showValueInputField) {
+            EditDialogValueInputField(
+                editedTrackedThing,
+                {
+                    onValueUpdate(
+                        editedTrackedThing
+                            .copy()
+                            .apply {
+                                setNewValue(it)
+                                managedDefaultValue = it
+                            }
+                    )
+                },
+                onFormSubmit
+            )
+        }
     }
 }
 
 @Composable
 private fun EditDialogValueInputField(
-    isSpellList: Boolean,
     editedTrackedThing: TrackedThing,
     onValueChange: (String) -> Unit,
     onFormSubmit: () -> Unit
 ) {
-    if (isSpellList) return
-
     if (editedTrackedThing.type == TrackedThing.Type.Text) {
         DialogInputField(
             value = editedTrackedThing.value,
@@ -541,9 +580,7 @@ fun StatsEditDialog(
         BoxWithScrollIndicator(
             scrollState,
             backgroundColor = CardDefaults.cardColors().containerColor,
-            Modifier
-                .weight(1f)
-                .padding(top = 8.dp)
+            Modifier.padding(top = 8.dp)
         ) {
             Column(Modifier.verticalScroll(scrollState)) {
                 Text(
@@ -571,7 +608,8 @@ fun StatsEditDialog(
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Number,
                         imeAction = ImeAction.Next
-                    )
+                    ),
+                    allowIncrementDecrement = true
                 )
                 NumberDialogInputField(
                     value = statsContainer.initiativeAdditionalBonus,
@@ -587,7 +625,8 @@ fun StatsEditDialog(
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Number,
                         imeAction = ImeAction.Next
-                    )
+                    ),
+                    allowIncrementDecrement = true
                 )
                 NumberDialogInputField(
                     value = statsContainer.spellSaveDcAdditionalBonus,
@@ -603,7 +642,8 @@ fun StatsEditDialog(
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Number,
                         imeAction = ImeAction.Next
-                    )
+                    ),
+                    allowIncrementDecrement = true
                 )
                 NumberDialogInputField(
                     value = statsContainer.spellAttackAdditionalBonus,
@@ -619,7 +659,8 @@ fun StatsEditDialog(
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Number,
                         imeAction = ImeAction.Next
-                    )
+                    ),
+                    allowIncrementDecrement = true
                 )
                 for ((statIndex, statEntry) in statsContainer.stats.withIndex()) {
                     Spacer(Modifier.height(8.dp))
@@ -685,7 +726,8 @@ private fun StatsStatEntry(
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Number,
                 imeAction = ImeAction.Next
-            )
+            ),
+            allowIncrementDecrement = true
         )
         NumberDialogInputField(
             value = statEntry.savingThrowAdditionalBonus,
@@ -704,7 +746,8 @@ private fun StatsStatEntry(
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Number,
                 imeAction = ImeAction.Next
-            )
+            ),
+            allowIncrementDecrement = true
         )
     }
     CheckboxWithText(
@@ -811,7 +854,8 @@ private fun StatsStatEntrySkill(
                     unfocusedContainerColor = Color.Transparent,
                     disabledContainerColor = Color.Transparent,
                     errorContainerColor = Color.Transparent
-                )
+                ),
+                allowIncrementDecrement = true
             )
         }
         CheckboxWithText(

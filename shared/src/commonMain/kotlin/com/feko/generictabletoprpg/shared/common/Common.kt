@@ -7,12 +7,14 @@ import com.feko.generictabletoprpg.armor
 import com.feko.generictabletoprpg.condition
 import com.feko.generictabletoprpg.disease
 import com.feko.generictabletoprpg.feat
+import com.feko.generictabletoprpg.magic_item
 import com.feko.generictabletoprpg.shared.features.action.Action
 import com.feko.generictabletoprpg.shared.features.ammunition.Ammunition
 import com.feko.generictabletoprpg.shared.features.armor.Armor
 import com.feko.generictabletoprpg.shared.features.condition.Condition
 import com.feko.generictabletoprpg.shared.features.disease.Disease
 import com.feko.generictabletoprpg.shared.features.feat.Feat
+import com.feko.generictabletoprpg.shared.features.magicitem.MagicItem
 import com.feko.generictabletoprpg.shared.features.spell.Spell
 import com.feko.generictabletoprpg.shared.features.weapon.Weapon
 import com.feko.generictabletoprpg.spell
@@ -26,7 +28,8 @@ val appNamesByType = mapOf(
     Disease::class to Res.string.disease,
     Feat::class to Res.string.feat,
     Spell::class to Res.string.spell,
-    Weapon::class to Res.string.weapon
+    Weapon::class to Res.string.weapon,
+    MagicItem::class to Res.string.magic_item
 )
 
 val appTypes = appNamesByType.keys

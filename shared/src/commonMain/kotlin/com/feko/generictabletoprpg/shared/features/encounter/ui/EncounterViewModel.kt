@@ -45,6 +45,14 @@ class EncounterViewModel(private val dao: InitiativeEntryDao) : ViewModel() {
                 EncounterState.TurnInProgress
         }
 
+    val maxAvailableLegendaryActionCount: Flow<Int> =
+        entries.map { entriesList ->
+            entriesList
+                .filter { it.canUseLegendaryActions(1) }
+                .maxOfOrNull { it.availableLegendaryActions }
+                ?: 0
+        }
+
     init {
         viewModelScope.launch {
             entries.collect { entries -> areLairActionsAdded = entries.any { it.isLairAction } }
@@ -84,7 +92,7 @@ class EncounterViewModel(private val dao: InitiativeEntryDao) : ViewModel() {
     fun showCreateNewDialog() =
         _dialog.update {
             IEncounterDialog.EditDialog(
-                InitiativeEntryEntity.Companion.Empty,
+                InitiativeEntryEntity.Empty,
                 isLairActionsButtonVisible = !areLairActionsAdded,
                 IText.StringResourceText(Res.string.add)
             )
@@ -124,7 +132,7 @@ class EncounterViewModel(private val dao: InitiativeEntryDao) : ViewModel() {
 
     fun addLairActions() {
         viewModelScope.launch {
-            dao.insert(InitiativeEntryEntity.Companion.createLairActionEntry())
+            dao.insert(InitiativeEntryEntity.createLairActionEntry())
         }
     }
 
@@ -169,7 +177,9 @@ class EncounterViewModel(private val dao: InitiativeEntryDao) : ViewModel() {
             val entries = entries.first()
             val indexOfCurrentEntry = entries.indexOfFirst { it.hasTurn }
             val currentEntry = entries[indexOfCurrentEntry]
-            if (currentEntry.isLairAction || !entries.any { it.canUseLegendaryAction }) {
+            if (currentEntry.isLairAction
+                || !entries.any { it.canUseLegendaryActions(count = 1) }
+            ) {
                 progressInitiativeInternal()
             } else {
                 dao.setTurnCompleted(currentEntry.id)
@@ -184,39 +194,40 @@ class EncounterViewModel(private val dao: InitiativeEntryDao) : ViewModel() {
         }
     }
 
-    fun progressInitiativeWithLegendaryAction() {
+    fun progressInitiativeWithLegendaryAction(count: Int) {
         viewModelScope.launch {
             val entries = entries.first()
             val entriesWithLegendaryActions =
-                entries.filter { it.canUseLegendaryAction }
+                entries.filter { it.canUseLegendaryActions(count) }
             val numberOfEntriesWithLegendaryActions = entriesWithLegendaryActions.size
             if (numberOfEntriesWithLegendaryActions > 1) {
                 _dialog.update {
-                    IEncounterDialog.PickLegendaryActionDialog(entriesWithLegendaryActions)
+                    IEncounterDialog.PickLegendaryActionDialog(entriesWithLegendaryActions, count)
                 }
             } else if (numberOfEntriesWithLegendaryActions == 1) {
-                useLegendaryActionAndProgressInitiative(entriesWithLegendaryActions.first())
+                useLegendaryActionAndProgressInitiative(entriesWithLegendaryActions.first(), count)
             }
         }
     }
 
     fun useLegendaryActionAndProgressInitiative(
-        initiativeEntryEntity: InitiativeEntryEntity
+        initiativeEntryEntity: InitiativeEntryEntity,
+        count: Int
     ) {
         viewModelScope.launch {
-            useLegendaryAction(initiativeEntryEntity)
+            useLegendaryAction(initiativeEntryEntity, count)
             progressInitiativeInternal()
         }
     }
 
-    private suspend fun useLegendaryAction(entry: InitiativeEntryEntity) {
+    private suspend fun useLegendaryAction(entry: InitiativeEntryEntity, count: Int) {
         _toastMessage.emit(
             ToastMessage(
                 IText.StringResourceText(Res.string.legendary_action_used, arrayOf(entry.name)),
                 _toastMessage
             )
         )
-        dao.update(entry.copy(availableLegendaryActions = entry.availableLegendaryActions - 1))
+        dao.update(entry.copy(availableLegendaryActions = entry.availableLegendaryActions - count))
     }
 
     private suspend fun progressInitiativeInternal() {

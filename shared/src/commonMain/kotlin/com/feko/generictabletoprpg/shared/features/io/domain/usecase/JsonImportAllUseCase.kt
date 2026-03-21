@@ -7,6 +7,7 @@ import com.feko.generictabletoprpg.shared.features.action.Action
 import com.feko.generictabletoprpg.shared.features.condition.Condition
 import com.feko.generictabletoprpg.shared.features.disease.Disease
 import com.feko.generictabletoprpg.shared.features.io.domain.model.AppModel
+import com.feko.generictabletoprpg.shared.features.magicitem.MagicItem
 import com.feko.generictabletoprpg.shared.features.tracker.model.TrackedThing
 import com.feko.generictabletoprpg.shared.features.tracker.model.TrackedThingGroup
 import com.feko.generictabletoprpg.shared.logger
@@ -18,7 +19,8 @@ class JsonImportAllUseCase(
     private val insertConditions: IInsertAllDao<Condition>,
     private val insertDiseases: IInsertAllDao<Disease>,
     private val insertTrackedGroup: IInsertOrUpdateDao<TrackedThingGroup>,
-    private val insertTrackedThings: IInsertAllDao<TrackedThing>
+    private val insertTrackedThings: IInsertAllDao<TrackedThing>,
+    private val insertMagicItems: IInsertAllDao<MagicItem>
 ) : IJsonImportAllUseCase {
     override suspend fun import(content: String): Result<Boolean> {
         try {
@@ -36,6 +38,9 @@ class JsonImportAllUseCase(
 
             val trackedGroupsImported = importTrackedGroups(appModel.trackedGroups)
             results.add(trackedGroupsImported)
+
+            val magicItemsImported = importMagicItems(appModel)
+            results.add(magicItemsImported)
 
             return results.fold(Result.success(true)) { current, result ->
                 val currentResult = current.getOrDefault(false)
@@ -100,15 +105,27 @@ class JsonImportAllUseCase(
 
     private suspend fun importDiseases(appModel: AppModel): Result<Boolean> {
         val diseases = appModel.sources.flatMap { source ->
-            source.diseases.map {
+            source.diseases.onEach {
                 it.source = source.name
-                it
             }
         }
         return if (diseases.isEmpty()) {
             Result.success(true)
         } else {
             insertDiseases.insertAll(diseases)
+        }
+    }
+
+    private suspend fun importMagicItems(appModel: AppModel): Result<Boolean> {
+        val magicItems = appModel.sources.flatMap { source ->
+            source.magicItems.onEach {
+                it.source = source.name
+            }
+        }
+        return if (magicItems.isEmpty()) {
+            Result.success(true)
+        } else {
+            insertMagicItems.insertAll(magicItems)
         }
     }
 }

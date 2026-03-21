@@ -10,7 +10,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import com.feko.generictabletoprpg.Res
+import com.feko.generictabletoprpg.equipment_item
 import com.feko.generictabletoprpg.search_everywhere
 import com.feko.generictabletoprpg.shared.common.domain.model.IText.StringResourceText.Companion.asText
 import com.feko.generictabletoprpg.shared.common.domain.model.IText.StringText.Companion.asText
@@ -23,6 +25,8 @@ import com.feko.generictabletoprpg.shared.common.ui.components.refreshIcon
 import com.feko.generictabletoprpg.shared.common.ui.viewmodel.ResultViewModel
 import com.feko.generictabletoprpg.shared.features.searchall.ui.getUniqueListItemKey
 import com.feko.generictabletoprpg.shared.features.spell.Spell
+import com.feko.generictabletoprpg.shared.features.tracker.model.EquipmentItem
+import com.feko.generictabletoprpg.shared.features.tracker.model.IEquipmentItem
 import com.feko.generictabletoprpg.shared.features.tracker.model.TrackedThing
 import sh.calvin.reorderable.ReorderableCollectionItemScope
 
@@ -30,15 +34,24 @@ import sh.calvin.reorderable.ReorderableCollectionItemScope
 fun TrackerScreen(
     viewModel: TrackerViewModel,
     onNavigationIconClick: () -> Unit,
-    spellSelectionResultViewModel: ResultViewModel<Long>,
+    itemSelectionResultViewModel: ResultViewModel<Any>,
     onNavigateToSpellListScreen: () -> Unit,
     onNavigateToSimpleSpellDetailsScreen: (Spell) -> Unit,
     onOpenDetails: (Any) -> Unit,
-    onSelectSpellRequest: () -> Unit
+    onSelectSpellRequest: () -> Unit,
+    onSelectEquipmentRequest: () -> Unit,
+    onNavigateToEquipmentDetailsScreen: (IEquipmentItem) -> Unit,
+    onNavigateToEquipmentListScreen: () -> Unit
 ) {
-    spellSelectionResultViewModel.selectionResult?.let {
-        spellSelectionResultViewModel.consumeSelectionResult()
-        viewModel.addSpellToList(it)
+    itemSelectionResultViewModel.selectionResult?.let {
+        itemSelectionResultViewModel.consumeSelectionResult()
+        if (it is Collection<*> && it.isNotEmpty()) {
+            if (it.all { item -> item is Spell }) {
+                viewModel.addSpellsToList(it.filterIsInstance<Spell>())
+            } else {
+                viewModel.addItemsToEquipment(it.filterIsInstance<IEquipmentItem>())
+            }
+        }
     }
     Scaffold(
         topBar = {
@@ -70,11 +83,13 @@ fun TrackerScreen(
                     viewModel,
                     onNavigateToSpellListScreen,
                     onOpenDetails,
-                    onSelectSpellRequest
+                    onSelectSpellRequest,
+                    onSelectEquipmentRequest,
+                    onNavigateToEquipmentListScreen
                 )
             },
             Modifier.padding(paddingValues),
-            addFabButtonSpacer = true,
+            bottomContentPadding = 60.dp,
             uniqueItemKey = { getUniqueListItemKey(it) },
             onItemReordered = { from, to -> viewModel.itemReordered(from.index, to.index) },
             searchFieldHint = Res.string.search_everywhere.asText()
@@ -82,7 +97,11 @@ fun TrackerScreen(
     }
     val toastMessage by viewModel.toast.collectAsState(null)
     ToastMessage(toastMessage)
-    TrackerAlertDialog(viewModel, onNavigateToSimpleSpellDetailsScreen)
+    TrackerAlertDialog(
+        viewModel,
+        onNavigateToSimpleSpellDetailsScreen,
+        onNavigateToEquipmentDetailsScreen
+    )
 }
 
 @Composable
@@ -93,7 +112,9 @@ fun LazyStaggeredGridItemScope.TrackerListItem(
     viewModel: TrackerViewModel,
     onNavigateToSpellListScreen: () -> Unit,
     onOpenDetails: (Any) -> Unit,
-    onSelectSpellRequest: () -> Unit
+    onSelectSpellRequest: () -> Unit,
+    onSelectEquipmentRequest: () -> Unit,
+    onNavigateToEquipmentListScreen: () -> Unit
 ) {
     if (item is TrackedThing) {
         when (item.type) {
@@ -116,8 +137,27 @@ fun LazyStaggeredGridItemScope.TrackerListItem(
             TrackedThing.Type.Text -> TextListItem(isDragged, item, scope, viewModel)
             TrackedThing.Type.HitDice -> HitDiceListItem(isDragged, item, scope, viewModel)
             TrackedThing.Type.FiveEStats -> StatsListItem(isDragged, item, scope, viewModel)
+            TrackedThing.Type.Equipment ->
+                EquipmentListItem(
+                    isDragged,
+                    item,
+                    scope,
+                    viewModel,
+                    onSelectEquipmentRequest,
+                    onNavigateToEquipmentListScreen
+                )
+
+            TrackedThing.Type.FileShortcuts ->
+                FileShortcutsListItem(isDragged, item, scope, viewModel)
         }
     } else {
-        OverviewItem(item, Modifier.clickable(onClick = { onOpenDetails(item) }))
+        val supportingText =
+            if (item is EquipmentItem) Res.string.equipment_item.asText()
+            else null
+        OverviewItem(
+            item,
+            Modifier.clickable(onClick = { onOpenDetails(item) }),
+            supportingText = supportingText
+        )
     }
 }

@@ -14,6 +14,7 @@ import com.feko.generictabletoprpg.shared.features.spell.Spell
 import com.feko.generictabletoprpg.somatic
 import com.feko.generictabletoprpg.verbal
 import com.feko.generictabletoprpg.yes
+import kotlin.reflect.KClass
 
 class SpellFilter(
     name: String? = null,
@@ -25,8 +26,8 @@ class SpellFilter(
     val spellComponents: SpellComponentsFilter = SpellComponentsFilter()
 ) : Filter(Spell::class, name) {
 
-    override fun isAccepted(obj: Any): Boolean {
-        var isAccepted = super.isAccepted(obj)
+    override fun isAccepted(obj: Any, type: KClass<*>?): Boolean {
+        var isAccepted = super.isAccepted(obj, type)
         if (!isAccepted) return false
 
         val spell = obj as Spell
@@ -182,3 +183,4 @@ data class SpellComponentsFilter(
     val somatic: Boolean? = null,
     val material: Boolean? = null
 )
+

@@ -4,11 +4,16 @@ import com.feko.generictabletoprpg.shared.common.domain.IProcessEdnMap
 import com.feko.generictabletoprpg.shared.common.domain.model.DoNotObfuscate
 import com.feko.generictabletoprpg.shared.common.domain.model.IFromSource
 import com.feko.generictabletoprpg.shared.common.domain.model.IIdentifiable
+import com.feko.generictabletoprpg.shared.common.domain.model.IKClassProvider
 import com.feko.generictabletoprpg.shared.common.domain.model.INamed
+import com.feko.generictabletoprpg.shared.features.tracker.model.IEquipmentItem
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlin.reflect.KClass
 
-@DoNotObfuscate
 @Serializable
+@DoNotObfuscate
+@SerialName("armor")
 data class Armor(
     override val id: Long = 0,
     override val name: String,
@@ -22,9 +27,14 @@ data class Armor(
     val minimumStrength: Int?
 ) : IIdentifiable,
     INamed,
-    IFromSource {
+    IFromSource,
+    IKClassProvider,
+    IEquipmentItem {
     val weightInLbs
         get() = "$weight lbs"
+
+    override val kclass: KClass<*>
+        get() = Armor::class
 
     companion object {
         fun createFromOrcbrewData(
@@ -32,14 +42,11 @@ data class Armor(
             armorMap: Map<Any, Any>,
             defaultSource: String
         ): Armor {
-            val type = processEdnMapPort.getValue<Any>(armorMap, ":type")
-                .toString()
-                .substring(1)
             return Armor(
                 0,
                 processEdnMapPort.getValue(armorMap, ":name"),
                 defaultSource,
-                type,
+                processEdnMapPort.getValue(armorMap, ":type"),
                 processEdnMapPort.getValueOrDefault<Long?>(armorMap, ":base-ac", null)?.toInt(),
                 processEdnMapPort.getValueOrDefault<Long?>(armorMap, ":max-dex-mod", null)?.toInt(),
                 processEdnMapPort.getValueOrDefault(armorMap, ":stealth-disadvantage", null),

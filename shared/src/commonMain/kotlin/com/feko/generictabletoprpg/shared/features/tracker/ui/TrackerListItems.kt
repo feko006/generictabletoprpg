@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -18,11 +19,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Card
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -44,11 +47,13 @@ import com.feko.generictabletoprpg.book_4_spark
 import com.feko.generictabletoprpg.initiative
 import com.feko.generictabletoprpg.proficiency_bonus
 import com.feko.generictabletoprpg.shared.common.domain.asSignedString
+import com.feko.generictabletoprpg.shared.common.ui.components.GttrpgContextMenu
+import com.feko.generictabletoprpg.shared.common.ui.components.dragIcon
 import com.feko.generictabletoprpg.shared.common.ui.components.draggableHandle
 import com.feko.generictabletoprpg.shared.common.ui.components.longPressDraggableHandle
-import com.feko.generictabletoprpg.shared.common.ui.components.menuIcon
 import com.feko.generictabletoprpg.shared.common.ui.theme.LocalDimens
 import com.feko.generictabletoprpg.shared.common.ui.theme.Typography
+import com.feko.generictabletoprpg.shared.common.ui.theme.compactDimens
 import com.feko.generictabletoprpg.shared.features.tracker.model.SpellListEntry
 import com.feko.generictabletoprpg.shared.features.tracker.model.StatEntry
 import com.feko.generictabletoprpg.shared.features.tracker.model.StatsContainer
@@ -59,6 +64,8 @@ import com.feko.generictabletoprpg.shared.features.tracker.model.printableValue
 import com.feko.generictabletoprpg.shield_with_heart
 import com.feko.generictabletoprpg.spell_attack_bonus
 import com.feko.generictabletoprpg.spell_save_dc
+import io.github.vinceglb.filekit.dialogs.FileKitType
+import io.github.vinceglb.filekit.dialogs.compose.rememberFilePickerLauncher
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import sh.calvin.reorderable.DragGestureDetector
@@ -121,29 +128,71 @@ private fun DefaultTrackableLayout(
                 modifier = Modifier.height(IntrinsicSize.Min),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalAlignment = Alignment.CenterVertically
-            ) firstRow@{
+            ) {
                 Text(
                     trackableName,
                     style = Typography.titleMedium,
                     modifier = Modifier.weight(1f)
                 )
-                if (valuePreview == null) return@firstRow
-                Box(
-                    Modifier
-                        .fillMaxHeight()
-                        .width(1.dp)
-                        .padding(vertical = 4.dp)
-                        .background(Color.Gray)
-                )
-                Column(
-                    verticalArrangement = Arrangement.SpaceAround,
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier.width(85.dp)
-                ) {
-                    valuePreview()
+                if (valuePreview != null) {
+                    Box(
+                        Modifier
+                            .fillMaxHeight()
+                            .width(1.dp)
+                            .padding(vertical = 4.dp)
+                            .background(Color.Gray)
+                    )
+                    Column(
+                        verticalArrangement = Arrangement.SpaceAround,
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier.width(85.dp)
+                    ) {
+                        valuePreview()
+                    }
                 }
             }
             content()
+        }
+    }
+}
+
+@Composable
+fun ContextMenuTrackedThingLayout(
+    trackableName: String,
+    trackableType: TrackedThing.Type,
+    scope: ReorderableCollectionItemScope,
+    interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
+    valuePreview: @Composable (() -> Unit)? = null,
+    contextMenuItems: @Composable ColumnScope.(closeContextMenu: () -> Unit) -> Unit
+) {
+    Column {
+        val dimens = LocalDimens.current
+        trackableType.nameResource?.let { type ->
+            Text(
+                stringResource(type),
+                Modifier.padding(start = dimens.paddingSmall, top = dimens.paddingSmall),
+                style = Typography.labelSmall
+            )
+        }
+        Row(
+            Modifier.height(IntrinsicSize.Min),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            ReorderHandle(scope, interactionSource)
+            Text(trackableName, style = Typography.titleMedium, modifier = Modifier.weight(1f))
+            if (valuePreview != null) {
+                Spacer(Modifier.width(dimens.gapSmall))
+                valuePreview()
+            }
+            var contextMenuExpanded by remember { mutableStateOf(false) }
+            GttrpgContextMenu(
+                contextMenuExpanded,
+                onDropdownExpandedStateChanged = { contextMenuExpanded = it }
+            ) {
+                contextMenuItems {
+                    contextMenuExpanded = false
+                }
+            }
         }
     }
 }
@@ -163,7 +212,7 @@ fun AbilityListItem(
             interactionSource,
             valuePreview = {
                 Text(ability.printableValue)
-                Text(ability.type.name, style = Typography.bodySmall)
+                Text(stringResource((ability.type.nameResource!!)), style = Typography.bodySmall)
             }) {
             AbilityActions(
                 canSubtract = ability.canSubtract,
@@ -192,13 +241,13 @@ fun HitDiceListItem(
             interactionSource,
             valuePreview = {
                 Text(hitDice.printableValue)
-                Text(hitDice.type.name, style = Typography.bodySmall)
+                Text(stringResource(hitDice.type.nameResource!!), style = Typography.bodySmall)
             }) {
             HitDiceActions(
                 canSubtract = hitDice.canSubtract,
                 onSubtractClicked = { viewModel.reduceByOne(hitDice) },
                 canAdd = hitDice.canAdd,
-                onAddClicked = { viewModel.restoreHitDie(hitDice) },
+                onAddClicked = { viewModel.addOne(hitDice) },
                 onEditButtonClicked = { viewModel.showEditDialog(hitDice) },
                 onDeleteButtonClicked = { viewModel.deleteItemRequested(hitDice) }
             )
@@ -248,7 +297,7 @@ fun NumberListItem(
             interactionSource,
             valuePreview = {
                 Text(number.printableValue)
-                Text(number.type.name, style = Typography.bodySmall)
+                Text(stringResource(number.type.nameResource!!), style = Typography.bodySmall)
             }) {
             NumberActions(
                 number,
@@ -292,7 +341,7 @@ fun HealthListItem(
                         )
                     }
                 }
-                Text(health.type.name, style = Typography.bodySmall)
+                Text(stringResource(health.type.nameResource!!), style = Typography.bodySmall)
             }) {
             HealthActions(
                 health,
@@ -363,7 +412,7 @@ fun SpellListItemContent(
         scope,
         valuePreview = {
             Text(spellList.printableValue)
-            Text(spellList.type.name, style = Typography.bodySmall)
+            Text(stringResource(spellList.type.nameResource!!), style = Typography.bodySmall)
         }) {
         @Suppress("UNCHECKED_CAST")
         (SpellListActions(
@@ -392,12 +441,17 @@ fun SpellSlotListItem(
             valuePreview = {
                 Text(spellSlot.printableValue)
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) row@{
-                    Text(spellSlot.type.name, style = Typography.bodySmall)
+                    Text(
+                        stringResource(spellSlot.type.nameResource!!),
+                        style = Typography.bodySmall
+                    )
                     Text("Lv ${spellSlot.level}", style = Typography.bodySmall)
                 }
             }) {
             SpellSlotActions(
+                canAdd = spellSlot.canAdd,
                 canSubtract = spellSlot.canSubtract,
+                onAddClicked = { viewModel.addOne(spellSlot) },
                 onSubtractClicked = { viewModel.reduceByOne(spellSlot) },
                 canRefresh = spellSlot.canAdd,
                 onRefreshClicked = { viewModel.resetValueToDefault(spellSlot) },
@@ -508,6 +562,91 @@ fun TextListItem(
 }
 
 @Composable
+fun EquipmentListItem(
+    isDragged: Boolean,
+    equipment: TrackedThing,
+    scope: ReorderableCollectionItemScope,
+    viewModel: TrackerViewModel,
+    onSelectEquipmentRequest: () -> Unit,
+    onNavigateToEquipmentListScreen: () -> Unit
+) {
+    val interactionSource = remember { MutableInteractionSource() }
+    val screenSize = LocalDimens.current.screenSize
+    TrackedThingListItem(
+        isDragged,
+        scope,
+        interactionSource,
+        onItemClicked = {
+            viewModel.showEquipmentListDialog(
+                equipment,
+                screenSize,
+                onNavigateToEquipmentListScreen
+            )
+        }
+    ) {
+        ContextMenuTrackedThingLayout(
+            equipment.name,
+            TrackedThing.Type.Equipment,
+            scope,
+            interactionSource
+        ) { closeContextMenu ->
+            EquipmentDropDownActions(
+                closeContextMenu,
+                onOpenList = {
+                    viewModel.showEquipmentListDialog(
+                        equipment,
+                        screenSize,
+                        onNavigateToEquipmentListScreen
+                    )
+                },
+                onAddExisting = {
+                    viewModel.addingItemToEquipment(equipment)
+                    onSelectEquipmentRequest()
+                },
+                onAddNew = { viewModel.showEditEquipmentItemDialog(equipment) },
+                onEdit = { viewModel.showEditDialog(equipment) },
+                onDelete = { viewModel.deleteItemRequested(equipment) }
+            )
+        }
+    }
+}
+
+@Composable
+fun FileShortcutsListItem(
+    isDragged: Boolean,
+    fileShortcuts: TrackedThing,
+    scope: ReorderableCollectionItemScope,
+    viewModel: TrackerViewModel
+) {
+    val interactionSource = remember { MutableInteractionSource() }
+    TrackedThingListItem(
+        isDragged,
+        scope,
+        interactionSource,
+        onItemClicked = { viewModel.showFileShortcutsDialog(fileShortcuts) }
+    ) {
+        val pickFileLauncher =
+            rememberFilePickerLauncher(FileKitType.File()) { file ->
+                if (file != null) viewModel.addFileToShortcuts(fileShortcuts, file)
+            }
+        ContextMenuTrackedThingLayout(
+            fileShortcuts.name,
+            TrackedThing.Type.FileShortcuts,
+            scope,
+            interactionSource
+        ) { closeContextMenu ->
+            FileShortcutsDropDownActions(
+                closeContextMenu,
+                onOpenList = { viewModel.showFileShortcutsDialog(fileShortcuts) },
+                onAdd = { pickFileLauncher.launch() },
+                onEdit = { viewModel.showEditDialog(fileShortcuts) },
+                onDelete = { viewModel.deleteItemRequested(fileShortcuts) }
+            )
+        }
+    }
+}
+
+@Composable
 private fun ReorderHandle(
     scope: ReorderableCollectionItemScope,
     interactionSource: MutableInteractionSource,
@@ -522,7 +661,7 @@ private fun ReorderHandle(
             .padding(8.dp)
             .then(modifier)
     ) {
-        Icon(menuIcon, "", Modifier.align(iconAlignment))
+        Icon(dragIcon, "", Modifier.align(iconAlignment))
     }
 }
 
@@ -587,7 +726,7 @@ fun StatsOverviewPreview() {
     Card {
         var stats by remember { mutableStateOf<List<StatEntry>>(listOf()) }
         LaunchedEffect(Unit) {
-            stats = StatsContainer.Companion.createDefault5EStatEntries()
+            stats = StatsContainer.createDefault5EStatEntries()
         }
         StatsOverview(
             TrackedThing(name = "Stats", type = TrackedThing.Type.FiveEStats, value = "[]").also {
@@ -698,4 +837,39 @@ private fun SpellListTrackedThingPreview() {
                 onDeleteButtonClicked = {}
             )
         })
+}
+
+@Preview
+@Composable
+private fun ContextMenuTrackedThingLayoutPreview() {
+    CompositionLocalProvider(
+        LocalDimens provides compactDimens
+    ) {
+        ContextMenuTrackedThingLayout(
+            "My Equipment",
+            TrackedThing.Type.Equipment,
+            object : ReorderableCollectionItemScope {
+                override fun Modifier.draggableHandle(
+                    enabled: Boolean,
+                    interactionSource: MutableInteractionSource?,
+                    onDragStarted: (startedPosition: Offset) -> Unit,
+                    onDragStopped: () -> Unit,
+                    dragGestureDetector: DragGestureDetector
+                ): Modifier = this
+
+                override fun Modifier.longPressDraggableHandle(
+                    enabled: Boolean,
+                    interactionSource: MutableInteractionSource?,
+                    onDragStarted: (startedPosition: Offset) -> Unit,
+                    onDragStopped: () -> Unit
+                ): Modifier = this
+            },
+            valuePreview = { Text("123") }
+        ) {
+            DropdownMenuItem(
+                text = { Text("Add") },
+                onClick = { }
+            )
+        }
+    }
 }

@@ -19,6 +19,7 @@ import com.feko.generictabletoprpg.shared.common.ui.components.ToastMessage
 import com.feko.generictabletoprpg.shared.common.ui.components.sendToMobileIcon
 import com.feko.generictabletoprpg.shared.common.ui.viewmodel.AppViewModel
 import com.feko.generictabletoprpg.tracker_title
+import io.github.vinceglb.filekit.dialogs.FileKitDialogSettings
 import io.github.vinceglb.filekit.dialogs.compose.rememberFileSaverLauncher
 import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
@@ -32,7 +33,7 @@ fun TrackerGroupsScreen(
     val viewModel: TrackerGroupViewModel = koinViewModel()
     val coroutineScope = rememberCoroutineScope()
     val fileSaverLauncher =
-        rememberFileSaverLauncher { file ->
+        rememberFileSaverLauncher(FileKitDialogSettings.createDefault()) { file ->
             coroutineScope.launch { viewModel.onFileSaveLocationSelected(file) }
         }
     appViewModel.updateActiveDrawerItem(RootDestinations.Tracker.destination)

@@ -20,6 +20,8 @@ import com.feko.generictabletoprpg.shared.features.encounter.InitiativeEntryDao
 import com.feko.generictabletoprpg.shared.features.encounter.InitiativeEntryEntity
 import com.feko.generictabletoprpg.shared.features.feat.FeatDao
 import com.feko.generictabletoprpg.shared.features.feat.FeatEntity
+import com.feko.generictabletoprpg.shared.features.magicitem.MagicItemDao
+import com.feko.generictabletoprpg.shared.features.magicitem.MagicItemEntity
 import com.feko.generictabletoprpg.shared.features.spell.SpellDao
 import com.feko.generictabletoprpg.shared.features.spell.SpellEntity
 import com.feko.generictabletoprpg.shared.features.tracker.TrackedThingDao
@@ -45,9 +47,10 @@ import com.feko.generictabletoprpg.shared.features.weapon.WeaponEntity
         ArmorEntity::class,
         TrackedThingEntity::class,
         TrackedThingGroupEntity::class,
-        InitiativeEntryEntity::class
+        InitiativeEntryEntity::class,
+        MagicItemEntity::class
     ],
-    version = 15,
+    version = 16,
     autoMigrations = [
         AutoMigration(from = 1, to = 2),
         AutoMigration(from = 2, to = 3),
@@ -62,7 +65,8 @@ import com.feko.generictabletoprpg.shared.features.weapon.WeaponEntity
         AutoMigration(from = 11, to = 12),
         AutoMigration(from = 12, to = 13),
         AutoMigration(from = 13, to = 14),
-        AutoMigration(from = 14, to = 15)
+        AutoMigration(from = 14, to = 15),
+        AutoMigration(from = 15, to = 16)
     ]
 )
 @ConstructedBy(AppDatabaseConstructor::class)
@@ -78,6 +82,7 @@ abstract class GenericTabletopRpgDatabase : RoomDatabase() {
     abstract fun trackedThingDao(): TrackedThingDao
     abstract fun trackedThingGroupDao(): TrackedThingGroupDao
     abstract fun initiativeEntryDao(): InitiativeEntryDao
+    abstract fun magicItemDao(): MagicItemDao
 }
 
 @Suppress("KotlinNoActualForExpect")

@@ -2,6 +2,7 @@ package com.feko.generictabletoprpg.shared.common.ui.components
 
 import androidx.navigation3.runtime.NavKey
 import com.feko.generictabletoprpg.shared.features.spell.Spell
+import com.feko.generictabletoprpg.shared.features.tracker.model.IEquipmentItem
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
@@ -58,6 +59,16 @@ sealed interface INavigationDestination : NavKey {
     @Serializable
     data object SpellListDestination : INavigationDestination
 
+    @Serializable
+    data class MagicItemDetailsDestination(val id: Long) : INavigationDestination
+
+    @Serializable
+    data class EquipmentItemDetailsDestination(val equipmentItem: IEquipmentItem) :
+        INavigationDestination
+
+    @Serializable
+    data object EquipmentListDestination : INavigationDestination
+
     companion object {
         val startDestination: INavigationDestination = TrackerGroupsDestination
 
@@ -77,6 +88,9 @@ sealed interface INavigationDestination : NavKey {
                 subclass(serializer = WeaponDetailsDestination.serializer())
                 subclass(serializer = SimpleSpellDetailsDestination.serializer())
                 subclass(serializer = ImportDestination.serializer())
+                subclass(serializer = MagicItemDetailsDestination.serializer())
+                subclass(serializer = EquipmentItemDetailsDestination.serializer())
+                subclass(serializer = EquipmentListDestination.serializer())
             }
         }
     }

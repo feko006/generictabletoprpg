@@ -15,6 +15,7 @@ import androidx.compose.material.icons.filled.Dashboard
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Diamond
 import androidx.compose.material.icons.filled.Done
+import androidx.compose.material.icons.filled.DragHandle
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.FilterList
@@ -64,3 +65,4 @@ actual val removeIcon = Icons.Default.Remove
 actual val sendToMobileIcon = Icons.AutoMirrored.Filled.SendToMobile
 actual val dashboardIcon = Icons.Filled.Dashboard
 actual val inputIcon = Icons.AutoMirrored.Default.Input
+actual val dragIcon = Icons.Default.DragHandle

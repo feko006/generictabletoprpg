@@ -11,7 +11,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavEntry
@@ -26,8 +25,11 @@ import com.feko.generictabletoprpg.shared.common.ui.components.INavigationDestin
 import com.feko.generictabletoprpg.shared.common.ui.components.INavigationDestination.ConditionDetailsDestination
 import com.feko.generictabletoprpg.shared.common.ui.components.INavigationDestination.DiseaseDetailsDestination
 import com.feko.generictabletoprpg.shared.common.ui.components.INavigationDestination.EncounterDestination
+import com.feko.generictabletoprpg.shared.common.ui.components.INavigationDestination.EquipmentItemDetailsDestination
+import com.feko.generictabletoprpg.shared.common.ui.components.INavigationDestination.EquipmentListDestination
 import com.feko.generictabletoprpg.shared.common.ui.components.INavigationDestination.FeatDetailsDestination
 import com.feko.generictabletoprpg.shared.common.ui.components.INavigationDestination.ImportDestination
+import com.feko.generictabletoprpg.shared.common.ui.components.INavigationDestination.MagicItemDetailsDestination
 import com.feko.generictabletoprpg.shared.common.ui.components.INavigationDestination.SearchAllDestination
 import com.feko.generictabletoprpg.shared.common.ui.components.INavigationDestination.SimpleSpellDetailsDestination
 import com.feko.generictabletoprpg.shared.common.ui.components.INavigationDestination.SpellDetailsDestination
@@ -51,13 +53,19 @@ import com.feko.generictabletoprpg.shared.features.disease.ui.DiseaseDetailsScre
 import com.feko.generictabletoprpg.shared.features.encounter.ui.EncounterScreen
 import com.feko.generictabletoprpg.shared.features.feat.Feat
 import com.feko.generictabletoprpg.shared.features.feat.ui.FeatDetailsScreen
+import com.feko.generictabletoprpg.shared.features.filter.EquipmentFilter
 import com.feko.generictabletoprpg.shared.features.filter.SpellFilter
 import com.feko.generictabletoprpg.shared.features.filter.index
 import com.feko.generictabletoprpg.shared.features.io.ui.ImportScreen
+import com.feko.generictabletoprpg.shared.features.magicitem.MagicItem
+import com.feko.generictabletoprpg.shared.features.magicitem.ui.MagicItemDetailsScreen
 import com.feko.generictabletoprpg.shared.features.searchall.ui.SearchAllScreen
 import com.feko.generictabletoprpg.shared.features.spell.Spell
 import com.feko.generictabletoprpg.shared.features.spell.ui.SimpleSpellDetailsScreen
 import com.feko.generictabletoprpg.shared.features.spell.ui.SpellDetailsScreen
+import com.feko.generictabletoprpg.shared.features.tracker.model.EquipmentItem
+import com.feko.generictabletoprpg.shared.features.tracker.ui.EquipmentItemDetailsScreen
+import com.feko.generictabletoprpg.shared.features.tracker.ui.EquipmentListScreen
 import com.feko.generictabletoprpg.shared.features.tracker.ui.SpellListScreen
 import com.feko.generictabletoprpg.shared.features.tracker.ui.TrackerGroupsScreen
 import com.feko.generictabletoprpg.shared.features.tracker.ui.TrackerScreen
@@ -89,7 +97,7 @@ fun NavigationHost(
         backStack.removeLastOrNull()
     }
 
-    val searchAllResultViewModel = viewModel<ResultViewModel<Long>>()
+    val searchAllResultViewModel = koinViewModel<ResultViewModel<Any>>()
     val panes =
         currentWindowAdaptiveInfo().windowSizeClass.let {
             when {
@@ -105,13 +113,15 @@ fun NavigationHost(
             rememberSaveableStateHolderNavEntryDecorator(),
             rememberViewModelStoreNavEntryDecorator()
         ),
-        sceneStrategy = ListDetailSceneStrategy(
-            BackNavigationBehavior.Companion.PopUntilCurrentDestinationChange,
-            PaneScaffoldDirective.Companion.Default.copy(
-                maxHorizontalPartitions = panes,
-                maxVerticalPartitions = panes
-            ),
-            ListDetailPaneScaffoldDefaults.adaptStrategies()
+        sceneStrategies = listOf(
+            ListDetailSceneStrategy(
+                BackNavigationBehavior.PopUntilCurrentDestinationChange,
+                PaneScaffoldDirective.Default.copy(
+                    maxHorizontalPartitions = panes,
+                    maxVerticalPartitions = panes
+                ),
+                ListDetailPaneScaffoldDefaults.adaptStrategies()
+            )
         )
     ) { key ->
         if (key !is INavigationDestination) {
@@ -140,12 +150,30 @@ fun NavigationHost(
                             backStack.add(SimpleSpellDetailsDestination(it))
                         },
                         onOpenDetails = {
-                            backStack.add(getDetailsDestination(it))
+                            if (it is EquipmentItem) {
+                                backStack.add(EquipmentItemDetailsDestination(it))
+                            } else {
+                                backStack.add(getDetailsDestination(it))
+                            }
                         },
                         onSelectSpellRequest = {
                             backStack.add(
                                 SearchAllDestination(SpellFilter().index(), isShownForResult = true)
                             )
+                        },
+                        onSelectEquipmentRequest = {
+                            backStack.add(
+                                SearchAllDestination(
+                                    EquipmentFilter().index(),
+                                    isShownForResult = true
+                                )
+                            )
+                        },
+                        onNavigateToEquipmentDetailsScreen = {
+                            backStack.add(EquipmentItemDetailsDestination(it))
+                        },
+                        onNavigateToEquipmentListScreen = {
+                            backStack.add(EquipmentListDestination)
                         }
                     )
                 }
@@ -242,6 +270,30 @@ fun NavigationHost(
                         onPopAll = { backStack.popAll(it) }
                     )
                 }
+
+            is MagicItemDetailsDestination ->
+                NavEntry(key, metadata = ListDetailSceneStrategy.detailPane()) {
+                    MagicItemDetailsScreen(key.id, onNavigationIconClick)
+                }
+
+            is EquipmentItemDetailsDestination ->
+                NavEntry(key, metadata = ListDetailSceneStrategy.extraPane()) {
+                    EquipmentItemDetailsScreen(key.equipmentItem, onNavigationIconClick)
+                }
+
+            is EquipmentListDestination ->
+                NavEntry(key, metadata = ListDetailSceneStrategy.detailPane()) {
+                    EquipmentListScreen(
+                        trackerViewModel,
+                        onNavigateToEquipmentItemDetailsScreen = {
+                            backStack.add(EquipmentItemDetailsDestination(it))
+                        },
+                        onPopEquipmentListScreen = {
+                            backStack.popUpTo<EquipmentListDestination>(inclusive = true)
+                        },
+                        onPopAll = { backStack.popAll(it) }
+                    )
+                }
         }
     }
 }
@@ -274,6 +326,7 @@ fun getDetailsDestination(item: Any): INavigationDestination {
         is Feat -> FeatDetailsDestination(id)
         is Spell -> SpellDetailsDestination(id)
         is Weapon -> WeaponDetailsDestination(id)
+        is MagicItem -> MagicItemDetailsDestination(id)
         else -> throw IllegalStateException("Unknown list item")
     }
 }

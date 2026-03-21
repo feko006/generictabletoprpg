@@ -4,9 +4,11 @@ import com.feko.generictabletoprpg.shared.common.domain.IProcessEdnMap
 import com.feko.generictabletoprpg.shared.common.domain.model.DoNotObfuscate
 import com.feko.generictabletoprpg.shared.common.domain.model.IFromSource
 import com.feko.generictabletoprpg.shared.common.domain.model.IIdentifiable
+import com.feko.generictabletoprpg.shared.common.domain.model.IKClassProvider
 import com.feko.generictabletoprpg.shared.common.domain.model.INamed
 import com.feko.generictabletoprpg.shared.common.domain.model.Stat
 import kotlinx.serialization.Serializable
+import kotlin.reflect.KClass
 
 @DoNotObfuscate
 @Serializable
@@ -22,7 +24,8 @@ data class Feat(
     val savingThrow: Boolean
 ) : IIdentifiable,
     INamed,
-    IFromSource {
+    IFromSource,
+    IKClassProvider {
     val hasRequirements: Boolean
         get() = proficiencyRequirements.isNotEmpty() or
                 statRequirements.isNotEmpty() or
@@ -41,6 +44,9 @@ data class Feat(
             }
             return builder.toString()
         }
+
+    override val kclass: KClass<*>
+        get() = Feat::class
 
     companion object {
         fun createFromOrcbrewData(

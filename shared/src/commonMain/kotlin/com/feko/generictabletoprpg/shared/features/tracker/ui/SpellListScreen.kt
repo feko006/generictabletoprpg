@@ -31,10 +31,15 @@ fun SpellListScreen(
     if (trackerViewModel == null) return
     val alertDialog by trackerViewModel.spellListDialog.collectAsState(ITrackerDialog.None)
     val dereferencedDialog = alertDialog
+    LaunchedEffect(alertDialog) {
+        if (alertDialog !is ITrackerDialog.SpellListDialog) {
+            onPopSpellListScreen()
+        }
+    }
     if (dereferencedDialog !is ITrackerDialog.SpellListDialog) return
     val spellListEntries = dereferencedDialog.spellList.serializedItem as List<SpellListEntry>
     var previousSpellList by remember { mutableStateOf(spellListEntries) }
-    val removedSpell = previousSpellList.minus(spellListEntries).firstOrNull()
+    val removedSpell = previousSpellList.minus(spellListEntries.toSet()).firstOrNull()
     LaunchedEffect(removedSpell) {
         if (removedSpell != null) {
             onPopAll {

@@ -81,7 +81,12 @@ private fun EncounterAlertDialog(dialog: IEncounterDialog, viewModel: EncounterV
         is IEncounterDialog.PickLegendaryActionDialog ->
             PickLegendaryActionDialog(
                 dialog,
-                viewModel::useLegendaryActionAndProgressInitiative,
+                { initiativeEntryEntity ->
+                    viewModel.useLegendaryActionAndProgressInitiative(
+                        initiativeEntryEntity,
+                        dialog.legendaryActionCount
+                    )
+                },
                 viewModel::dismissDialog
             )
 
@@ -191,8 +196,7 @@ fun EditDialog(
         val scrollState = rememberScrollState()
         BoxWithScrollIndicator(
             scrollState,
-            backgroundColor = CardDefaults.cardColors().containerColor,
-            Modifier.weight(1f)
+            backgroundColor = CardDefaults.cardColors().containerColor
         ) {
             Column(
                 Modifier.verticalScroll(scrollState),
