@@ -30,6 +30,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Fix broken shortcuts in case a file is moved, renamed or deleted
 - Drag and drop capability for importing data in the desktop version of the application
 - Shortcut buttons for bumping an input fields value up or down by 1 in certain dialogs
+- Menu for selecting the amount of legendary actions to be used in the encounter screen
 
 ### Fixed
 
