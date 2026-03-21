@@ -212,7 +212,7 @@ fun AbilityListItem(
             interactionSource,
             valuePreview = {
                 Text(ability.printableValue)
-                Text(ability.type.name, style = Typography.bodySmall)
+                Text(stringResource((ability.type.nameResource!!)), style = Typography.bodySmall)
             }) {
             AbilityActions(
                 canSubtract = ability.canSubtract,
@@ -241,7 +241,7 @@ fun HitDiceListItem(
             interactionSource,
             valuePreview = {
                 Text(hitDice.printableValue)
-                Text(hitDice.type.name, style = Typography.bodySmall)
+                Text(stringResource(hitDice.type.nameResource!!), style = Typography.bodySmall)
             }) {
             HitDiceActions(
                 canSubtract = hitDice.canSubtract,
@@ -297,7 +297,7 @@ fun NumberListItem(
             interactionSource,
             valuePreview = {
                 Text(number.printableValue)
-                Text(number.type.name, style = Typography.bodySmall)
+                Text(stringResource(number.type.nameResource!!), style = Typography.bodySmall)
             }) {
             NumberActions(
                 number,
@@ -341,7 +341,7 @@ fun HealthListItem(
                         )
                     }
                 }
-                Text(health.type.name, style = Typography.bodySmall)
+                Text(stringResource(health.type.nameResource!!), style = Typography.bodySmall)
             }) {
             HealthActions(
                 health,
@@ -412,7 +412,7 @@ fun SpellListItemContent(
         scope,
         valuePreview = {
             Text(spellList.printableValue)
-            Text(spellList.type.name, style = Typography.bodySmall)
+            Text(stringResource(spellList.type.nameResource!!), style = Typography.bodySmall)
         }) {
         @Suppress("UNCHECKED_CAST")
         (SpellListActions(
@@ -441,7 +441,10 @@ fun SpellSlotListItem(
             valuePreview = {
                 Text(spellSlot.printableValue)
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) row@{
-                    Text(spellSlot.type.name, style = Typography.bodySmall)
+                    Text(
+                        stringResource(spellSlot.type.nameResource!!),
+                        style = Typography.bodySmall
+                    )
                     Text("Lv ${spellSlot.level}", style = Typography.bodySmall)
                 }
             }) {
