@@ -21,7 +21,7 @@ configure<ApplicationExtension> {
         applicationId = "com.feko.generictabletoprpg"
         minSdk = 24
         targetSdk = 36
-        versionCode = 9
+        versionCode = 10
         versionName = libs.versions.app.get()
 
         vectorDrawables {
