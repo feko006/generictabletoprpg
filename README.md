@@ -60,11 +60,13 @@ with a generic tracker.
 - HP + temporary HP too!
 - Abilities
 - Spell slots
-- Arbitrary number, e.g. for gold, arrows...
+- Arbitrary number, e.g. for gold...
 - Known & prepared spells + more
-- Text e.g. for notes, items...
+- Text e.g. for notes...
 - Hit dice
-- Stats :new:
+- Stats
+- Equipment :new:
+- File shortcuts :new:
 
 More types will be supported in the future.
 
