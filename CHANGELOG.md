@@ -19,8 +19,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Drag and drop capability for importing data in the desktop version of the application.
-- Shortcut buttons for bumping an input fields value up or down by 1 in certain dialogs.
+- Magic items from SRD v5.2.1 to base content
+- Equipment list trackable
+  - Add existing or create new entry
+  - Easily search through and preview details of added equipment
+  - Keep track of item quantity
+- File shortcuts trackable
+  - Add links to files for easy access
+  - Open added files in the default system app (if one exists)
+  - Fix broken shortcuts in case a file is moved, renamed or deleted
+- Drag and drop capability for importing data in the desktop version of the application
+- Shortcut buttons for bumping an input fields value up or down by 1 in certain dialogs
+
+### Fixed
+
+- Value preview of trackables (e.g. number of available spell slots) not having localized subtext.
+
+### Changed
+
+- Selecting spells to add to a spell list trackable, or equipment to add to the equipment list
+  trackable now supports multiple selection.
+- Spell slot trackables now allow restoring spell slots.
 
 ## [1.4.1] - 2025-11-17
 
