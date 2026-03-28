@@ -251,7 +251,7 @@ fun NavigationHost(
                     key,
                     metadata = ListDetailSceneStrategy.extraPane()
                 ) {
-                    SimpleSpellDetailsScreen(key.spell, onNavigationIconClick)
+                    SimpleSpellDetailsScreen(key.spell, onNavigationIconClick, onNavigateBack)
                 }
 
             ImportDestination ->
@@ -278,7 +278,9 @@ fun NavigationHost(
 
             is EquipmentItemDetailsDestination ->
                 NavEntry(key, metadata = ListDetailSceneStrategy.extraPane()) {
-                    EquipmentItemDetailsScreen(key.equipmentItem, onNavigationIconClick)
+                    EquipmentItemDetailsScreen(
+                        key.equipmentItem, onNavigationIconClick, onNavigateBack
+                    )
                 }
 
             is EquipmentListDestination ->

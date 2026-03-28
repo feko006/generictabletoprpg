@@ -7,6 +7,9 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.navigationevent.NavigationEventInfo
+import androidx.navigationevent.compose.NavigationBackHandler
+import androidx.navigationevent.compose.rememberNavigationEventState
 import com.feko.generictabletoprpg.Res
 import com.feko.generictabletoprpg.casting_time
 import com.feko.generictabletoprpg.classes
@@ -39,8 +42,14 @@ fun SpellDetailsScreen(
 @Composable
 fun SimpleSpellDetailsScreen(
     spell: Spell,
-    onNavigationIconClick: () -> Unit
+    onNavigationIconClick: () -> Unit,
+    onNavigateBack: () -> Unit
 ) {
+    NavigationBackHandler(
+        rememberNavigationEventState(NavigationEventInfo.None),
+        isBackEnabled = true,
+        onBackCompleted = onNavigateBack
+    )
     Scaffold(
         topBar = { GttrpgTopAppBar(spell.name.asText(), onNavigationIconClick) }
     ) { it: PaddingValues ->

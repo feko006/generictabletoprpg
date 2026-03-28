@@ -784,9 +784,14 @@ class TrackerViewModel(
     ) {
         addingItemToEquipment(equipment)
         val item = (equipmentItem as? EquipmentItem) ?: EquipmentItem.empty()
-        updateFlexDialogState(_equipmentListDialog) {
-            val editEquipmentItemDialog = ITrackerDialog.EditEquipmentItemDialog(item)
-            it.copy(secondaryDialog = editEquipmentItemDialog)
+        val editEquipmentItemDialog = ITrackerDialog.EditEquipmentItemDialog(item)
+        _equipmentListDialog.update {
+            ITrackerDialog.EquipmentListDialog(equipment, secondaryDialog = editEquipmentItemDialog)
+        }
+        _dialog.update {
+            if (it is ITrackerDialog.EquipmentListDialog) {
+                it.copy(secondaryDialog = editEquipmentItemDialog)
+            } else editEquipmentItemDialog
         }
     }
 
@@ -822,6 +827,11 @@ class TrackerViewModel(
             }
             equipmentList.setItem(serializedItem)
             trackedThingDao.insertOrUpdate(equipmentList)
+            _dialog.update {
+                if (it is ITrackerDialog.EditEquipmentItemDialog) {
+                    ITrackerDialog.None
+                } else it
+            }
             updateFlexDialogState(_equipmentListDialog) {
                 it.copy(
                     equipment = equipmentList,
