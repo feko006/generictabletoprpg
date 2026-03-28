@@ -2,13 +2,15 @@ package com.feko.generictabletoprpg.shared.features.tracker.ui
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentWidth
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -43,6 +45,7 @@ import com.feko.generictabletoprpg.shared.common.ui.components.DialogTitle
 import com.feko.generictabletoprpg.shared.common.ui.components.EnterValueDialog
 import com.feko.generictabletoprpg.shared.common.ui.components.GttrpgContextMenu
 import com.feko.generictabletoprpg.shared.common.ui.theme.LocalDimens
+import com.feko.generictabletoprpg.shared.common.ui.theme.columnCount
 import com.feko.generictabletoprpg.shared.features.tracker.model.EquipmentContainer
 import com.feko.generictabletoprpg.shared.features.tracker.model.EquipmentEntry
 import com.feko.generictabletoprpg.shared.features.tracker.model.EquipmentItem
@@ -133,29 +136,33 @@ fun EquipmentListContent(
     onSetQuantity: (EquipmentEntry) -> Unit,
     onRemove: (EquipmentEntry) -> Unit
 ) {
-    val scrollState = rememberLazyListState()
+    val scrollState = rememberLazyGridState()
     val dimens = LocalDimens.current
-    BoxWithScrollIndicator(
-        scrollState,
-        backgroundColor = CardDefaults.cardColors().containerColor,
-        Modifier.padding(top = dimens.paddingSmall)
-    ) {
-        LazyColumn(
-            state = scrollState,
-            verticalArrangement = Arrangement.spacedBy(dimens.gapSmall)
+    BoxWithConstraints constraints@{
+        BoxWithScrollIndicator(
+            scrollState,
+            backgroundColor = CardDefaults.cardColors().containerColor,
+            Modifier.padding(top = dimens.paddingSmall)
         ) {
-            items(
-                (dialog.equipment.serializedItem as EquipmentContainer).entries,
-                key = { it.item.name }
+            LazyVerticalGrid(
+                GridCells.Fixed(columnCount(this@constraints.maxWidth)),
+                state = scrollState,
+                verticalArrangement = Arrangement.spacedBy(dimens.gapSmall),
+                horizontalArrangement = Arrangement.spacedBy(LocalDimens.current.gapSmall)
             ) {
-                EquipmentListItem(
-                    it.item.name,
-                    it.count,
-                    isEditMenuItemVisible = it.item is EquipmentItem,
-                    onClick = { onEquipmentClick(it.item) },
-                    onEdit = { onEdit(it.item) },
-                    onSetQuantity = { onSetQuantity(it) },
-                    onRemove = { onRemove(it) })
+                items(
+                    (dialog.equipment.serializedItem as EquipmentContainer).entries,
+                    key = { it.item.name }
+                ) {
+                    EquipmentListItem(
+                        it.item.name,
+                        it.count,
+                        isEditMenuItemVisible = it.item is EquipmentItem,
+                        onClick = { onEquipmentClick(it.item) },
+                        onEdit = { onEdit(it.item) },
+                        onSetQuantity = { onSetQuantity(it) },
+                        onRemove = { onRemove(it) })
+                }
             }
         }
     }

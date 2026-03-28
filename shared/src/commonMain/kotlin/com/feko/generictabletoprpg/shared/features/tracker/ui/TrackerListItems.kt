@@ -504,7 +504,7 @@ fun StatsListItem(
                 StatsOverview(stats)
                 StatsActions(
                     stats,
-                    onPreviewButtonClicked = { viewModel.showEditDialog(stats) },
+                    onPreviewButtonClicked = { viewModel.showStatsDialog(stats) },
                     onEditButtonClicked = { viewModel.showEditDialog(stats) },
                     onDeleteButtonClicked = { viewModel.deleteItemRequested(stats) }
                 )
