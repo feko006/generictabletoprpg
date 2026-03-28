@@ -6,6 +6,9 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.navigationevent.NavigationEventInfo
+import androidx.navigationevent.compose.NavigationBackHandler
+import androidx.navigationevent.compose.rememberNavigationEventState
 import com.feko.generictabletoprpg.shared.common.domain.model.IText.StringText.Companion.asText
 import com.feko.generictabletoprpg.shared.common.ui.components.DetailsScreen
 import com.feko.generictabletoprpg.shared.common.ui.components.GttrpgTopAppBar
@@ -23,8 +26,14 @@ import com.feko.generictabletoprpg.shared.features.weapon.ui.WeaponDetailsConten
 @Composable
 fun EquipmentItemDetailsScreen(
     equipmentItem: IEquipmentItem,
-    onNavigationIconClick: () -> Unit
+    onNavigationIconClick: () -> Unit,
+    onNavigateBack: () -> Unit
 ) {
+    NavigationBackHandler(
+        rememberNavigationEventState(NavigationEventInfo.None),
+        isBackEnabled = true,
+        onBackCompleted = onNavigateBack
+    )
     Scaffold(
         topBar = { GttrpgTopAppBar(equipmentItem.name.asText(), onNavigationIconClick) }
     ) { it: PaddingValues ->
