@@ -15,7 +15,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
+## [1.5.1]
+
+### Known Issues
+
+- No UI is shown when resizing the app from medium to compact size on larger displays
+
+### Fixed
+
+- List action in stats trackable opening edit dialog instead of skills dialog
+- Add new equipment item not working for the newly added equipment trackable
+- Back gesture navigation not working for spell and equipment item details screen shown from the
+  spell and equipment list dialogs
+
+### Changed
+
+- Equipment list screen on large screen devices now utilizes space better with a grid layout
+
 ## [1.5.0]
+
+### Known Issues
+
+- No UI is shown when resizing the app from medium to compact size on larger devices
+- Back gesture navigation doe snot work for spell and equipment item detail screens shown from the
+  spell and equipment list dialogs
 
 ### Added
 
@@ -44,6 +67,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.4.1] - 2025-11-17
 
+### Known Issues
+
+- No UI is shown when resizing the app from medium to compact size on larger devices
+
 ### Fixed
 
 - Desktop app database being saved in temporary location causing data loss at random points in time,
@@ -55,6 +82,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Opening the Encounter screen crashes the application in certain scenarios (e.g. when deep into the
   tracker navigation hierarchy)
+- No UI is shown when resizing the app from medium to compact size on larger devices
 
 ### Added
 
