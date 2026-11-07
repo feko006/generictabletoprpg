@@ -12,8 +12,6 @@ import com.feko.generictabletoprpg.shared.features.tracker.model.TrackedThing
 import com.feko.generictabletoprpg.shared.features.tracker.model.TrackedThingGroup
 import com.feko.generictabletoprpg.shared.logger
 
-//import timber.log.Timber
-
 class JsonImportAllUseCase(
     private val insertActions: IInsertAllDao<Action>,
     private val insertConditions: IInsertAllDao<Condition>,

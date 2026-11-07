@@ -4,23 +4,24 @@ plugins {
     alias(libs.plugins.androidx.room)
     alias(libs.plugins.compose)
     alias(libs.plugins.compose.compiler)
-    alias(libs.plugins.google.ksp)
     alias(libs.plugins.jetbrains.kotlin.serialization)
     alias(libs.plugins.kotlin.multiplatform)
+    alias(libs.plugins.google.ksp)
 }
 
 kotlin {
     // Target declarations - add or remove as needed below. These define
     // which platforms this KMP module supports.
     // See: https://kotlinlang.org/docs/multiplatform-discover-project.html#targets
-    androidLibrary {
+    android {
         namespace = "com.feko.generictabletoprpg.shared"
-        compileSdk = 36
-        minSdk = 24
+        compileSdk {
+            version = release(libs.versions.compileSdkVersion.get().toInt())
+        }
+        minSdk = libs.versions.minSdkVersion.get().toInt()
         androidResources.enable = true
 
-        withHostTestBuilder {
-        }
+        withHostTestBuilder { }
 
         withDeviceTestBuilder {
             sourceSetTreeName = "test"
@@ -75,7 +76,7 @@ kotlin {
             }
         }
 
-        val desktopMain by getting
+        val desktopMain = getByName("desktopMain")
         desktopMain.dependencies {
             implementation(libs.compose.desktop)
             implementation(compose.desktop.currentOs)

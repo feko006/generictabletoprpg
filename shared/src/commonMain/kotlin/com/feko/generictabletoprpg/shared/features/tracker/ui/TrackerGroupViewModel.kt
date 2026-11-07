@@ -23,7 +23,9 @@ import com.feko.generictabletoprpg.shared.logger
 import io.github.vinceglb.filekit.PlatformFile
 import io.github.vinceglb.filekit.dialogs.compose.SaverResultLauncher
 import io.github.vinceglb.filekit.writeString
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
@@ -115,7 +117,11 @@ class TrackerGroupViewModel(
         _exportToast.update { ToastMessage(Res.string.export_location_hint.asText(), _exportToast) }
         val trackedGroupFileName = item.name.replace(" ", "-")
         val displayName = "tracked-group-$trackedGroupFileName"
-        fileSaverLauncher?.launch(suggestedName = displayName, extension = "json")
+        fileSaverLauncher?.launch(
+            suggestedName = displayName,
+            defaultExtension = "json",
+            allowedExtensions = setOf("json")
+        )
     }
 
     override fun exportAll(fileSaverLauncher: SaverResultLauncher?) {
@@ -124,7 +130,11 @@ class TrackerGroupViewModel(
         val date = SimpleDateFormat("yyyy-MM-dd-HH-mm-ss", Locale.getDefault())
             .format(Date())
         val displayName = "tracked-groups-$date"
-        fileSaverLauncher?.launch(suggestedName = displayName, extension = "json")
+        fileSaverLauncher?.launch(
+            suggestedName = displayName,
+            defaultExtension = "json",
+            allowedExtensions = setOf("json")
+        )
     }
 
     override suspend fun onFileSaveLocationSelected(file: PlatformFile?) {
@@ -132,7 +142,8 @@ class TrackerGroupViewModel(
             _exportState = ExportState.None
             return
         }
-        withContext(viewModelScope.coroutineContext) {
+
+        val deferred = viewModelScope.async {
             try {
                 val json = when (val exportState = _exportState) {
                     ExportState.ExportingAll -> getAllTrackedGroupsExportJson()
@@ -154,6 +165,13 @@ class TrackerGroupViewModel(
             } finally {
                 _exportState = ExportState.None
             }
+        }
+
+        try {
+            deferred.await()
+        } catch (e: CancellationException) {
+            deferred.cancel()
+            throw e
         }
     }
 

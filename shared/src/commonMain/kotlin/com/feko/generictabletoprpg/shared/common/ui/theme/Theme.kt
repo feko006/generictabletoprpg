@@ -2,9 +2,8 @@ package com.feko.generictabletoprpg.shared.common.ui.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.ColorScheme
-import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.MaterialExpressiveTheme
-import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfoV2
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.staticCompositionLocalOf
@@ -19,7 +18,6 @@ data class Theme(val isInDarkMode: Boolean)
 @Composable
 expect fun getColorScheme(dynamicColor: Boolean, darkTheme: Boolean): ColorScheme
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun GttrpgTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
@@ -29,7 +27,7 @@ fun GttrpgTheme(
     val colorScheme = getColorScheme(dynamicColor, darkTheme)
 
     val dimens =
-        currentWindowAdaptiveInfo().windowSizeClass.let {
+        currentWindowAdaptiveInfoV2().windowSizeClass.let {
             when {
                 it.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND) -> expandedDimens
                 it.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_MEDIUM_LOWER_BOUND) -> mediumDimens

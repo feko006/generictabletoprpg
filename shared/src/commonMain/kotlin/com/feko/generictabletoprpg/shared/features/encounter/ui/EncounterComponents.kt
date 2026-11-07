@@ -18,8 +18,6 @@ import androidx.compose.foundation.rememberBasicTooltipState
 import androidx.compose.material3.Card
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ElevatedCard
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.HorizontalFloatingToolbar
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -72,7 +70,6 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun ActionButtons(viewModel: EncounterViewModel) {
     val encounterState by viewModel.encounterState.collectAsState(EncounterState.Empty)
@@ -285,7 +282,7 @@ fun InitiativeListItem(
 }
 
 @Composable
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class)
 fun IconAndTextWithTooltip(imageVector: ImageVector, value: String, tooltipText: String) {
     val state = rememberBasicTooltipState(isPersistent = false)
     val coroutineScope = rememberCoroutineScope()

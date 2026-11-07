@@ -1,7 +1,3 @@
-import com.android.build.api.dsl.ApplicationExtension
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
-
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.compose.compiler)
@@ -9,19 +5,21 @@ plugins {
     alias(libs.plugins.jetbrains.kotlin.serialization)
 }
 
-configure<ApplicationExtension> {
+android {
+    namespace = "com.feko.generictabletoprpg"
+    compileSdk {
+        version = release(libs.versions.compileSdkVersion.get().toInt())
+    }
+
     signingConfigs {
         create("release") { }
     }
-    namespace = "com.feko.generictabletoprpg"
-    compileSdk = 36
-    buildToolsVersion = "36.0.0"
 
     defaultConfig {
         applicationId = "com.feko.generictabletoprpg"
-        minSdk = 24
-        targetSdk = 36
-        versionCode = 11
+        minSdk = libs.versions.minSdkVersion.get().toInt()
+        targetSdk = libs.versions.targetSdkVersion.get().toInt()
+        versionCode = libs.versions.versionCode.get().toInt()
         versionName = libs.versions.app.get()
 
         vectorDrawables {
@@ -49,8 +47,8 @@ configure<ApplicationExtension> {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_19
-        targetCompatibility = JavaVersion.VERSION_19
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
     }
     buildFeatures {
         compose = true
@@ -61,13 +59,6 @@ configure<ApplicationExtension> {
         }
     }
     sourceSets["main"].res.directories.add("../shared/src/commonMain/composeResources")
-}
-
-tasks.withType<KotlinJvmCompile>().configureEach {
-    compilerOptions {
-        jvmTarget.set(JvmTarget.JVM_19)
-        freeCompilerArgs.add("-opt-in=kotlin.RequiresOptIn")
-    }
 }
 
 dependencies {

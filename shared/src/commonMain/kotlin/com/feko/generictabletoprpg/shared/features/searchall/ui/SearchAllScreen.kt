@@ -14,7 +14,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.material3.SheetValue
+import androidx.compose.material3.rememberBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -120,7 +121,7 @@ fun SearchAllScreen(
     if (isBottomSheetVisible) {
         ModalBottomSheet(
             onDismissRequest = { viewModel.bottomSheetHidden() },
-            sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+            sheetState = rememberBottomSheetState(SheetValue.Expanded)
         ) {
             val typeOptions by viewModel.availableTypeOptions.collectAsState()
             FilterScreen(

@@ -21,7 +21,6 @@ import androidx.compose.foundation.lazy.staggeredgrid.rememberLazyStaggeredGridS
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
@@ -60,7 +59,6 @@ import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyStaggeredGridState
 
 @Composable
-@OptIn(ExperimentalMaterial3Api::class)
 fun <TViewModel, T> SearchableLazyItems(
     viewModel: TViewModel,
     item: @Composable LazyStaggeredGridItemScope.(T) -> Unit,
@@ -106,7 +104,6 @@ fun <TViewModel, T> SearchableLazyItems(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun <TViewModel, T> SearchableReorderableLazyItems(
     viewModel: TViewModel,
@@ -207,7 +204,6 @@ fun Modifier.longPressDraggableHandle(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun <TViewModel, T> SearchableLazyItemsLayout(
     viewModel: TViewModel,

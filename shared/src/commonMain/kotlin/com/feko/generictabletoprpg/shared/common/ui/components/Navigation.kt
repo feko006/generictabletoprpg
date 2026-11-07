@@ -2,7 +2,7 @@ package com.feko.generictabletoprpg.shared.common.ui.components
 
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
-import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfoV2
 import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffoldDefaults
 import androidx.compose.material3.adaptive.layout.PaneScaffoldDirective
 import androidx.compose.material3.adaptive.navigation.BackNavigationBehavior
@@ -99,7 +99,7 @@ fun NavigationHost(
 
     val searchAllResultViewModel = koinViewModel<ResultViewModel<Any>>()
     val panes =
-        currentWindowAdaptiveInfo().windowSizeClass.let {
+        currentWindowAdaptiveInfoV2().windowSizeClass.let {
             when {
                 it.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_MEDIUM_LOWER_BOUND) -> 2
                 it.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND) -> 3

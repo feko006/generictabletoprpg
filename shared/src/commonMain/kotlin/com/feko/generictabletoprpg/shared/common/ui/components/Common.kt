@@ -228,7 +228,6 @@ fun StableAnimatedVisibility(
 }
 
 @Composable
-@OptIn(ExperimentalMaterial3Api::class)
 fun GttrpgTextField(
     value: String,
     onValueChange: (String) -> Unit,
@@ -284,7 +283,6 @@ fun GttrpgTextField(
 }
 
 @Composable
-@OptIn(ExperimentalMaterial3Api::class)
 fun GttrpgOutlinedTextField(
     value: String,
     onValueChange: (String) -> Unit,

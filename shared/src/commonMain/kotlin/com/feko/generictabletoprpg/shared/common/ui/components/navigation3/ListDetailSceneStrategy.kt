@@ -18,7 +18,7 @@ package com.feko.generictabletoprpg.shared.common.ui.components.navigation3
 
 import androidx.collection.mutableIntListOf
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
-import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfoV2
 import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffoldDefaults
 import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffoldRole
 import androidx.compose.material3.adaptive.layout.PaneAdaptedValue
@@ -36,9 +36,6 @@ import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.scene.Scene
 import androidx.navigation3.scene.SceneStrategy
 import androidx.navigation3.scene.SceneStrategyScope
-import com.feko.generictabletoprpg.shared.common.ui.components.navigation3.ListDetailSceneStrategy.Companion.detailPane
-import com.feko.generictabletoprpg.shared.common.ui.components.navigation3.ListDetailSceneStrategy.Companion.extraPane
-import com.feko.generictabletoprpg.shared.common.ui.components.navigation3.ListDetailSceneStrategy.Companion.listPane
 
 /**
  * Creates and remembers a [ListDetailSceneStrategy].
@@ -58,7 +55,7 @@ import com.feko.generictabletoprpg.shared.common.ui.components.navigation3.ListD
 public fun <T : Any> rememberListDetailSceneStrategy(
     backNavigationBehavior: BackNavigationBehavior =
         BackNavigationBehavior.PopUntilScaffoldValueChange,
-    directive: PaneScaffoldDirective = calculatePaneScaffoldDirective(currentWindowAdaptiveInfo()),
+    directive: PaneScaffoldDirective = calculatePaneScaffoldDirective(currentWindowAdaptiveInfoV2()),
     adaptStrategies: ThreePaneScaffoldAdaptStrategies =
         ListDetailPaneScaffoldDefaults.adaptStrategies(),
 ): ListDetailSceneStrategy<T> {
