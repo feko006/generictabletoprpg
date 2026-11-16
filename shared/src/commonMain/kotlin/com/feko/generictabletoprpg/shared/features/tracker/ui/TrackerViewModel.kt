@@ -48,26 +48,28 @@ import io.github.vinceglb.filekit.absolutePath
 import io.github.vinceglb.filekit.dialogs.openFileWithDefaultApplication
 import io.github.vinceglb.filekit.nameWithoutExtension
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 class TrackerViewModel(
-    private val groupId: Long,
-    val groupName: String,
     private val trackedThingDao: TrackedThingDao,
     searchAllUseCase: ISearchAllUseCase,
 ) : OverviewViewModel<Any>(trackedThingDao) {
 
+    val groupIdFlow: StateFlow<Long>
+        field = MutableStateFlow(0)
+    lateinit var groupName: String
     private val _fabDropdownExpanded = MutableStateFlow(false)
     val fabDropdownExpanded: StateFlow<Boolean> = _fabDropdownExpanded
 
@@ -133,15 +135,23 @@ class TrackerViewModel(
         }
     }
 
+    fun init(id: Long, name: String) {
+        groupIdFlow.update { id }
+        groupName = name
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
     override fun getAllItems(): Flow<List<Any>> =
-        trackedThingDao.getAllSortedByIndex(groupId)
-            .onEach { list ->
-                list.onEach {
-                    if (it.serializedItem == 0) {
-                        it.serializedItem = it.getItem()
+        groupIdFlow.flatMapLatest { groupId ->
+            trackedThingDao.getAllSortedByIndex(groupId)
+                .onEach { list ->
+                    list.onEach {
+                        if (it.serializedItem == 0) {
+                            it.serializedItem = it.getItem()
+                        }
                     }
                 }
-            }
+        }
 
     fun showCreateDialog(type: TrackedThing.Type) {
         viewModelScope.launch {
@@ -149,14 +159,15 @@ class TrackerViewModel(
                 fiveEDefaultStats = fiveEDefaultStats
                     ?: StatsContainer.createDefault5EStatEntries()
                 val defaultStats = requireNotNull(fiveEDefaultStats)
-                val newStats = TrackedThing.emptyOfType(type, _items.value.size, groupId)
+                val newStats =
+                    TrackedThing.emptyOfType(type, _items.value.size, groupIdFlow.value)
                 newStats.setItem(StatsContainer.Empty.copy(stats = defaultStats))
                 _dialog.emit(
                     ITrackerDialog.StatsEditDialog(newStats, Res.string.five_e_stats.asText())
                 )
             } else {
                 val newTrackedThing =
-                    TrackedThing.emptyOfType(type, _items.value.size, groupId)
+                    TrackedThing.emptyOfType(type, _items.value.size, groupIdFlow.value)
                 _dialog.emit(
                     ITrackerDialog.EditDialog(newTrackedThing, type.nameResource!!.asText())
                 )
@@ -856,7 +867,6 @@ class TrackerViewModel(
         }
     }
 
-    @OptIn(ExperimentalUuidApi::class)
     fun addFileToShortcuts(
         fileShortcuts: TrackedThing,
         file: PlatformFile

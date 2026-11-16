@@ -15,7 +15,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
-## [1.5.1]
+## [1.6.0]
+
+### Added
+
+### Fixed
+
+- No UI shown when resizing the app from medium to compact size on larger devices
+
+### Changed
+
+### Removed
+
+## [1.5.1] - 2026-03-28
 
 ### Known Issues
 
@@ -32,7 +44,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Equipment list screen on large screen devices now utilizes space better with a grid layout
 
-## [1.5.0]
+## [1.5.0] - 2026-03-21
 
 ### Known Issues
 

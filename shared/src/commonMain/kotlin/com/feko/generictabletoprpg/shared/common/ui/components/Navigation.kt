@@ -1,16 +1,11 @@
 package com.feko.generictabletoprpg.shared.common.ui.components
 
-import androidx.compose.material3.DrawerState
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfoV2
 import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffoldDefaults
 import androidx.compose.material3.adaptive.layout.PaneScaffoldDirective
 import androidx.compose.material3.adaptive.navigation.BackNavigationBehavior
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavEntry
@@ -72,27 +67,15 @@ import com.feko.generictabletoprpg.shared.features.tracker.ui.TrackerScreen
 import com.feko.generictabletoprpg.shared.features.tracker.ui.TrackerViewModel
 import com.feko.generictabletoprpg.shared.features.weapon.Weapon
 import com.feko.generictabletoprpg.shared.features.weapon.ui.WeaponDetailsScreen
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
-import org.koin.core.parameter.parameterSetOf
 
 @Composable
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
 fun NavigationHost(
-    scope: CoroutineScope,
-    drawerState: DrawerState,
     backStack: NavBackStack<NavKey>,
-    appViewModel: AppViewModel
+    appViewModel: AppViewModel,
+    onNavigationIconClick: () -> Unit
 ) {
-    val onNavigationIconClick: () -> Unit = {
-        scope.launch {
-            drawerState.apply {
-                if (isOpen) close() else open()
-            }
-        }
-    }
-
     val onNavigateBack: () -> Unit = {
         backStack.removeLastOrNull()
     }
@@ -106,7 +89,7 @@ fun NavigationHost(
                 else -> 1
             }
         }
-    var trackerViewModel: TrackerViewModel? by remember { mutableStateOf(null) }
+    val trackerViewModel: TrackerViewModel = koinViewModel()
     NavDisplay(
         backStack,
         entryDecorators = listOf(
@@ -137,10 +120,9 @@ fun NavigationHost(
 
             is TrackerDestination ->
                 NavEntry(key, metadata = ListDetailSceneStrategy.listPane()) {
-                    trackerViewModel =
-                        koinViewModel(parameters = { parameterSetOf(key.id, key.name) })
+                    trackerViewModel.init(key.id, key.name)
                     TrackerScreen(
-                        trackerViewModel!!,
+                        trackerViewModel,
                         onNavigationIconClick,
                         searchAllResultViewModel,
                         onNavigateToSpellListScreen = {

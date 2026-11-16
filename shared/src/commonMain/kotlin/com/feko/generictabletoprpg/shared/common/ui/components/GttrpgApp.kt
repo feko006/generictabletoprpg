@@ -62,13 +62,21 @@ fun GttrpgApp() {
                 INavigationDestination.startDestination
             )
             val isBigScreen = LocalDimens.current.screenSize != ScreenSize.Compact
+            val content: @Composable () -> Unit = {
+                NavigationHost(backStack, appViewModel) {
+                    scope.launch {
+                        drawerState.apply {
+                            if (isOpen) close() else open()
+                        }
+                    }
+                }
+            }
             if (isBigScreen) {
                 LargeScreenNavigation(
                     activeDrawerItemRoute,
                     appViewModel,
                     backStack,
-                    scope,
-                    drawerState
+                    content
                 )
             } else {
                 SmallScreenNavigation(
@@ -76,7 +84,8 @@ fun GttrpgApp() {
                     appViewModel,
                     scope,
                     drawerState,
-                    backStack
+                    backStack,
+                    content
                 )
             }
         }
@@ -88,8 +97,7 @@ private fun LargeScreenNavigation(
     activeDrawerItemRoute: State<INavigationDestination>,
     appViewModel: AppViewModel,
     backStack: NavBackStack<NavKey>,
-    scope: CoroutineScope,
-    drawerState: DrawerState
+    content: @Composable () -> Unit
 ) {
     Row {
         NavigationRail(Modifier.padding(LocalDimens.current.paddingSmall)) {
@@ -109,7 +117,7 @@ private fun LargeScreenNavigation(
                     onClick = { updateRootDestination(appViewModel, rootDestination, backStack) })
             }
         }
-        NavigationHost(scope, drawerState, backStack, appViewModel)
+        content()
     }
 }
 
@@ -119,7 +127,8 @@ private fun SmallScreenNavigation(
     appViewModel: AppViewModel,
     scope: CoroutineScope,
     drawerState: DrawerState,
-    backStack: NavBackStack<NavKey>
+    backStack: NavBackStack<NavKey>,
+    content: @Composable () -> Unit
 ) {
     ModalNavigationDrawer(
         drawerContent = {
@@ -140,8 +149,9 @@ private fun SmallScreenNavigation(
         },
         Modifier.safeDrawingPadding(),
         drawerState,
-        gesturesEnabled = !drawerState.isAnimationRunning
-    ) { NavigationHost(scope, drawerState, backStack, appViewModel) }
+        gesturesEnabled = !drawerState.isAnimationRunning,
+        content = content
+    )
 }
 
 private fun updateRootDestination(
