@@ -1,7 +1,14 @@
 package com.feko.generictabletoprpg.shared.features.io.domain.usecase
 
+import com.feko.generictabletoprpg.Res
+import com.feko.generictabletoprpg.ammunition
+import com.feko.generictabletoprpg.armor
+import com.feko.generictabletoprpg.feat
 import com.feko.generictabletoprpg.shared.common.domain.IParseEdnAsMap
+import com.feko.generictabletoprpg.shared.common.domain.model.IText.StringResourceText.Companion.asText
 import com.feko.generictabletoprpg.shared.logger
+import com.feko.generictabletoprpg.spell
+import com.feko.generictabletoprpg.weapon
 
 class OrcbrewImportAllUseCase(
     private val parseEdnAsMapPort: IParseEdnAsMap,
@@ -11,7 +18,7 @@ class OrcbrewImportAllUseCase(
     private val orcbrewImportAmmunitionsUseCase: IOrcbrewImportAmmunitionsUseCase,
     private val orcbrewImportArmorsUseCase: IOrcbrewImportArmorsUseCase
 ) : IOrcbrewImportAllUseCase {
-    override suspend fun import(content: String): Result<Boolean> {
+    override suspend fun import(content: String): Result<List<ImportResult>> {
         try {
             val safeFileContents =
                 if (content[0] != '\ufeff') {
@@ -24,22 +31,28 @@ class OrcbrewImportAllUseCase(
             if (sources.keys.any { it.toString().contains("orcpub") }) {
                 sources = mapOf("" to sources)
             }
-            val results = mutableListOf<Result<Boolean>>()
+            val results = mutableListOf<ImportResult>()
             val spellsImported = orcbrewImportSpellsUseCase.import(sources)
-            results.add(spellsImported)
+            spellsImported.getOrNull()?.let {
+                results.add(ImportResult(Res.string.spell.asText(), it.first, it.second))
+            }
             val featsImported = orcbrewImportFeatsUseCase.import(sources)
-            results.add(featsImported)
+            featsImported.getOrNull()?.let {
+                results.add(ImportResult(Res.string.feat.asText(), it.first, it.second))
+            }
             val weaponsImported = orcbrewImportWeaponsUseCase.import(sources)
-            results.add(weaponsImported)
+            weaponsImported.getOrNull()?.let {
+                results.add(ImportResult(Res.string.weapon.asText(), it.first, it.second))
+            }
             val ammunitionsImported = orcbrewImportAmmunitionsUseCase.import(sources)
-            results.add(ammunitionsImported)
+            ammunitionsImported.getOrNull()?.let {
+                results.add(ImportResult(Res.string.ammunition.asText(), it.first, it.second))
+            }
             val armorsImported = orcbrewImportArmorsUseCase.import(sources)
-            results.add(armorsImported)
-            val everythingImported =
-                results.fold(true) { current, result ->
-                    current && result.getOrDefault(false)
-                }
-            return Result.success(everythingImported)
+            armorsImported.getOrNull()?.let {
+                results.add(ImportResult(Res.string.armor.asText(), it.first, it.second))
+            }
+            return Result.success(results)
         } catch (e: Exception) {
             logger.error(e) { "Failed to process file" }
             return Result.failure(e)

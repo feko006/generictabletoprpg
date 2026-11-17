@@ -9,6 +9,7 @@ import com.feko.generictabletoprpg.reset_dialog_title
 import com.feko.generictabletoprpg.reset_encounter_message
 import com.feko.generictabletoprpg.select_legendary_action
 import com.feko.generictabletoprpg.shared.common.domain.model.IText
+import com.feko.generictabletoprpg.shared.common.domain.model.IText.StringText.Companion.asText
 import com.feko.generictabletoprpg.shared.features.encounter.InitiativeEntryEntity
 import com.feko.generictabletoprpg.take_damage_dialog_title
 
@@ -40,7 +41,7 @@ sealed interface IEncounterDialog {
         val title: IText = IText.StringResourceText(Res.string.delete_dialog_title)
         val message: IText = IText.StringResourceText(
             Res.string.remove_from_encounter_after_taking_lethal_damage_dialog_message_template,
-            arrayOf(entry.name)
+            listOf(entry.name.asText())
         )
     }
 

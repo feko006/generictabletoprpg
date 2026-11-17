@@ -12,6 +12,7 @@ import com.feko.generictabletoprpg.item_successfully_added_to_equipment
 import com.feko.generictabletoprpg.shared.common.domain.createNewComparator
 import com.feko.generictabletoprpg.shared.common.domain.model.IText
 import com.feko.generictabletoprpg.shared.common.domain.model.IText.StringResourceText.Companion.asText
+import com.feko.generictabletoprpg.shared.common.domain.model.IText.StringText.Companion.asText
 import com.feko.generictabletoprpg.shared.common.ui.ToastMessage
 import com.feko.generictabletoprpg.shared.common.ui.theme.ScreenSize
 import com.feko.generictabletoprpg.shared.common.ui.viewmodel.OverviewViewModel
@@ -598,7 +599,9 @@ class TrackerViewModel(
             reduceByOneSuspending(spellSlot)
             _toast.emit(
                 ToastMessage(
-                    Res.string.spell_cast_with_slot_level.asText(arrayOf(withSlotLevel.toString())),
+                    Res.string.spell_cast_with_slot_level.asText(
+                        listOf(withSlotLevel.toString().asText())
+                    ),
                     _toast
                 )
             )
@@ -618,7 +621,9 @@ class TrackerViewModel(
             reduceByOneSuspending(spellSlot)
             _toast.emit(
                 ToastMessage(
-                    Res.string.spell_cast_with_slot_level.asText(arrayOf(withSlotLevel.toString())),
+                    Res.string.spell_cast_with_slot_level.asText(
+                        listOf(withSlotLevel.toString().asText())
+                    ),
                     _toast
                 )
             )

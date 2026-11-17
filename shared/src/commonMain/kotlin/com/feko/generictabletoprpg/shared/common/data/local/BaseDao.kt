@@ -32,7 +32,7 @@ abstract class BaseDao<TEntity, TCore> :
     suspend fun updateAll(list: List<TCore>) =
         updateAllInternal(list.map { getEntityFromCoreModel(it) })
 
-    override suspend fun insertAll(list: List<TCore>): Result<Boolean> {
+    override suspend fun insertAll(list: List<TCore>): Result<Pair<Int, Int>> {
         val errors = mutableListOf<Exception>()
         list.forEach { item ->
             try {
@@ -42,7 +42,8 @@ abstract class BaseDao<TEntity, TCore> :
                 errors.add(e)
             }
         }
-        return Result.success(errors.isEmpty())
+        val succeeded = list.size - errors.size
+        return Result.success(Pair(succeeded, list.size))
     }
 
     override suspend fun insertOrUpdate(item: TCore): Long {

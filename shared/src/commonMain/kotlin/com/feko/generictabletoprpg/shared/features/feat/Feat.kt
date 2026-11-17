@@ -16,7 +16,7 @@ data class Feat(
     override val id: Long = 0,
     override val name: String,
     val description: String,
-    override val source: String,
+    override var source: String,
     val abilityIncreases: List<Stat>,
     val proficiencyRequirements: List<String>,
     val statRequirements: List<Stat>,

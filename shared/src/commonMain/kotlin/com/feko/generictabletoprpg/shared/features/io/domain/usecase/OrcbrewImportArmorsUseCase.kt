@@ -10,7 +10,7 @@ class OrcbrewImportArmorsUseCase(
     private val processEdnMapPort: IProcessEdnMap,
     private val insertArmorsPort: IInsertAllDao<Armor>
 ) : IOrcbrewImportArmorsUseCase {
-    override suspend fun import(sources: Map<Any, Any>): Result<Boolean> {
+    override suspend fun import(sources: Map<Any, Any>): Result<Pair<Int, Int>> {
         val armorsToAdd = mutableListOf<Armor>()
         val exceptions = mutableListOf<Exception>()
         sources.forEach { source ->
@@ -35,13 +35,8 @@ class OrcbrewImportArmorsUseCase(
                 }
             }
         }
-        if (exceptions.isNotEmpty() and
-            armorsToAdd.isNotEmpty()
-        ) {
-            return Result.success(false)
-        }
-        if (armorsToAdd.isEmpty()) {
-            return Result.success(true)
+        if (exceptions.isNotEmpty() and armorsToAdd.isNotEmpty()) {
+            return Result.failure(exceptions.first())
         }
         return insertArmorsPort.insertAll(armorsToAdd)
     }

@@ -68,11 +68,16 @@ val ioModule = module {
     single<IJsonImportAllUseCase> {
         JsonImportAllUseCase(
             get<ActionDao>(),
+            get<AmmunitionDao>(),
+            get<ArmorDao>(),
             get<ConditionDao>(),
             get<DiseaseDao>(),
+            get<FeatDao>(),
+            get<SpellDao>(),
+            get<WeaponDao>(),
+            get<MagicItemDao>(),
             get<TrackedThingGroupDao>(),
             get<TrackedThingDao>(),
-            get<MagicItemDao>()
         )
     }
     singleOf(::ImportAllUseCase) bind IImportAllUseCase::class

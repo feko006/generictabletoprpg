@@ -17,7 +17,7 @@ import kotlin.reflect.KClass
 data class Armor(
     override val id: Long = 0,
     override val name: String,
-    override val source: String,
+    override var source: String,
     val type: String,
     val baseAc: Int?,
     val maxDexModifier: Int?,

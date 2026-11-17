@@ -18,7 +18,7 @@ import kotlin.reflect.KClass
 data class Weapon(
     override val id: Long = 0,
     override val name: String,
-    override val source: String,
+    override var source: String,
     val damage: Damage?,
     val type: String,
     val isRanged: Boolean,

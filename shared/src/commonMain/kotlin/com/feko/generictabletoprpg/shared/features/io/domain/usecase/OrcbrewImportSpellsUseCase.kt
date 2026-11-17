@@ -10,7 +10,7 @@ class OrcbrewImportSpellsUseCase(
     private val processEdnMapPort: IProcessEdnMap,
     private val insertSpellsPort: IInsertAllDao<Spell>
 ) : IOrcbrewImportSpellsUseCase {
-    override suspend fun import(sources: Map<Any, Any>): Result<Boolean> {
+    override suspend fun import(sources: Map<Any, Any>): Result<Pair<Int, Int>> {
         val spellsToAdd = mutableListOf<Spell>()
         val exceptions = mutableListOf<Exception>()
         sources.forEach { source ->
@@ -35,13 +35,8 @@ class OrcbrewImportSpellsUseCase(
                 }
             }
         }
-        if (exceptions.isNotEmpty() and
-            spellsToAdd.isNotEmpty()
-        ) {
-            return Result.success(false)
-        }
-        if (spellsToAdd.isEmpty()) {
-            return Result.success(true)
+        if (exceptions.isNotEmpty() and spellsToAdd.isNotEmpty()) {
+            return Result.failure(exceptions.first())
         }
         return insertSpellsPort.insertAll(spellsToAdd)
     }

@@ -19,11 +19,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Support for importing all content via JSON
+
 ### Fixed
 
 - No UI shown when resizing the app from medium to compact size on larger devices
 
 ### Changed
+
+- Message shown after importing files
 
 ### Removed
 

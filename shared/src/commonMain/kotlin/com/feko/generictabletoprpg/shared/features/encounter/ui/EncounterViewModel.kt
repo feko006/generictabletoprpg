@@ -7,6 +7,8 @@ import com.feko.generictabletoprpg.add
 import com.feko.generictabletoprpg.edit
 import com.feko.generictabletoprpg.legendary_action_used
 import com.feko.generictabletoprpg.shared.common.domain.model.IText
+import com.feko.generictabletoprpg.shared.common.domain.model.IText.StringResourceText.Companion.asText
+import com.feko.generictabletoprpg.shared.common.domain.model.IText.StringText.Companion.asText
 import com.feko.generictabletoprpg.shared.common.ui.ToastMessage
 import com.feko.generictabletoprpg.shared.features.encounter.InitiativeEntryDao
 import com.feko.generictabletoprpg.shared.features.encounter.InitiativeEntryEntity
@@ -223,7 +225,7 @@ class EncounterViewModel(private val dao: InitiativeEntryDao) : ViewModel() {
     private suspend fun useLegendaryAction(entry: InitiativeEntryEntity, count: Int) {
         _toastMessage.emit(
             ToastMessage(
-                IText.StringResourceText(Res.string.legendary_action_used, arrayOf(entry.name)),
+                Res.string.legendary_action_used.asText(listOf(entry.name.asText())),
                 _toastMessage
             )
         )

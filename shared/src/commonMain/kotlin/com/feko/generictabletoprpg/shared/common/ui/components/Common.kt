@@ -125,7 +125,7 @@ fun ToastMessage(toast: ToastMessage?) {
     val toaster = rememberToasterState()
     Toaster(toaster, darkTheme = LocalTheme.current.isInDarkMode)
     if (toast != null) {
-        toaster.show(toast.message.text())
+        toaster.show(toast.message.text(), duration = toast.duration)
         toast.toastConsumed()
     }
 }

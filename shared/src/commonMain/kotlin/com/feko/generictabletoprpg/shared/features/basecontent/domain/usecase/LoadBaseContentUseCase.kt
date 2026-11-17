@@ -4,6 +4,7 @@ import com.feko.generictabletoprpg.shared.common.domain.IUserPreferences
 import com.feko.generictabletoprpg.shared.features.basecontent.domain.ILoadBaseContent
 import com.feko.generictabletoprpg.shared.features.io.domain.usecase.IJsonImportAllUseCase
 import com.feko.generictabletoprpg.shared.features.io.domain.usecase.IOrcbrewImportAllUseCase
+import com.feko.generictabletoprpg.shared.features.io.domain.usecase.ImportResult
 
 class LoadBaseContentUseCase(
     private val userPreferences: IUserPreferences,
@@ -22,7 +23,7 @@ class LoadBaseContentUseCase(
             return
         }
 
-        val allResults = mutableListOf<Result<Boolean>>()
+        val allResults = mutableListOf<Result<List<ImportResult>>>()
 
         val baseOrcbrewContent = loadBaseContentPort.loadOrcbrewBaseContent()
         val orcbrewResult = orcbrewImportAllUseCase.import(baseOrcbrewContent)
@@ -32,16 +33,11 @@ class LoadBaseContentUseCase(
         val jsonResult = jsonImportAllUseCase.import(baseJsonContent)
         allResults.add(jsonResult)
 
-        val result = allResults.fold(Result.success(true)) { current, result ->
-            val currentResult = current.getOrDefault(false)
-            val nextResult = result.getOrDefault(false)
-            Result.success(currentResult && nextResult)
-        }
-
-        if (!result.getOrDefault(false)) {
+        val failure = allResults.firstOrNull { it.isFailure }
+        failure?.let {
             throw IllegalStateException(
                 "App must initialize successfully on start",
-                result.exceptionOrNull()
+                it.exceptionOrNull()
             )
         }
 

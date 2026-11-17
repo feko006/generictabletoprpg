@@ -19,7 +19,7 @@ data class Spell(
     val duration: String,
     val concentration: Boolean,
     val level: Int,
-    override val source: String,
+    override var source: String,
     val components: SpellComponents,
     val castingTime: String,
     val classesThatCanCast: List<String>,

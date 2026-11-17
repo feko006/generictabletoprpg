@@ -10,26 +10,29 @@ sealed interface IText {
 
     data class StringResourceText(
         private val stringResource: StringResource,
-        @Suppress("ArrayInDataClass")
-        private val formatArgs: Array<String> = emptyArray()
+        private val formatArgs: Collection<IText> = emptyList()
     ) : IText {
         @Composable
         override fun text(): String =
-            stringResource(stringResource, *formatArgs)
+            stringResource(stringResource, *formatArgs.map { it.text() }.toTypedArray())
 
         companion object {
             fun StringResource.asText(): IText = StringResourceText(this)
-            fun StringResource.asText(formatArgs: Array<String>): IText =
+            fun StringResource.asText(formatArgs: Collection<IText>): IText =
                 StringResourceText(this, formatArgs)
         }
     }
 
-    data class StringText(private val string: String) : IText {
+    data class StringText(
+        private val string: String,
+        private val formatArgs: Collection<IText> = emptyList()
+    ) : IText {
         @Composable
-        override fun text(): String = string
+        override fun text(): String = string.format(*formatArgs.map { it.text() }.toTypedArray())
 
         companion object {
             fun String.asText(): IText = StringText(this)
+            fun String.asText(formatArgs: Collection<IText>): IText = StringText(this, formatArgs)
         }
     }
 }

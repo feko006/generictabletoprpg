@@ -49,11 +49,16 @@ class ImportExportTrackerDataTest {
         jsonImportAllUseCase =
             JsonImportAllUseCase(
                 db.actionDao(),
+                db.ammunitionDao(),
+                db.armorDao(),
                 db.conditionDao(),
                 db.diseaseDao(),
+                db.featDao(),
+                db.spellDao(),
+                db.weaponDao(),
+                db.magicItemDao(),
                 db.trackedThingGroupDao(),
-                db.trackedThingDao(),
-                db.magicItemDao()
+                db.trackedThingDao()
             )
     }
 

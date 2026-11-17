@@ -10,7 +10,7 @@ class OrcbrewImportFeatsUseCase(
     private val processEdnMapPort: IProcessEdnMap,
     private val insertFeatsPort: IInsertAllDao<Feat>
 ) : IOrcbrewImportFeatsUseCase {
-    override suspend fun import(sources: Map<Any, Any>): Result<Boolean> {
+    override suspend fun import(sources: Map<Any, Any>): Result<Pair<Int, Int>> {
         val featsToAdd = mutableListOf<Feat>()
         val exceptions = mutableListOf<Exception>()
         sources.forEach { source ->
@@ -35,13 +35,8 @@ class OrcbrewImportFeatsUseCase(
                 }
             }
         }
-        if (exceptions.isNotEmpty() and
-            featsToAdd.isNotEmpty()
-        ) {
-            return Result.success(false)
-        }
-        if (featsToAdd.isEmpty()) {
-            return Result.success(true)
+        if (exceptions.isNotEmpty() and featsToAdd.isNotEmpty()) {
+            return Result.failure(exceptions.first())
         }
         return insertFeatsPort.insertAll(featsToAdd)
     }
