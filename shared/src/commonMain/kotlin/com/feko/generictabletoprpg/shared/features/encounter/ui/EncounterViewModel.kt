@@ -24,17 +24,16 @@ class EncounterViewModel(private val dao: InitiativeEntryDao) : ViewModel() {
 
     val entries: Flow<List<InitiativeEntryEntity>> = dao.getAllSortedByInitiative()
 
-    private val _dialog = MutableStateFlow<IEncounterDialog>(IEncounterDialog.None)
-    val dialog: Flow<IEncounterDialog> = _dialog
+    val dialog: Flow<IEncounterDialog>
+        field = MutableStateFlow<IEncounterDialog>(IEncounterDialog.None)
 
     private var areLairActionsAdded = false
 
-    private val _currentRound = MutableStateFlow(0)
     val currentRound: Flow<Int>
-        get() = _currentRound
+        field = MutableStateFlow(0)
 
-    private val _toastMessage = MutableStateFlow<ToastMessage?>(null)
-    val toastMessage: Flow<ToastMessage?> = _toastMessage
+    val toastMessage: Flow<ToastMessage?>
+        field = MutableStateFlow<ToastMessage?>(null)
 
     val encounterState: Flow<EncounterState> =
         entries.map { entry ->
@@ -61,9 +60,8 @@ class EncounterViewModel(private val dao: InitiativeEntryDao) : ViewModel() {
         }
     }
 
-    private val _scrollToItemWithIndex = MutableSharedFlow<Int>()
     val scrollToItemWithIndex: Flow<Int>
-        get() = _scrollToItemWithIndex
+        field = MutableSharedFlow<Int>()
 
     fun createOrUpdateInitiativeEntry(entity: InitiativeEntryEntity) {
         viewModelScope.launch {
@@ -86,13 +84,13 @@ class EncounterViewModel(private val dao: InitiativeEntryDao) : ViewModel() {
             val newHealthValue = (initiativeEntry.health - amount).coerceAtLeast(0)
             dao.update(initiativeEntry.copy(health = newHealthValue))
             if (newHealthValue == 0 && !initiativeEntry.keepOnRefresh) {
-                _dialog.update { IEncounterDialog.RemoveAfterTakingDamageDialog(initiativeEntry) }
+                dialog.update { IEncounterDialog.RemoveAfterTakingDamageDialog(initiativeEntry) }
             }
         }
     }
 
     fun showCreateNewDialog() =
-        _dialog.update {
+        dialog.update {
             IEncounterDialog.EditDialog(
                 InitiativeEntryEntity.Empty,
                 isLairActionsButtonVisible = !areLairActionsAdded,
@@ -101,16 +99,16 @@ class EncounterViewModel(private val dao: InitiativeEntryDao) : ViewModel() {
         }
 
     fun showInitiativeDialog(initiativeEntry: InitiativeEntryEntity) =
-        _dialog.update { IEncounterDialog.InitiativeDialog(initiativeEntry) }
+        dialog.update { IEncounterDialog.InitiativeDialog(initiativeEntry) }
 
     fun showHealDialog(initiativeEntry: InitiativeEntryEntity) =
-        _dialog.update { IEncounterDialog.HealDialog(initiativeEntry) }
+        dialog.update { IEncounterDialog.HealDialog(initiativeEntry) }
 
     fun showDamageDialog(initiativeEntry: InitiativeEntryEntity) =
-        _dialog.update { IEncounterDialog.DamageDialog(initiativeEntry) }
+        dialog.update { IEncounterDialog.DamageDialog(initiativeEntry) }
 
     fun duplicateEntry(initiativeEntry: InitiativeEntryEntity) =
-        _dialog.update {
+        dialog.update {
             IEncounterDialog.EditDialog(
                 initiativeEntry.copy(id = 0L, hasTurn = false, isTurnCompleted = false),
                 isLairActionsButtonVisible = !areLairActionsAdded,
@@ -119,7 +117,7 @@ class EncounterViewModel(private val dao: InitiativeEntryDao) : ViewModel() {
         }
 
     fun showEditDialog(initiativeEntry: InitiativeEntryEntity) =
-        _dialog.update {
+        dialog.update {
             IEncounterDialog.EditDialog(
                 initiativeEntry,
                 isLairActionsButtonVisible = !areLairActionsAdded,
@@ -128,9 +126,9 @@ class EncounterViewModel(private val dao: InitiativeEntryDao) : ViewModel() {
         }
 
     fun showDeleteDialog(initiativeEntry: InitiativeEntryEntity) =
-        _dialog.update { IEncounterDialog.ConfirmDeletionDialog(initiativeEntry) }
+        dialog.update { IEncounterDialog.ConfirmDeletionDialog(initiativeEntry) }
 
-    fun showResetDialog() = _dialog.update { IEncounterDialog.ConfirmResetDialog }
+    fun showResetDialog() = dialog.update { IEncounterDialog.ConfirmResetDialog }
 
     fun addLairActions() {
         viewModelScope.launch {
@@ -158,7 +156,7 @@ class EncounterViewModel(private val dao: InitiativeEntryDao) : ViewModel() {
 
     fun resetInitiative() {
         viewModelScope.launch {
-            _currentRound.emit(0)
+            currentRound.emit(0)
             dao.resetInitiative()
             dao.resetAvailableLegendaryActions()
             dao.setCurrentTurn(0L)
@@ -169,7 +167,7 @@ class EncounterViewModel(private val dao: InitiativeEntryDao) : ViewModel() {
     fun startInitiative() {
         viewModelScope.launch {
             val entries = entries.first()
-            _currentRound.emit(1)
+            currentRound.emit(1)
             dao.setCurrentTurn(entries.first().id)
         }
     }
@@ -185,7 +183,7 @@ class EncounterViewModel(private val dao: InitiativeEntryDao) : ViewModel() {
                 progressInitiativeInternal()
             } else {
                 dao.setTurnCompleted(currentEntry.id)
-                _scrollToItemWithIndex.emit(indexOfCurrentEntry)
+                scrollToItemWithIndex.emit(indexOfCurrentEntry)
             }
         }
     }
@@ -203,7 +201,7 @@ class EncounterViewModel(private val dao: InitiativeEntryDao) : ViewModel() {
                 entries.filter { it.canUseLegendaryActions(count) }
             val numberOfEntriesWithLegendaryActions = entriesWithLegendaryActions.size
             if (numberOfEntriesWithLegendaryActions > 1) {
-                _dialog.update {
+                dialog.update {
                     IEncounterDialog.PickLegendaryActionDialog(entriesWithLegendaryActions, count)
                 }
             } else if (numberOfEntriesWithLegendaryActions == 1) {
@@ -223,10 +221,10 @@ class EncounterViewModel(private val dao: InitiativeEntryDao) : ViewModel() {
     }
 
     private suspend fun useLegendaryAction(entry: InitiativeEntryEntity, count: Int) {
-        _toastMessage.emit(
+        toastMessage.emit(
             ToastMessage(
                 Res.string.legendary_action_used.asText(listOf(entry.name.asText())),
-                _toastMessage
+                toastMessage
             )
         )
         dao.update(entry.copy(availableLegendaryActions = entry.availableLegendaryActions - count))
@@ -238,20 +236,20 @@ class EncounterViewModel(private val dao: InitiativeEntryDao) : ViewModel() {
         val indexOfNextEntry = (indexOfCurrentEntry + 1) % entries.size
         val isNewRound = indexOfNextEntry == 0
         if (isNewRound) {
-            _currentRound.emit(_currentRound.value + 1)
+            currentRound.emit(currentRound.value + 1)
             dao.resetAvailableLegendaryActions()
         }
         dao.setCurrentTurn(entries[indexOfNextEntry].id)
         dao.setTurnCompleted(0L)
-        _scrollToItemWithIndex.emit(indexOfNextEntry)
+        scrollToItemWithIndex.emit(indexOfNextEntry)
     }
 
     fun dismissDialog() {
-        _dialog.update { IEncounterDialog.None }
+        dialog.update { IEncounterDialog.None }
     }
 
     fun editDialogItemUpdated(entry: InitiativeEntryEntity) {
-        _dialog.update {
+        dialog.update {
             if (it !is IEncounterDialog.EditDialog) return
             it.copy(entry = entry)
         }

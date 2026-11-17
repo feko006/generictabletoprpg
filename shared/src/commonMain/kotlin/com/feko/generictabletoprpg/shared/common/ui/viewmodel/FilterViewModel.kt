@@ -9,14 +9,13 @@ class FilterViewModel(
     private val defaultFilter: Filter? = null
 ) : IFilterViewModel {
     override val activeFilter: StateFlow<Filter?>
-        get() = _activeFilter
-    private val _activeFilter = MutableStateFlow(defaultFilter)
+        field = MutableStateFlow(defaultFilter)
 
     override fun filterUpdated(newFilter: Filter?) {
-        _activeFilter.update { newFilter }
+        activeFilter.update { newFilter }
     }
 
     override fun resetFilter() {
-        _activeFilter.update { defaultFilter }
+        activeFilter.update { defaultFilter }
     }
 }

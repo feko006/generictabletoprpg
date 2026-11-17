@@ -58,13 +58,12 @@ open class OverviewViewModel<T : Any>(
             }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
     }
 
-    private val _scrollToEnd = MutableStateFlow(false)
     val scrollToEnd: Flow<Boolean>
-        get() = _scrollToEnd
+        field = MutableStateFlow(false)
 
     fun consumeScrollToEndEvent() {
         viewModelScope.launch {
-            _scrollToEnd.emit(false)
+            scrollToEnd.emit(false)
         }
     }
 
@@ -77,6 +76,6 @@ open class OverviewViewModel<T : Any>(
     }
 
     protected suspend fun scrollToEnd() {
-        _scrollToEnd.emit(true)
+        scrollToEnd.emit(true)
     }
 }

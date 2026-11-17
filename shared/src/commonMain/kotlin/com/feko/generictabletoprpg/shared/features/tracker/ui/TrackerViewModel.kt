@@ -68,23 +68,24 @@ class TrackerViewModel(
     searchAllUseCase: ISearchAllUseCase,
 ) : OverviewViewModel<Any>(trackedThingDao) {
 
+    lateinit var groupName: String
+
     val groupIdFlow: StateFlow<Long>
         field = MutableStateFlow(0)
-    lateinit var groupName: String
-    private val _fabDropdownExpanded = MutableStateFlow(false)
-    val fabDropdownExpanded: StateFlow<Boolean> = _fabDropdownExpanded
+    val fabDropdownExpanded: StateFlow<Boolean>
+        field = MutableStateFlow(false)
 
-    private val _toast = MutableStateFlow<ToastMessage?>(null)
-    val toast: Flow<ToastMessage?> = _toast
+    val toast: Flow<ToastMessage?>
+        field = MutableStateFlow<ToastMessage?>(null)
 
-    private val _dialog: MutableStateFlow<ITrackerDialog> = MutableStateFlow(ITrackerDialog.None)
-    val dialog: Flow<ITrackerDialog> = _dialog
+    val dialog: Flow<ITrackerDialog>
+        field: MutableStateFlow<ITrackerDialog> = MutableStateFlow(ITrackerDialog.None)
 
-    private val _spellListDialog = MutableStateFlow<ITrackerDialog.SpellListDialog?>(null)
-    val spellListDialog: Flow<ITrackerDialog.SpellListDialog?> = _spellListDialog
+    val spellListDialog: Flow<ITrackerDialog.SpellListDialog?>
+        field = MutableStateFlow<ITrackerDialog.SpellListDialog?>(null)
 
-    private val _equipmentListDialog = MutableStateFlow<ITrackerDialog.EquipmentListDialog?>(null)
-    val equipmentListDialog: Flow<ITrackerDialog.EquipmentListDialog?> = _equipmentListDialog
+    val equipmentListDialog: Flow<ITrackerDialog.EquipmentListDialog?>
+        field = MutableStateFlow<ITrackerDialog.EquipmentListDialog?>(null)
 
     private lateinit var allItems: List<Any>
 
@@ -129,7 +130,7 @@ class TrackerViewModel(
         viewModelScope.launch {
             allItems = searchAllUseCase.getAllItems().first()
             isShowingPreparedSpells.collect {
-                updateFlexDialogState(_spellListDialog) {
+                updateFlexDialogState(spellListDialog) {
                     it.copy(isFilteringByPreparedSpells = isShowingPreparedSpells.value)
                 }
             }
@@ -163,13 +164,13 @@ class TrackerViewModel(
                 val newStats =
                     TrackedThing.emptyOfType(type, _items.value.size, groupIdFlow.value)
                 newStats.setItem(StatsContainer.Empty.copy(stats = defaultStats))
-                _dialog.emit(
+                dialog.emit(
                     ITrackerDialog.StatsEditDialog(newStats, Res.string.five_e_stats.asText())
                 )
             } else {
                 val newTrackedThing =
                     TrackedThing.emptyOfType(type, _items.value.size, groupIdFlow.value)
-                _dialog.emit(
+                dialog.emit(
                     ITrackerDialog.EditDialog(newTrackedThing, type.nameResource!!.asText())
                 )
             }
@@ -181,11 +182,11 @@ class TrackerViewModel(
         viewModelScope.launch {
             val copy = item.copy()
             if (item.type == TrackedThing.Type.FiveEStats) {
-                _dialog.emit(
+                dialog.emit(
                     ITrackerDialog.StatsEditDialog(copy, IText.StringResourceText(Res.string.edit))
                 )
             } else {
-                _dialog.emit(
+                dialog.emit(
                     ITrackerDialog.EditDialog(copy, IText.StringResourceText(Res.string.edit))
                 )
             }
@@ -219,13 +220,13 @@ class TrackerViewModel(
         viewModelScope.launch {
             trackedThingDao.delete(trackedThing.id)
             updateItemOrder()
-            val spellListId = _spellListDialog.value?.spellList?.id
+            val spellListId = spellListDialog.value?.spellList?.id
             if (spellListId == trackedThing.id) {
-                _spellListDialog.emit(null)
+                spellListDialog.emit(null)
             }
-            val equipmentId = _equipmentListDialog.value?.equipment?.id
+            val equipmentId = equipmentListDialog.value?.equipment?.id
             if (equipmentId == trackedThing.id) {
-                _equipmentListDialog.emit(null)
+                equipmentListDialog.emit(null)
             }
         }
     }
@@ -281,7 +282,7 @@ class TrackerViewModel(
 
     fun editStatsDialogValueUpdated(stats: TrackedThing) {
         viewModelScope.launch {
-            _dialog.update {
+            dialog.update {
                 if (it !is ITrackerDialog.StatsEditDialog) return@launch
                 stats.setItem(stats.serializedItem)
                 it.copy(stats = stats)
@@ -423,31 +424,31 @@ class TrackerViewModel(
     }
 
     fun addToPercentageRequested(percentage: TrackedThing) =
-        _dialog.update { ITrackerDialog.AddToPercentageDialog(percentage) }
+        dialog.update { ITrackerDialog.AddToPercentageDialog(percentage) }
 
     fun subtractFromPercentageRequested(percentage: TrackedThing) =
-        _dialog.update { ITrackerDialog.SubtractFromPercentageDialog(percentage) }
+        dialog.update { ITrackerDialog.SubtractFromPercentageDialog(percentage) }
 
     fun addToNumberRequested(number: TrackedThing) =
-        _dialog.update { ITrackerDialog.AddToNumberDialog(number) }
+        dialog.update { ITrackerDialog.AddToNumberDialog(number) }
 
     fun subtractFromNumberRequested(number: TrackedThing) =
-        _dialog.update { ITrackerDialog.SubtractFromNumberDialog(number) }
+        dialog.update { ITrackerDialog.SubtractFromNumberDialog(number) }
 
     fun takeDamageRequested(health: TrackedThing) =
-        _dialog.update { ITrackerDialog.DamageHealthDialog(health) }
+        dialog.update { ITrackerDialog.DamageHealthDialog(health) }
 
     fun healRequested(health: TrackedThing) =
-        _dialog.update { ITrackerDialog.HealHealthDialog(health) }
+        dialog.update { ITrackerDialog.HealHealthDialog(health) }
 
     fun addTemporaryHpRequested(health: TrackedThing) =
-        _dialog.update { ITrackerDialog.AddTemporaryHpDialog(health) }
+        dialog.update { ITrackerDialog.AddTemporaryHpDialog(health) }
 
     fun deleteItemRequested(item: TrackedThing) =
-        _dialog.update { ITrackerDialog.ConfirmDeletionDialog(item) }
+        dialog.update { ITrackerDialog.ConfirmDeletionDialog(item) }
 
     fun refreshAllRequested() =
-        _dialog.update { ITrackerDialog.RefreshAllDialog() }
+        dialog.update { ITrackerDialog.RefreshAllDialog() }
 
     fun itemReordered(from: Int, to: Int) {
         val itemCount = _items.value.size
@@ -489,8 +490,8 @@ class TrackerViewModel(
         val spellListDialog =
             ITrackerDialog.SpellListDialog(spellList, isShowingPreparedSpells.value)
         viewModelScope.launch {
-            _dialog.emit(spellListDialog)
-            _spellListDialog.emit(spellListDialog)
+            dialog.emit(spellListDialog)
+            this@TrackerViewModel.spellListDialog.emit(spellListDialog)
             if (screenSize != ScreenSize.Compact) {
                 onNavigateToSpellListScreen()
             }
@@ -510,7 +511,7 @@ class TrackerViewModel(
             }
             val spellsAlreadyInList = spellsNotInList.isEmpty()
             if (spellsAlreadyInList) {
-                _toast.emit(ToastMessage(Res.string.spells_already_in_list.asText(), _toast))
+                toast.emit(ToastMessage(Res.string.spells_already_in_list.asText(), toast))
             } else {
                 val newSpells = spellsNotInList.map { SpellListEntry.fromSpell(it) }
                 val sortedSpells =
@@ -525,9 +526,9 @@ class TrackerViewModel(
                         }
                 spellList.setItem(sortedSpells)
                 trackedThingDao.insertOrUpdate(spellList)
-                updateFlexDialogState(_spellListDialog) { it.copy(spellList = spellList) }
-                _toast.emit(
-                    ToastMessage(Res.string.spells_successfully_added_to_list.asText(), _toast)
+                updateFlexDialogState(spellListDialog) { it.copy(spellList = spellList) }
+                toast.emit(
+                    ToastMessage(Res.string.spells_successfully_added_to_list.asText(), toast)
                 )
             }
             spellListBeingAddedTo = null
@@ -539,7 +540,7 @@ class TrackerViewModel(
     }
 
     fun removeSpellFromSpellListRequested(spell: SpellListEntry) =
-        updateFlexDialogState(_spellListDialog) {
+        updateFlexDialogState(spellListDialog) {
             it.copy(secondaryDialog = ISpellListDialogDialogs.ConfirmSpellRemovalDialog(spell))
         }
 
@@ -559,7 +560,7 @@ class TrackerViewModel(
                 onPopSpellListScreen()
                 dismissDialog()
             } else {
-                updateFlexDialogState(_spellListDialog) { it.copy(spellList = spellListCopy) }
+                updateFlexDialogState(spellListDialog) { it.copy(spellList = spellListCopy) }
             }
         }
     }
@@ -577,7 +578,7 @@ class TrackerViewModel(
                 castSpellImmediate(availableSpellSlots.first())
                 return@launch
             }
-            updateFlexDialogState(_spellListDialog) {
+            updateFlexDialogState(spellListDialog) {
                 it.copy(
                     secondaryDialog =
                         ISpellListDialogDialogs.SelectSpellSlotDialog(availableSpellSlots)
@@ -597,12 +598,12 @@ class TrackerViewModel(
                                 && it.amount.toInt() > 0
                     }
             reduceByOneSuspending(spellSlot)
-            _toast.emit(
+            toast.emit(
                 ToastMessage(
                     Res.string.spell_cast_with_slot_level.asText(
                         listOf(withSlotLevel.toString().asText())
                     ),
-                    _toast
+                    toast
                 )
             )
         }
@@ -619,19 +620,19 @@ class TrackerViewModel(
                                 && it.amount.toInt() > 0
                     }
             reduceByOneSuspending(spellSlot)
-            _toast.emit(
+            toast.emit(
                 ToastMessage(
                     Res.string.spell_cast_with_slot_level.asText(
                         listOf(withSlotLevel.toString().asText())
                     ),
-                    _toast
+                    toast
                 )
             )
         }
     }
 
     fun showStatsDialog(stats: TrackedThing) =
-        _dialog.update {
+        dialog.update {
             ITrackerDialog.PreviewStatSkillsDialog(stats.serializedItem as StatsContainer)
         }
 
@@ -645,30 +646,30 @@ class TrackerViewModel(
             spellListEntry.isPrepared = isPrepared
             spellListCopy.setItem(spellListCopy.serializedItem)
             trackedThingDao.insertOrUpdate(spellListCopy)
-            updateFlexDialogState(_spellListDialog) { it.copy(spellList = spellListCopy) }
+            updateFlexDialogState(spellListDialog) { it.copy(spellList = spellListCopy) }
         }
     }
 
     fun setShowingPreparedSpells(value: Boolean) = isShowingPreparedSpells.update { value }
 
-    fun dismissDialog() = _dialog.update { ITrackerDialog.None }
+    fun dismissDialog() = dialog.update { ITrackerDialog.None }
 
     fun dismissSpellListSecondaryDialog() =
-        updateFlexDialogState(_spellListDialog) { it.copy(secondaryDialog = ISpellListDialogDialogs.None) }
+        updateFlexDialogState(spellListDialog) { it.copy(secondaryDialog = ISpellListDialogDialogs.None) }
 
     fun editDialogValueUpdated(trackedThing: TrackedThing) =
-        _dialog.update {
+        dialog.update {
             if (it is ITrackerDialog.EditDialog)
                 it.copy(editedItem = trackedThing)
             else it
         }
 
     fun dismissFabDropdown() {
-        _fabDropdownExpanded.update { false }
+        fabDropdownExpanded.update { false }
     }
 
     fun toggleFabDropdown() {
-        _fabDropdownExpanded.update { !it }
+        fabDropdownExpanded.update { !it }
     }
 
     fun addingItemToEquipment(equipment: TrackedThing) {
@@ -703,9 +704,9 @@ class TrackerViewModel(
             val newSerializedItem = serializedItem.copy(entries = newEntries)
             equipment.setItem(newSerializedItem)
             trackedThingDao.insertOrUpdate(equipment)
-            updateFlexDialogState(_equipmentListDialog) { it.copy(equipment = equipment) }
-            _toast.emit(
-                ToastMessage(Res.string.item_successfully_added_to_equipment.asText(), _toast)
+            updateFlexDialogState(equipmentListDialog) { it.copy(equipment = equipment) }
+            toast.emit(
+                ToastMessage(Res.string.item_successfully_added_to_equipment.asText(), toast)
             )
             equipmentBeingAddedTo = null
         }
@@ -722,15 +723,15 @@ class TrackerViewModel(
         }
         val equipmentListDialog =
             ITrackerDialog.EquipmentListDialog(equipment)
-        _dialog.update { equipmentListDialog }
-        _equipmentListDialog.update { equipmentListDialog }
+        dialog.update { equipmentListDialog }
+        this.equipmentListDialog.update { equipmentListDialog }
         if (screenSize != ScreenSize.Compact) {
             onNavigateToEquipmentListScreen()
         }
     }
 
     fun removeItemFromEquipmentListRequested(equipment: EquipmentEntry) =
-        updateFlexDialogState(_equipmentListDialog) {
+        updateFlexDialogState(equipmentListDialog) {
             it.copy(secondaryDialog = IEquipmentListDialogDialogs.ConfirmItemRemovalDialog(equipment))
         }
 
@@ -750,7 +751,7 @@ class TrackerViewModel(
                 onPopEquipmentListScreen()
                 dismissDialog()
             } else {
-                updateFlexDialogState(_equipmentListDialog) {
+                updateFlexDialogState(equipmentListDialog) {
                     it.copy(equipment = equipmentListCopy)
                 }
             }
@@ -758,7 +759,7 @@ class TrackerViewModel(
     }
 
     fun setItemQuantityRequested(equipmentEntry: EquipmentEntry) =
-        updateFlexDialogState(_equipmentListDialog) {
+        updateFlexDialogState(equipmentListDialog) {
             it.copy(
                 secondaryDialog =
                     IEquipmentListDialogDialogs.SetItemQuantityDialog(equipmentEntry)
@@ -780,7 +781,7 @@ class TrackerViewModel(
             val equipmentListCopy = equipment.copy()
             equipmentListCopy.setItem(serializedItem)
             trackedThingDao.insertOrUpdate(equipmentListCopy)
-            updateFlexDialogState(_equipmentListDialog) {
+            updateFlexDialogState(equipmentListDialog) {
                 it.copy(
                     equipment = equipmentListCopy,
                     secondaryDialog = IEquipmentListDialogDialogs.None
@@ -790,7 +791,7 @@ class TrackerViewModel(
     }
 
     fun dismissEquipmentListSecondaryDialog() =
-        updateFlexDialogState(_equipmentListDialog) {
+        updateFlexDialogState(equipmentListDialog) {
             it.copy(secondaryDialog = IEquipmentListDialogDialogs.None)
         }
 
@@ -801,10 +802,10 @@ class TrackerViewModel(
         addingItemToEquipment(equipment)
         val item = (equipmentItem as? EquipmentItem) ?: EquipmentItem.empty()
         val editEquipmentItemDialog = ITrackerDialog.EditEquipmentItemDialog(item)
-        _equipmentListDialog.update {
+        equipmentListDialog.update {
             ITrackerDialog.EquipmentListDialog(equipment, secondaryDialog = editEquipmentItemDialog)
         }
-        _dialog.update {
+        dialog.update {
             if (it is ITrackerDialog.EquipmentListDialog) {
                 it.copy(secondaryDialog = editEquipmentItemDialog)
             } else editEquipmentItemDialog
@@ -843,19 +844,19 @@ class TrackerViewModel(
             }
             equipmentList.setItem(serializedItem)
             trackedThingDao.insertOrUpdate(equipmentList)
-            _dialog.update {
+            dialog.update {
                 if (it is ITrackerDialog.EditEquipmentItemDialog) {
                     ITrackerDialog.None
                 } else it
             }
-            updateFlexDialogState(_equipmentListDialog) {
+            updateFlexDialogState(equipmentListDialog) {
                 it.copy(
                     equipment = equipmentList,
                     secondaryDialog = IEquipmentListDialogDialogs.None
                 )
             }
-            _toast.emit(
-                ToastMessage(Res.string.equipment_item_successfully_saved.asText(), _toast)
+            toast.emit(
+                ToastMessage(Res.string.equipment_item_successfully_saved.asText(), toast)
             )
             equipmentBeingAddedTo = null
         }
@@ -866,9 +867,9 @@ class TrackerViewModel(
         transform: (T) -> T
     ) {
         flexDialogProperty.update { dialog -> dialog?.let { transform(it) } }
-        val currentDialog = _dialog.value
+        val currentDialog = dialog.value
         if (currentDialog is T) {
-            _dialog.update { transform(currentDialog) }
+            dialog.update { transform(currentDialog) }
         }
     }
 
@@ -883,13 +884,13 @@ class TrackerViewModel(
                     file.nameWithoutExtension,
                     preprocessFileShortcut(file.absolutePath())
                 )
-            _dialog.update {
+            dialog.update {
                 EditFileShortcutNameDialog(fileShortcuts, newFileShortcut)
             }
         } catch (throwable: Throwable) {
             logger.error(throwable) { "Failed to add file to shortcuts." }
-            _toast.update {
-                ToastMessage(Res.string.failed_to_create_file_shortcut.asText(), _toast)
+            toast.update {
+                ToastMessage(Res.string.failed_to_create_file_shortcut.asText(), toast)
             }
         }
     }
@@ -897,7 +898,7 @@ class TrackerViewModel(
     fun showChangeFileShortcutNameSecondaryDialog(
         fileShortcut: FileShortcutEntry
     ) {
-        _dialog.update {
+        dialog.update {
             if (it is ITrackerDialog.FileShortcutsDialog) {
                 it.copy(
                     secondaryDialog =
@@ -918,7 +919,7 @@ class TrackerViewModel(
             newEntries = newEntries.plus(fileShortcut).sortedBy { it.name }
             fileShortcuts.setItem(serializedItem.copy(entries = newEntries))
             trackedThingDao.insertOrUpdate(fileShortcuts)
-            _toast.emit(ToastMessage(Res.string.file_shortcut_successfully_saved.asText(), _toast))
+            toast.emit(ToastMessage(Res.string.file_shortcut_successfully_saved.asText(), toast))
         }
     }
 
@@ -927,11 +928,11 @@ class TrackerViewModel(
         if ((fileShortcuts.serializedItem as FileShortcutsContainer).entries.isEmpty()) {
             return
         }
-        _dialog.update { ITrackerDialog.FileShortcutsDialog(fileShortcuts) }
+        dialog.update { ITrackerDialog.FileShortcutsDialog(fileShortcuts) }
     }
 
     fun removeFileShortcutRequested(fileShortcutEntry: FileShortcutEntry) {
-        _dialog.update {
+        dialog.update {
             if (it is ITrackerDialog.FileShortcutsDialog) {
                 it.copy(
                     secondaryDialog =
@@ -952,7 +953,7 @@ class TrackerViewModel(
             if (serializedItem.entries.isEmpty()) {
                 dismissDialog()
             } else {
-                _dialog.update {
+                dialog.update {
                     if (it is ITrackerDialog.FileShortcutsDialog) {
                         it.copy(
                             fileShortcuts = fileShortcutsCopy,
@@ -965,7 +966,7 @@ class TrackerViewModel(
     }
 
     fun dismissFileShortcutSecondaryDialog() {
-        _dialog.update {
+        dialog.update {
             if (it is ITrackerDialog.FileShortcutsDialog) {
                 it.copy(secondaryDialog = IFileShortcutDialogs.None)
             } else it
@@ -978,7 +979,7 @@ class TrackerViewModel(
             FileKit.openFileWithDefaultApplication(file)
         } catch (throwable: Throwable) {
             logger.error(throwable) { "Unable to open file shortcut." }
-            _dialog.update {
+            dialog.update {
                 if (it is ITrackerDialog.FileShortcutsDialog) {
                     it.copy(
                         secondaryDialog =
@@ -991,7 +992,7 @@ class TrackerViewModel(
 
     fun resolveBrokenFileShortcutDialog(file: PlatformFile) {
         viewModelScope.launch {
-            val fileShortcutDialog = _dialog.value as ITrackerDialog.FileShortcutsDialog
+            val fileShortcutDialog = dialog.value as ITrackerDialog.FileShortcutsDialog
             val brokenFileShortcutDialog =
                 fileShortcutDialog.secondaryDialog as IFileShortcutDialogs.BrokenFileShortcutDialog
             createOrEditFileShortcut(

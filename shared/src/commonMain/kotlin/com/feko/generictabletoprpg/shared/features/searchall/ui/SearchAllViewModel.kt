@@ -26,8 +26,8 @@ class SearchAllViewModel(
 ) : OverviewViewModel<Any>(null),
     IFilterViewModel by filterViewModel {
 
-    private val _isFilterBottomSheetVisible = MutableStateFlow(false)
-    val isFilterBottomSheetVisible: Flow<Boolean> = _isFilterBottomSheetVisible
+    val isFilterBottomSheetVisible: Flow<Boolean>
+        field = MutableStateFlow(false)
 
     val availableTypeOptions: StateFlow<List<KClass<out Any>>> =
         activeFilter
@@ -40,7 +40,7 @@ class SearchAllViewModel(
             }.stateIn(viewModelScope, SharingStarted.Lazily, listOf())
 
     fun filterRequested() {
-        _isFilterBottomSheetVisible.update { true }
+        isFilterBottomSheetVisible.update { true }
     }
 
     override fun getAllItems(): Flow<List<Any>> = searchAllUseCase.getAllItems()
@@ -48,6 +48,6 @@ class SearchAllViewModel(
     override fun getFilterFlow(): StateFlow<Filter?> = activeFilter
 
     fun bottomSheetHidden() {
-        _isFilterBottomSheetVisible.update { false }
+        isFilterBottomSheetVisible.update { false }
     }
 }

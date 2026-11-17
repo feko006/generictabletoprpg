@@ -11,12 +11,12 @@ import kotlinx.coroutines.launch
 class SpellFilterViewModel(
     spellFilterDao: ISpellFilterDao
 ) : ViewModel() {
-    private val _schools = MutableStateFlow(listOf<String>())
-    val schools: Flow<List<String>> = _schools
-    private val _levels = MutableStateFlow(listOf<Int>())
-    val levels: Flow<List<Int>> = _levels
-    private val _classes = MutableStateFlow(listOf<String>())
-    val classes: Flow<List<String>> = _classes
+    val schools: Flow<List<String>>
+        field = MutableStateFlow(listOf<String>())
+    val levels: Flow<List<Int>>
+        field = MutableStateFlow(listOf<Int>())
+    val classes: Flow<List<String>>
+        field = MutableStateFlow(listOf<String>())
 
     init {
         viewModelScope.launch {
@@ -29,13 +29,13 @@ class SpellFilterViewModel(
                         }
                     }
                 }
-                .collect(_schools)
+                .collect(schools)
         }
         viewModelScope.launch {
             spellFilterDao
                 .getAllLevels()
                 .map { it.sorted() }
-                .collect(_levels)
+                .collect(levels)
         }
         viewModelScope.launch {
             spellFilterDao
@@ -53,7 +53,7 @@ class SpellFilterViewModel(
                         .sorted()
                         .toList()
                 }
-                .collect(_classes)
+                .collect(classes)
         }
     }
 }

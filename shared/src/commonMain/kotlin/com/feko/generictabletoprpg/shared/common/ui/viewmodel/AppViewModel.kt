@@ -15,25 +15,21 @@ class AppViewModel(
     loadBaseContentUseCase: ILoadBaseContentUseCase
 ) : ViewModel() {
     val appState: StateFlow<AppState>
-        get() = _appState
-    private val _appState: MutableStateFlow<AppState> =
-        MutableStateFlow(AppState.ImportingBaseContent)
-
+        field = MutableStateFlow<AppState>(AppState.ImportingBaseContent)
     val activeDrawerItemRoute: StateFlow<INavigationDestination>
-        get() = _activeDrawerItemRoute
-    private val _activeDrawerItemRoute = MutableStateFlow(INavigationDestination.startDestination)
+        field = MutableStateFlow(INavigationDestination.startDestination)
 
     init {
         viewModelScope.launch {
             withContext(Dispatchers.Default) {
                 loadBaseContentUseCase.invoke()
             }
-            _appState.emit(AppState.ShowingScreen)
+            appState.emit(AppState.ShowingScreen)
         }
     }
 
     fun updateActiveDrawerItem(destination: INavigationDestination) {
-        _activeDrawerItemRoute.update { destination }
+        activeDrawerItemRoute.update { destination }
     }
 
     sealed class AppState {

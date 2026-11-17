@@ -44,17 +44,17 @@ class TrackerGroupViewModel(
     IExportViewModel<TrackedThingGroup> {
 
     private var _exportState: ExportState<TrackedThingGroup> = ExportState.None
-    private val _dialog = MutableStateFlow<ITrackerGroupDialog>(ITrackerGroupDialog.None)
-    val dialog: Flow<ITrackerGroupDialog> = _dialog
+    val dialog: Flow<ITrackerGroupDialog>
+        field = MutableStateFlow<ITrackerGroupDialog>(ITrackerGroupDialog.None)
 
     val exportButtonVisible: Flow<Boolean> =
         _items.map { it.any() }
 
-    private val _exportToast = MutableStateFlow<ToastMessage?>(null)
-    val exportToast: Flow<ToastMessage?> = _exportToast
+    val exportToast: Flow<ToastMessage?>
+        field = MutableStateFlow<ToastMessage?>(null)
 
     fun newTrackedThingGroupRequested() {
-        _dialog.update {
+        dialog.update {
             ITrackerGroupDialog.EditDialog(
                 TrackedThingGroup.Empty,
                 IText.StringResourceText(Res.string.create_new_tracked_group_dialog_title)
@@ -63,7 +63,7 @@ class TrackerGroupViewModel(
     }
 
     fun editItemRequested(item: TrackedThingGroup) {
-        _dialog.update {
+        dialog.update {
             ITrackerGroupDialog.EditDialog(
                 item,
                 IText.StringResourceText(Res.string.edit_tracked_group_dialog_title)
@@ -72,7 +72,7 @@ class TrackerGroupViewModel(
     }
 
     fun deleteItemRequested(item: TrackedThingGroup) {
-        _dialog.update {
+        dialog.update {
             ITrackerGroupDialog.DeleteDialog(
                 item,
                 IText.StringResourceText(Res.string.delete_tracked_group_dialog_title)
@@ -102,19 +102,19 @@ class TrackerGroupViewModel(
     }
 
     fun editDialogValueUpdated(trackedThingGroup: TrackedThingGroup) {
-        _dialog.update {
+        dialog.update {
             if (it !is ITrackerGroupDialog.EditDialog) return
             it.copy(trackedThingGroup = trackedThingGroup)
         }
     }
 
     fun dismissDialog() {
-        _dialog.update { ITrackerGroupDialog.None }
+        dialog.update { ITrackerGroupDialog.None }
     }
 
     override fun export(item: TrackedThingGroup, fileSaverLauncher: SaverResultLauncher?) {
         _exportState = ExportState.ExportingSingle(item)
-        _exportToast.update { ToastMessage(Res.string.export_location_hint.asText(), _exportToast) }
+        exportToast.update { ToastMessage(Res.string.export_location_hint.asText(), exportToast) }
         val trackedGroupFileName = item.name.replace(" ", "-")
         val displayName = "tracked-group-$trackedGroupFileName"
         fileSaverLauncher?.launch(
@@ -126,7 +126,7 @@ class TrackerGroupViewModel(
 
     override fun exportAll(fileSaverLauncher: SaverResultLauncher?) {
         _exportState = ExportState.ExportingAll
-        _exportToast.update { ToastMessage(Res.string.export_location_hint.asText(), _exportToast) }
+        exportToast.update { ToastMessage(Res.string.export_location_hint.asText(), exportToast) }
         val date = SimpleDateFormat("yyyy-MM-dd-HH-mm-ss", Locale.getDefault())
             .format(Date())
         val displayName = "tracked-groups-$date"
@@ -154,13 +154,13 @@ class TrackerGroupViewModel(
                 }
                 file.writeString(json)
                 logger.debug { "Export successful." }
-                _exportToast.emit(
-                    ToastMessage(Res.string.export_successful.asText(), _exportToast)
+                exportToast.emit(
+                    ToastMessage(Res.string.export_successful.asText(), exportToast)
                 )
             } catch (e: Throwable) {
                 logger.error(e) { "Export failed." }
-                _exportToast.emit(
-                    ToastMessage(Res.string.export_failed.asText(), _exportToast)
+                exportToast.emit(
+                    ToastMessage(Res.string.export_failed.asText(), exportToast)
                 )
             } finally {
                 _exportState = ExportState.None

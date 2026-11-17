@@ -28,8 +28,8 @@ class ImportViewModel(
 
     val screenState: StateFlow<IImportScreenState>
         field = MutableStateFlow<IImportScreenState>(IImportScreenState.ReadyToImport)
-    private val _toastMessage = MutableStateFlow<ToastMessage?>(null)
-    val toastMessage: Flow<ToastMessage?> = _toastMessage
+    val toastMessage: Flow<ToastMessage?>
+        field = MutableStateFlow<ToastMessage?>(null)
 
     fun filesSelected(files: List<PlatformFile>) {
         viewModelScope.launch {
@@ -80,7 +80,13 @@ class ImportViewModel(
     }
 
     private suspend fun showToastAndResetScreen(toastMessage: IText) {
-        _toastMessage.emit(ToastMessage(toastMessage, _toastMessage, ToasterDefaults.DurationLong))
+        this.toastMessage.emit(
+            ToastMessage(
+                toastMessage,
+                this.toastMessage,
+                ToasterDefaults.DurationLong
+            )
+        )
         screenState.emit(IImportScreenState.ReadyToImport)
     }
 
