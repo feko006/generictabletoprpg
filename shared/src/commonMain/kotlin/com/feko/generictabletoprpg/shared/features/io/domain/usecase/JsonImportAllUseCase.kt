@@ -98,7 +98,7 @@ class JsonImportAllUseCase(
             }
 
             return Result.success(results)
-        } catch (e: Exception) {
+        } catch (e: Throwable) {
             logger.error(e) { "Failed to process file" }
             return Result.failure(e)
         }

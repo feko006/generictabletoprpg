@@ -12,23 +12,23 @@ class OrcbrewImportArmorsUseCase(
 ) : IOrcbrewImportArmorsUseCase {
     override suspend fun import(sources: Map<Any, Any>): Result<Pair<Int, Int>> {
         val armorsToAdd = mutableListOf<Armor>()
-        val exceptions = mutableListOf<Exception>()
+        val exceptions = mutableListOf<Throwable>()
         sources.forEach { source ->
-            val content = source.value as Map<Any, Any>
+            val content = source.value as? Map<Any, Any>
             val armorsKey = ":orcpub.dnd.e5/armors"
             val hasValueForKey = processEdnMapPort.containsKey(content, armorsKey)
             if (hasValueForKey) {
                 val armors = processEdnMapPort.getValue<Map<Any, Any>>(content, armorsKey)
                 armors.forEach { armor ->
                     try {
-                        val armorMap = armor.value as Map<Any, Any>
+                        val armorMap = armor.value as? Map<Any, Any>
                         val armorToAdd = Armor.createFromOrcbrewData(
                             processEdnMapPort,
                             armorMap,
                             source.key.toString()
                         )
                         armorsToAdd.add(armorToAdd)
-                    } catch (e: Exception) {
+                    } catch (e: Throwable) {
                         logger.error(e) { "Failed to process armor named '${armor.key}." }
                         exceptions.add(e)
                     }

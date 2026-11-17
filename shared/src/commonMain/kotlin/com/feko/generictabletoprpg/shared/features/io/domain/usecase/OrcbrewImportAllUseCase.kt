@@ -28,6 +28,7 @@ class OrcbrewImportAllUseCase(
                 }
                     .replace("##NaN", "nil")
             var sources = parseEdnAsMapPort.parse(safeFileContents)
+            requireNotNull(sources)
             if (sources.keys.any { it.toString().contains("orcpub") }) {
                 sources = mapOf("" to sources)
             }
@@ -53,7 +54,7 @@ class OrcbrewImportAllUseCase(
                 results.add(ImportResult(Res.string.armor.asText(), it.first, it.second))
             }
             return Result.success(results)
-        } catch (e: Exception) {
+        } catch (e: Throwable) {
             logger.error(e) { "Failed to process file" }
             return Result.failure(e)
         }

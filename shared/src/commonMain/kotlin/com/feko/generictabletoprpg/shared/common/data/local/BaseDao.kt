@@ -33,11 +33,11 @@ abstract class BaseDao<TEntity, TCore> :
         updateAllInternal(list.map { getEntityFromCoreModel(it) })
 
     override suspend fun insertAll(list: List<TCore>): Result<Pair<Int, Int>> {
-        val errors = mutableListOf<Exception>()
+        val errors = mutableListOf<Throwable>()
         list.forEach { item ->
             try {
                 insertOrUpdate(item)
-            } catch (e: Exception) {
+            } catch (e: Throwable) {
                 logger.error(e) { "Saving entity with name ${item.name} failed." }
                 errors.add(e)
             }

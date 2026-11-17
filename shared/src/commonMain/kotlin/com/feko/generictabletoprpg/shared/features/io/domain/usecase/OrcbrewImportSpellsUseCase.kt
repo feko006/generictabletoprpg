@@ -12,23 +12,23 @@ class OrcbrewImportSpellsUseCase(
 ) : IOrcbrewImportSpellsUseCase {
     override suspend fun import(sources: Map<Any, Any>): Result<Pair<Int, Int>> {
         val spellsToAdd = mutableListOf<Spell>()
-        val exceptions = mutableListOf<Exception>()
+        val exceptions = mutableListOf<Throwable>()
         sources.forEach { source ->
-            val content = source.value as Map<Any, Any>
+            val content = source.value as? Map<Any, Any>
             val spellsKey = ":orcpub.dnd.e5/spells"
             val hasValueForKey = processEdnMapPort.containsKey(content, spellsKey)
             if (hasValueForKey) {
                 val spells = processEdnMapPort.getValue<Map<Any, Any>>(content, spellsKey)
                 spells.forEach { spell ->
                     try {
-                        val spellMap = spell.value as Map<Any, Any>
+                        val spellMap = spell.value as? Map<Any, Any>
                         val spellToAdd = Spell.createFromOrcbrewData(
                             processEdnMapPort,
                             spellMap,
                             source.key.toString()
                         )
                         spellsToAdd.add(spellToAdd)
-                    } catch (e: Exception) {
+                    } catch (e: Throwable) {
                         logger.error(e) { "Failed to process spell named '${spell.key}." }
                         exceptions.add(e)
                     }

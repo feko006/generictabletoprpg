@@ -157,7 +157,7 @@ class TrackerGroupViewModel(
                 _exportToast.emit(
                     ToastMessage(Res.string.export_successful.asText(), _exportToast)
                 )
-            } catch (e: Exception) {
+            } catch (e: Throwable) {
                 logger.error(e) { "Export failed." }
                 _exportToast.emit(
                     ToastMessage(Res.string.export_failed.asText(), _exportToast)

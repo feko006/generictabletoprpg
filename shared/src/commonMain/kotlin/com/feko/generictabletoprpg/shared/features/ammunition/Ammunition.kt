@@ -34,9 +34,10 @@ data class Ammunition(
     companion object {
         fun createFromOrcbrewData(
             processEdnMapPort: IProcessEdnMap,
-            ammunitionMap: Map<Any, Any>,
+            ammunitionMap: Map<Any, Any>?,
             defaultSource: String
         ): Ammunition {
+            requireNotNull(ammunitionMap)
             return Ammunition(
                 0,
                 processEdnMapPort.getValue(ammunitionMap, ":name"),

@@ -4,7 +4,8 @@ import com.feko.generictabletoprpg.shared.common.domain.IProcessEdnMap
 import us.bpsm.edn.Keyword
 
 class ProcessEdnMapEdnJava : IProcessEdnMap {
-    override fun <T> getValue(map: Map<Any, Any>, key: String): T {
+    override fun <T> getValue(map: Map<Any, Any>?, key: String): T {
+        requireNotNull(map)
         val actualKey = map.keys
             .filterIsInstance<Keyword>()
             .first { it.toString() == key }
@@ -21,8 +22,9 @@ class ProcessEdnMapEdnJava : IProcessEdnMap {
         return map[actualKey] as T
     }
 
-    override fun containsKey(map: Map<Any, Any>, key: String): Boolean =
-        map.keys
+    override fun containsKey(map: Map<Any, Any>?, key: String): Boolean =
+        if (map == null) false
+        else map.keys
             .filterIsInstance<Keyword>()
             .any { it.toString() == key }
 

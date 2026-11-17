@@ -51,9 +51,10 @@ data class Feat(
     companion object {
         fun createFromOrcbrewData(
             processEdnMapPort: IProcessEdnMap,
-            featMap: Map<Any, Any>,
+            featMap: Map<Any, Any>?,
             defaultSource: String
         ): Feat {
+            requireNotNull(featMap)
             val abilityIncreasesSet =
                 processEdnMapPort.getValueOrDefault<Set<Any>>(
                     featMap,
@@ -67,7 +68,7 @@ data class Feat(
                 try {
                     val stat = Stat.fromOrcbrewString(orcbrewString)
                     abilityIncreases.add(stat)
-                } catch (e: Exception) {
+                } catch (e: Throwable) {
                     if (orcbrewString.contains("saves")) {
                         savingThrow = true
                     }
@@ -87,7 +88,7 @@ data class Feat(
                     try {
                         val stat = Stat.fromOrcbrewString(it)
                         statRequirements.add(stat)
-                    } catch (e: Exception) {
+                    } catch (e: Throwable) {
                         proficiencyRequirements.add(it.substring(1))
                     }
                 }

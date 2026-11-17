@@ -92,9 +92,10 @@ data class Spell(
     companion object {
         fun createFromOrcbrewData(
             processEdnMapPort: IProcessEdnMap,
-            spellMap: Map<Any, Any>,
+            spellMap: Map<Any, Any>?,
             defaultSource: String
         ): Spell {
+            requireNotNull(spellMap)
             val componentsMap =
                 processEdnMapPort.getValueOrDefault(
                     spellMap,

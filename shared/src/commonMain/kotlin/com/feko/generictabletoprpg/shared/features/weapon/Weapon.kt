@@ -146,9 +146,10 @@ data class Weapon(
     companion object {
         fun createFromOrcbrewData(
             processEdnMapPort: IProcessEdnMap,
-            weaponMap: Map<Any, Any>,
+            weaponMap: Map<Any, Any>?,
             defaultSource: String
         ): Weapon {
+            requireNotNull(weaponMap)
             var damage: Damage? = null
             if (processEdnMapPort.containsKey(weaponMap, ":damage-type")
                 && processEdnMapPort.containsKey(weaponMap, ":damage-die")

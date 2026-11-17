@@ -12,23 +12,23 @@ class OrcbrewImportFeatsUseCase(
 ) : IOrcbrewImportFeatsUseCase {
     override suspend fun import(sources: Map<Any, Any>): Result<Pair<Int, Int>> {
         val featsToAdd = mutableListOf<Feat>()
-        val exceptions = mutableListOf<Exception>()
+        val exceptions = mutableListOf<Throwable>()
         sources.forEach { source ->
-            val content = source.value as Map<Any, Any>
+            val content = source.value as? Map<Any, Any>
             val featsKey = ":orcpub.dnd.e5/feats"
             val hasValueForKey = processEdnMapPort.containsKey(content, featsKey)
             if (hasValueForKey) {
                 val feats = processEdnMapPort.getValue<Map<Any, Any>>(content, featsKey)
                 feats.forEach { feat ->
                     try {
-                        val featMap = feat.value as Map<Any, Any>
+                        val featMap = feat.value as? Map<Any, Any>
                         val featToAdd = Feat.createFromOrcbrewData(
                             processEdnMapPort,
                             featMap,
                             source.key.toString()
                         )
                         featsToAdd.add(featToAdd)
-                    } catch (e: Exception) {
+                    } catch (e: Throwable) {
                         logger.error(e) { "Failed to process feat named '${feat.key}." }
                         exceptions.add(e)
                     }

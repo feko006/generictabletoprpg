@@ -39,9 +39,10 @@ data class Armor(
     companion object {
         fun createFromOrcbrewData(
             processEdnMapPort: IProcessEdnMap,
-            armorMap: Map<Any, Any>,
+            armorMap: Map<Any, Any>?,
             defaultSource: String
         ): Armor {
+            requireNotNull(armorMap)
             return Armor(
                 0,
                 processEdnMapPort.getValue(armorMap, ":name"),
