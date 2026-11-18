@@ -1,7 +1,9 @@
 package com.feko.generictabletoprpg.shared.features.encounter
 
 import androidx.compose.runtime.Immutable
+import androidx.room.ColumnInfo
 import androidx.room.Entity
+import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 import com.feko.generictabletoprpg.shared.common.domain.model.DoNotObfuscate
 import com.feko.generictabletoprpg.shared.common.domain.model.IMutableIdentifiable
@@ -9,7 +11,17 @@ import com.feko.generictabletoprpg.shared.common.domain.model.INamed
 
 @Immutable
 @DoNotObfuscate
-@Entity(tableName = "initiative_entries")
+@Entity(
+    tableName = "initiative_entries",
+    foreignKeys = [
+        ForeignKey(
+            entity = EncounterEntity::class,
+            parentColumns = ["id"],
+            childColumns = ["encounterId"],
+            onDelete = ForeignKey.CASCADE
+        )
+    ]
+)
 data class InitiativeEntryEntity(
     @PrimaryKey(autoGenerate = true)
     override var id: Long,
@@ -23,7 +35,9 @@ data class InitiativeEntryEntity(
     val spellAttackModifier: Int,
     val keepOnRefresh: Boolean,
     val hasTurn: Boolean,
-    val isTurnCompleted: Boolean
+    val isTurnCompleted: Boolean,
+    @ColumnInfo(index = true, defaultValue = "1")
+    val encounterId: Long
 ) : IMutableIdentifiable, INamed {
 
     val hasHealth by lazy { health > 0 }
@@ -46,7 +60,7 @@ data class InitiativeEntryEntity(
         availableLegendaryActions >= count && !hasTurn && !isLairAction
 
     companion object {
-        val Empty = InitiativeEntryEntity(0L, "", 0, 0, 0, 0, 0, 0, 0, false, false, false)
+        val Empty = InitiativeEntryEntity(0L, "", 0, 0, 0, 0, 0, 0, 0, false, false, false, 0)
         fun createLairActionEntry(): InitiativeEntryEntity = Empty.copy(initiative = 20)
     }
 }

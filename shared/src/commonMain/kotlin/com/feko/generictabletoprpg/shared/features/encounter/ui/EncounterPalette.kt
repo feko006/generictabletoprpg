@@ -8,7 +8,7 @@ import com.feko.generictabletoprpg.shared.features.encounter.InitiativeEntryEnti
 @Composable
 fun InitiativeListItemPreview() {
     InitiativeListItem(
-        InitiativeEntryEntity(1, "Larry", 10, 18, 19, 3, 1, 14, 7, false, false, false),
+        InitiativeEntryEntity(1, "Larry", 10, 18, 19, 3, 1, 14, 7, false, false, false, 0),
         onUpdateInitiativeRequested = {},
         onUpdateKeepOnReset = {},
         onHealButtonClicked = {},

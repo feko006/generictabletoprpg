@@ -7,5 +7,6 @@ import org.koin.dsl.module
 
 val encounterModule = module {
     single<InitiativeEntryDao> { get<GenericTabletopRpgDatabase>().initiativeEntryDao() }
+    single<EncounterDao> { get<GenericTabletopRpgDatabase>().encounterDao() }
     viewModelOf(::EncounterViewModel)
 }

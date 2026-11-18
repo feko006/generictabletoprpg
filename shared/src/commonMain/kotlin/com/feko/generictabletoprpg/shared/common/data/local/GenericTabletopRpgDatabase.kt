@@ -6,6 +6,9 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.RoomDatabaseConstructor
 import androidx.room.TypeConverters
+import androidx.room.migration.AutoMigrationSpec
+import androidx.sqlite.SQLiteConnection
+import androidx.sqlite.execSQL
 import com.feko.generictabletoprpg.shared.features.action.ActionDao
 import com.feko.generictabletoprpg.shared.features.action.ActionEntity
 import com.feko.generictabletoprpg.shared.features.ammunition.AmmunitionDao
@@ -16,6 +19,8 @@ import com.feko.generictabletoprpg.shared.features.condition.ConditionDao
 import com.feko.generictabletoprpg.shared.features.condition.ConditionEntity
 import com.feko.generictabletoprpg.shared.features.disease.DiseaseDao
 import com.feko.generictabletoprpg.shared.features.disease.DiseaseEntity
+import com.feko.generictabletoprpg.shared.features.encounter.EncounterDao
+import com.feko.generictabletoprpg.shared.features.encounter.EncounterEntity
 import com.feko.generictabletoprpg.shared.features.encounter.InitiativeEntryDao
 import com.feko.generictabletoprpg.shared.features.encounter.InitiativeEntryEntity
 import com.feko.generictabletoprpg.shared.features.feat.FeatDao
@@ -48,9 +53,10 @@ import com.feko.generictabletoprpg.shared.features.weapon.WeaponEntity
         TrackedThingEntity::class,
         TrackedThingGroupEntity::class,
         InitiativeEntryEntity::class,
-        MagicItemEntity::class
+        MagicItemEntity::class,
+        EncounterEntity::class
     ],
-    version = 16,
+    version = 18,
     autoMigrations = [
         AutoMigration(from = 1, to = 2),
         AutoMigration(from = 2, to = 3),
@@ -66,7 +72,9 @@ import com.feko.generictabletoprpg.shared.features.weapon.WeaponEntity
         AutoMigration(from = 12, to = 13),
         AutoMigration(from = 13, to = 14),
         AutoMigration(from = 14, to = 15),
-        AutoMigration(from = 15, to = 16)
+        AutoMigration(from = 15, to = 16),
+        AutoMigration(from = 16, to = 17, spec = MigrationSpec16To17::class),
+        AutoMigration(from = 17, to = 18)
     ]
 )
 @ConstructedBy(AppDatabaseConstructor::class)
@@ -83,9 +91,17 @@ abstract class GenericTabletopRpgDatabase : RoomDatabase() {
     abstract fun trackedThingGroupDao(): TrackedThingGroupDao
     abstract fun initiativeEntryDao(): InitiativeEntryDao
     abstract fun magicItemDao(): MagicItemDao
+    abstract fun encounterDao(): EncounterDao
 }
 
 @Suppress("KotlinNoActualForExpect")
 expect object AppDatabaseConstructor : RoomDatabaseConstructor<GenericTabletopRpgDatabase> {
     override fun initialize(): GenericTabletopRpgDatabase
+}
+
+internal class MigrationSpec16To17 : AutoMigrationSpec {
+    override fun onPostMigrate(connection: SQLiteConnection) {
+        super.onPostMigrate(connection)
+        connection.execSQL("insert into encounters(id, name, round) values(1, 'Encounter', 1)")
+    }
 }
