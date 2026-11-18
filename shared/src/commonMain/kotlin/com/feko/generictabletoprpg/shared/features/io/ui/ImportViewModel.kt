@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.dokar.sonner.ToasterDefaults
 import com.feko.generictabletoprpg.Res
 import com.feko.generictabletoprpg.failed_to_import_data_toast
+import com.feko.generictabletoprpg.nothing_to_import
 import com.feko.generictabletoprpg.partially_imported_data_toast
 import com.feko.generictabletoprpg.shared.common.domain.model.IText
 import com.feko.generictabletoprpg.shared.common.domain.model.IText.StringResourceText.Companion.asText
@@ -42,6 +43,16 @@ class ImportViewModel(
             val successes = results.count { it.isSuccess }
             if (successes == 0) {
                 showToastAndResetScreen(Res.string.failed_to_import_data_toast.asText())
+                return@launch
+            }
+
+            val nothingImported = results.all { res ->
+                res.getOrNull()?.all { importRes ->
+                    importRes.total == 0
+                } ?: true
+            }
+            if (nothingImported) {
+                showToastAndResetScreen(Res.string.nothing_to_import.asText())
                 return@launch
             }
 

@@ -76,6 +76,7 @@
     <string name="failed_to_import_data_toast">Failed to import data</string>
     <string name="successfully_imported_data_toast">Successfully imported data</string>
     <string name="partially_imported_data_toast">Data partially imported</string>
+    <string name="nothing_to_import">Nothing to import</string>
     <!--Search All-->
     <string name="search_all_title">Index</string>
     <string name="search_everywhere">Search everywhere</string>
